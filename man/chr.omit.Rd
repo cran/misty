@@ -29,7 +29,7 @@ character vector or factor.
 }
 \examples{
 #————————————————————————————————————————————————————————————————————————————
-# Charater vector
+# Charater Vector
 
 x.chr <- c("a", "", "c", NA, "", "d", "e", NA)
 
@@ -46,7 +46,7 @@ chr.omit(x.chr, omit = c("c", "e"))
 chr.omit(x.chr, omit = c("c", "e"), na.omit = TRUE)
 
 #————————————————————————————————————————————————————————————————————————————
-# Numeric vector
+# Numeric Vector
 
 x.num <- c(1, 2, NA, 3, 4, 5, NA)
 

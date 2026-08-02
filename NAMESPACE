@@ -75,11 +75,13 @@ export(indirect)
 export(item.alpha)
 export(item.cfa)
 export(item.dfi)
+export(item.distract)
 export(item.invar)
 export(item.noninvar)
 export(item.omega)
 export(item.reverse)
 export(item.scores)
+export(item.stats)
 export(kurtosis)
 export(lagged)
 export(lavaan.satcor)
@@ -93,6 +95,7 @@ export(mplus.print)
 export(mplus)
 export(mplus.run)
 export(mplus.update)
+export(multilevel.alpha)
 export(multilevel.cfa)
 export(multilevel.cor)
 export(multilevel.descript)
@@ -146,17 +149,19 @@ export(write.mplus)
 export(write.result)
 export(write.sav)
 export(write.xlsx)
-importFrom("stats", "AIC","aov", "anova", "as.formula", "BIC", "chisq.test", "contrasts", "contr.helmert",
-           "contr.poly", "contr.sum", "contr.treatment", "coef", "coefficients",
-           "cooks.distance", "confint", "cor", "cor.test", "cov", "cov2cor", "density", "df",
-           "dfbetas", "df.residual", "dnorm", "dt", "fft", "formula", "hatvalues",
+importFrom("stats", "AIC","aov", "anova", "as.formula", "BIC", "chisq.test", "complete.cases", 
+           "contrasts", "contr.helmert", "contr.poly", "contr.sum", "contr.treatment", "coef", 
+           "coefficients", "cooks.distance", "confint", "cor", "cor.test", "cov", "cov2cor", 
+           "density", "df", "dfbetas", "df.residual", "dnorm", "dt", "fft", "formula", "hatvalues",
            "integrate", "IQR", "lag", "lm", "loess", "logLik", "mad", "mahalanobis", "median",
            "model.frame", "model.matrix", "na.omit", "nextn", "nobs", "oneway.test", "optim",
-           "optimize", "pnorm", "predict", "resid", "residuals", "rnorm", "rstandard", "rstudent", 
-           "runif", "setNames", "sigma", "summary.lm", "pchisq", "qbeta", "qbinom", "qchisq", "qf", 
-           "qnorm", "qt", "quantile", "reshape", "sd", "terms", "time", "t.test", "p.adjust", "pf", 
+           "optimize", "pnorm", "predict", "resid", "residuals", "rnorm", "rstandard", "rstudent",
+           "runif", "setNames", "sigma", "summary.lm", "pchisq", "qbeta", "qbinom", "qchisq", "qf",
+           "qnorm", "qt", "quantile", "reshape", "sd", "terms", "time", "t.test", "p.adjust", "pf",
            "pt", "uniroot", "update", "var", "vcov", "weights")
 importFrom("grDevices", "hcl.colors", "hcl.pals")
 importFrom("utils", "as.relistable", "available.packages", "combn", "head",
            "install.packages", "installed.packages", "packageDescription", "read.csv",
            "read.table", "relist", "setTxtProgressBar", "txtProgressBar", "write.csv", "write.csv2", "write.table")
+
+

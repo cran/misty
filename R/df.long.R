@@ -116,8 +116,8 @@
 #'                     adep = c(3, 6, NA), bdep = c(5, 5, 6), cdep = c(4, NA, 5),
 #'                     aanx = c(5, 3, 6), banx = c(NA, 7, 2), canx = c(6, NA, 8))
 #'
-#' #----------------------------------------------------------------------------
-#' # Convert from 'wide' data format to the 'long' data format
+#' #————————————————————————————————————————————————————————————————————————————
+#' # Convert from 'wide' Data Format to the 'long' Data Format
 #'
 #' # Example 1: One set of time-varying variables combined into "dep"
 #' df.long(dat.w, var = c("adep", "bdep", "cdep"), var.name = "dep", idvar = "id")
@@ -151,8 +151,8 @@
 #' # Example 7: Convert all variables except "age" and "gend"
 #' df.long(dat.w, age, gend, idvar = "id")
 #'
-#' #----------------------------------------------------------------------------
-#' # Convert from 'long' data format to the 'wide' data format
+#' #—————————————————————————————————————————————————————————————————————————————
+#' # Convert from 'long' Data Format to the 'wide' Data Format
 #'
 #' dat.l <- df.long(dat.w,
 #'                  var = list(c("adep", "bdep", "cdep"), c("aanx", "banx", "canx")),
@@ -183,13 +183,13 @@ df.long <- function(data, ..., var = NULL, var.name = "value",
   #
   # Variables ------------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Set of Varying Variables ####
 
   if (isTRUE(is.null(var))) { measure.vars <- setdiff(colnames(data), idvar) } else { measure.vars <- var }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Variables using the argument '...' ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Using the Argument '...' ####
 
   if (isTRUE(!missing(...))) {
 
@@ -197,8 +197,8 @@ df.long <- function(data, ..., var = NULL, var.name = "value",
 
     if (isTRUE(is.null(var))) { measure.vars <- setdiff(measure.vars, id.vars) }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Variables without using the argument '...' ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Without using the Argument '...' ####
 
   } else {
 
@@ -206,12 +206,12 @@ df.long <- function(data, ..., var = NULL, var.name = "value",
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Remove Varying Set of Variables ####
 
   id.vars <- setdiff(id.vars, unlist(measure.vars))
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## ID Variable not in Dataframe ####
 
   if (isTRUE(!idvar %in% colnames(data))) { data <- setNames(data.frame(seq_len(nrow(data)), data), nm = c(idvar, colnames(data))) }
@@ -243,19 +243,19 @@ df.long <- function(data, ..., var = NULL, var.name = "value",
   #
   # Arguments ------------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Argument 'time' ####
 
   # Default, "num" when argument 'var' is specified, otherwise "chr"
   time <- if (isTRUE(all(c("num", "chr", "fac", "ord") %in% time))) { if (isTRUE(!is.null(var))) { "num" } else { "chr" } } else { time }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Argument 'var' ####
 
   # One set of variables specified in a list
   if (isTRUE(is.list(var) && length(var) == 1L)) { measure.vars <- unlist(measure.vars) }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Argument 'var.name' ####
 
   if (isTRUE(is.list(measure.vars) && length(var.name) == 1L)) { var.name <- paste0(var.name, seq_len(length(var))) }
@@ -268,10 +268,10 @@ df.long <- function(data, ..., var = NULL, var.name = "value",
                                                                                  id.vars = id.vars, variable.name = time.name, variable.factor = FALSE, value.factor = FALSE,
                                                                                  na.rm = FALSE, verbose = FALSE))))
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Time Variable ####
 
-  #...................
+  #—————————————————————————————————————— #
   ### Numeric, Character, Factor, or Ordered Factor ####
 
   if (isTRUE(all(time %in% c("num", "chr", "fac", "ord")))) {
@@ -296,7 +296,7 @@ df.long <- function(data, ..., var = NULL, var.name = "value",
 
     }
 
-  #...................
+  #—————————————————————————————————————— #
   ### User-Defined Values ####
 
   } else {
@@ -305,12 +305,12 @@ df.long <- function(data, ..., var = NULL, var.name = "value",
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Sort Data Frame According to 'idvar' ####
 
   if (isTRUE(sort)) { object <- data.frame(object[order(object[, idvar], decreasing = decreasing), , drop = FALSE], row.names = NULL) }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Remove NA values ####
 
   if (isTRUE(na.rm)) { object <- object[which(misty::na.prop(object[, var.name, drop = FALSE]) != 1L), ] }
@@ -340,15 +340,15 @@ df.wide <- function(data, ..., var, var.name = var, time = "time", idvar = "idva
   #
   # Variables ------------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Variables using the argument 'data' ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Using the Argument 'data' ####
 
   if (isTRUE(!missing(...))) {
 
     plus.var <- c(idvar, .var.names(..., data = data))
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Variables without using the argument 'data' ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Without Using the Argument 'data' ####
 
   } else {
 
@@ -356,7 +356,7 @@ df.wide <- function(data, ..., var, var.name = var, time = "time", idvar = "idva
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Remove Variables for Casting and Time Variable ####
 
   plus.var <- setdiff(plus.var, c(var, time))
@@ -389,7 +389,7 @@ df.wide <- function(data, ..., var, var.name = var, time = "time", idvar = "idva
   #
   # Arguments ------------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Argument 'formula' ####
 
   formula <- paste(paste(plus.var, collapse = " + "), time, sep = " ~ ")
@@ -400,7 +400,7 @@ df.wide <- function(data, ..., var, var.name = var, time = "time", idvar = "idva
 
   object <- suppressMessages(suppressWarnings(data.table::setDF(data.table::dcast(data.table::setDT(data), formula = formula, value.var = var, sep = sep))))
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Variable Names ####
 
   if (isTRUE(!identical(var.name, var))) { for (i in seq_along(var)) { object <- setNames(object, nm = c(plus.var, sub(var[i], var.name[i], setdiff(colnames(object), plus.var)))) } }

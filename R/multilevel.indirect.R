@@ -214,8 +214,8 @@ multilevel.indirect <- function(a, b, se.a, se.b, cov.ab = 0, cov.rand, se.cov.r
   #
   # Arguments ------------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Alternative hypothesis ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Alternative Hypothesis ####
 
   if (isTRUE(all(c("two.sided", "less", "greater") %in% alternative))) { alternative <- "two.sided" }
 
@@ -223,7 +223,7 @@ multilevel.indirect <- function(a, b, se.a, se.b, cov.ab = 0, cov.rand, se.cov.r
   #
   # Main Function --------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Random Number Generation ####
 
   if (isTRUE(!is.null(seed))) {
@@ -232,7 +232,7 @@ multilevel.indirect <- function(a, b, se.a, se.b, cov.ab = 0, cov.rand, se.cov.r
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Monte Carlo Method ####
 
   dvec <- rnorm(nrep)
@@ -260,17 +260,17 @@ multilevel.indirect <- function(a, b, se.a, se.b, cov.ab = 0, cov.rand, se.cov.r
 
   ab <- avec * bvec + cvec
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Point estimate ####
 
   mc.ab <- mean(ab)
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Standard error ####
 
   mc.se.ab <- sd(ab)
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Confidence interval ####
 
   mc.ci <- switch(alternative,
@@ -305,7 +305,7 @@ multilevel.indirect <- function(a, b, se.a, se.b, cov.ab = 0, cov.rand, se.cov.r
 
   if (isTRUE(!is.null(write))) {
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Text file ####
 
     # Send R output to textfile

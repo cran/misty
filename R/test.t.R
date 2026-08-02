@@ -134,7 +134,7 @@
 #' @export
 #'
 #' @examples
-#' #————————————————————————————————————————————————————————————————————————————
+#' #—————————————————————————————————————— #——————————————————————————————————————
 #' # One-Sample Design
 #'
 #' # Example 1a: Two-sided one-sample t-test, population mean = 20
@@ -143,7 +143,7 @@
 #' # Example 1b: One-sided one-sample t-test, population mean = 20, print Cohen's d
 #' test.t(mtcars$mpg, mu = 20, alternative = "greater", effsize = TRUE)
 #'
-#' #————————————————————————————————————————————————————————————————————————————
+#' #—————————————————————————————————————— #——————————————————————————————————————
 #' # Two-Sample Design
 #'
 #' # Example 2a: Two-sided two-sample t-test
@@ -155,7 +155,7 @@
 #' # Example 2c: One-sided two-sample t-test, print Cohen's d
 #' test.t(mpg ~ vs, data = mtcars, alternative = "greater", effsize = TRUE)
 #'
-#' #————————————————————————————————————————————————————————————————————————————
+#' #—————————————————————————————————————— #——————————————————————————————————————
 #' # Paired-Sample Design
 #'
 #' # Example 3a: Two-sided paired-sample t-test
@@ -164,7 +164,7 @@
 #' # Example 3b: One-sided paired-sample t-test, print Cohen's d
 #' test.t(mtcars$drat, mtcars$wt, paired = TRUE, alternative = "greater", effsize = TRUE)
 #'
-#' #————————————————————————————————————————————————————————————————————————————
+#' #—————————————————————————————————————— #——————————————————————————————————————
 #' # Plot
 #'
 #' # Example 4a: One-Sample Design
@@ -181,7 +181,7 @@
 #' object <- test.t(mpg ~ vs, data = mtcars)
 #' plot(object, jitter = TRUE, jitter.alpha = 0.4, title = "Two-Sample t-Test")
 #'
-#' #————————————————————————————————————————————————————————————————————————————
+#' #—————————————————————————————————————— #——————————————————————————————————————
 #' # Create Plot Manually
 #'
 #' # Load ggplot2 package
@@ -206,7 +206,7 @@
 #'  theme_bw()  +
 #'  theme(axis.text.x = element_blank(), axis.ticks.x = element_blank())
 #'
-#' #————————————————————————————————————————————————————————————————————————————
+#' #—————————————————————————————————————— #——————————————————————————————————————
 #' # Write Results and Save Plot
 #'
 #' \dontrun{
@@ -269,7 +269,7 @@ test.t.default <- function(x, y = NULL, mu = 0, paired = FALSE,
 
   #_____________________________________________________________________________
   #
-  ## Convert user-missing values into NA ####
+  ## Convert User-Missing Values into NA ####
 
   if (isTRUE(!is.null(as.na))) {
 
@@ -324,7 +324,7 @@ test.t.default <- function(x, y = NULL, mu = 0, paired = FALSE,
   #
   ## Main Function ####
 
-  #——————————————————————————————————————
+  #—————————————————————————————————————— #
   ### One-Sample Design ####
 
   if (isTRUE(is.null(y))) {
@@ -346,7 +346,7 @@ test.t.default <- function(x, y = NULL, mu = 0, paired = FALSE,
 
     sample <- "one"
 
-  #——————————————————————————————————————
+  #—————————————————————————————————————— #
   ### Two-Sample Design ####
 
   } else if (isTRUE(!is.null(y) && !isTRUE(paired))) {
@@ -369,7 +369,7 @@ test.t.default <- function(x, y = NULL, mu = 0, paired = FALSE,
 
     sample <- "two"
 
-  #——————————————————————————————————————
+  #—————————————————————————————————————— #
   ### Paired-Sample Design  ####
 
   } else if (isTRUE(!is.null(y) && isTRUE(paired))) {
@@ -457,7 +457,7 @@ test.t.formula <- function(formula, data, alternative = c("two.sided", "less", "
   #
   ## Formula ####
 
-  #——————————————————————————————————————
+  #—————————————————————————————————————— #
   ### Variables ####
 
   var.formula <- all.vars(as.formula(formula))
@@ -468,7 +468,7 @@ test.t.formula <- function(formula, data, alternative = c("two.sided", "less", "
   # Outcome(s)
   y.vars <- var.formula[-grep(group.var, var.formula)]
 
-  #——————————————————————————————————————
+  #—————————————————————————————————————— #
   ### Check ####
 
   # Check input 'check'
@@ -487,7 +487,7 @@ test.t.formula <- function(formula, data, alternative = c("two.sided", "less", "
 
   }
 
-  #——————————————————————————————————————
+  #—————————————————————————————————————— #
   ### Convert user-missing values into NA ####
 
   if (isTRUE(!is.null(as.na))) {

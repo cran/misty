@@ -4,22 +4,23 @@
 \alias{item.invar}
 \title{Between-Group and Longitudinal Measurement Invariance Evaluation}
 \usage{
-item.invar(data, ..., model = NULL, group = NULL, cluster = NULL, long = FALSE,
-           ordered = FALSE, parameterization = c("delta", "theta"),
+item.invar(data, ..., model = NULL, group = NULL, cluster = NULL,
+           long = FALSE, ordered = FALSE, parameterization = c("delta", "theta"),
            rescov = NULL, rescov.long = TRUE,
            invar = c("config", "thres", "metric", "scalar", "strict"),
            partial = NULL, ident = c("marker", "var", "effect"),
            estimator = c("ML", "MLM", "MLMV", "MLMVS", "MLF", "MLR",
-                         "GLS", "WLS", "DWLS", "WLSM", "WLSMV",
-                         "ULS", "ULSM", "ULSMV", "DLS", "PML"),
+                         "GLS", "WLS", "DWLS", "WLSM", "WLSMV", "WLSMVS",
+                         "ULS", "ULSM", "ULSMV", "ULSMVS", "DLS", "PML"),
            missing = c("listwise", "pairwise", "fiml", "two.stage",
                        "robust.two.stage", "doubly.robust"), null.model = TRUE,
            print = c("all", "summary", "partial", "coverage", "descript", "fit",
-                     "est", "modind", "resid"),
-           print.fit = c("all", "standard", "scaled", "robust"),
-           mod.minval = 6.63, resid.minval = 0.1, lavaan.run = TRUE, se = NULL,
-           digits = 3, p.digits = 3, as.na = NULL, write = NULL, append = TRUE,
-           check = TRUE, output = TRUE)
+                     "est", "modind", "resid", "opdyke"),
+           print.fit = c("all", "standard", "scaled", "robust"), mod.minval = 6.63,
+           resid.minval = 0.1, opdyke.prec = 1, opdyke.minmax = c(0.40, 0.60),
+           color = "b.red", style = c("regular", "bold", "italic"),
+           lavaan.run = TRUE, se = NULL, digits = 3, p.digits = 3, as.na = NULL,
+           write = NULL, append = TRUE, check = TRUE, output = TRUE)
 }
 \arguments{
 \item{data}{a data frame. If \code{model = NULL}, confirmatory
@@ -159,22 +160,47 @@ addition, metric measurement invariance cannot be
 investigated when all indicators have only two response
 categories, i.e., binary indicators.}
 
-\item{partial}{a list of character vectors named \code{load} for freeing
-factor loadings, \code{inter} for freeing intercepts, and/or
-\code{resid} for freeing residual variances when evaluating
-between-group measurement invariance based on two groups
-(see Example 4a) or longitudinal measurement invariance
-(see Example 11a and 11b). When evaluating between-group
-measurement invariance based on more than two groups, a
-list with lists named with e.g., in case of three groups
-\code{g1} for group 1, \code{g2} for group 2, and/or \code{g3}
-for group 3 with these lists containing character vectors
-named \code{load} for freeing factor loadings, \code{inter}
-for freeing intercepts, and/or \code{resid} for freeing
-residual variances in specific groups. Note that at least two
-invariant indicators per latent variable are needed for a
-partial measurement invariance model. Otherwise there might
-be issues with model non-identification.}
+\item{partial}{a list of character vectors and/or list(s) named
+\code{thres} for freeing thresholds, \code{load} for
+freeing factor loadings, \code{inter} for freeing
+intercepts, and/or \code{resid} for freeing residual
+variances. More specifically, a list of named character
+vectors \code{load}, \code{inter}, and/or \code{resid}
+are needed when investigating partial between-group
+measurement invariance for continuous indicators based
+on two groups (see Example 4a) or longitudinal partial
+measurement invariance for continuous indicators based on
+two time points (see Example 10) or more than two time
+points However, a list of named lists labled \code{load},
+\code{inter}, and/or \code{resid} are needed when
+investigating partial between-group measurement invariance
+for continuous indicators based  on more than two groups
+(see Example 4b). A list including a list named \code{thres}
+of character vectors named a after the indicators for
+which threshold parameters (e.g., \code{"t1"} for
+threshold \code{1}) are to be freed along with named
+character vectors \code{load}, \code{inter}, and/or
+\code{resid} are needed when investigating partial
+between-group measurement invariance  for ordered
+categorical indicators based on two groups (see Example
+12a) or longitudinal partial measurement invariance for
+ordered categorical indicators based on two time points
+(see Example 14) or more than two time points. However,
+a list including a list named \code{thres} of lists
+named after the indicators for which threshold parameters
+are freed (e.g., \code{item1}) of named character vectors
+specifying the threshold parameter along with lists named
+\code{load}, \code{inter}, and/or \code{resid} are needed
+when investigating partial between-group measurement
+invariance for ordered categorical indicators based on
+more than two groups (see Example 12b). Groups are
+denoted with \code{"g"} following the group number, e.g.
+\code{load = list(x4 = c("g1", "g3"))} for freeing
+factor loadings of indicator \code{x4} in group 1 and
+group 3. Note that at least two invariant indicators
+per latent variable are needed for a partial measurement
+invariance model. Otherwise there might be issues with
+model non-identification.}
 
 \item{ident}{a character string indicating the method used for identifying
 and scaling latent variables, i.e., \code{"marker"} for the
@@ -239,9 +265,12 @@ for continuous variables (\code{ordered = FALSE}) and
 item frequencies for ordered categorical variable
 (\code{ordered = TRUE}), \code{"fit"} for model fit and
 model comparison, \code{"est"} for parameter estimates,
-\code{"modind"} for modification indices, and \code{"resid"}
+\code{"modind"} for modification indices, \code{"resid"}
 for the residual correlation matrix and standardized residual
-means. By default, a summary of the specification, model
+means, and \code{"opdyke"} for the discrepancy between
+model-implied and observed correlation expressed in terms
+of the relative percentile of an Opdyke distribution
+(McNeish, 2025). By default, a summary of the specification, model
 fit, and parameter estimates are printed. Note that parameter
 estimates, modification indices, and residual correlation
 matrix is only provided for the model investigating the
@@ -275,6 +304,48 @@ in boldface. By default, absolute residual correlation
 coefficients and standardized means equal or higher 0.1
 are highlighted. Note that highlighting can be disabled by
 setting the minimum value to 1.}
+
+\item{opdyke.prec}{a numeric value indicating the precision of the probability
+density function calculations of the Opdyke distribution.
+The default is \code{1} which calculates the PDF
+for polar angles between \eqn{(0, pi)} in \eqn{0.01}
+increments. Specifying \code{10} calculates the PDF
+polar angles between \eqn{(0, pi)} in 0.001 increments,
+which takes considerably longer, especially if there
+are many correlation elements.}
+
+\item{opdyke.minmax}{a numeric vector with two elements indicating the
+minimum and maximum percentile of the Opdyke distribution
+that is considered to be acceptably close to the
+observed correlation represented by the Opdyke distribution
+median. Predicted correlation outside the range will be
+color highlighted in line with to the argument \code{color}.}
+
+\item{color}{a character string indicating the text color for
+highlighting absolute residual correlation coefficients
+and standardized means equal or higher \code{resid.minval}
+and predicted correlations outside the minimum and
+maximum percentile of the Opdyke distribution, i.e.,
+i.e., \code{"default"} for the default text color without
+color coding and various text colors for highlighting
+\code{"red"}, \code{"b.red"} (default), \code{"green"},
+\code{"b.green"}, \code{"blue"}, or \code{"b.blue"},
+see the help page of the \code{\link{chr.color}} function.
+Note that this option is not supported when using R
+Markdown and when writing the output into a text file
+(\code{.txt}).}
+
+\item{style}{a character vector indicating the font style for
+highlighting absolute residual correlation coefficients
+and standardized means equal or higher \code{resid.minval},
+i.e., \code{"regular"} (default) for regular text, \code{"bold"}
+for bold text, and \code{"italic"} for italic text. Note
+that the font style \code{"bold"} and \code{"italic"} can
+be combined, i.e., style = c("bold", "italic") provides a
+bold and italic text. Note that the argument \code{color}
+needs to be specified to change the style of the text, e.g.
+\code{color = "black"} and \code{style = "bold"} to for
+bold text.}
 
 \item{lavaan.run}{logical: if \code{TRUE} (default), all models for
 evaluating measurement invariance will be estimated by
@@ -339,7 +410,7 @@ entries:
 \item{\code{result}}{list with result tables, i.e., \code{summary} for the
                      summary of the specification, e.g., estimation method or
                      missing data handling in lavaan, \code{partial} for the
-                     summary of the partial invariance specification,\code{coverage}
+                     summary of the partial invariance specification, \code{coverage}
                      for the variance-covariance coverage of the data, \code{descript}
                      list with descriptive statistics (\code{stat}) and
                      frequencies (\code{freq}), \code{fit} for a list with
@@ -350,10 +421,13 @@ entries:
                      the configural, metric, scalar, and strict invariance model,
                      \code{score} for the list with result of the score tests
                      for constrained parameters for the threshold, metric,
-                     scalar, and strict invariance model, and \code{resid} for
+                     scalar, and strict invariance model, \code{resid} for
                      the list with residual correlation matrices and standardized
                      residual means for the configural, threshold, metric, scalar,
-                     and strict invariance model}
+                     and strict invariance model, and \code{opdyke} for the
+                     list with relative Opdyke distribution percentile matrix
+                     for the configural, threshold, metric, scalar, and strict
+                     invariance model}
 }
 \description{
 This function evaluates configural, (threshold), metric, scalar, and strict
@@ -372,25 +446,28 @@ test, fit indices based on a proper null model, and information criteria) and
 model comparison (i.e., chi-square difference test, change in fit indices, and
 change in information criteria). Additionally, variance-covariance coverage of
 the data, descriptive statistics, parameter estimates, modification indices,
-and residual correlation matrix can be requested by specifying the argument
-\code{print}.
+residual correlation matrix, and relative Opdyke distribution percentile matrix
+can be requested by specifying the argument \code{print}.
 }
 \note{
 The function uses the functions \code{cfa}, \code{fitmeasures} ,\code{lavInspect},
 \code{lavTech}, \code{lavTestLRT}, \code{lavTestScore}, \code{modindices},
 \code{parameterEstimates}, \code{parTable}, and \code{standardizedsolution}
-provided in the R package \pkg{lavaan} by Yves Rosseel (2012).
+provided in the R package \pkg{lavaan} by Yves Rosseel (2012). The relative Opdyke
+distribution percentile matrix is based on the functions \code{opdyke} and
+\code{opdyke.percentiles} provided in the R package \pkg{opddyke} by Dan McNeish (2026).
 }
 \examples{
 \dontrun{
+
 # Load data set "HolzingerSwineford1939" in the lavaan package
 data("HolzingerSwineford1939", package = "lavaan")
 
 #————————————————————————————————————————————————————————————————————————————
 # Between-Group Measurement Invariance: Continuous Indicators
 
-#···················
-# Measurement model with one factor
+#——————————————————————————————————————
+# Measurement Model with One Factor
 
 # Example 1a: Model specification using the argument '...'
 item.invar(HolzingerSwineford1939, x1, x2, x3, x4, group = "school")
@@ -405,23 +482,23 @@ item.invar(HolzingerSwineford1939[, c("x1", "x2", "x3", "x4", "school")], group 
 # Example 1d: Alternative model specification using the argument 'model'
 item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"), group = "school")
 
-#···················
-# Measurement model with two factors
+#——————————————————————————————————————
+# Measurement Model with Two Factors
 
 # Example 2: Model specification using the argument 'model'
 item.invar(HolzingerSwineford1939,
            model = list(c("x1", "x2", "x3", "x4"), c("x5", "x6", "x7", "x8")),
            group = "school")
 
-#···················
-# Configural, metric, scalar, and strict measurement invariance
+#——————————————————————————————————————
+# Configural, Metric, Scalar, and Strict Measurement Invariance
 
 # Example 3: Evaluate configural, metric, scalar, and strict measurement invariance
 item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
            group = "school", invar = "strict")
 
-#···················
-# Between-group partial measurement invariance
+#——————————————————————————————————————
+# Between-Group Partial Measurement Invariance
 
 # Example 4a: Two Groups
 #             Free factor loadings for 'x2' and 'x3'
@@ -444,8 +521,8 @@ item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
                           inter = list(x1 = "g3"),
                           resid = list(x3 = c("g1", "g3"))))
 
-#···················
-# Residual covariances
+#——————————————————————————————————————
+# Residual Covariances
 
 # Example 5a: One residual covariance
 item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
@@ -455,52 +532,42 @@ item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
 item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
            rescov = list(c("x1", "x4"), c("x3", "x4")), group = "school")
 
-#···················
-# Scaled test statistic
+#——————————————————————————————————————
+# Default Null Model
 
-# Example 6a: Specify cluster variable using a variable name in 'data'
-item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
-           group = "school", cluster = "agemo")
-
-# Example 6b: Specify cluster variable as vector
-item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
-           group = "school", cluster = HolzingerSwineford1939$agemo)
-
-#···················
-# Default Null model
-
-# Example 7: Specify default null model for computing incremental fit indices
+# Example 6: Specify default null model for computing incremental fit indices
 item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
            group = "school", null.model = FALSE)
 
-#···················
-# Print argument
+#——————————————————————————————————————
+# Arguments 'print', 'print.fit', 'mod.minval', 'resid.minval', and 'opdyke.minmax'
 
-# Example 8a: Request all results
+# Example 7a: Request all results
 item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
            group = "school", print = "all")
 
-# Example 8b: Request fit indices with ad hoc non-normality correction
+# Example 7b: Request fit indices with ad hoc non-normality correction
 item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
            group = "school", print.fit = "scaled")
 
-# Example 8c: Request modification indices with value equal or higher than 2
-# and highlight residual correlations equal or higher than 0.3
+# Example 7c: Request modification indices with value equal or higher than 2
+# highlight absolute residual correlations equal or higher than 0.05
+# highlight Opdyke distribution percentiles outside 0.45 and 0.55
 item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
-           group = "school", print = c("modind", "resid"),
-           mod.minval = 2, resid.minval = 0.3)
+           group = "school", print = c("modind", "resid", "opdyke"),
+           mod.minval = 2, resid.minval = 0.05, opdyke.minmax = c(0.45, 0.55))
 
-#···················
-# Model syntax and lavaan summary of the estimated model
+#——————————————————————————————————————
+# Model Syntax and lavaan Summary of the Estimated Model
 
-# Example 9a: Model specification using the argument '...'
+# Example 8a: Model specification using the argument '...'
 mod1 <- item.invar(HolzingerSwineford1939, x1, x2, x3, x4, group = "school",
                    output = FALSE)
 
 # lavaan summary of the scalar invariance model
 lavaan::summary(mod1$model.fit$scalar, standardized = TRUE, fit.measures = TRUE)
 
-# Example 9b: Do not estimate any models
+# Example 8b: Do not estimate any models
 mod2 <- item.invar(HolzingerSwineford1939, x1, x2, x3, x4, group = "school",
                    lavaan.run = FALSE)
 
@@ -513,14 +580,14 @@ cat(mod2$model$scalar)
 #————————————————————————————————————————————————————————————————————————————
 # Longitudinal Measurement Invariance: Continuous Indicators
 
-# Example 10: Two time points with three indicators at each time point
+# Example 9: Two time points with three indicators at each time point
 item.invar(HolzingerSwineford1939,
            model = list(c("x1", "x2", "x3"), c("x5", "x6", "x7")), long = TRUE)
 
-#···················
-# Longitudinal partial measurement invariance
+#——————————————————————————————————————
+# Longitudinal Partial Measurement Invariance
 
-# Example 11: Two Time Points with three indicators at each time point
+# Example 10: Two Time Points with three indicators at each time point
 #             Free factor loading for 'x2'
 #             Free intercepts for 'x1' and x2
 item.invar(HolzingerSwineford1939,
@@ -530,80 +597,75 @@ item.invar(HolzingerSwineford1939,
 
 #————————————————————————————————————————————————————————————————————————————
 # Between-Group Measurement Invariance: Ordered Categorical Indicators
-#
-# Note that the example analysis for ordered categorical indicators cannot be
-# conduct since the data set 'data' is not available.
 
-# Example 12a: Delta parameterization (default)
-item.invar(data, item1, item2, item3, item4, group = "two.group", ordered = TRUE)
+# Example 11a: Delta parameterization (default)
+item.invar(data.items, pitem1, pitem2r, pitem3r, pitem4, group = "group2",
+           ordered = TRUE)
 
-# Example 12a: Theta parameterization
-item.invar(data, item1, item2, item3, item4, group = "two.group", ordered = TRUE,
+# Example 11b: Theta parameterization
+item.invar(data.items, pitem1, pitem2r, pitem3r, pitem4, group = "group2", ordered = TRUE,
            parameterization = "theta")
 
-#————————————————————————————————————————————————————————————————————————————
-# Between-Group Partial Measurement Invariance: Ordered Categorical Indicators
+#——————————————————————————————————————
+# Between-Group Partial Measurement Invariance
 
-# Example 13a: Two Groups
-#              Free 2nd and 4th threshold of 'item1'
-#              Free 1st threshold of 'item3'
-#              Free factor loadings for 'item2' and 'item4'
-#              Free intercept for 'item1'
-#              Free residual variance for 'item3'
-item.invar(data, item1, item2, item3, item4, group = "two.group", ordered = TRUE,
-           partial = list(thres = list(item1 = c("t2", "t4"),
-                                       item3 = "t1"),
-                          load = c("item2", "item4"),
-                          inter = "item1",
-                          resid = "item3"))
+# Example 12a: Two Groups
+#              Free 2nd and 3rd threshold of 'pitem1'
+#              Free 1st threshold of 'pitem3r'
+#              Free factor loadings for 'pitem2r' and 'pitem4'
+#              Free intercept for 'pitem1'
+#              Free residual variance for 'pitem3r'
+item.invar(data.items, pitem1, pitem2r, pitem3r, pitem4, group = "group2",
+           ordered = TRUE,
+           partial = list(thres = list(pitem1 = c("t2", "t3"),
+                                       pitem3r = "t1"),
+                          load = c("pitem2r", "pitem4"),
+                          inter = "pitem1",
+                          resid = "pitem3r"))
 
-# Example 13b: More than Two Groups
-#              Free 1st threshold of 'item1' in group 1 and 2
-#              Free 3rd threshold of 'item3' in group 3
-#              Free factor loadings for 'item2' in group 1
-#              Free intercept for 'item2' in group 1
-#              Free intercept for 'item3' in group 2 and 4
-#              Free residual variance for 'item1' in group 1 and 3
-item.invar(data, item1, item2, item3, item4, group = "four.group", ordered = TRUE,
-           partial = list(thres = list(item1 = list(t1 = c("g1", "g2")),
-                                       item3 = list(t3 = "g3")),
-                          load  = list(item2 = "g1"),
-                          inter = list(item2 = "g1", item3 = c("g2", "g4")),
-                          resid = list(item1 = c("g1", "g3"))))
+# Example 12b: More than Two Groups
+#              Free 1st threshold of 'pitem1' in group 1 and 2
+#              Free 2nd threshold of 'pitem3r' in group 3
+#              Free factor loadings for 'pitem2r' in group 1
+#              Free intercept for 'pitem2r' in group 1
+#              Free intercept for 'item3r' in group 2 and 4
+#              Free residual variance for 'pitem1' in group 1 and 3
+item.invar(data.items, pitem1, pitem2r, pitem3r, pitem4, group = "group4", ordered = TRUE,
+           partial = list(thres = list(pitem1 = list(t1 = c("g1", "g2")),
+                                       pitem3r = list(t2 = "g3")),
+                          load  = list(pitem2r = "g1"),
+                          inter = list(pitem2r = "g1", pitem3r = c("g2", "g4")),
+                          resid = list(pitem1 = c("g1", "g3"))))
 
 #————————————————————————————————————————————————————————————————————————————
 # Longitudinal Measurement Invariance: Ordered Categorical Indicators
 
+# Example 13: Two Time Points
+item.invar(data.items, model = list(c("pitem1", "pitem2r", "pitem3r"),
+                                    c("pitem4", "pitem5", "pitem6")),
+           long = TRUE, ordered = TRUE, invar = "thres")
+
+#——————————————————————————————————————
+# Longitudinal Partial Measurement Invariance
+
 # Example 14: Two Time Points
-item.invar(data, model = list(c("aitem1", "aitem2", "aitem3"),
-                              c("bitem1", "bitem2", "bitem3")),
-           long = TRUE, ordered = TRUE)
-
-#···················
-# Longitudinal partial measurement invariance: Ordered Categorical Indicators
-
-# Example 15: Two Time Points
-#             Free 2nd and 4th threshold of 'aitem1'
-#             Free 1st threshold of 'aitem4'
-#             Free factor loading for 'aitem2
-#             Free intercepts for 'aitem1' and 'bitem2'
-#             Free residual variance for 'aitem3'
-item.invar(data, model = list(c("aitem1", "aitem2", "aitem3"),
-                              c("bitem1", "bitem2", "bitem3")),
-           long = TRUE, ordered = TRUE, invar = "strict",
-           partial = list(thres = list(aitem1 = c("t2", "t4"), aitem3 = "t1"),
-                          load = "aitem2",
-                          inter = c("aitem1", "bitem2"),
-                          resid = "aitem3"))
+#             Free 2nd and 3rd threshold of 'pitem1'
+#             Free 1st threshold of 'pitem3r'
+#             Free factor loading of 'pitem1'
+item.invar(data.items, model = list(c("pitem1", "pitem2r", "pitem3r"),
+                                    c("pitem4", "pitem5", "pitem6")),
+           long = TRUE, ordered = TRUE, invar = "thres",
+           partial = list(thres = list(pitem1 = c("t2", "t3"), pitem3r = "t1"),
+                          load  = "pitem1"))
 
 #————————————————————————————————————————————————————————————————————————————
 # Write Results
 
-# Example 16a: Write Results into a text file
+# Example 15a: Write Results into a text file
 item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
            group = "school", print = "all", write = "Invariance.txt", output = FALSE)
 
-# Example 16b: Write Results into an Excel file
+# Example 15b: Write Results into an Excel file
 item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
            group = "school", print = "all", write = "Invariance.xlsx", output = FALSE)
 }
@@ -619,6 +681,10 @@ hypothesis of close fit of misspecified mean and covariance structural models.
 
 Little, T. D. (2013). \emph{Longitudinal structural equation modeling}. Guilford
 Press.
+
+McNeish D (2026). opdyke: Opdyke Percentiles for Approximate Local Fit in
+Structural Equation Models. R package version 1.0.0. Retrieved from
+https://github.com/dmcneish18/opdyke
 
 Rosseel, Y. (2012). lavaan: An R Package for Structural Equation Modeling.
 \emph{Journal of Statistical Software, 48}, 1-36. https://doi.org/10.18637/jss.v048.i02

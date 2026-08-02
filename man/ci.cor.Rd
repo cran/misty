@@ -9,7 +9,7 @@ ci.cor(data, ...,
        adjust = c("none", "joint", "approx"),
        se = c("fisher", "fieller", "bonett", "rin"),
        sample = TRUE, seed = NULL, maxtol = 1e-05, nudge = 0.001,
-       boot = c("none", "norm", "basic", "perc", "bc", "bca"), R = 1000,
+       boot = c("none", "norm", "basic", "perc", "bc", "bca"), nrep = 1000,
        fisher = TRUE, alternative = c("two.sided", "less", "greater"),
        conf.level = 0.95, group = NULL, split = NULL, na.omit = FALSE,
        digits = 2, as.na = NULL, plot = c("none", "ci", "boot"), hist = TRUE,
@@ -104,7 +104,7 @@ for the bias-corrected (BC) percentile bootstrap CI
 (without acceleration), and \code{"bca"} for the
 bias-corrected and accelerated (BCa) bootstrap CI.}
 
-\item{R}{a numeric value indicating the number of bootstrap
+\item{nrep}{a numeric value indicating the number of bootstrap
 replicates (default is 1000).}
 
 \item{fisher}{logical: if \code{TRUE} (default), Fisher \eqn{z}
@@ -521,7 +521,7 @@ ci.cor(mtcars, mpg, drat, qsec, boot = "bc")
 
 # Example 4b: Bias-corrected and accelerated (BCa) bootstrap CI,
 # 5000 bootstrap replications, set seed of the pseudo-random number generator
-ci.cor(mtcars, mpg, drat, qsec, boot = "bca", R = 5000, seed = 42)
+ci.cor(mtcars, mpg, drat, qsec, boot = "bca", nrep = 5000, seed = 42)
 
 #————————————————————————————————————————————————————————————————————————————
 # Grouping and Split Variable

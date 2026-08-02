@@ -94,8 +94,8 @@ cluster.scores <- function(data, ..., cluster,
   #
   # Data -----------------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data using the argument '...' ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Using the Argument '...' ####
 
   if (isTRUE(!missing(...))) {
 
@@ -108,8 +108,8 @@ cluster.scores <- function(data, ..., cluster,
     # Extract cluster variable and convert tibble into data frame or vector
     cluster <- data[, cluster] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { unname(unlist(y)) } else { return(y) })()
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data without using the argument '...' ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Without Using the Argument '...' ####
 
   } else {
 
@@ -127,7 +127,7 @@ cluster.scores <- function(data, ..., cluster,
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Convert user-missing values into NA ####
 
   if (isTRUE(!is.null(as.na))) { x <- .as.na(x, na = as.na) }
@@ -177,7 +177,7 @@ cluster.scores <- function(data, ..., cluster,
   #
   # Arguments ------------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Function for computing cluster scores ####
 
   fun <- ifelse(all(c("mean", "sum", "median", "var", "sd", "min", "max") %in% fun), "mean", fun)
@@ -186,12 +186,13 @@ cluster.scores <- function(data, ..., cluster,
   #
   # Main Function --------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Single variable ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Single Variable ####
+
   if (isTRUE(is.null(dim(x)))) {
 
-    #...................
-    ### Compute cluster scores ####
+    #—————————————————————————————————————— #
+    ### Compute Cluster Scores ####
 
     if (isTRUE(fun != "sum")) {
 
@@ -215,8 +216,9 @@ cluster.scores <- function(data, ..., cluster,
 
     }
 
-    #----------------------------------------
-    # Expand
+    #—————————————————————————————————————— #
+    ### Expand ####
+
     if (isTRUE(expand)) {
 
       object <- as.vector(agg.scores[match(cluster, names(agg.scores))])
@@ -227,9 +229,13 @@ cluster.scores <- function(data, ..., cluster,
 
     }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Multiple variables ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Multiple Variables ####
+
   } else {
+
+    #—————————————————————————————————————— #
+    ### Expand ####
 
     if (isTRUE(expand)) {
 
@@ -241,8 +247,8 @@ cluster.scores <- function(data, ..., cluster,
 
     }
 
-    #...................
-    ### Variable names ####
+    #—————————————————————————————————————— #
+    ### Variable Names ####
 
     if (isTRUE(length(name) == 1L)) {
 
@@ -256,15 +262,15 @@ cluster.scores <- function(data, ..., cluster,
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Append ####
 
   if (isTRUE(!missing(...) && expand && append)) {
 
     if (isTRUE(is.null(dim(x)))) {
 
-      #...................
-      ### Variable names ####
+      #——————————————————————————————————————
+      ### Variable Names ####
 
       if (isTRUE(name == ".a")) {
 

@@ -150,8 +150,8 @@ rec <- function(data, ..., spec, as.factor = FALSE, levels = NULL,
   #
   # Data -----------------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data using the argument '...' ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Using the Argument '...' ####
 
   if (isTRUE(!missing(...))) {
 
@@ -161,8 +161,8 @@ rec <- function(data, ..., spec, as.factor = FALSE, levels = NULL,
     # Extract data and convert tibble into data frame or vector
     x <- data[, var.names] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(y)) == 1L)) { unname(unlist(y)) } else { as.data.frame(y) } } else { y })()
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data without using the argument '...' ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Without Using the Argument '...' ####
 
   } else {
 
@@ -171,8 +171,8 @@ rec <- function(data, ..., spec, as.factor = FALSE, levels = NULL,
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Convert user-missing values into NA ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Convert User-Missing Values into NA ####
 
   # Convert user-missing values into NA
   if (isTRUE(!is.null(as.na))) { x <- .as.na(x, na = as.na) }
@@ -202,14 +202,14 @@ rec <- function(data, ..., spec, as.factor = FALSE, levels = NULL,
   #
   # Arguments ------------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Define special values ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Define Special Values ####
 
   lo <- -Inf
   hi <- Inf
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Recode specification terms ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Recode Specification Terms ####
 
   spec.list <- rev(unlist(strsplit(spec, ";")))
 
@@ -217,27 +217,28 @@ rec <- function(data, ..., spec, as.factor = FALSE, levels = NULL,
   #
   # Main Function --------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Single variable ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Single Variable ####
+
   if (isTRUE(is.null(dim(x)))) {
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Recoded result vector ####
+    #—————————————————————————————————————— #
+    ### Recoded Result Vector ####
 
     object <- x
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Convert factor into character ####
+    #—————————————————————————————————————— #
+    ### Convert Factor into Character ####
 
     if (isTRUE(is.factor(object))) { object <- as.character(object) }
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Loop across specification terms ####
+    #—————————————————————————————————————— #
+    ### Loop Across Specification Terms ####
 
     for (i in spec.list) {
 
-      #...................
-      ### Specification with range of values ####
+      #···················
+      #### Specification with Range of Values ####
 
       if (isTRUE(length(grep(":", i)) == 1L)) {
 
@@ -271,8 +272,8 @@ rec <- function(data, ..., spec, as.factor = FALSE, levels = NULL,
 
       }
 
-      #...................
-      ### Specification with range of values else ####
+      #···················
+      #### Specification with Range of Values else ####
 
       if (isTRUE(length(grep("else", i)) == 1L)) {
 
@@ -288,8 +289,8 @@ rec <- function(data, ..., spec, as.factor = FALSE, levels = NULL,
 
       }
 
-      #...................
-      ### Specification with single or vector of values ####
+      #···················
+      #### Specification with Single Value or Vector of Values ####
 
       if (isTRUE(length(grep(":", i))  == 0L && length(grep("else", i)) == 0L)) {
 
@@ -327,13 +328,14 @@ rec <- function(data, ..., spec, as.factor = FALSE, levels = NULL,
 
     }
 
-    #...................
-    ### Character and factor ####
+    #—————————————————————————————————————— #
+    ### Character and Factor ####
 
     if (isTRUE(is.character(object))) {
 
-      #......
-      # Original vector was a factor
+      #···················
+      #### Original Vector was a Factor ####
+
       if (isTRUE(is.factor(x))) {
 
         if (isTRUE(is.null(levels))) {
@@ -346,8 +348,9 @@ rec <- function(data, ..., spec, as.factor = FALSE, levels = NULL,
 
         }
 
-      #......
-      # Original vector was not a factor
+      #···················
+      #### Original Vector was Not a Factor ####
+
       } else {
 
         if (isTRUE(as.factor)) {
@@ -380,14 +383,15 @@ rec <- function(data, ..., spec, as.factor = FALSE, levels = NULL,
 
     }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Multiple variables ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Multiple Variables ####
+
   } else {
 
     object <- data.frame(lapply(x, misty::rec, spec = spec, as.factor = as.factor, levels = levels, as.na = as.na, check = FALSE))
 
-    #...................
-    ### Variable names ####
+    #—————————————————————————————————————— #
+    ### Variable Names ####
 
     if (isTRUE(length(name) == 1L)) {
 
@@ -401,20 +405,20 @@ rec <- function(data, ..., spec, as.factor = FALSE, levels = NULL,
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Print cross table ####
 
   if (isTRUE(is.null(dim(x)) && table)) { print(table(x, object, dnn = c("item", "recoded coded"), useNA = "always")) }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Append ####
 
   if (isTRUE(!missing(...) && append)) {
 
     if (isTRUE(is.null(dim(x)))) {
 
-      #...................
-      ### Variable names ####
+      #—————————————————————————————————————— #
+      ### Variable Names ####
 
       if (isTRUE(name == ".e")) {
 

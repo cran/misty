@@ -6,13 +6,14 @@
 \usage{
 multilevel.cor(data, ..., cluster, estimator = c("ML", "MLR"), constr.var = FALSE,
                optim.method = c("nlminb", "em"), optim.switch = TRUE,
-               missing = c("listwise", "fiml"), sig = FALSE, alpha = 0.05,
-               print = c("all", "cor", "se", "stat", "p"), split = FALSE,
+               print = c("all", "summary", "cor", "se", "stat", "p"), split = FALSE,
                order = FALSE, tri = c("both", "lower", "upper"), tri.lower = TRUE,
+               missing = c("listwise", "fiml"), alpha = 0.05,
+               color = "default", style = c("regular", "bold", "italic"),
                p.adj = c("none", "bonferroni", "holm", "hochberg", "hommel",
-                         "BH", "BY", "fdr"), digits = 2, p.digits = 3,
-               as.na = NULL, write = NULL, append = TRUE, check = TRUE,
-               output = TRUE)
+                         "BH", "BY", "fdr"),
+               digits = 2, p.digits = 3, as.na = NULL, write = NULL,
+               append = TRUE, check = TRUE, output = TRUE)
 }
 \arguments{
 \item{data}{a data frame.}
@@ -33,47 +34,39 @@ group or cluster variable).}
 \code{"ML"} for maximum likelihood with conventional
 standard errors and \code{"MLR"} for maximum likelihood with
 Huber-White robust standard errors. The default setting
-depends on the argument \code{sig}, i.e., \code{"ML"} is
-used when specifying \code{sig = FALSE} (default) and
-\code{"MLR"} is used when specifying \code{sig = TRUE}.}
+depends on the argument \code{color}, i.e., \code{"ML"} is
+used when specifying \code{color = "default"} (default) and
+\code{"MLR"} is used when specifying a color for the
+argument \code{color}.}
 
 \item{constr.var}{logical: if \code{TRUE}, inequality constraints are imposed
 for the variance parameters at the between level, i.e., variances are constrained
 to be greater than 0.}
 
-\item{optim.method}{a character string indicating the optimizer, i.e., \code{"nlminb"}
-(default) for the unconstrained and bounds-constrained
-quasi-Newton method optimizer and \code{"em"} for the
-Expectation Maximization (EM) algorithm.}
+\item{optim.method}{a character string indicating the optimizer, i.e.,
+\code{"nlminb"} for the unconstrained and
+bounds-constrained quasi-Newton method optimizer and
+\code{"em"} for the Expectation Maximization (EM) algorithm.
+By default, the optimizer \code{"nlminb"} is used with
+complete data or when using listwise deletion for missing
+data handling, while the optimizer \code{"em"} is used
+when using for full information maximum likelihood (FIML)
+method for missing data handling.}
 
 \item{optim.switch}{logical: if \code{TRUE} (default), model estimation switches
 to Expectation Maximization (EM) algorithm (\code{"em"})
-if the quasi-Newton optimization (\code{"nlminb"} (default))
+if the quasi-Newton optimization (\code{"nlminb"})
 does not converge.}
-
-\item{missing}{a character string indicating how to deal with missing
-data, i.e., \code{"listwise"} for listwise deletion or
-\code{"fiml"} (default) for full information maximum
-likelihood (FIML) method. Note that it takes longer to
-estimate models while using FIML and using FIML is
-prone to issues with model convergence, these issues might
-be resolved by switching to listwise deletion.}
-
-\item{sig}{logical: if \code{TRUE}, statistically significant
-correlation coefficients are shown in boldface on the
-console. Note that standard errors, z test statistics, and
-significance values not provided in the return object when
-\code{sig = FALSE} (default).}
-
-\item{alpha}{a numeric value between 0 and 1 indicating the significance
-level at which correlation coefficients are printed
-boldface when \code{sig = TRUE}.}
 
 \item{print}{a character string or character vector indicating which
 results to show on the console, i.e. \code{"all"} for all
-results, \code{"cor"} for correlation coefficients,
-\code{"se"} for standard errors, \code{"stat"} for z test
-statistics, and \code{"p"} for \emph{p}-values.}
+results, \code{"summary"} for a summary of the specification
+of the estimation method and missing data handling in lavaan,
+\code{"cor"} (default) for correlation coefficients, \code{"se"}
+for standard errors, \code{"stat"} for z test statistics,
+and \code{"p"} for \emph{p}-values. By default, the function
+only prints the within-group and between-group correlation
+matrix.}
 
 \item{split}{logical: if \code{TRUE}, output table is split in
 within-group and between-group correlation matrix.}
@@ -91,6 +84,39 @@ triangular.}
 (default), within-group correlations are shown in the lower
 triangular and between-group correlation are shown in the
 upper triangular.}
+
+\item{missing}{a character string indicating how to deal with missing
+data, i.e., \code{"listwise"} for listwise deletion or
+\code{"fiml"} (default) for full information maximum
+likelihood (FIML) method. Note that it takes longer to
+estimate models while using FIML and using FIML is
+prone to issues with model convergence, these issues might
+be resolved by switching to listwise deletion.}
+
+\item{alpha}{a numeric value between 0 and 1 indicating the significance
+level at which correlation coefficients are printed
+boldface when when specifying the argument \code{color}.}
+
+\item{color}{a character string indicating the text color for highlighting
+statistically significant correlation coefficients , i.e.,
+\code{"default"} (default) for the default text color without
+color coding and various text colors for highlighting like
+\code{"red"}, \code{"b.red"}, \code{"green"}, \code{"b.green"},
+\code{"blue"}, or \code{"b.blue"}, see the help page of the
+\code{\link{chr.color}} function. Note that this option is
+not supported when using R Markdown and when writing the output
+into a text file (\code{.txt}).}
+
+\item{style}{a character vector indicating the font style for
+statistically significant correlation coefficients, i.e.,
+\code{"regular"} (default) for regular text, \code{"bold"}
+for bold text, and \code{"italic"} for italic text. Note
+that the font style \code{"bold"} and \code{"italic"} can
+be combined, i.e., style = c("bold", "italic") provides a
+bold and italic text. Note that the argument \code{color}
+needs to be specified to change the style of the text, e.g.
+\code{color = "black"} and \code{style = "bold"} to for
+bold text.}
 
 \item{p.adj}{a character string indicating an adjustment method for
 multiple testing based on \code{\link{p.adjust}}, i.e.,
@@ -157,9 +183,9 @@ This function computes the within-group and between-group correlation matrix by
 calling the \code{sem} function in the R package \pkg{lavaan} and provides standard
 errors, z test statistics, and significance values (\emph{p}-values) for testing
 the hypothesis H0: \eqn{\rho} = 0 for all pairs of variables within and between
-groups. By default, the function computes the within-group and between-group
-correlation matrix without standard errors, z test statistics, and significance
-value.
+groups. By default, the function provides the within-group and
+between-group correlation matrix. Statistically significant correlations can
+be highlighted by specifying the argument \code{color}.
 }
 \details{
 \describe{
@@ -169,27 +195,26 @@ measured at the individual level and modeled only at the within level and (2)
 variables in the data frame specified in \code{data} that are measured at the
 cluster level and modeled only at the between level. The former variables have
 no variance in the between part of the model (i.e., ICC(1) is 0 e.g. due to centering
-within clusters), while the latter variables do not have any variance within cluster.}
-\item{\strong{Estimation Method and Missing Data Handling}}{The default setting
+within clusters), while the latter variables do not have any variance within clusters.}
+\item{\strong{Estimation Method}}{The default setting
 for the argument \code{estimator} is depending on the setting of the argument
-\code{sig}. If \code{sig = FALSE} (default), maximum likelihood estimation
+\code{color}. If \code{color = "default"} (default), maximum likelihood estimation
 (\code{estimator = "ML"}) is used, while maximum likelihood with Huber-White
 robust standard errors (\code{estimator = "MLR"}) that are robust against
-non-normality is used when \code{sig = TRUE}. In the presence of missing data,
-full information maximum likelihood (FIML) method (\code{missing = "fiml"}) is
-used by default. Note that FIML method cannot deal with within-group variables
-that have no variance within some clusters. In this cases, the function will
-switch to listwise deletion. Using FIML method might result in issues with model
-convergence, which will be resolved by switching to listwise deletion
-(\code{missing = "listwise"}).}
+non-normality is used when when specifying a color for the argument \code{color}.}
+\item{\strong{Missing Data Handling}}{In the presence of missing data, full information
+maximum likelihood (FIML) method (\code{missing = "fiml"}) is used by default.
+Note that FIML method cannot deal with within-group variables that have no
+variance within some clusters. In this cases, the function will switch to
+listwise deletion. Using FIML method might result in issues with model convergence,
+which might be resolved by switching to listwise deletion (\code{missing = "listwise"}).}
 \item{\strong{Optimizer}}{The lavaan package uses a quasi-Newton optimization
 method (\code{"nlminb"}) by default. If the optimizer does not converge, model
 estimation switches to the Expectation Maximization (EM) algorithm (\code{"em"})
 if the argument \code{optim.switch} is specified as \code{TRUE} (default).}
 \item{\strong{Statistical Significance}}{Statistically significant correlation
-coefficients can be shown in boldface on the console by specifying \code{sig = TRUE}.
-However, this option is not supported when using R Markdown, i.e., the argument
-\code{sig} will switch to \code{FALSE}.}
+coefficients can be shown color coded on the console by specifying the argument
+\code{color}. However, this option is not supported when using R Markdown.}
 \item{\strong{Adjustment Method for Multiple Testing }}{Adjustment method for
 multiple testing when specifying the argument \code{p.adj} is applied to
 the within-group and between-group correlation matrix separately.}
@@ -208,48 +233,56 @@ Yves Rosseel (2012).
 data("Demo.twolevel", package = "lavaan")
 
 #————————————————————————————————————————————————————————————————————————————
-# Cluster variable specification
+# Cluster Variable Specification
 
-# Example 1: Specification using the argument '...'
+# Example 1a: Specification using the argument '...'
 multilevel.cor(Demo.twolevel, y1, y2, y3, cluster = "cluster")
 
-# Alternative specification with cluster variable 'cluster' in 'data'
+# Example 1b: Alternative specification with cluster variable 'cluster' in 'data'
 multilevel.cor(Demo.twolevel[, c("y1", "y2", "y3", "cluster")], cluster = "cluster")
 
-# Alternative specification with cluster variable 'cluster' not in 'data'
+# Example 1c: Alternative specification with cluster variable 'cluster' not in 'data'
 multilevel.cor(Demo.twolevel[, c("y1", "y2", "y3")], cluster = Demo.twolevel$cluster)
 
 #————————————————————————————————————————————————————————————————————————————
-# Example 2: All variables modeled at both the within and between level
-# Highlight statistically significant result at alpha = 0.05
-multilevel.cor(Demo.twolevel, y1, y2, y3, sig = TRUE, cluster = "cluster")
+# Arguments 'color', 'style', 'split', 'print', and 'p.adj'
 
-# Example 3: Split output table in within-group and between-group correlation matrix.
-multilevel.cor(Demo.twolevel, y1, y2, y3, cluster = "cluster", split = TRUE)
+# Example 2a: Highlight statistically significant result in bright red
+multilevel.cor(Demo.twolevel, y1, y2, y3, cluster = "cluster", color = "b.red")
 
-# Example 4: Print correlation coefficients, standard errors, z test statistics,
-# and p-values
-multilevel.cor(Demo.twolevel, y1, y2, y3, cluster = "cluster", sig = TRUE, print = "all")
+# Example 2b: Highlight statistically significant result in boldface
+multilevel.cor(Demo.twolevel, y1, y2, y3, cluster = "cluster", color = "black",
+               style = "bold")
 
-# Example 5: Print correlation coefficients and p-values
-# significance values with Bonferroni correction
-multilevel.cor(Demo.twolevel, y1, y2, y3, cluster = "cluster", sig = TRUE,
-               print = c("cor", "p"), p.adj = "bonferroni")
+# Example 3: Split output table in within-group and between-group correlation matrix
+multilevel.cor(Demo.twolevel, y1, y2, y3, cluster = "cluster", split = TRUE,
+               color = "green", style = "bold")
 
-#————————————————————————————————————————————————————————————————————————————
-# Example 6: Variables "y1", "y2", and "y2" modeled at both the within and between level
-# Variables "w1" and "w2" modeled at the cluster level
-multilevel.cor(Demo.twolevel, y1, y2, y3, w1, w2, cluster = "cluster",
-               between = c("w1", "w2"))
+# Example 4a: Print summary of the lavaan specification and all results
+multilevel.cor(Demo.twolevel, y1, y2, y3, cluster = "cluster", print = "all")
 
-# Example 7: Show variables specified in the argument 'between' first
-multilevel.cor(Demo.twolevel, y1, y2, y3, w1, w2, cluster = "cluster",
-               between = c("w1", "w2"), order = TRUE)
+# Example 4b: Print summary of the lavaan specification and correlation coefficients
+multilevel.cor(Demo.twolevel, y1, y2, y3, cluster = "cluster", print = c("summary", "cor"))
+
+# Example 5: Significance values with Bonferroni correction
+multilevel.cor(Demo.twolevel, y1, y2, y3, cluster = "cluster", print = c("cor", "p"),
+               p.adj = "bonferroni")
 
 #————————————————————————————————————————————————————————————————————————————
-# Example 8: lavaan model and summary of the multilevel model used to compute the
-# within-group and between-group correlation matrix
+# Variables Measured at the Within and Cluster Level
 
+# Example 6a: Variables "y1", "y2", and "y2" modeled at both the within and between level
+#             Variables "w1" and "w2" modeled at the cluster level
+multilevel.cor(Demo.twolevel, y1, y2, y3, w1, w2, cluster = "cluster")
+
+# Example 6b: Print cluster level variables first
+multilevel.cor(Demo.twolevel, y1, y2, y3, w1, w2, cluster = "cluster", order = TRUE)
+
+#————————————————————————————————————————————————————————————————————————————
+# lavaan Model and Summary of the Estimated Model
+
+# Example 7: lavaan model and summary of the multilevel model used to compute
+#             the within-group and between-group correlation matrix
 mod <- multilevel.cor(Demo.twolevel, y1, y2, y3, cluster = "cluster", output = FALSE)
 
 # lavaan model syntax
@@ -261,11 +294,11 @@ lavaan::summary(mod$model.fit, standardized = TRUE)
 #————————————————————————————————————————————————————————————————————————————
 # Write Results
 
-# Example 9a: Write Results into a text file
+# Example 8a: Write Results into a text file
 multilevel.cor(Demo.twolevel, y1, y2, y3, cluster = "cluster",
                write = "Multilevel_Correlation.txt")
 
-# Example 9b: Write Results into a Excel file
+# Example 8b: Write Results into a Excel file
 multilevel.cor(Demo.twolevel, y1, y2, y3, cluster = "cluster",
                write = "Multilevel_Correlation.xlsx")
 }

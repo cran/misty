@@ -4,13 +4,13 @@
 \alias{item.alpha}
 \title{Coefficient Alpha, Hierarchical Alpha, and Ordinal Alpha}
 \usage{
-item.alpha(data, ..., rescov = NULL, type = c("alpha", "hierarch", "categ"),
-           exclude = NULL, std = FALSE,
+item.alpha(data, ..., rescov = NULL, ordered = FALSE, exclude = NULL,
+           correct = TRUE, std = FALSE,
            estimator = c("ML", "GLS", "WLS", "DWLS", "ULS", "PML"),
            missing = c("listwise", "pairwise", "fiml"),
-           print = c("all", "alpha", "item"), digits = 2, conf.level = 0.95,
-           as.na = NULL, write = NULL, append = TRUE, check = TRUE,
-           output = TRUE)
+           print = c("all", "alpha", "item"), digits = 2, r.digits = 3,
+           conf.level = 0.95, as.na = NULL, write = NULL, append = TRUE,
+           check = TRUE, output = TRUE)
 }
 \arguments{
 \item{data}{a data frame. Note that at least two items are needed for
@@ -30,37 +30,47 @@ or \code{rescov = list(c("x1", "x2"), c("x3", "x4"))} for
 specifying residual covariances between items \code{x1} and
 \code{x2}, and items \code{x3} and \code{x4}.}
 
-\item{type}{a character string indicating the type of alpha to be computed,
-i.e., \code{alpha} (default) for coefficient alpha, \code{hierarch}
-for hierarchical coefficient alpha, and \code{categ} for
-ordinal coefficient alpha.}
+\item{ordered}{logical: if \code{TRUE}, variables are treated as ordered
+(ordinal) variables to compute ordinal coefficient alpha.}
 
 \item{exclude}{a character vector indicating items to be excluded from the
 analysis.}
+
+\item{correct}{logical: if \code{TRUE} (default), the corrected item-total
+correlation is computed.}
 
 \item{std}{logical: if \code{TRUE}, the standardized coefficient omega
 is computed.}
 
 \item{estimator}{a character string indicating the estimator to be used
-(see 'Details' in the \code{\link{item.cfa}} function).
-By default, \code{"ULS"} is used for computing (hierarchical)
-coefficient alpha and \code{"DWLS"} is used for computing
-ordinal coefficient alpha.}
+(see 'Details' in the \code{\link{item.cfa}} function) when
+specifying residual covariances using the \code{rescov}
+argument or when using full information maximum likelihood
+method for missing data handling, i.e., \code{missing = "fiml"}.
+By default, \code{"ULS"} is used for computing coefficient
+alpha in the presence of residual covariances. Note that
+the argument \code{estimator} switches to \code{"ML"} when
+specifying \code{missing = "fiml"}.}
 
 \item{missing}{a character string indicating how to deal with missing data.
 (see 'Details' in the \code{\link{item.cfa}} function). By
-default, listwise deletion (\code{missing = "listwise"}) is
-used for computing (hierarchical) coefficient alpha and
-ordinal coefficient alpha. Full information maximum
-likelihood method is available for estimating (hierarchical)
-coefficient alpha and is requested by specifying \code{missing = "fiml"}
-along with \code{estimator = "ML"}.}
+default, pairwise deletion (\code{missing = "pairwise"}) is
+used for computing coefficient alpha and ordinal coefficient
+alpha. Full information maximum likelihood (FIML) method is
+available for estimating coefficient alpha and is requested
+by specifying \code{missing = "fiml"} along with \code{estimator = "ML"}.
+Note that FIML method is not available for computing ordinal
+coefficient alpha.}
 
 \item{print}{a character vector indicating which results to show, i.e.
 \code{"all"} for all results \code{"alpha"} (default) for
 the coefficient alpha, and \code{"item"} for item statistics.}
 
 \item{digits}{an integer value indicating the number of decimal places to
+be used for displaying mean, standard deviation, minimum,
+and maximum.}
+
+\item{r.digits}{an integer value indicating the number of decimal places to
 be used for displaying alpha and standardized factor loadings.}
 
 \item{conf.level}{a numeric value between 0 and 1 indicating the confidence
@@ -101,72 +111,91 @@ entries:
 }
 \description{
 This function computes point estimate and confidence interval for the coefficient
-alpha (aka Cronbach's alpha), hierarchical alpha, and ordinal alpha (aka categorical
-alpha) along with standardized factor loadings and alpha if item deleted. By
-default, the function computes coefficient alpha based on unweighted least
-squares (ULS) parameter estimates using liswise deletion in the presence of
-missing data that provides equivalent results compared to the formula-based
-coefficient alpha computed by using e.g. the \code{alpha} function in the
-\pkg{psych} package by William Revelle (2025).
+alpha (aka Cronbach's alpha) and ordinal coefficient alpha (aka categorical
+alpha) along with corrected item-total correlations or standardized factor loadings
+and coefficient alphas if the item is deleted. By default, the function computes
+the formula-based coefficient alpha using pairwise deletion in the presence
+of missing data.
 }
 \details{
-Coefficient alpha is computed by conducting a confirmatory factor analysis based
-on the essentially tau-equivalent measurement model (Graham, 2006) using the \code{cfa()}
-function in the \pkg{lavaan} package by Yves Rosseel (2019).
-Approximate confidence intervals are computed using the procedure by Feldt,
-Woodruff and Salih (1987). Note that there are at least 10 other procedures
-for computing the confidence interval (see Kelley and Pornprasertmanit, 2016),
-which are implemented in the \code{ci.reliability()} function in the
-\pkg{MBESSS} package by Ken Kelley (2019)
-
-Ordinal coefficient alpha was introduced by Zumbo, Gadermann and  Zeisser (2007).
-Note that Chalmers (2018) highlighted that the categorical coefficient alpha
+\describe{
+\item{\strong{Coefficient Alpha}}{This function computes the coefficient alpha
+using either a formula-based method or a confirmatory factor analysis (CFA).
+The latter conducts a CFA based on the essentially tau-equivalent measurement
+model (Graham, 2006) using the \code{cfa()} function in the \pkg{lavaan}
+package by Yves Rosseel (2019). By default, the function employs the formula-based
+method and uses listwise deletion to handle missing values. The function
+switches to the CFA-based method when residual covariances are specified using
+the \code{rescov} argument, when full information maximum likelihood (FIML)
+method is requested for missing data handling by specifying \code{missing = "fiml"},
+or when the \code{estimator} argument is set to any other estimation method other
+than the default estimator \code{ULS}.}
+\item{\strong{Ordinal Coefficient Alpha}}{The ordinal coefficient alpha (Zumbo
+et al., 2007) is calculated by applying the formula for coefficient alpha to
+the polychoric correlation matrix, rather than to the the variance-covariance
+or product-moment correlation matrix. The ordinal coefficient alpha
 should be interpreted only as a hypothetical estimate of an alternative reliability,
-whereby a test's ordinal categorical response options have be modified to include
-an infinite number of ordinal response options and concludes that coefficient
-alpha should not be reported as a measure of a test's reliability. However, Zumbo
-and Kroc (2019) argued that Chalmers' critique of categorical coefficient alpha
-is unfounded and that categorical coefficient alpha may be the most appropriate
-quantifier of reliability when using Likert-type measurement to study a latent
-continuous random variable.
+where a test's ordinal categorical response options have been modified to include
+an infinite number of response options and concludes that coefficient
+alpha should not be reported as a measure of a test's reliability. However,
+Zumbo and Kroc (2019) argued that Chalmers' critique of ordinal coefficient
+alpha is unfounded, and that ordinal coefficient alpha may be the most
+appropriate quantifier of reliability when using Likert-type measurement to
+study a latent continuous random variable.}
+\item{\strong{Confidence Interval}}{The confidence interval for the (ordinal)
+coefficient alpha is computed using the procedure by Feldt et al. (1987).
+Note that there are at least 10 other procedures for computing the confidence
+interval (see Kelley and Pornprasertmanit, 2016), which are implemented in the
+\code{ci.reliability()} function in the \pkg{MBESSS} package by Ken Kelley (2019).}
+}
 }
 \note{
-Computation of the hierarchical and ordinal alpha is based on the
-\code{ci.reliability()} function in the \pkg{MBESS} package by Ken Kelley
-(2019).
+Computation of the polyserial correlation coefficient is based on the \code{polyserial()}
+function in the \pkg{polycor} package by John Fox (2025)
 }
 \examples{
 \dontrun{
-dat <- data.frame(item1 = c(3, NA, 3, 4, 1, 2, 4, 2), item2 = c(5, 3, 3, 2, 2, 1, 3, 1),
-                  item3 = c(4, 2, 4, 2, 1, 3, 4, 1), item4 = c(4, 1, 2, 2, 1, 3, 4, 3))
+
+# Load data set "HolzingerSwineford1939" in the lavaan package
+data("HolzingerSwineford1939", package = "lavaan")
+
+#————————————————————————————————————————————————————————————————————————————
+# Continuous Data
 
 # Example 1a: Coefficient alpha, listwise deletion
-item.alpha(dat)
+item.alpha(HolzingerSwineford1939, x1::x9)
 
-# Example 1b: Coefficient alpha, Full information maximum likelihood method
-item.alpha(dat, estimator = "ML", missing = "fiml")
+# Example 1b: Full information maximum likelihood method
+item.alpha(HolzingerSwineford1939, x1::x9, estimator = "ML", missing = "fiml")
 
-# Example 2: Coefficient alpha and item statistics after excluding item3
-item.alpha(dat, exclude = "item3", print = "all")
+# Example 2: Coefficient alpha and item statistics after excluding 'x3'
+item.alpha(HolzingerSwineford1939, x1::x9, exclude = "x3", print = "all")
 
-# Example 3a: Coefficient alpha with a residual covariance
-item.alpha(dat, rescov = c("item1", "item2"))
+# Example 3a: Residual covariance between 'x1' and 'x2'
+item.alpha(HolzingerSwineford1939, x1::x9, rescov = c("x1", "x2"))
 
-# Example 3b: Coefficient alpha with residual covariances
-item.alpha(dat, rescov = list(c("item1", "item2"), c("item1", "item3")))
+# Example 3b: Residual covariances between 'x1' and 'x2', and 'x2' and 'x3'
+item.alpha(HolzingerSwineford1939, x1::x9, rescov = list(c("x1", "x2"), c("x2", "x3")))
 
-# Example 4: Ordinal coefficient alpha and item statistics
-item.alpha(dat, type = "categ", print = "all")
-
-# Example 6: Summary of the CFA model used to compute coefficient alpha
-lavaan::summary(item.alpha(dat, output = FALSE)$model.fit,
+# Example 4: Summary of the CFA model used to compute coefficient alpha
+lavaan::summary(item.alpha(HolzingerSwineford1939, x1::x9, output = FALSE)$model.fit,
                 standardized = TRUE)
 
-# Example 7a: Write Results into a text file
-item.alpha(dat, write = "Alpha.txt")
+#————————————————————————————————————————————————————————————————————————————
+# Polytomous Data
 
-# Example 7b: Write Results into an Excel file
-item.alpha(dat, write = "Alpha.xlsx")
+# Example 5: Ordinal coefficient alpha and item statistics
+item.alpha(data.items, pitem1, pitem2r, pitem3r, pitem4::pitem6, type = "categ",
+           print = "all")
+
+#————————————————————————————————————————————————————————————————————————————
+# Write Results
+
+# Example 6a: Write Results into a text file
+item.alpha(HolzingerSwineford1939, x1::x9, print = "all", write = "Alpha.txt")
+
+# Example 6b: Write Results into an Excel file
+item.alpha(HolzingerSwineford1939, x1::x9, print = "all", write = "Alpha.xlsx")
 }
 }
 \references{
@@ -185,6 +214,9 @@ Feldt, L. S., Woodruff, D. J., & Salih, F. A. (1987). Statistical inference for
 coefficient alpha. \emph{Applied Psychological Measurement}, 11 93-103.
 https://doi.org/10.1177/014662168701100107
 
+Fox, J. (2025). \emph{polycor: Polychoric and polyserial correlations}.
+R package version 0.8-2. https://doi.org/10.32614/CRAN.package.polycor
+
 Graham, J. M. (2006). Congeneric and (essentially) tau-equivalent estimates of
 score reliability: What they are and how to use them. \emph{Educational and
 Psychological Measurement, 66}(6), 930–944. https://doi.org/10.1177/0013164406288165
@@ -196,10 +228,6 @@ https://doi.org/10.1037/a0040086.
 
 Ken Kelley (2019). \emph{MBESS: The MBESS R Package}. R package version 4.6.0.
 https://CRAN.R-project.org/package=MBESS
-
-Revelle, W. (2025). \emph{psych: Procedures for psychological, psychometric,
-and personality research}.  Northwestern University, Evanston, Illinois.
-R package version 2.5.3,  https://CRAN.R-project.org/package=psych.
 
 Zumbo, B. D., & Kroc, E. (2019). A measurement is a choice and Stevens' scales
 of measurement do not help make it: A response to Chalmers. \emph{Educational

@@ -115,23 +115,25 @@ df.move <- function(data, ..., before = NULL, after = NULL, first = TRUE, check 
   var.names.ind <- NULL
   for (i in var.names) { var.names.ind <- c(var.names.ind, which(colnames(data) %in% i)) }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Argument 'before' and 'after' are NULL ####
 
-  #...................
+  #—————————————————————————————————————— #
   ### Move variables to the first position in 'data' ####
+
   if (isTRUE(first)) {
 
     object <- data[, c(var.names.ind, which(!colnames(data) %in% var.names))]
 
   ### Move variables to the last position in 'data' ####
+
   } else {
 
     object <- data[, c(which(!colnames(data) %in% var.names), var.names.ind)]
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Argument 'before' and 'after' are not NULL ####
 
   # Move variables before variables specified in 'before'

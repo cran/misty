@@ -201,7 +201,7 @@ check.collin  <- function(model, print = c("all", "vif", "eigen"),
   #
   # Arguments ------------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Print variance inflation factor and/or eigenvalues ####
 
   if (isTRUE(all(c("all", "vif", "eigen") %in% print))) { print <- "vif" }
@@ -212,10 +212,10 @@ check.collin  <- function(model, print = c("all", "vif", "eigen"),
   #
   # Main Function --------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Variance inflation factor ####
 
-  #...................
+  #—————————————————————————————————————— #
   ### Class: lm or glm ####
 
   if (isTRUE(all(class(model) %in% c("lm", "glm")))) {
@@ -238,7 +238,7 @@ check.collin  <- function(model, print = c("all", "vif", "eigen"),
 
     }
 
-  #...................
+  #—————————————————————————————————————— #
   ### Class: lmerMod, lmerModLmerTest or glmerMod ####
 
   } else if (isTRUE(all(class(model) %in% c("lmerMod", "lmerModLmerTest", "glmerMod", "lme")))) {
@@ -261,8 +261,9 @@ check.collin  <- function(model, print = c("all", "vif", "eigen"),
 
     }
 
-  #...................
+  #—————————————————————————————————————— #
   ### Class: glmmTMB ####
+
   } else if (isTRUE(all(class(model) %in% "glmmTMB"))) {
 
     # Regression model with intercept
@@ -285,7 +286,7 @@ check.collin  <- function(model, print = c("all", "vif", "eigen"),
 
   }
 
-  #...................
+  #—————————————————————————————————————— #
   ### Warning message: Model without intercept ####
 
   if (isTRUE(isFALSE(intercept) && "vif" %in% print)) { warning("Variance inflation factor might not be sensible in models without an intercept.", call. = FALSE) }
@@ -319,7 +320,7 @@ check.collin  <- function(model, print = c("all", "vif", "eigen"),
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Eigenvalue and Condition Index ####
 
   if (isTRUE(all(class(model) %in% c("lmerMod", "lmerModLmerTest", "glmerMod", "lme", "glmmTMB")))) {
@@ -353,7 +354,7 @@ check.collin  <- function(model, print = c("all", "vif", "eigen"),
   #
   # Return Object --------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Regression coefficients with VIF ####
 
   # Regression coefficients
@@ -414,7 +415,7 @@ check.collin  <- function(model, print = c("all", "vif", "eigen"),
 
   if (isTRUE(!is.null(write))) {
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Text file ####
 
     # Send R output to textfile

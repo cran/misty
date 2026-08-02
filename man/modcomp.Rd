@@ -293,19 +293,22 @@ HS.model <- 'visual  =~ x1 + x2 + x3
 fit1 <- cfa(HS.model, data = HolzingerSwineford1939)
 fit2 <- cfa(HS.model, data = HolzingerSwineford1939, orthogonal = TRUE)
 
-# Example 1a: Model comparison, default setting
+# Example 1a: Model fit for model 'fit1', default setting
+modcomp(fit1)
+
+# Example 1b: Model comparison, default setting
 modcomp(fit1, fit2)
 
-# Example 1b: Model comparison, request likelihood ratio test
+# Example 1c: Model comparison, request likelihood ratio test
 modcomp(fit1, fit2, difftest = TRUE)
 
-# Example 1c: Model comparison, request default information criteria and AICc
+# Example 1d: Model comparison, request default information criteria and AICc
 modcomp(fit1, fit2, print.ic = c("default", "aicc"))
 
-# Example 1d: Model comparison, request all information criteria
+# Example 1e: Model comparison, request all information criteria
 modcomp(fit1, fit2, print.ic = "all")
 
-# Example 1e: Model fit indices, request all information criteria
+# Example 1f: Model fit indices, request all information criteria
 modcomp(fit1, print.ic = "all")
 
 #————————————————————————————————————————————————————————————————————————————

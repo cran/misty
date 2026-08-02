@@ -58,7 +58,7 @@ write.xlsx <- function(x, file = "Excel_Data.xlsx", col.names = TRUE, format = F
   # Input Check ————————————————————————————————————————————————————————————————
 
   # Check inputs
-  .check.input(logical = c("col.names", "use.zip64"), character = list(file = 1L), envir = environment(), input.check = check)
+  .check.input(logical = c("col.names", "use.zip64"), character = list(file = 1L), package = "writexl", envir = environment(), input.check = check)
 
   #_____________________________________________________________________________
   #

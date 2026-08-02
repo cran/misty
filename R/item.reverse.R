@@ -3,12 +3,6 @@
 #' This function reverse codes inverted items, i.e., items that are negatively
 #' worded.
 #'
-#' If arguments \code{min} and/or \code{max} are not specified, empirical minimum
-#' and/or maximum is computed from the data Note, however, that reverse coding
-#' might fail if the lowest or highest possible scale value is not represented in
-#' the data That is, it is always preferable to specify the arguments \code{min}
-#' and \code{max}.
-#'
 #' @param data   a numeric vector for reverse coding an item or data frame for
 #'               reverse coding more than one item.
 #' @param ...    an expression indicating the variable names in \code{data} e.g.,
@@ -36,6 +30,13 @@
 #'               is printed on the console if only one variable is specified.
 #' @param check  logical: if \code{TRUE} (default), argument specification is checked.
 #'
+#' @details
+#' If the arguments \code{min} and/or \code{max} are not specified, empirical minimum
+#' and/or maximum is computed from the data. Note  that reverse coding may fail
+#' if the lowest or highest possible scale value is not represented in the data.
+#' Therefore, it is always preferable to specify the arguments \code{min} and
+#' \code{max}.
+#'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
 #'
@@ -54,32 +55,20 @@
 #' @export
 #'
 #' @examples
-#' dat <- data.frame(item1 = c(1, 5, 3, 1, 4, 4, 1, 5),
-#'                   item2 = c(1, 1.3, 1.7, 2, 2.7, 3.3, 4.7, 5),
-#'                   item3 = c(4, 2, 4, 5, 1, 3, 5, -99))
+#' # Example 1a: Reverse code 'pitem2' and append to 'data.items'
+#' item.reverse(data.items, pitem2, min = 0, max = 3)
 #'
-#' # Example 1: Reverse code 'item1' and append to 'dat'
-#' item.reverse(dat, item1, min = 1, max = 5)
+#' # Example 1b: Alternative specification without using the '...' argument
+#' item.reverse(data.items$pitem2, min = 0, max = 3)
 #'
-#' # Alternative specification without using the '...' argument
-#' item.reverse(dat$item1, min = 1, max = 5)
+#' # Example 2a: Reverse code 'pitem2' and 'pitem3' and attach to 'data.items'
+#' item.reverse(data.items, pitem2, pitem3, min = 0, max = 3)
 #'
-#' # Example 2: Reverse code 'item3' while keeping the value -99
-#' item.reverse(dat, item3, min = 1, max = 5, keep = -99)
-#'
-#' # Example 3: Reverse code 'item3' while keeping the value -99 and check recoding
-#' item.reverse(dat, item3, min = 1, max = 5, keep = -99, table = TRUE)
-#'
-#' # Example 4: Reverse code 'item1', 'item2', and 'item3' and attach to 'dat'
-#' item.reverse(item1:item3, data = dat, min = 1, max = 5, keep = -99)
-#'
-#' # Alternative specification without using the '...' argument
-#' dat <- cbind(dat,
-#'              item.reverse(dat[, c("item1", "item2", "item3")],
-#'                           min = 1, max = 5, keep = -99))
-item.reverse <- function(data, ..., min = NULL, max = NULL, keep = NULL,
-                         append = TRUE, name = ".r", as.na = NULL, table = FALSE,
-                         check = TRUE) {
+#' # Example 2b: Alternative specification without using the '...' argument
+#' dat <- cbind(data.items,
+#'              item.reverse(data.items[, c("pitem2", "pitem3")], min = 0, max = 3))
+item.reverse <- function(data, ..., min = NULL, max = NULL, keep = NULL, append = TRUE,
+                         name = ".r", as.na = NULL, table = FALSE, check = TRUE) {
 
   #_____________________________________________________________________________
   #
@@ -92,8 +81,8 @@ item.reverse <- function(data, ..., min = NULL, max = NULL, keep = NULL,
   #
   # Data -----------------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data using the argument '...' ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Using the Argument '...' ####
 
   if (isTRUE(!missing(...))) {
 
@@ -103,8 +92,8 @@ item.reverse <- function(data, ..., min = NULL, max = NULL, keep = NULL,
     # Extract data and convert tibble into data frame or vector
     x <- data[, var.names] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(y)) == 1L)) { unname(unlist(y)) } else { as.data.frame(y) } } else { y })()
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data without using the argument '...' ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Without Using the Argument '...' ####
 
   } else {
 
@@ -119,13 +108,14 @@ item.reverse <- function(data, ..., min = NULL, max = NULL, keep = NULL,
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Convert user-missing values into NA ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Convert User-Missing Values into NA ####
 
   if (isTRUE(!is.null(as.na))) { x <- .as.na(x, na = as.na) }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Argument ####
+  #_____________________________________________________________________________
+  #
+  # Arguments ------------------------------------------------------------------
 
   # Argument 'min'
   if (isTRUE(is.null(min))) { min <- min(x, na.rm = TRUE) }
@@ -192,8 +182,9 @@ item.reverse <- function(data, ..., min = NULL, max = NULL, keep = NULL,
   #
   # Main Function --------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Single variable ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Single Variable ####
+
   if (isTRUE(is.null(dim(x)))) {
 
     # Reverse coded vector
@@ -217,15 +208,16 @@ item.reverse <- function(data, ..., min = NULL, max = NULL, keep = NULL,
 
     }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Multiple variables ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Multiple Variables ####
+
   } else {
 
     object <- data.frame(vapply(x, misty::item.reverse, min = min, max = max, keep = keep, as.na = as.na, table = FALSE,
                                 check = FALSE, FUN.VALUE = double(nrow(x))))
 
-    #...................
-    ### Variable names ####
+    #—————————————————————————————————————— #
+    ### Variable Names ####
 
     if (isTRUE(length(name) == 1L)) {
 
@@ -239,19 +231,19 @@ item.reverse <- function(data, ..., min = NULL, max = NULL, keep = NULL,
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Print cross table ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Print Cross Table ####
 
   if (isTRUE(is.null(dim(x)) && table)) { print(table(x, object, dnn = c("item", "reverse coded"))) }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Append ####
 
   if (isTRUE(!missing(...) && append)) {
 
     if (isTRUE(is.null(dim(x)))) {
 
-      #...................
+      #—————————————————————————————————————— #
       ### Variable names ####
 
       if (isTRUE(name == ".r")) {

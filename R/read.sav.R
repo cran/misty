@@ -105,8 +105,8 @@ read.sav <- function(file, use.value.labels = FALSE, use.missings = TRUE, format
   # Read SPSS data
   object <- haven::read_spss(file, user_na = use_na)
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Remove format ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Remove Format ####
 
   if (isTRUE(!formats)) {
 
@@ -118,7 +118,7 @@ read.sav <- function(file, use.value.labels = FALSE, use.missings = TRUE, format
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Remove Variable Label ####
 
   if (isTRUE(!label)) {
@@ -131,7 +131,7 @@ read.sav <- function(file, use.value.labels = FALSE, use.missings = TRUE, format
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Remove Value Labels ####
 
   if (isTRUE(!labels)) {
@@ -144,8 +144,8 @@ read.sav <- function(file, use.value.labels = FALSE, use.missings = TRUE, format
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Remove value labels for user-defined missing values ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Remove Value Labels for User-Defined Missing Values ####
 
   if (isTRUE(!missing)) {
 
@@ -157,8 +157,8 @@ read.sav <- function(file, use.value.labels = FALSE, use.missings = TRUE, format
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Remove widths ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Remove Widths ####
 
   if (!isTRUE(!widths)) {
 
@@ -170,8 +170,8 @@ read.sav <- function(file, use.value.labels = FALSE, use.missings = TRUE, format
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## As data frame ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## As Data Frame ####
 
   if (isTRUE(as.data.frame)) {
 
@@ -179,8 +179,9 @@ read.sav <- function(file, use.value.labels = FALSE, use.missings = TRUE, format
 
     object.attributes <- lapply(object, function(y) names(attributes(y)))
 
-    #...................
+    #—————————————————————————————————————— #
     ### Factors ####
+
     if (isTRUE(any(unlist(object.attributes) == "labels") && use.value.labels)) {
 
       var.labels.na <- NULL

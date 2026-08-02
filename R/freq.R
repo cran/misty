@@ -142,15 +142,15 @@ freq <- function(data, ..., print = c("no", "all", "perc", "v.perc"),
   #
   # Data -----------------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data Using the Argument '...' ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Using the Argument '...' ####
 
   if (isTRUE(!missing(...))) {
 
     x <- as.data.frame(data[, .var.names(data = data, ...), drop = FALSE])
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data Without Using the Argument '...' ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Without Using the Argument '...' ####
 
   } else {
 
@@ -158,15 +158,15 @@ freq <- function(data, ..., print = c("no", "all", "perc", "v.perc"),
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Missing Data ####
 
-  #...................
+  #—————————————————————————————————————— #
   ### Convert User-Missing Values into NA ####
 
   if (isTRUE(!is.null(as.na))) { x <- .as.na(x, na = as.na) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### Check Missing Values ####
 
   # All values missing
@@ -217,18 +217,18 @@ freq <- function(data, ..., print = c("no", "all", "perc", "v.perc"),
   #
   # Data and Arguments ---------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Argument 'print' ####
 
-  #...................
+  #—————————————————————————————————————— #
   ### One Variable ####
 
   if (isTRUE(ncol(x) == 1L)) {
 
     if (isTRUE(all(c("no", "all", "perc", "v.perc") %in% print))) { print <- c("perc", "v.perc") }
 
-  #...................
-  ### More than one variable ####
+  #—————————————————————————————————————— #
+  ### More than One Variable ####
 
   } else {
 
@@ -254,7 +254,7 @@ freq <- function(data, ..., print = c("no", "all", "perc", "v.perc"),
 
   if (isTRUE(all(print == "all"))) { print <- c("perc", "v.perc") }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Factor Labels ####
 
   vapply(x, function(y) is.factor(y), FUN.VALUE = logical(1L)) |> (\(p) if (isTRUE(any(p)) && !isTRUE(labels)) {
@@ -267,7 +267,7 @@ freq <- function(data, ..., print = c("no", "all", "perc", "v.perc"),
 
     })()
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Exclude Variables ####
 
   if (isTRUE(!isFALSE(exclude))) {
@@ -297,7 +297,7 @@ freq <- function(data, ..., print = c("no", "all", "perc", "v.perc"),
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Round Numeric Variables ####
 
   # Numeric variable with more than 'round' digits
@@ -322,7 +322,7 @@ freq <- function(data, ..., print = c("no", "all", "perc", "v.perc"),
   #
   # Main Function --------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## One Variable ####
 
   if (isTRUE(ncol(x) == 1L)) {
@@ -336,7 +336,7 @@ freq <- function(data, ..., print = c("no", "all", "perc", "v.perc"),
     # Valid percentages
     x.v.perc <- prop.table(table(x, useNA = "no")) * 100L
 
-    #...................
+    #—————————————————————————————————————— #
     ### Values in Columns ####
 
     if (!isTRUE(val.col)) {
@@ -354,7 +354,7 @@ freq <- function(data, ..., print = c("no", "all", "perc", "v.perc"),
 
       }
 
-    #...................
+    #—————————————————————————————————————— #
     ### Values in Rows ####
 
     } else {
@@ -363,12 +363,12 @@ freq <- function(data, ..., print = c("no", "all", "perc", "v.perc"),
 
     }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## More than One Variable ####
 
   } else {
 
-    #...................
+    #—————————————————————————————————————— #
     ### split = FALSE ####
 
     if (!isTRUE(split)) {
@@ -455,7 +455,7 @@ freq <- function(data, ..., print = c("no", "all", "perc", "v.perc"),
 
       result <- list(freq = abs.result, perc = perc.result, v.perc = v.perc.result)
 
-    #...................
+    #—————————————————————————————————————— #
     ### split = TRUE ####
 
     } else {

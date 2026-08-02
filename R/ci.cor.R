@@ -91,7 +91,7 @@
 #'                          bias-corrected (BC) percentile bootstrap CI
 #'                          (without acceleration), and \code{"bca"} for the
 #'                          bias-corrected and accelerated (BCa) bootstrap CI.
-#' @param R                 a numeric value indicating the number of bootstrap
+#' @param nrep              a numeric value indicating the number of bootstrap
 #'                          replicates (default is 1000).
 #' @param fisher            logical: if \code{TRUE} (default), Fisher \eqn{z}
 #'                          transformation is applied before computing the
@@ -526,7 +526,7 @@
 #'
 #' # Example 4b: Bias-corrected and accelerated (BCa) bootstrap CI,
 #' # 5000 bootstrap replications, set seed of the pseudo-random number generator
-#' ci.cor(mtcars, mpg, drat, qsec, boot = "bca", R = 5000, seed = 42)
+#' ci.cor(mtcars, mpg, drat, qsec, boot = "bca", nrep = 5000, seed = 42)
 #'
 #' #————————————————————————————————————————————————————————————————————————————
 #' # Grouping and Split Variable
@@ -599,7 +599,7 @@
 ci.cor <- function(data, ..., method = c("pearson", "spearman", "kendall-b", "kendall-c"),
                    adjust = c("none", "joint", "approx"), se = c("fisher", "fieller", "bonett", "rin"),
                    sample = TRUE, seed = NULL, maxtol = 1e-05, nudge = 0.001,
-                   boot = c("none", "norm", "basic", "perc", "bc", "bca"), R = 1000,
+                   boot = c("none", "norm", "basic", "perc", "bc", "bca"), nrep = 1000,
                    fisher = TRUE, alternative = c("two.sided", "less", "greater"),
                    conf.level = 0.95, group = NULL, split = NULL, na.omit = FALSE,
                    digits = 2, as.na = NULL, plot = c("none", "ci", "boot"),
@@ -619,7 +619,7 @@ ci.cor <- function(data, ..., method = c("pearson", "spearman", "kendall-b", "ke
   # Data -----------------------------------------------------------------------
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data using the argument '...' ####
+  ## Using the argument '...' ####
 
   if (isTRUE(!missing(...))) {
 
@@ -633,7 +633,7 @@ ci.cor <- function(data, ..., method = c("pearson", "spearman", "kendall-b", "ke
     if (isTRUE(!is.null(split))) { split <- data[, split] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { unname(unlist(y)) } else { return(y) })() }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data without using the argument '...' ####
+  ## Without using the argument '...' ####
 
   } else {
 
@@ -724,7 +724,7 @@ ci.cor <- function(data, ..., method = c("pearson", "spearman", "kendall-b", "ke
   # Check inputs
   .check.input(logical = c("sample", "fisher", "hist", "point", "ci", "line", "append", "output"), numeric = list(seed = 1L, maxtol = 1L, nudge = 1L, width = 1L, height = 1L, dpi = 1L),
                s.character = list(method = c("pearson", "spearman", "kendall-b", "kendall-c"), adjust = c("none", "joint", "approx"), se = c("fisher", "fieller", "bonett", "rin"), boot = c("none", "norm", "basic", "perc", "bc", "bca"), plot = c("none", "ci", "boot")),
-               args = c("R", "alternative", "conf.level", "digits", "write2"), envir = environment(), input.check = check)
+               args = c("alternative", "conf.level", "digits", "nrep", "write2"), envir = environment(), input.check = check)
 
   # Additional checks
   if (isTRUE(isTRUE(check))) {
@@ -803,7 +803,7 @@ ci.cor <- function(data, ..., method = c("pearson", "spearman", "kendall-b", "ke
 
   if (isTRUE(is.null(group) && is.null(split))) {
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— #
     ### No Bootstrapping ####
 
     if (isTRUE(boot == "none")) {
@@ -866,13 +866,13 @@ ci.cor <- function(data, ..., method = c("pearson", "spearman", "kendall-b", "ke
 
       })
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— #
     ### Bootstrapping ####
 
     } else {
 
       result.boot <- apply(as.matrix(combn(seq_len(ncol(x)), m = 2L)), 2L, function(y) x |>
-                        (\(z) suppressWarnings(.ci.boot.cor(data = z, x = y[1L], y = y[2L], method = method, boot = boot, R = R, fisher = fisher, alternative = alternative, conf.level = conf.level, seed = seed)))() |>
+                        (\(z) suppressWarnings(.ci.boot.cor(data = z, x = y[1L], y = y[2L], method = method, boot = boot, nrep = nrep, fisher = fisher, alternative = alternative, conf.level = conf.level, seed = seed)))() |>
                         (\(w) list(t = data.frame(var1 = colnames(x)[y[1L]], var2 = colnames(x)[y[2L]], cor = w$t), result = data.frame(var1 = colnames(x)[y[1L]], var2 = colnames(x)[y[2L]], n = w$n, nNA = w$nNA, pNA = w$pNA, skew1 = w$skew1, kurt1 = w$kurt1, skew2 = w$skew2, kurt2 = w$kurt2, cor = w$cor, low = w$ci[1L], upp = w$ci[2L], row.names = NULL)))())
 
       boot.sample <- do.call("rbind", lapply(result.boot, function(y) y$t))
@@ -885,7 +885,7 @@ ci.cor <- function(data, ..., method = c("pearson", "spearman", "kendall-b", "ke
 
   } else if (isTRUE(!is.null(group) && is.null(split))) {
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— #
     ### No Bootstrapping ####
 
     if (isTRUE(boot == "none")) {
@@ -893,13 +893,13 @@ ci.cor <- function(data, ..., method = c("pearson", "spearman", "kendall-b", "ke
       result <- lapply(split(x, f = group), function(y) misty::ci.cor(y, group = NULL, split = NULL, method = method, adjust = adjust, se = se, sample = sample, seed = seed, maxtol = maxtol, nudge = nudge, alternative = alternative, conf.level = conf.level, check = FALSE, output = FALSE)$result) |>
         (\(z) data.frame(group = rep(names(z), each = unique(unlist(lapply(z, nrow)))), do.call("rbind", z), row.names = NULL))()
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— #
     ### Bootstrapping ####
 
     } else {
 
-      result.boot <- lapply(split(x, f = group), function(y) misty::ci.cor(y, group = NULL, split = NULL, method = method, sample = sample, seed = seed, boot = boot, R = R, alternative = alternative, conf.level = conf.level, na.omit = FALSE, check = FALSE, output = FALSE)) |>
-        (\(z) list(boot.sample = data.frame(group = rep(names(z), each = R*unique(unlist(lapply(z, function(q) nrow(q$result))))), do.call("rbind", lapply(z, function(w) w$boot)), row.names = NULL), result = data.frame(group = rep(names(z), each = unique(unlist(lapply(z, function(q) nrow(q$result))))), do.call("rbind", lapply(z, function(w) w$result)), row.names = NULL)))()
+      result.boot <- lapply(split(x, f = group), function(y) misty::ci.cor(y, group = NULL, split = NULL, method = method, sample = sample, seed = seed, boot = boot, nrep = nrep, alternative = alternative, conf.level = conf.level, na.omit = FALSE, check = FALSE, output = FALSE)) |>
+        (\(z) list(boot.sample = data.frame(group = rep(names(z), each = nrep*unique(unlist(lapply(z, function(q) nrow(q$result))))), do.call("rbind", lapply(z, function(w) w$boot)), row.names = NULL), result = data.frame(group = rep(names(z), each = unique(unlist(lapply(z, function(q) nrow(q$result))))), do.call("rbind", lapply(z, function(w) w$result)), row.names = NULL)))()
 
       boot.sample <- result.boot$boot.sample
       result <- result.boot$result
@@ -911,20 +911,20 @@ ci.cor <- function(data, ..., method = c("pearson", "spearman", "kendall-b", "ke
 
   } else if (isTRUE(is.null(group) && !is.null(split))) {
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— #
     ### No Bootstrapping ####
 
     if (isTRUE(boot == "none")) {
 
       result <- lapply(split(x, f = split), function(y) misty::ci.cor(y, group = NULL, split = NULL, method = method, adjust = adjust, se = se, sample = sample, seed = seed, maxtol = maxtol, nudge = nudge, alternative = alternative, conf.level = conf.level, na.omit = FALSE, as.na = NULL, check = FALSE, output = FALSE)$result)
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— #
     ### Bootstrapping ####
 
     } else {
 
-      result.boot <- lapply(split(x, f = split), function(y) misty::ci.cor(y, group = NULL, split = NULL, method = method, sample = sample, seed = seed, boot = boot, R = R, alternative = alternative, conf.level = conf.level, na.omit = FALSE, check = FALSE, output = FALSE)) |>
-        (\(z) list(boot.sample = data.frame(split = rep(names(z), each = R*unique(unlist(lapply(z, function(q) nrow(q$result))))), do.call("rbind", lapply(z, function(w) w$boot)), row.names = NULL), result = lapply(z, function(w) w$result)))()
+      result.boot <- lapply(split(x, f = split), function(y) misty::ci.cor(y, group = NULL, split = NULL, method = method, sample = sample, seed = seed, boot = boot, nrep = nrep, alternative = alternative, conf.level = conf.level, na.omit = FALSE, check = FALSE, output = FALSE)) |>
+        (\(z) list(boot.sample = data.frame(split = rep(names(z), each = nrep*unique(unlist(lapply(z, function(q) nrow(q$result))))), do.call("rbind", lapply(z, function(w) w$boot)), row.names = NULL), result = lapply(z, function(w) w$result)))()
 
       boot.sample <- result.boot$boot.sample
       result <- result.boot$result
@@ -936,20 +936,20 @@ ci.cor <- function(data, ..., method = c("pearson", "spearman", "kendall-b", "ke
 
   } else if (isTRUE(!is.null(group) && !is.null(split))) {
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— #
     ### No Bootstrapping ####
 
     if (isTRUE(boot == "none")) {
 
       result <- lapply(split(data.frame(x, group = group), f = split), function(y) misty::ci.cor(y[, -grep("group", names(y))], group = y$group, split = NULL, method = method, adjust = adjust, se = se, sample = sample, seed = seed, maxtol = maxtol, nudge = nudge, alternative = alternative, conf.level = conf.level, check = FALSE, output = FALSE)$result)
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— #
     ### Bootstrapping ####
 
     } else {
 
-      result.boot <- lapply(split(data.frame(x, group = group), f = split), function(y) misty::ci.cor(y[, -grep("group", names(y))], group = y$group, split = NULL, method = method, sample = sample, seed = seed, boot = boot, R = R, alternative = alternative, conf.level = conf.level, na.omit = FALSE, check = FALSE, output = FALSE)) |>
-        (\(z) list(boot.sample = data.frame(split = rep(names(z), each = R*unique(unlist(lapply(z, function(q) nrow(q$result))))), do.call("rbind", lapply(z, function(w) w$boot)), row.names = NULL), result = lapply(z, function(w) w$result)))()
+      result.boot <- lapply(split(data.frame(x, group = group), f = split), function(y) misty::ci.cor(y[, -grep("group", names(y))], group = y$group, split = NULL, method = method, sample = sample, seed = seed, boot = boot, nrep = nrep, alternative = alternative, conf.level = conf.level, na.omit = FALSE, check = FALSE, output = FALSE)) |>
+        (\(z) list(boot.sample = data.frame(split = rep(names(z), each = nrep*unique(unlist(lapply(z, function(q) nrow(q$result))))), do.call("rbind", lapply(z, function(w) w$boot)), row.names = NULL), result = lapply(z, function(w) w$result)))()
 
       boot.sample <- result.boot$boot.sample
       result <- result.boot$result
@@ -965,7 +965,7 @@ ci.cor <- function(data, ..., method = c("pearson", "spearman", "kendall-b", "ke
   object <- list(call = match.call(),
                  type = "ci.cor",
                  data = list(x = x, group = group, split = split),
-                 args = list(method = method, adjust = adjust, se = se, sample = sample, seed = seed, maxtol = maxtol, nudge = nudge, boot = boot, R = R, fisher = fisher, alternative = alternative, conf.level = conf.level, na.omit = na.omit, digits = digits, as.na = as.na, plot = plot, hist = hist, density = density, point = point, ci = ci, line = line, filename = filename, width = width, height = height, dpi = dpi, write = write, append = append, check = check, output = output),
+                 args = list(method = method, adjust = adjust, se = se, sample = sample, seed = seed, maxtol = maxtol, nudge = nudge, boot = boot, nrep = nrep, fisher = fisher, alternative = alternative, conf.level = conf.level, na.omit = na.omit, digits = digits, as.na = as.na, plot = plot, hist = hist, density = density, point = point, ci = ci, line = line, filename = filename, width = width, height = height, dpi = dpi, write = write, append = append, check = check, output = output),
                  boot = if (isTRUE(boot != "none")) { boot.sample } else { NULL },
                  plot = NULL, result = result)
 

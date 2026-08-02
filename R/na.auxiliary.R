@@ -189,16 +189,16 @@ na.auxiliary <- function(data, ..., model = NULL, categ = NULL, estimator = c("M
   #
   # Data -----------------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data using the argument '...' ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Using the Argument '...' ####
 
   if (isTRUE(!missing(...))) {
 
     # Extract data and convert tibble into data frame or vector
     x <- as.data.frame(data[, .var.names(data = data, ...), drop = FALSE])
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data without using the argument '...' ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Without Using the Argument '...' ####
 
   } else {
 
@@ -206,7 +206,7 @@ na.auxiliary <- function(data, ..., model = NULL, categ = NULL, estimator = c("M
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Categorical Variables ####
 
   if (isTRUE(!is.null(categ))) {
@@ -219,15 +219,15 @@ na.auxiliary <- function(data, ..., model = NULL, categ = NULL, estimator = c("M
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Convert user-missing values into NA ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Convert User-Missing Values into NA ####
 
   if (isTRUE(!is.null(as.na))) { x <- .as.na(x, na = as.na) }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Factors and Character Vectors ####
 
-  #...................
+  #—————————————————————————————————————— #
   ### Factor ####
 
   if (isTRUE(any(sapply(x, is.factor)))) {
@@ -238,7 +238,7 @@ na.auxiliary <- function(data, ..., model = NULL, categ = NULL, estimator = c("M
 
   }
 
-  #...................
+  #—————————————————————————————————————— #
   ### Character ####
 
   if (isTRUE(any(sapply(x, is.character)))) {
@@ -273,17 +273,17 @@ na.auxiliary <- function(data, ..., model = NULL, categ = NULL, estimator = c("M
   #
   # Arguments ------------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## 'tri' argument ####
 
   tri <- ifelse(all(c("both", "lower", "upper") %in% tri), "lower", tri)
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## 'estimator' argument ####
 
   estimator <- ifelse(all(c("ML", "MLR") %in% estimator), "MLR", estimator)
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## 'missing' argument ####
 
   missing <- ifelse(all(c("fiml", "two.stage", "robust.two.stage", "doubly.robust") %in% missing), "fiml", missing)
@@ -297,21 +297,22 @@ na.auxiliary <- function(data, ..., model = NULL, categ = NULL, estimator = c("M
     # No substantive model
     mod.na <- mod.na.fit <- mod.na.fit.stand <- NULL
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Variables Related to the Incomplete Variable ####
 
-    #...................
+    #—————————————————————————————————————— #
     ### Continuous Variables ####
 
     # Product-moment correlation coefficient matrix
     cor.mat <- cor(x, use = "pairwise.complete.obs")
 
-    #...................
+    #—————————————————————————————————————— #
     ### Categorical Variables ####
 
     if (isTRUE(!is.null(categ))) {
 
-      ##### Categorical and Continuous Variable
+      #···················
+      #### Categorical and Continuous Variables ####
 
       if (isTRUE(!all(categ %in% colnames(x)))) {
 
@@ -323,7 +324,8 @@ na.auxiliary <- function(data, ..., model = NULL, categ = NULL, estimator = c("M
 
       }
 
-      ##### Categorical Variables
+      #···················
+      #### Categorical Variables ####
 
       if (isTRUE(length(categ) > 1L)) {
 
@@ -341,7 +343,7 @@ na.auxiliary <- function(data, ..., model = NULL, categ = NULL, estimator = c("M
 
     }
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Variables Related to the Probability of Missingness ####
 
     # Indicator matrix
@@ -353,7 +355,7 @@ na.auxiliary <- function(data, ..., model = NULL, categ = NULL, estimator = c("M
     # Data
     x.ind <- data.frame(x, ind)
 
-    #...................
+    #—————————————————————————————————————— #
     ### Cohen's d ####
 
     result.d.low <- result.d.upp <- numeric(ncol(x.combn))
@@ -383,7 +385,7 @@ na.auxiliary <- function(data, ..., model = NULL, categ = NULL, estimator = c("M
 
     }
 
-    #...................
+    #—————————————————————————————————————— #
     ### Cohen's d Matrix ####
 
     d.mat <- matrix(NA, ncol = ncol(x), nrow = ncol(x), dimnames = list(names(x), names(x)))
@@ -396,7 +398,7 @@ na.auxiliary <- function(data, ..., model = NULL, categ = NULL, estimator = c("M
     # Remove empty rows
     d.mat <- d.mat[apply(d.mat, 1L, function(y) any(!is.na(y))), , drop = FALSE]
 
-    #...................
+    #—————————————————————————————————————— #
     ### Categorical Variables ####
 
     if (isTRUE(!is.null(categ))) {
@@ -426,7 +428,7 @@ na.auxiliary <- function(data, ..., model = NULL, categ = NULL, estimator = c("M
     # No correlation matrix or Cohen's d matrix
     cor.mat <- d.mat <- NULL
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Variables ####
 
     # As formula
@@ -454,7 +456,7 @@ na.auxiliary <- function(data, ..., model = NULL, categ = NULL, estimator = c("M
 
     }
 
-    #...................
+    #—————————————————————————————————————— #
     ### Predictor and Outcome Variables ####
 
     # Predictor variables
@@ -468,7 +470,7 @@ na.auxiliary <- function(data, ..., model = NULL, categ = NULL, estimator = c("M
     # All variable including candidate auxiliary variables
     var.all <- unique(c(y.var, pred.var, colnames(x)))
 
-    #...................
+    #—————————————————————————————————————— #
     ### Exclude Categorical Variables ####
 
     if (isTRUE(!is.null(categ))) {
@@ -482,7 +484,7 @@ na.auxiliary <- function(data, ..., model = NULL, categ = NULL, estimator = c("M
 
     }
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Data ####
 
     # Select all variables
@@ -490,10 +492,10 @@ na.auxiliary <- function(data, ..., model = NULL, categ = NULL, estimator = c("M
 
     if (isTRUE(all(!is.na(x[, y.var])))) { stop("There are no missing values in the outcome variable specified in the substantive model.", call. = FALSE) }
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## lavaan ####
 
-    #...................
+    #—————————————————————————————————————— #
     ### Model Specification ####
 
     mod.na <- NULL
@@ -516,7 +518,7 @@ na.auxiliary <- function(data, ..., model = NULL, categ = NULL, estimator = c("M
     # Paste substantive model
     mod.na <- paste0("# Substantive model\n", model, "\n# Auxiliary model\n", mod.na)
 
-    #...................
+    #—————————————————————————————————————— #
     ### Model Estimation ####
 
     mod.na.fit <- suppressWarnings(lavaan::sem(mod.na, data = x, estimator = estimator, missing = missing, fixed.x = FALSE))

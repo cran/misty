@@ -125,9 +125,9 @@
 #' # Model specification based on code provided on the accompanying website of
 #' # Mulder and Hamaker (2021)
 #'
-#' #..................
-#' # Model Specification: Cross-Lagged Panel Model (CLPM)
-#' # i.e., Var(Kappa) = 0, Var(Omega) = 0, Cov(Kappa, Omega) = 0
+#' #——————————————————————————————————————
+#' ## Model Specification: Cross-Lagged Panel Model (CLPM)
+#' ## i.e., Var(Kappa) = 0, Var(Omega) = 0, Cov(Kappa, Omega) = 0
 #'
 #' mod.clpm <- '
 #'   # Create between components (random intercepts)
@@ -168,9 +168,9 @@
 #'   wy3 ~~ wy3
 #' '
 #'
-#' #..................
-#' # Model Specification: Random Intercept Cross-Lagged Panel Model RI-CLPM(Kappa)
-#' # i.e., Var(Kappa) > 0, Var(Omega) = 0, Cov(Kappa, Omega) = 0
+#' #——————————————————————————————————————
+#' ## Model Specification: Random Intercept Cross-Lagged Panel Model RI-CLPM(Kappa)
+#' ## i.e., Var(Kappa) > 0, Var(Omega) = 0, Cov(Kappa, Omega) = 0
 #'
 #' mod.ri.clpm.k <- '
 #'   # Create between components (random intercepts)
@@ -210,9 +210,9 @@
 #'   wy3 ~~ wy3
 #' '
 #'
-#' #..................
-#' # Model Specification: Random Intercept Cross-Lagged Panel Model RI-CLPM(Omega)
-#' # i.e., Var(Kappa) = 0, Var(Omega) > 0, Cov(Kappa, Omega) = 0
+#' #——————————————————————————————————————
+#' ## Model Specification: Random Intercept Cross-Lagged Panel Model RI-CLPM(Omega)
+#' ## i.e., Var(Kappa) = 0, Var(Omega) > 0, Cov(Kappa, Omega) = 0
 #'
 #' mod.ri.clpm.o <- '
 #'   # Create between components (random intercepts)
@@ -252,8 +252,8 @@
 #'   wy3 ~~ wy3
 #' '
 #'
-#' #..................
-#' # Estimate Models
+#' #——————————————————————————————————————
+#' ## Estimate Models
 #' #
 #' # Note that the example analysis cannot be conduct as the data set 'data'
 #' # is not available.
@@ -267,8 +267,8 @@
 #' # RI-CLPM(Omega)
 #' fit.ri.clpm.o <- lavaan(mod.ri.clpm.o, data = data, estimator = "MLR")
 #'
-#' #..................
-#' # Chi-Bar-Square Difference Test
+#' #——————————————————————————————————————
+#' ## Chi-Bar-Square Difference Test
 #'
 #' # CLPM vs. RI-CLPM(Kappa)
 #' difftest.chibarsq(fit.clpm, fit.ri.clpm.k)
@@ -324,7 +324,7 @@ difftest.chibarsq <- function(clpm, riclpm, alpha = 0.05, digits = 2, p.digits =
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Extract Information from Fitted Models ####
 
-  #--------------------------------------
+  #—————————————————————————————————————— #
   ### Random Intercepts ####
 
   ri <- lavaan::parameterestimates(clpm) |> (\(p) p[p$op == "~~", ])() |>
@@ -333,17 +333,17 @@ difftest.chibarsq <- function(clpm, riclpm, alpha = 0.05, digits = 2, p.digits =
 
   if (isTRUE(length(ri) == 0L)) { stop("Random intercept variance fixed to zero was not found in the model specified in 'clpm'.", call. = FALSE) }
 
-  #--------------------------------------
+  #—————————————————————————————————————— #
   ### Number of Random Intercepts ####
 
   q <- length(ri)
 
-  #--------------------------------------
+  #—————————————————————————————————————— #
   ### Covariance Matrix of Random Intercepts ####
 
   S <- lavaan::vcov(riclpm) |> (\(p) which(rownames(p) %in% sapply(ri, function(y) paste0(y, "~~", y))) |> (\(q) p[q, q])())()
 
-  #--------------------------------------
+  #—————————————————————————————————————— #
   ### Chi-Square ####
 
   chi2.clpm <- lavaan::fitmeasures(clpm)["chisq"]
@@ -352,13 +352,13 @@ difftest.chibarsq <- function(clpm, riclpm, alpha = 0.05, digits = 2, p.digits =
   chi2.clpm.scaled <- lavaan::fitmeasures(clpm)["chisq.scaled"] |> (\(p) if (is.na(p)) { NULL } else { p })()
   chi2.riclpm.scaled <- lavaan::fitmeasures(riclpm)["chisq.scaled"] |> (\(p) if (is.na(p)) { NULL } else { p })()
 
-  #--------------------------------------
+  #—————————————————————————————————————— #
   ### Degrees of Freedom ####
 
   df.clpm <- lavaan::fitmeasures(clpm)["df"]
   df.riclpm <- lavaan::fitmeasures(riclpm)["df"]
 
-  #--------------------------------------
+  #—————————————————————————————————————— #
   ### Number of Constrained Variances ####
 
   if (isTRUE(length(S) != 1L)) {
@@ -372,7 +372,7 @@ difftest.chibarsq <- function(clpm, riclpm, alpha = 0.05, digits = 2, p.digits =
 
   }
 
-  #--------------------------------------
+  #—————————————————————————————————————— #
   ### Number of Unconstrained Variances and Unconstrained Covariances ####
 
   u <- k*(q - k) + k*(k - 1L) / 2L
@@ -380,19 +380,19 @@ difftest.chibarsq <- function(clpm, riclpm, alpha = 0.05, digits = 2, p.digits =
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Weights, Critical Value, Chi-Square Difference, df Difference, and Significance Value ####
 
-  #--------------------------------------
+  #—————————————————————————————————————— #
   ### Weights ####
 
   weights <- rev(ic.infer::ic.weights(S))
 
-  #--------------------------------------
+  #—————————————————————————————————————— #
   ### Critical Value ####
 
   sol <- nleqslv::nleqslv(5L, .find.c2(weights, k, u, alpha), control = list(btol = 0.001, allowSingular = TRUE))
 
   if (isTRUE(sol$fvec <= 0.01)) {
 
-    #--------------------------------------
+    #—————————————————————————————————————— #
     ### Chi-Square Difference ####
 
     # Satorra-Bentler scaled chi-square value
@@ -413,12 +413,12 @@ difftest.chibarsq <- function(clpm, riclpm, alpha = 0.05, digits = 2, p.digits =
 
     }
 
-    #--------------------------------------
+    #—————————————————————————————————————— #
     ### Difference in Degrees of Freedom ####
 
     df.diff <- df.clpm - df.riclpm
 
-    #--------------------------------------
+    #—————————————————————————————————————— #
     ### Significance Value ####
 
     p <- 0L

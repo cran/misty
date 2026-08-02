@@ -33,7 +33,7 @@
 #'                 missing data patterns, each of which has a large size, such as
 #'                 in a planned missing data design, or \code{trans = 2} (default)
 #'                 when there are more missing data patterns.
-#' @param R        a numeric value indicating the number of bootstrap replicates
+#' @param nrep     a numeric value indicating the number of bootstrap replicates
 #'                 (default is 500).
 #' @param return   a character string indicating which results to return, i.e.,
 #'                 \code{"transdat"} for only the transformed data, \code{"bootsamp"}
@@ -141,7 +141,7 @@
 #' #————————————————————————————————————————————————————————————————————————————
 #' # Bollen-Stine Bootstrapping with Incomplete Data
 #'
-#' # Example 1: Default setting, transformation method 2, R = 500 replicates
+#' # Example 1: Default setting, transformation method 2, 500 replicates
 #' # Plot bootstrap sampling distribution of the test statistic
 #' boot.bs(fit, seed = 42, plot = TRUE)
 #'
@@ -181,7 +181,7 @@
 #' }
 boot.bs <- function(object = NULL, data = NULL, model = NULL, sigma = NULL, mu = NULL,
                     group = NULL, chisq = NULL, em.cov = NULL, trans = c(1, 2),
-                    R = 500, return = c("transdat", "bootsamp", "output"), seed = NULL,
+                    nrep = 500, return = c("transdat", "bootsamp", "output"), seed = NULL,
                     progress = TRUE, digits = 2, p.digits = 3, plot = FALSE, filename = NULL,
                     width = NA, height = NA, dpi = 600, write = NULL, append = TRUE,
                     check = TRUE, output = TRUE, ...) {
@@ -190,7 +190,7 @@ boot.bs <- function(object = NULL, data = NULL, model = NULL, sigma = NULL, mu =
   #
   # Input Check ----------------------------------------------------------------
 
-  .check.input(logical = c("progress", "plot"), numeric = list(seed = 1L), s.character = list(return = c("transdat", "bootsamp", "output")),  args = "R", envir = environment(), input.check = check)
+  .check.input(logical = c("progress", "plot"), numeric = list(seed = 1L), s.character = list(return = c("transdat", "bootsamp", "output")),  args = "nrep", envir = environment(), input.check = check)
 
   # Check argument 'trans'
   if (isTRUE(check)) { if (isTRUE(!trans %in% c(1L, 2L))) { stop("Please specify 1 or 2 for the argument 'trans'.", call. = FALSE) } }
@@ -212,7 +212,7 @@ boot.bs <- function(object = NULL, data = NULL, model = NULL, sigma = NULL, mu =
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data Preparation ####
 
-  #——————————————————————————————————————
+  #—————————————————————————————————————— #
   ### lavaan Object Specified ####
 
   if (isTRUE(!is.null(object))) {
@@ -275,7 +275,7 @@ boot.bs <- function(object = NULL, data = NULL, model = NULL, sigma = NULL, mu =
 
     }
 
-  #——————————————————————————————————————
+  #—————————————————————————————————————— #
   ### lavaan Object Not Specified ####
 
   } else {
@@ -357,7 +357,7 @@ boot.bs <- function(object = NULL, data = NULL, model = NULL, sigma = NULL, mu =
 
   for (i in seq_along(group.label)) {
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— #
     ### Transformation 1 ####
 
     if (isTRUE(trans == 1L)) {
@@ -373,7 +373,7 @@ boot.bs <- function(object = NULL, data = NULL, model = NULL, sigma = NULL, mu =
 
       for (j in seq_along(pattern.uniq)) { data.trans[[i]][pattern.rows[[j]], ] <- data.trans.list[[j]] }
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— #
     ### Transformation 2 ####
 
     } else if (isTRUE(trans == 2L)) {
@@ -394,7 +394,7 @@ boot.bs <- function(object = NULL, data = NULL, model = NULL, sigma = NULL, mu =
     if (isTRUE(!is.null(seed))) { set.seed(seed) }
 
     # Draw bootstrap samples
-    boot.samples <- lapply(seq_len(R), function(y) .getBootSample(data.trans, group = group, group.label = group.label))
+    boot.samples <- lapply(seq_len(nrep), function(y) .getBootSample(data.trans, group = group, group.label = group.label))
 
   }
 
@@ -404,7 +404,7 @@ boot.bs <- function(object = NULL, data = NULL, model = NULL, sigma = NULL, mu =
   boot.p <- nconv <- df <- NULL
   if (isTRUE(return == "output")) {
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— #
     ### lavaan Arguments ####
 
     # lavaan arguments in ...
@@ -439,16 +439,16 @@ boot.bs <- function(object = NULL, data = NULL, model = NULL, sigma = NULL, mu =
     lavaan.args$slotOptions$check.start <- FALSE
     lavaan.args$slotOptions$check.vcov <- FALSE
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— #
     ### Fit Models ####
 
     # With progress bar
     if (isTRUE(progress)) {
 
-      progress.bar <- txtProgressBar(min = 1L, max = R, initial = 1L, char = "=", width = getOption("width") - 13L, style = 3, file = "")
+      progress.bar <- txtProgressBar(min = 1L, max = nrep, initial = 1L, char = "=", width = getOption("width") - 13L, style = 3, file = "")
 
       boot.chisq <- numeric()
-      for (i in seq_len(R)) {
+      for (i in seq_len(nrep)) {
 
         boot.chisq[i] <- suppressWarnings(.fitBootSample(boot.samples[[i]], args = lavaan.args))
 
@@ -480,7 +480,7 @@ boot.bs <- function(object = NULL, data = NULL, model = NULL, sigma = NULL, mu =
     # Number of not converged bootstrap samples
     nconv <- sum(is.na(boot.chisq))
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— #
     ### Bootstrapped p-Value ####
 
     boot.p <- mean(boot.chisq >= chisq, na.rm = TRUE)
@@ -491,7 +491,7 @@ boot.bs <- function(object = NULL, data = NULL, model = NULL, sigma = NULL, mu =
   #
   # Return Object --------------------------------------------------------------
 
-  #——————————————————————————————————————
+  #—————————————————————————————————————— #
   ### Transformed Data ####
 
   # Stack groups
@@ -502,16 +502,16 @@ boot.bs <- function(object = NULL, data = NULL, model = NULL, sigma = NULL, mu =
   # Return transformed data
   if (isTRUE(return == "transdat")) { return(data.trans) }
 
-  #——————————————————————————————————————
+  #—————————————————————————————————————— #
   ### Bootstrap Samples ####
 
   # Return bootstrap samples
   if (isTRUE(return == "bootsamp")) { return(boot.samples) }
 
-  #——————————————————————————————————————
+  #—————————————————————————————————————— #
   ### Bootstrapping Result Table ####
 
-  restab <- data.frame(R = R - nconv, nNA = nconv, chisq = chisq, df = df, p = pchisq(chisq, df = df, lower.tail = FALSE), boot.p = boot.p, row.names = NULL)
+  restab <- data.frame(nrep = nrep - nconv, nNA = nconv, chisq = chisq, df = df, p = pchisq(chisq, df = df, lower.tail = FALSE), boot.p = boot.p, row.names = NULL)
 
   #_____________________________________________________________________________
   #
@@ -522,7 +522,7 @@ boot.bs <- function(object = NULL, data = NULL, model = NULL, sigma = NULL, mu =
                  object = object,
                  data.trans = data.trans,
                  boot.chisq = boot.chisq,
-                 args = list(data = data, model = model, sigma = sigma, mu = mu, group = group, chisq = chisq, em.cov = em.cov, trans = trans, R = R, return = return, seed = seed, digits = digits, p.digits = p.digits, plot = plot, filename = filename, width = width, height = height, dpi = dpi, write = write, append = append, check = check, output = output),
+                 args = list(data = data, model = model, sigma = sigma, mu = mu, group = group, chisq = chisq, em.cov = em.cov, trans = trans, nrep = nrep, return = return, seed = seed, digits = digits, p.digits = p.digits, plot = plot, filename = filename, width = width, height = height, dpi = dpi, write = write, append = append, check = check, output = output),
                  plot = NULL,
                  result = restab)
 

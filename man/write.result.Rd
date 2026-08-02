@@ -4,11 +4,10 @@
 \alias{write.result}
 \title{Write Results of a misty Object into an Excel file}
 \usage{
-write.result(x, file = "Results.xlsx", write = x$args$print, tri = x$args$tri,
-             digits = x$args$digits, p.digits = x$args$p.digits,
-             icc.digits = x$args$icc.digits, r.digits = x$args$r.digits,
-             ess.digits = x$args$ess.digits, mcse.digits = x$args$mcse.digits,
-             check = TRUE)
+write.result(x, file = "Results.xlsx", digits = x$args$digits,
+             p.digits = x$args$p.digits, icc.digits = x$args$icc.digits,
+             r.digits = x$args$r.digits, ess.digits = x$args$ess.digits,
+             mcse.digits = x$args$mcse.digits, check = TRUE)
 }
 \arguments{
 \item{x}{misty object (\code{misty.object}) resulting from a misty function
@@ -16,14 +15,6 @@ supported by the \code{write.result} function (see 'Details').}
 
 \item{file}{a character string naming a file with or without file extension
 '.xlsx', e.g., \code{"Results.xlsx"} or \code{"Results"}.}
-
-\item{write}{a character string or character vector indicating which
-results to to be written into an Excel file.}
-
-\item{tri}{a character string or character vector indicating which triangular
-of the matrix to show on the console, i.e., \code{both} for upper and lower
-triangular, \code{lower} for the lower triangular, and \code{upper} for the upper
-triangular.}
 
 \item{digits}{an integer value indicating the number of decimal places digits
 to be used for displaying results.}
@@ -35,7 +26,9 @@ for displaying \emph{p}-values.}
 for displaying intraclass correlation coefficients.}
 
 \item{r.digits}{an integer value indicating the number of decimal places
-to be used for displaying R-hat values.}
+to be used for displaying R-hat values, item-total correlation
+standardized factor loadings, coefficient alpha, and
+coefficient omega.}
 
 \item{ess.digits}{an integer value indicating the number of decimal places
 to be used for displaying effective sample sizes.}
@@ -50,14 +43,17 @@ This function writes the results of a \code{misty.object}) into an Excel file.
 }
 \details{
 Currently the function supports result objects from the following functions:
+
 \code{\link{blimp.bayes}}, \code{\link{boot.bs}},\code{\link{ci.cor}},
-\code{\link{ci.mean}}, \code{\link{ci.median}}, \code{\link{ci.prop}}, \code{\link{ci.var}},
-\code{\link{ci.sd}}, \code{\link{coeff.robust}}, \code{\link{coeff.std}},
-\code{\link{cor.matrix}}, \code{\link{crosstab}}, \code{\link{descript}},
-\code{\link{difftest.chibarsq}}, \code{\link{dominance.manual}}, \code{\link{dominance}},
-\code{\link{effsize}}, \code{\link{freq}}, \code{\link{item.alpha}},
-\code{\link{item.cfa}}, \code{\link{item.dfi}} \code{\link{item.invar}}, \code{\link{item.omega}},
-\code{\link{mplus.bayes}}, \code{\link{multilevel.cfa}}, \code{\link{multilevel.cor}},
+\code{\link{ci.mean}}, \code{\link{ci.median}}, \code{\link{ci.prop}},
+\code{\link{ci.var}}, \code{\link{ci.sd}}, \code{\link{coeff.robust}},
+\code{\link{coeff.std}}, \code{\link{cor.matrix}}, \code{\link{crosstab}},
+\code{\link{descript}}, \code{\link{difftest.chibarsq}},
+\code{\link{dominance.manual}}, \code{\link{dominance}}, \code{\link{effsize}},
+\code{\link{freq}}, \code{\link{item.alpha}}, \code{\link{item.cfa}},
+\code{\link{item.dfi}}, \code{\link{item.distract}}, \code{\link{item.invar}},
+\code{\link{item.omega}}, \code{\link{item.stats}}, \code{\link{mplus.bayes}},
+\code{\link{multilevel.cfa}}, \code{\link{multilevel.cor}},
 \code{\link{multilevel.descript}}, \code{\link{multilevel.fit}},
 \code{\link{multilevel.invar}}, \code{\link{item.noninvar}},
 \code{\link{multilevel.omega}}, \code{\link{na.auxiliary}},

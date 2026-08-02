@@ -170,7 +170,7 @@
 #'
 #' @examples
 #' \dontrun{
-#' #----------------------------------------------------------------------------
+#' #—————————————————————————————————————— #———————————————————————————————————————
 #' # Example 1: Update VARIABLE and MODEL section
 #'
 #' # Write Mplus Data File
@@ -197,7 +197,7 @@
 #' # Run updated Mplus input
 #' mod1 <- mplus.update(mod0, update1, file = "ex3_1_update1.inp")
 #'
-#' #----------------------------------------------------------------------------
+#' #—————————————————————————————————————— #———————————————————————————————————————
 #' # Example 2: Update ANALYSIS section
 #'
 #' # Update ANALYSIS section
@@ -208,7 +208,7 @@
 #' # Run updated Mplus input
 #' mod2 <- mplus.update(mod1, update2, file = "ex3_1_update2.inp")
 #'
-#' #----------------------------------------------------------------------------
+#' #—————————————————————————————————————— #———————————————————————————————————————
 #' # Example 3: Remove OUTPUT section
 #'
 #' #' Remove OUTPUT section
@@ -303,7 +303,7 @@ mplus.update <- function(x, update, file = "Mplus_Input_Update.inp", comment = F
   #
   # Arguments ------------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## file Argument ####
 
   # File extension .inp
@@ -312,7 +312,7 @@ mplus.update <- function(x, update, file = "Mplus_Input_Update.inp", comment = F
   # .out object
   file.out <- sub(".inp", ".out", file)
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## replace.out Argument ####
 
   if (isTRUE(all(c("always", "never", "modified") %in% replace.out))) {
@@ -329,7 +329,7 @@ mplus.update <- function(x, update, file = "Mplus_Input_Update.inp", comment = F
   #
   # Main Function --------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Remove Comments ####
 
   if (isTRUE(!comment)) {
@@ -356,13 +356,13 @@ mplus.update <- function(x, update, file = "Mplus_Input_Update.inp", comment = F
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## update Argument ####
 
   # Upper case characters
   update.upp <- toupper(update)
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Extract Position of Update Input Command Sections ####
 
   section.pos <- c(if (isTRUE(any(grepl("TITLE:", update.upp)))) { as.numeric(gregexec("TITLE:", update.upp)[[1L]]) } else { NULL },
@@ -399,132 +399,132 @@ mplus.update <- function(x, update, file = "Mplus_Input_Update.inp", comment = F
                    if (isTRUE(any(grepl("SAVEDATA:", update.upp)))) { as.numeric(gregexec("SAVEDATA:", update.upp)[[1L]]) } else { NULL })
 
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Extract Update Input Command Sections ####
 
   title <- inpdata <- data.imp <- data.wl <- data.lw <- data.tp <- data.miss <- data.surv <- data.coh <- inpvariable <- define <- analysis <- model <- mod.ind <- mod.test <- mod.prior <- montecarlo <- mod.pop <- mod.cov <- mod.miss <- mod.const <- plot <- inpoutput <- savedata <- NULL
 
-  #...................
+  #—————————————————————————————————————— #
   ### TITLE ####
 
   if (isTRUE(any(grepl("TITLE:", update.upp)))) { title <- .extract.section("TITLE:", update, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### DATA ####
 
   if (isTRUE(any(grepl("DATA:", update.upp)))) { inpdata <- .extract.section("DATA:", update, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### DATA IMPUTATION ####
 
   if (isTRUE(any(grepl("DATA IMPUTATION:", update.upp)))) { data.imp <- .extract.section("DATA IMPUTATION:", update, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### DATA WIDETOLONG ####
 
   if (isTRUE(any(grepl("DATA WIDETOLONG:", update.upp)))) { data.wl <- .extract.section("DATA WIDETOLONG:", update, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### DATA LONGTOWIDE ####
 
   if (isTRUE(any(grepl("DATA LONGTOWIDE:", update.upp)))) { data.lw <- .extract.section("DATA LONGTOWIDE:", update, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### DATA TWOPART ####
 
   if (isTRUE(any(grepl("DATA TWOPART:", update.upp)))) { data.tp <- .extract.section("DATA TWOPART:", update, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### DATA MISSING ####
 
   if (isTRUE(any(grepl("DATA MISSING:", update.upp)))) { data.miss <- .extract.section("DATA MISSING:", update, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### DATA SURVIVAL ####
 
   if (isTRUE(any(grepl("DATA SURVIVAL:", update.upp)))) { data.surv <- .extract.section("DATA SURVIVAL:", update, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### DATA COHORT ####
 
   if (isTRUE(any(grepl("DATA COHORT:", update.upp)))) { data.coh <- .extract.section("DATA COHORT:", update, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### VARIABLE ####
 
   if (isTRUE(any(grepl("VARIABLE:", update.upp)))) { inpvariable <- .extract.section("VARIABLE:", update, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### DEFINE ####
 
   if (isTRUE(any(grepl("DEFINE:", update.upp)))) { define <- .extract.section("DEFINE:", update, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### ANALYSIS ####
 
   if (isTRUE(any(grepl("ANALYSIS:", update.upp)))) { analysis <- .extract.section("ANALYSIS:", update, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### MODEL ####
 
   if (isTRUE(any(grepl("MODEL:", update.upp)))) { model <- .extract.section("MODEL:", update, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### MODEL INDIRECT ####
 
   if (isTRUE(any(grepl("MODEL INDIRECT:", update.upp)))) { model.ind <- .extract.section("MODEL INDIRECT:", update, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### MODEL TEST ####
 
   if (isTRUE(any(grepl("MODEL TEST:", update.upp)))) { model.test <- .extract.section("MODEL TEST:", update, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### MODEL PRIORS ####
 
   if (isTRUE(any(grepl("MODEL PRIORS:", update.upp)))) { model.prior <- .extract.section("MODEL PRIORS:", update, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### MONTECARLO ####
 
   if (isTRUE(any(grepl("MONTECARLO:", update.upp)))) { montecarlo <- .extract.section("MONTECARLO:", update, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### MODEL POPULATION ####
 
   if (isTRUE(any(grepl("MODEL POPULATION:", update.upp)))) { model.pop <- .extract.section("MODEL POPULATION:", update, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### MODEL COVERAGE ####
 
   if (isTRUE(any(grepl("MODEL COVERAGE:", update.upp)))) { model.cov <- .extract.section("MODEL COVERAGE:", update, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### MODEL MISSING ####
 
   if (isTRUE(any(grepl("MODEL MISSING:", update.upp)))) { model.miss <- .extract.section("MODEL MISSING:", update, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### MODEL CONSTRAINT ####
 
   if (isTRUE(any(grepl("MODEL CONSTRAINT:", update.upp)))) { mod.const <- .extract.section("MODEL CONSTRAINT:", update, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### PLOT ####
 
   if (isTRUE(any(grepl("PLOT:", update.upp)))) { plot <- .extract.section("PLOT:", update, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### OUTPUT ####
 
   if (isTRUE(any(grepl("OUTPUT:", update.upp)))) { inpoutput <- .extract.section("OUTPUT:", update, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### SAVEDATA ####
 
   if (isTRUE(any(grepl("SAVEDATA:", update.upp)))) { savedata <- .extract.section("SAVEDATA:", update, section.pos) }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Updated Input Object ####
 
   input.object.update <- Filter(Negate(is.null),
@@ -539,17 +539,19 @@ mplus.update <- function(x, update, file = "Mplus_Input_Update.inp", comment = F
   # Input object
   input.object <- Filter(Negate(is.null), x$input)
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Update Input Section ####
 
   for (i in names(input.object.update)) {
 
-    #...................
+    #—————————————————————————————————————— #
     ### Update section available in input ####
 
     if (isTRUE(i %in% names(input.object))) {
 
-      #### VARIABLE section ####
+      #···················
+      #### VARIABLE Section ####
+
       if (isTRUE(i == "variable")) {
 
         ##### ... Specification ####
@@ -569,7 +571,9 @@ mplus.update <- function(x, update, file = "Mplus_Input_Update.inp", comment = F
 
         }
 
-      #### ANALYSIS section ####
+      #···················
+      #### ANALYSIS Section ####
+
       } else if (isTRUE(i == "analysis")) {
 
         ##### ... Specification ####
@@ -601,7 +605,7 @@ mplus.update <- function(x, update, file = "Mplus_Input_Update.inp", comment = F
 
         }
 
-      #...................
+      #—————————————————————————————————————— #
       ### No VARIABLE or ANALYSIS section ####
 
       } else {
@@ -610,8 +614,8 @@ mplus.update <- function(x, update, file = "Mplus_Input_Update.inp", comment = F
 
       }
 
-    #...................
-    ### Update section not available in input ####
+    #—————————————————————————————————————— #
+    ### Update Section Not Available in Input ####
     } else {
 
       # Order section
@@ -622,8 +626,8 @@ mplus.update <- function(x, update, file = "Mplus_Input_Update.inp", comment = F
 
     }
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Remove sections using --- ####
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Remove Sections Using --- ####
 
     if (isTRUE(grepl("---", input.object[[i]], fixed = TRUE))) {
 
@@ -644,13 +648,13 @@ mplus.update <- function(x, update, file = "Mplus_Input_Update.inp", comment = F
       # Remove section
       input.object[[i]] <- paste(unlist(strsplit(input.object[[i]], ""))[-start.end], collapse = "")
 
-      #...................
-      ### Remove empty section ####
+      #—————————————————————————————————————— #
+      ### Remove Empty Section ####
 
       if (isTRUE(misty::chr.trim(toupper(input.object[[i]])) %in% c("TITLE:", "DATA:", "DATA IMPUTATION", "DATA WIDETOLONG:", "DATA LONGTOWIDE:", "DATA TWOPART:", "DATA MISSING:", "DATA SURVIVAL:", "DATA COHORT:", "VARIABLE:", "DEFINE:", "ANALYSIS:", "MODEL:", "MODEL INDIRECT:", "MODEL CONSTRAINT:", "MODEL TEST:", "MODEL PRIORS:", "MONTECARLO:", "MODEL POPULATION:", "MODEL COVERAGE:", "MODEL MISSING:", "OUTPUT:", "SAVEDATA:"))) { input.object[[i]] <- NULL }
 
-      #...................
-      ### Remove new lines before first entry ####
+      #—————————————————————————————————————— #
+      ### Remove New Lines Before First Entry ####
 
       colon <- as.numeric(unlist(gregexec(":", input.object[[i]])))
       newline <- as.numeric(unlist(gregexec("\n|\t", input.object[[i]])))
@@ -663,12 +667,12 @@ mplus.update <- function(x, update, file = "Mplus_Input_Update.inp", comment = F
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Write Object ####
 
   write.object <- misty::chr.gsub(c("\n\n\n", "\n\n\n\n", "\n\n\n\n\n", "\n\n\n\n\n\n", "\n\n\n\n\n\n\n"), rep("\n\n", times = 5L), paste(input.object, collapse = "\n\n"))
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Write Input ####
 
   # Input file already exists
@@ -693,7 +697,7 @@ mplus.update <- function(x, update, file = "Mplus_Input_Update.inp", comment = F
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Run Mplus ####
 
   if (isTRUE(mplus.run)) {
@@ -719,7 +723,7 @@ mplus.update <- function(x, update, file = "Mplus_Input_Update.inp", comment = F
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Mplus Output ####
 
   # Existing output file

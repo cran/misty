@@ -2,7 +2,7 @@
 % Please edit documentation in R/write.mplus.R
 \name{write.mplus}
 \alias{write.mplus}
-\title{Write Mplus Data File}
+\title{Write Mplus Data File and Mplus Input Template}
 \usage{
 write.mplus(x, file = "Mplus_Data.dat", data = TRUE, input = TRUE,
             var = FALSE, na = -99, check = TRUE)

@@ -156,8 +156,8 @@ lagged <- function(data, ..., id = NULL, obs = NULL, day = NULL, lag = 1, time =
   #
   # Data -----------------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data using the argument '...' ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Using the Argument '...' ####
 
   if (isTRUE(!missing(...))) {
 
@@ -179,8 +179,8 @@ lagged <- function(data, ..., id = NULL, obs = NULL, day = NULL, lag = 1, time =
     # Actual date and time variable
     if (isTRUE(!is.null(time))) { time <- data[, time] }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data without using the argument '...' ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Without Using the Argument '...' ####
 
   } else {
 
@@ -213,7 +213,7 @@ lagged <- function(data, ..., id = NULL, obs = NULL, day = NULL, lag = 1, time =
   if (!is.null(day) && isTRUE("tbl" %in% substr(class(day), 1L, 3L))) { day <- unname(unlist(day)) }
   if (!is.null(time) && isTRUE("tbl" %in% substr(class(time), 1L, 3L))) { time <- as.vector(time)[[1L]] }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Convert user-missing values into NA ####
 
   if (isTRUE(!is.null(as.na))) { x <- .as.na(x, na = as.na) }
@@ -260,11 +260,11 @@ lagged <- function(data, ..., id = NULL, obs = NULL, day = NULL, lag = 1, time =
   #
   # Main Function --------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Single variable ####
   if (isTRUE(is.null(dim(x)))) {
 
-    #...................
+    #—————————————————————————————————————— #
     ### Subject ID, observation number, day, and date variable ####
 
     # If 'id' is not specified, assume data are from a single subject
@@ -318,14 +318,16 @@ lagged <- function(data, ..., id = NULL, obs = NULL, day = NULL, lag = 1, time =
 
     })
 
-    #...................
+    #—————————————————————————————————————— #
     ### Reassemble data frame ####
+
     object <- data.frame(lagged = unsplit(lapply(res, function(x) x$x.lag), f = dat$id), timediff = unsplit(lapply(res, function(x) x$t.lag), f = dat$id))
 
     if (all(is.na(object$timediff))) { object <- object$lagged }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Multiple variables ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Multiple Variables ####
+
   } else {
 
     object <- apply(x, 2L, misty::lagged, id = id, obs = obs, day = day, lag = lag, time = time, units = units, check = FALSE)
@@ -343,10 +345,12 @@ lagged <- function(data, ..., id = NULL, obs = NULL, day = NULL, lag = 1, time =
 
     }
 
-    #...................
-    ### Variable names ####
+    #—————————————————————————————————————— #
+    ### Variable Names ####
 
-    ##### With timediff variables
+    #···················
+    #### With 'timediff' Variables ####
+
     if (isTRUE(any(sapply(object, class) == "difftime"))) {
 
       if (isTRUE(all(name == ".lag") && all(name.td == ".td"))) {
@@ -367,7 +371,9 @@ lagged <- function(data, ..., id = NULL, obs = NULL, day = NULL, lag = 1, time =
 
       }
 
-    ##### Without timediff variable
+    #···················
+    #### Without 'timediff' Variables ####
+
     } else {
 
       if (isTRUE(name == ".lag")) {
@@ -384,17 +390,19 @@ lagged <- function(data, ..., id = NULL, obs = NULL, day = NULL, lag = 1, time =
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Append ####
 
   if (isTRUE(!missing(...) && append)) {
 
     if (isTRUE(is.null(dim(x)))) {
 
-      #...................
-      ### Variable names ####
+      #—————————————————————————————————————— #
+      ### Variable Names ####
 
-      ##### With timediff variable
+      #···················
+      #### With 'timediff' Variables ####
+
       if (isTRUE(any(sapply(object, class) == "difftime"))) {
 
         if (isTRUE(name == ".lag" && name.td == ".td")) {
@@ -415,7 +423,9 @@ lagged <- function(data, ..., id = NULL, obs = NULL, day = NULL, lag = 1, time =
 
         }
 
-      ##### Without timediff variable
+      #···················
+      #### Without 'timediff' Variables ####
+
       } else {
 
         if (isTRUE(name == ".lag")) {

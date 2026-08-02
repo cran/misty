@@ -226,19 +226,19 @@ indirect <- function(a, b, se.a, se.b, print = c("all", "asymp", "dop", "mc"),
   #
   # Arguments ------------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Print Confidence intervals ####
 
   if(all(c("all", "asymp", "dop", "mc") %in% print)) { print <- "mc" }
 
   if (isTRUE(all(print == "all"))) { print <- c("asymp", "dop", "mc") }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Method Used to Compute Standard Errors ####
 
   se <- ifelse(all(c("sobel", "aroian", "goodman") %in% se), "aroian", se)
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Alternative hypothesis ####
 
   if (isTRUE(all(c("two.sided", "less", "greater") %in% alternative))) { alternative <- "two.sided" }
@@ -251,18 +251,18 @@ indirect <- function(a, b, se.a, se.b, print = c("all", "asymp", "dop", "mc"),
 
   asymp.ab <- dop.ab <- mc.ab <- asmyp.se.ab <- dop.se.ab <- mc.se.ab <- NA
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Asymptotic Normal and/or Distribution of Product Method ####
 
   if (isTRUE("asymp" %in% print || "dop" %in% print)) {
 
-    #...................
-    ### Point estimate ####
+    #—————————————————————————————————————— #
+    ### Point Estimate ####
 
     dop.ab <- asymp.ab <- a*b
 
-    #...................
-    ### Standard error ####
+    #—————————————————————————————————————— #
+    ### Standard Error ####
 
     dop.se.ab <- asmyp.se.ab <- switch(se,
                                        "sobel" = {
@@ -292,7 +292,7 @@ indirect <- function(a, b, se.a, se.b, print = c("all", "asymp", "dop", "mc"),
 
     }
 
-    #...................
+    #—————————————————————————————————————— #
     ### Asymptotic Normal Confidence Intervals ####
 
     if (isTRUE("asymp" %in% print)) {
@@ -317,13 +317,13 @@ indirect <- function(a, b, se.a, se.b, print = c("all", "asymp", "dop", "mc"),
 
     }
 
-    #...................
+    #—————————————————————————————————————— #
     ### Distribution of Product Confidence Intervals ####
 
     if (isTRUE("dop" %in% print)) {
 
-      #...................
-      ### Confidence interval ####
+      #—————————————————————————————————————— #
+      ### Confidence Interval ####
 
       dop.ci <- switch(alternative,
                        two.sided = c(low = .qprodnormalMeeker((1L - conf.level) / 2L, a = a, b = b, se.a = se.a, se.b = se.b, lower.tail = TRUE) |> (\(p) if (isTRUE(is.list(p))) { NA } else { p })(),
@@ -353,33 +353,33 @@ indirect <- function(a, b, se.a, se.b, print = c("all", "asymp", "dop", "mc"),
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Monte Carlo Method ####
 
   if (isTRUE("mc" %in% print)) {
 
-    #...................
+    #—————————————————————————————————————— #
     ### Random Number Generation ####
 
     if (isTRUE(!is.null(seed))) { set.seed(seed) }
 
-    #...................
+    #—————————————————————————————————————— #
     ### Monte Carlo ####
 
     ab <- t(crossprod(chol(matrix(c(se.a^2L, se.a*se.b*0L, se.a*se.b*0L, se.b^2L), nrow = 2L)), (matrix(rnorm(2L*nrep), ncol = nrep))) + c(a, b)) |> (\(p) p[, 1L]*p[, 2L])()
 
-    #...................
-    ### Point estimate ####
+    #—————————————————————————————————————— #
+    ### Point Estimate ####
 
     mc.ab <- mean(ab)
 
-    #...................
-    ### Standard error ####
+    #—————————————————————————————————————— #
+    ### Standard Error ####
 
     mc.se.ab <- sd(ab)
 
-    #...................
-    ### Confidence interval ####
+    #—————————————————————————————————————— #
+    ### Confidence Interval ####
 
     mc.ci <- switch(alternative,
                     two.sided = c(low = quantile(ab, (1L - conf.level) / 2L), upp = quantile(ab, 1L - (1L - conf.level) / 2L)),
@@ -390,7 +390,7 @@ indirect <- function(a, b, se.a, se.b, print = c("all", "asymp", "dop", "mc"),
 
   #_____________________________________________________________________________
   #
-  # Return object --------------------------------------------------------------
+  # Return Object --------------------------------------------------------------
 
   object <- list(call = match.call(),
                  type = "indirect",
@@ -406,16 +406,12 @@ indirect <- function(a, b, se.a, se.b, print = c("all", "asymp", "dop", "mc"),
   #
   # Write Results --------------------------------------------------------------
 
-  #_____________________________________________________________________________
-  #
-  # Write Results --------------------------------------------------------------
-
   if (isTRUE(!is.null(write))) {
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Text file ####
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Text File ####
 
-    # Send R output to textfile
+    # Send R output to text file
     sink(file = write, append = ifelse(isTRUE(file.exists(write)), append, FALSE), type = "output", split = FALSE)
 
     if (isTRUE(append && file.exists(write))) { write("", file = write, append = TRUE) }

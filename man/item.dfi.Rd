@@ -188,7 +188,7 @@ library(lavaan)
 #————————————————————————————————————————————————————————————————————————————
 # Object of Class misty
 
-#.....................
+#——————————————————————————————————————
 ## Multivariate Normality across all Items
 
 # Conduct confirmatory factor analysis: Continuous items
@@ -197,7 +197,7 @@ mod1a.fit <- item.cfa(HolzingerSwineford1939, x1:x6, estimator = "ML")
 # Example 1a: Simulate DFI cutoffs, multivariate normality
 item.dfi(mod1a.fit, type = "norm")
 
-#.....................
+#——————————————————————————————————————
 ## Multivariate Non-Normality across all Items
 
 # Conduct confirmatory factor analysis: Continuous items
@@ -206,24 +206,23 @@ mod1b.fit <- item.cfa(HolzingerSwineford1939, x1:x6)
 # Example 1b: Simulate DFI cutoffs, multivariate non-normality (default)
 item.dfi(mod1b.fit)
 
-#.....................
+#——————————————————————————————————————
 ## Likert-Type Items Treated as Continuous
 
 # Conduct confirmatory factor analysis: Likert-type items as continuous
-mod1c.fit <- item.cfa(round(HolzingerSwineford1939[, c("x4", "x5", "x6", "x7")]))
+mod1c.fit <- item.cfa(data.items, pitem1, pitem2r, pitem3r, pitem4)
 
 # Example 1c: Simulate DFI cutoffs, Likert-type
 item.dfi(mod1c.fit, type = "likert")
 
-#.....................
+#——————————————————————————————————————
 ## Ordered-Categorical Items
 
 # Conduct confirmatory factor analysis: Ordered-categorical items
-mod1d.fit <- item.cfa(round(HolzingerSwineford1939[, c("x4", "x5", "x6", "x7")]),
-                      ordered = TRUE)
+mod1d.fit <- item.cfa(data.items, pitem1, pitem2r, pitem3r, pitem4, ordered = TRUE)
 
 # Example 1d: Simulate DFI cutoffs, ordered-categorical
-item.dfi(mod1d.fit, nrep = 50)
+item.dfi(mod1d.fit)
 
 #————————————————————————————————————————————————————————————————————————————
 # Object of Class lavaan
@@ -231,7 +230,7 @@ item.dfi(mod1d.fit, nrep = 50)
 # Model specification
 mod <- 'f =~ x1 + x2 + x3 + x4 + x5 + x6'
 
-#.....................
+#——————————————————————————————————————
 ## Multivariate Normality across all Items
 
 # Model estimation
@@ -240,7 +239,7 @@ mod2a.fit <- cfa(mod, data = HolzingerSwineford1939, estimator = "ML")
 # Example 2a: Simulate DFI cutoffs, multivariate normality
 mod2a.dfi <- item.dfi(mod2a.fit, type = "norm")
 
-#.....................
+#——————————————————————————————————————
 ## Multivariate Non-Normality across all Items
 
 # Model estimation
@@ -249,7 +248,7 @@ mod2b.fit <- cfa(mod, data = HolzingerSwineford1939, estimator = "MLR")
 # Example 2b: Simulate DFI cutoffs, multivariate non-normality (default)
 mod2b.fit <- item.dfi(mod2b.fit)
 
-#.....................
+#——————————————————————————————————————
 ## Arguments 'print' and 'level'
 
 # Model estimation
@@ -286,7 +285,7 @@ item.dfi(mod3, n = 301, data = HolzingerSwineford1939, estimator = "MLR")
 mod3.fit <- item.cfa(HolzingerSwineford1939, x1:x6)
 
 # Example 4: Plot distributions of fit indices for each level of misspecification
-item.dfi(mod3.fit, plot = TRUE, nrep = 100)
+item.dfi(mod3.fit, plot = TRUE)
 
 #————————————————————————————————————————————————————————————————————————————
 # Write Results and Save Plot

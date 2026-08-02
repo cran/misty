@@ -51,36 +51,25 @@ This function reverse codes inverted items, i.e., items that are negatively
 worded.
 }
 \details{
-If arguments \code{min} and/or \code{max} are not specified, empirical minimum
-and/or maximum is computed from the data Note, however, that reverse coding
-might fail if the lowest or highest possible scale value is not represented in
-the data That is, it is always preferable to specify the arguments \code{min}
+If the arguments \code{min} and/or \code{max} are not specified, empirical minimum
+and/or maximum is computed from the data. Note that reverse coding may fail
+if the lowest or highest possible scale value is not represented in the data.
+Therefore, it is always preferable to specify the arguments \code{min}
 and \code{max}.
 }
 \examples{
-dat <- data.frame(item1 = c(1, 5, 3, 1, 4, 4, 1, 5),
-                  item2 = c(1, 1.3, 1.7, 2, 2.7, 3.3, 4.7, 5),
-                  item3 = c(4, 2, 4, 5, 1, 3, 5, -99))
+# Example 1a: Reverse code 'pitem2' and append to 'data.items'
+item.reverse(data.items, pitem2, min = 0, max = 3)
 
-# Example 1: Reverse code 'item1' and append to 'dat'
-item.reverse(dat, item1, min = 1, max = 5)
+# Example 1b: Alternative specification without using the '...' argument
+item.reverse(data.items$pitem2, min = 0, max = 3)
 
-# Alternative specification without using the '...' argument
-item.reverse(dat$item1, min = 1, max = 5)
+# Example 2a: Reverse code 'pitem2' and 'pitem3' and attach to 'data.items'
+item.reverse(data.items, pitem2, pitem3, min = 0, max = 3)
 
-# Example 2: Reverse code 'item3' while keeping the value -99
-item.reverse(dat, item3, min = 1, max = 5, keep = -99)
-
-# Example 3: Reverse code 'item3' while keeping the value -99 and check recoding
-item.reverse(dat, item3, min = 1, max = 5, keep = -99, table = TRUE)
-
-# Example 4: Reverse code 'item1', 'item2', and 'item3' and attach to 'dat'
-item.reverse(item1:item3, data = dat, min = 1, max = 5, keep = -99)
-
-# Alternative specification without using the '...' argument
-dat <- cbind(dat,
-             item.reverse(dat[, c("item1", "item2", "item3")],
-                          min = 1, max = 5, keep = -99))
+# Example 2b: Alternative specification without using the '...' argument
+dat <- cbind(data.items,
+             item.reverse(data.items[, c("pitem2", "pitem3")], min = 0, max = 3))
 }
 \references{
 Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psychology

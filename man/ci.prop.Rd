@@ -5,7 +5,7 @@
 \title{(Bootstrap) Confidence Intervals for Proportions}
 \usage{
 ci.prop(data, ..., method = c("wald", "wilson"),
-        boot = c("none", "perc", "bc", "bca"), R = 1000, seed = NULL,
+        boot = c("none", "perc", "bc", "bca"), nrep = 1000, seed = NULL,
         alternative = c("two.sided", "less", "greater"), conf.level = 0.95,
         group = NULL, split = NULL, sort.var = FALSE, na.omit = FALSE,
         digits = 3, as.na = NULL, plot = c("none", "ci", "boot"), hist = TRUE,
@@ -37,7 +37,7 @@ acceleration), and \code{"bca"} for the bias-corrected
 and accelerated (BCa) bootstrap CI, see 'Details' in
 the \code{\link{ci.cor}} function.}
 
-\item{R}{a numeric value indicating the number of bootstrap
+\item{nrep}{a numeric value indicating the number of bootstrap
 replicates (default is 1000).}
 
 \item{seed}{a numeric value specifying seeds of the pseudo-random
@@ -199,7 +199,7 @@ ci.prop(mtcars, vs, am, boot = "bc")
 
 # Example 2b: Bias-corrected and accelerated (BCa) bootstrap CI,
 # 5000 bootstrap replications, set seed of the pseudo-random number generator
-ci.prop(mtcars, vs, am, boot = "bca", R = 5000, seed = 42)
+ci.prop(mtcars, vs, am, boot = "bca", nrep = 5000, seed = 42)
 
 #————————————————————————————————————————————————————————————————————————————
 # Grouping and Split Variable

@@ -146,7 +146,7 @@
 #' @export
 #'
 #' @examples
-#' #————————————————————————————————————————————————————————————————————————————
+#' #—————————————————————————————————————— #——————————————————————————————————————
 #' # One-Sample Design
 #'
 #' # Example 1a: Two-sided one-sample z-test, population mean = 20, population SD = 6
@@ -156,7 +156,7 @@
 #' # print Cohen's d
 #' test.z(mtcars$mpg, sigma = 6, mu = 20, alternative = "greater", effsize = TRUE)
 #'
-#' #————————————————————————————————————————————————————————————————————————————
+#' #—————————————————————————————————————— #——————————————————————————————————————
 #' # Two-Sample Design
 #'
 #' # Example 2a: Two-sided two-sample z-test, population SD = 6, equal SD assumption
@@ -172,7 +172,7 @@
 #' # print Cohen's d
 #' test.z(mpg ~ vs, data = mtcars, sigma = c(4, 6), alternative = "greater", effsize = TRUE)
 #'
-#' #————————————————————————————————————————————————————————————————————————————
+#' #—————————————————————————————————————— #——————————————————————————————————————
 #' # Paired-Sample Design
 #'
 #' # Example 3a: Two-sided paired-sample z-test, population SD of difference score = 1.2
@@ -183,7 +183,7 @@
 #' test.z(mtcars$drat, mtcars$wt, sigma = 1.2, paired = TRUE, alternative = "greater",
 #'        effsize = TRUE)
 #'
-#' #————————————————————————————————————————————————————————————————————————————
+#' #—————————————————————————————————————— #——————————————————————————————————————
 #' # Plot
 #'
 #' # Example 4a: One-Sample Design
@@ -200,7 +200,7 @@
 #' object <- test.z(mpg ~ vs, data = mtcars, sigma = 6)
 #' plot(object, jitter = TRUE, jitter.alpha = 0.4, title = "Two-Sample z-Test")
 #'
-#' #————————————————————————————————————————————————————————————————————————————
+#' #—————————————————————————————————————— #——————————————————————————————————————
 #' # Create Plot Manually
 #'
 #' # Load ggplot2 package
@@ -225,7 +225,7 @@
 #'  theme_bw()  +
 #'  theme(axis.text.x = element_blank(), axis.ticks.x = element_blank())
 #'
-#' #————————————————————————————————————————————————————————————————————————————
+#' #—————————————————————————————————————— #——————————————————————————————————————
 #' # Write Results and Save Plot
 #'
 #' \dontrun{
@@ -393,7 +393,7 @@ test.z.default <- function(x, y = NULL, sigma = NULL, sigma2 = NULL, mu = 0,
   #
   ## Arguments ####
 
-  #——————————————————————————————————————
+  #—————————————————————————————————————— #
   ### Population standard deviation and variance ####
 
   #···················
@@ -421,7 +421,7 @@ test.z.default <- function(x, y = NULL, sigma = NULL, sigma2 = NULL, mu = 0,
   #
   ## Main Function ####
 
-  #——————————————————————————————————————
+  #—————————————————————————————————————— #
   ### One-Sample Design ####
 
   if (isTRUE(is.null(y))) {
@@ -442,12 +442,12 @@ test.z.default <- function(x, y = NULL, sigma = NULL, sigma2 = NULL, mu = 0,
                          m = x.ci[["m"]], sd = x.ci[["sd"]],
                          m.diff = x.ci[["m"]] - mu, se = se,
                          m.low = x.ci[["low"]], m.upp = x.ci[["upp"]], z = z,
-                         p = switch(alternative, two.sided = pnorm(abs(z), lower.tail = FALSE) * 2, less = pnorm(z, lower.tail = TRUE), greater = pnorm(z, lower.tail = FALSE)),
+                         p = switch(alternative, two.sided = pnorm(abs(z), lower.tail = FALSE) * 2L, less = pnorm(z, lower.tail = TRUE), greater = pnorm(z, lower.tail = FALSE)),
                          d = d, row.names = NULL)
 
     sample <- "one"
 
-  #——————————————————————————————————————
+  #—————————————————————————————————————— #
   ### Two-Sample Design ####
 
   } else if (isTRUE(!is.null(y) && !isTRUE(paired))) {
@@ -471,7 +471,7 @@ test.z.default <- function(x, y = NULL, sigma = NULL, sigma2 = NULL, mu = 0,
 
     sample <- "two"
 
-  #——————————————————————————————————————
+  #—————————————————————————————————————— #
   ### Paired-Sample Design ####
 
   } else if (isTRUE(!is.null(y) && isTRUE(paired))) {
@@ -567,7 +567,7 @@ test.z.formula <- function(formula, data, sigma = NULL, sigma2 = NULL,
   #
   ## Formula ####
 
-  #——————————————————————————————————————
+  #—————————————————————————————————————— #
   ### Variables ####
 
   var.formula <- all.vars(as.formula(formula))

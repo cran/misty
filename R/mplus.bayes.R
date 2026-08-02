@@ -250,7 +250,7 @@
 #'
 #' @examples
 #' \dontrun{
-#' #----------------------------------------------------------------------------
+#' #—————————————————————————————————————— #——————————————————————————————————————
 #' # Mplus Example 3.18: Moderated Mediation with a Plot of the Indirect Effect
 #'
 #' # Example 1: Default setting
@@ -299,7 +299,7 @@ mplus.bayes <- function(x,
   # Check input 'x' or NULL
   if (isTRUE(missing(x) || is.null(x))) { stop("Please specify a character string indicating the name of a Mplus GH5 file for the argument 'x'", call. = FALSE) }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Character string ####
 
   # Character string
@@ -336,7 +336,7 @@ mplus.bayes <- function(x,
   #
   # Arguments ------------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## 'print' Argument ####
 
   print.all <- c("m", "med", "map", "sd", "mad", "skew", "kurt", "eti", "hdi", "rhat", "b.ess", "t.ess", "b.mcse", "t.mcse")
@@ -363,7 +363,7 @@ mplus.bayes <- function(x,
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## 'param' Argument ####
 
   # Default setting
@@ -378,7 +378,7 @@ mplus.bayes <- function(x,
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## 'std' Argument ####
 
   # Default setting
@@ -393,7 +393,7 @@ mplus.bayes <- function(x,
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## 'alternative' Argument ####
 
   if (isTRUE(all(c("two.sided", "less", "greater") %in% alternative))) { alternative  <- "two.sided" }
@@ -402,10 +402,10 @@ mplus.bayes <- function(x,
   #
   # Main Function --------------------------------------------------------------
 
-  #----------------------------------------
+  #—————————————————————————————————————— # #
   # Mplus GH5 File
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Read Mplus GH5 File ####
 
   gh5 <- tryCatch(hdf5r::h5file(x), error = function(y) { stop("Reading Mplus GH5 file using the h5file() function from the hdf5r package failed.", call. = FALSE) })
@@ -413,7 +413,7 @@ mplus.bayes <- function(x,
   # "bayesian_data" or "loop_data" section
   if (isTRUE(!"bayesian_data" %in% names(gh5))) { stop("There is no \"bayesian_data\" section in the Mplus GH5 file specified in the argument 'x'", call. = FALSE) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### Extract Posterior Data, Labels, and Dimensionality ####
 
   # Posterior
@@ -438,10 +438,12 @@ mplus.bayes <- function(x,
   # Number of chains
   n.chains <- post.dim[3L]
 
-  #...................
+  #—————————————————————————————————————— #
   ### Select Parameters ####
 
+  #···················
   #### Default or User-Specified Setting Setting: ON ####
+
   if (isTRUE(all(param == "on"))) {
 
     # ON parameter not available
@@ -473,7 +475,9 @@ mplus.bayes <- function(x,
 
     }
 
+  #···················
   #### User-Specified Setting: BY ####
+
   } else if (isTRUE(all(param == "by") && all(!grepl(" BY ", labels)))) {
 
     param <- "with"
@@ -489,13 +493,16 @@ mplus.bayes <- function(x,
 
     }
 
+  #···················
   #### User-Specified Setting: WITH ####
+
   } else if (isTRUE(all(param == "with") && all(!grepl(" WITH ", labels)))) {
 
     stop("There are no 'WITH' parameters available in the Mplus GH5 file.", call. = FALSE)
 
   }
 
+  #···················
   #### Extract Variables involved in BY, WITH, ON, [, $, or # ####
 
   var <- unname(unique(unlist(sapply(misty::chr.grep(c(" BY ", " WITH ", " ON ", "\\[", "\\]", "\\$"), labels, value = TRUE), function(y) {
@@ -504,7 +511,9 @@ mplus.bayes <- function(x,
 
   }))))
 
-  # % statement
+  #···················
+  #### % Statement ####
+
   if (isTRUE(any(grepl("%", var)))) {
 
     var <- unique(misty::chr.trim(sub(":", "", apply(rbind(var, unlist(lapply(strsplit(var, ""), function(y) grep(":", y)[1L])), nchar(var)), 2L, function(z) if (isTRUE(!is.na(z[2L]))) { substr(z[1L], start = z[2L], z[3L]) } else { z[1L]} )))) |>
@@ -512,6 +521,7 @@ mplus.bayes <- function(x,
 
   }
 
+  #···················
   #### Select Parameters ####
 
   # Select ON, BY, WITH, intercept/threshold
@@ -543,7 +553,7 @@ mplus.bayes <- function(x,
   # No parameter selected
   if (isTRUE(length(param.ind) == 0L)) { stop("There are no parameters selected for the trace, posterior distribution, or autocorrelation plots.", call. = FALSE) }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Summary Measures, Convergence and Efficiency Diagnostics ####
 
   post.summary <- sapply(seq_len(n.parameters), function(y) {
@@ -559,8 +569,8 @@ mplus.bayes <- function(x,
 
     if (isTRUE(var(x.comb) != 0L)) {
 
-      #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-      ## Point Estimates ####
+      #—————————————————————————————————————— #
+      ### Point Estimate ####
 
       # Mean
       x.mean <- mean(x.comb)
@@ -571,8 +581,8 @@ mplus.bayes <- function(x,
       # Maximum A Posteriori
       x.map <- .map(x.comb)
 
-      #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-      ## Measures of Dispersion ####
+      #—————————————————————————————————————— #
+      ### Measures of Dispersion ####
 
       # Standard Deviation
       x.sd <- sd(x.comb)
@@ -580,8 +590,8 @@ mplus.bayes <- function(x,
       # Mean Absolute Deviation
       x.mad <- stats::mad(x.comb)
 
-      #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-      ## Measures of Shape ####
+      #—————————————————————————————————————— #
+      ### Measures of Shape ####
 
       # Skewness
       x.skew <- misty::skewness(x.comb, check = FALSE)
@@ -589,8 +599,8 @@ mplus.bayes <- function(x,
       # Kurtosis
       x.kurt <- misty::kurtosis(x.comb, check = FALSE)
 
-      #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-      ## Credible Interval ####
+      #—————————————————————————————————————— #
+      ### Credible Interval ####
 
       # Equal-Tailed Interval
       x.eti <- switch(alternative,
@@ -601,8 +611,8 @@ mplus.bayes <- function(x,
       # Highest Density Interval
       x.hdi <- .hdi(x.comb, conf.level = conf.level)
 
-      #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-      ## Convergence and Efficiency Diagnostics ####
+      #—————————————————————————————————————— #
+      ### Convergence and Efficiency Diagnostics ####
 
       # R-hat Convergence Diagnostic
       if (isTRUE(fold)) {
@@ -637,13 +647,13 @@ mplus.bayes <- function(x,
       x.t.mcse <- max(.mcse(x, quant = TRUE, prob = mcse.tail[1L], split = FALSE, rank = FALSE),
                       .mcse(x, quant = TRUE, prob = mcse.tail[2L], split = FALSE, rank = FALSE))
 
-      #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-      ## Probability of Direction ####
+      #—————————————————————————————————————— #
+      ### Probability of Direction ####
 
       x.pd <- max(sum(x.comb < null) / length(x.comb), sum(x.comb > null) / length(x.comb))
 
-      #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-      ## Probability of being in the ROPE ####
+      #—————————————————————————————————————— #
+      ### Probability of Being in the ROPE ####
 
       if (isTRUE(!is.null(rope))) {
 
@@ -658,8 +668,8 @@ mplus.bayes <- function(x,
 
       }
 
-      #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-      ## Result Table ####
+      #—————————————————————————————————————— #
+      ### Result Table ####
 
       result.table <- data.frame(m = x.mean, med = x.med, map = x.map, sd = x.sd, mad = x.mad,
                                  skew = x.skew, kurt = x.kurt,
@@ -682,7 +692,7 @@ mplus.bayes <- function(x,
   # Merge with labels
   result.table <- data.frame(param = labels, apply(t(post.summary), 2L, unlist))[param.ind, ]
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Close Mplus GH5 File ####
 
   hdf5r::h5close(gh5)

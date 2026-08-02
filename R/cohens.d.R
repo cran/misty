@@ -170,8 +170,8 @@
 #' @export
 #'
 #' @examples
-#' #----------------------------------------------------------------------------
-#' # One-sample design
+#' #————————————————————————————————————————————————————————————————————————————
+#' # One-Sample Design
 #'
 #' # Example 1a: Cohen's d.z with two-sided 95% CI
 #' # population mean = 3
@@ -193,8 +193,8 @@
 #' # population mean = 3, by 'vs' separately, split by 'am'
 #' cohens.d(mtcars$mpg, mu = 20, group = mtcars$vs, split = mtcars$am)
 #'
-#' #----------------------------------------------------------------------------
-#' # Two-sample design
+#' #————————————————————————————————————————————————————————————————————————————
+#' # Two-Sample Design
 #'
 #' # Example 2a: Cohen's d.s with two-sided 95% CI
 #' # weighted pooled SD
@@ -236,8 +236,8 @@
 #' # weighted pooled SD, split analysis by 'am'
 #' cohens.d(mpg ~ vs, data = mtcars, split = mtcars$am)
 #'
-#' #----------------------------------------------------------------------------
-#' # Paired-sample design
+#' #————————————————————————————————————————————————————————————————————————————
+#' # Paired-Sample Design
 #'
 #' # Example 3a: Cohen's d.z with two-sided 95% CI
 #' # SD of the difference scores
@@ -355,11 +355,11 @@ cohens.d.default <- function(x, y = NULL, mu = 0, paired = FALSE, weighted = TRU
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## List or Dataframe ####
 
-  #...................
-  ### One-sample design ####
+  #—————————————————————————————————————— #
+  ### One-Sample Design ####
 
   if (is.null(y)) {
 
@@ -373,15 +373,15 @@ cohens.d.default <- function(x, y = NULL, mu = 0, paired = FALSE, weighted = TRU
 
     }
 
-  #...................
-  ### Two-sample design ####
+  #—————————————————————————————————————— #
+  ### Two-Sample Design ####
 
   } else if (!isTRUE(paired)) {
 
     xy <- list(x = x, y = y)
 
-  #...................
-  ### Paired-sample design ####
+  #—————————————————————————————————————— #
+  ### Paired-Sample Design ####
 
   } else if (isTRUE(paired)) {
 
@@ -389,13 +389,13 @@ cohens.d.default <- function(x, y = NULL, mu = 0, paired = FALSE, weighted = TRU
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Convert user-missing values into NA ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Convert User-Missing Values into NA ####
 
   if (isTRUE(!is.null(as.na))) { xy <- .as.na(xy, na = as.na) }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Listwise deletion ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Listwise Deletion ####
 
   if (isTRUE(paired && nrow(na.omit(xy)) < 2L)) { stop("After listwise deletion, the number of pairs of observations is less than two.", call. = FALSE) }
 
@@ -442,8 +442,8 @@ cohens.d.default <- function(x, y = NULL, mu = 0, paired = FALSE, weighted = TRU
   #
   # Arguments ------------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Type of sample ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Type of Sample ####
 
   # One-sample
   if (isTRUE(is.null(y))) {
@@ -462,7 +462,7 @@ cohens.d.default <- function(x, y = NULL, mu = 0, paired = FALSE, weighted = TRU
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Alternative hypothesis ####
 
   if (isTRUE(all(c("two.sided", "less", "greater") %in% alternative))) { alternative <- "two.sided" }
@@ -471,12 +471,14 @@ cohens.d.default <- function(x, y = NULL, mu = 0, paired = FALSE, weighted = TRU
   #
   # Main Function --------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## No Grouping, No Split ####
+
   if (isTRUE(is.null(group) && is.null(split))) {
 
-    #...................
-    ### One-sample ####
+    #—————————————————————————————————————— #
+    ### One-Sample ####
+
     switch(sample, one = {
 
       # Compute Cohen's d and confidence intervals
@@ -498,8 +500,9 @@ cohens.d.default <- function(x, y = NULL, mu = 0, paired = FALSE, weighted = TRU
                            upp = temp$upp,
                            stringsAsFactors = FALSE, row.names = NULL)
 
-    #...................
-    ### Two-sample ####
+    #—————————————————————————————————————— #
+    ### Two-Sample ####
+
     }, two = {
 
       # Compute Cohen's d and confidence intervals
@@ -526,8 +529,9 @@ cohens.d.default <- function(x, y = NULL, mu = 0, paired = FALSE, weighted = TRU
                                            upp = temp$upp,
                                            stringsAsFactors = FALSE, row.names = NULL))
 
-    #...................
-    ### Paired-sample ####
+    #—————————————————————————————————————— #
+    ### Paired-Sample ####
+
     }, paired = {
 
       # Compute Cohen's d and confidence intervals
@@ -550,12 +554,14 @@ cohens.d.default <- function(x, y = NULL, mu = 0, paired = FALSE, weighted = TRU
 
     })
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Grouping, No Split ####
+
   } else if (isTRUE(!is.null(group) && is.null(split))) {
 
-    #...................
-    ### One-sample ####
+    #—————————————————————————————————————— #
+    ### One-Sample ####
+
     if (isTRUE(sample == "one")) {
 
       object.group <- lapply(split(xy, f = group),
@@ -565,8 +571,9 @@ cohens.d.default <- function(x, y = NULL, mu = 0, paired = FALSE, weighted = TRU
                                                           conf.level = conf.level, group = NULL, split = NULL, sort.var = sort.var,
                                                           as.na = as.na, check = FALSE, output = FALSE)$result)
 
-    #...................
-    ### Two-sample and Paired-sample ####
+    #——————————————————————————————————————
+    ### Two-Sample and Paired-Sample ####
+
     } else {
 
       object.group <- lapply(split(xy, f = group),
@@ -581,12 +588,14 @@ cohens.d.default <- function(x, y = NULL, mu = 0, paired = FALSE, weighted = TRU
                          eval(parse(text = paste0("rbind(", paste0("object.group[[", seq_len(length(object.group)), "]]",
                                                                    collapse = ", "), ")"))))
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## No Grouping, Split ####
+
   } else if (isTRUE(is.null(group) && !is.null(split))) {
 
-    #...................
-    ### One-sample ####
+    #—————————————————————————————————————— #
+    ### One-Sample ####
+
     if (isTRUE(sample == "one")) {
 
       result <- lapply(split(xy, f = split),
@@ -596,8 +605,9 @@ cohens.d.default <- function(x, y = NULL, mu = 0, paired = FALSE, weighted = TRU
                                                     conf.level = conf.level, group = NULL, split = NULL, sort.var = sort.var,
                                                     as.na = as.na, check = FALSE, output = FALSE)$result)
 
-    #...................
-    ### Two-sample and Paired-sample ####
+    #—————————————————————————————————————— #
+    ### Two-Sample and Paired-Sample ####
+
     } else {
 
       result <- lapply(split(xy, f = split),
@@ -608,12 +618,13 @@ cohens.d.default <- function(x, y = NULL, mu = 0, paired = FALSE, weighted = TRU
 
     }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Grouping, Split ####
   } else if (isTRUE(!is.null(group) && !is.null(split))) {
 
-    #...................
-    ### One-sample ####
+    #—————————————————————————————————————— #
+    ### One-Sample ####
+
     if (isTRUE(sample == "one")) {
 
       result <- lapply(split(data.frame(xy, .group = group, row.names = NULL), f = split),
@@ -623,8 +634,9 @@ cohens.d.default <- function(x, y = NULL, mu = 0, paired = FALSE, weighted = TRU
                                                     conf.level = conf.level, group = z$.group, split = NULL, sort.var = sort.var,
                                                     as.na = as.na, check = FALSE, output = FALSE)$result)
 
-    #...................
-    ### Two-sample and Paired-sample ####
+    #—————————————————————————————————————— #
+    ### Two-Sample and Paired-Sample ####
+
     } else {
 
       result <- lapply(split(data.frame(xy, .group = group, row.names = NULL), f = split),
@@ -656,11 +668,11 @@ cohens.d.default <- function(x, y = NULL, mu = 0, paired = FALSE, weighted = TRU
 
   #_____________________________________________________________________________
   #
-  # Write results --------------------------------------------------------------
+  # Write Results --------------------------------------------------------------
 
   if (isTRUE(!is.null(write))) {
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Text file ####
 
     # Send R output to textfile
@@ -732,12 +744,12 @@ cohens.d.formula <- function(formula, data, weighted = TRUE, cor = TRUE,
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## As data frame ####
 
   data <- as.data.frame(data)
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Variables ####
 
   var.formula <- all.vars(as.formula(formula))
@@ -748,7 +760,7 @@ cohens.d.formula <- function(formula, data, weighted = TRUE, cor = TRUE,
   # Outcome(s)
   y.vars <- var.formula[-grep(group.var, var.formula)]
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Check ####
 
   # Check if variables are in the data
@@ -764,8 +776,8 @@ cohens.d.formula <- function(formula, data, weighted = TRUE, cor = TRUE,
   # Check if 'ref' is in the grouping variable
   if (!isTRUE(is.null(ref))) { if (!isTRUE(ref %in% data[, group.var])) { stop("Reference group specified in the argument 'ref' is not represented in the grouping variable.", call. = FALSE) } }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Convert user-missing values into NA ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Convert User-Missing Values into NA ####
 
   if (isTRUE(!is.null(as.na))) {
 
@@ -778,21 +790,23 @@ cohens.d.formula <- function(formula, data, weighted = TRUE, cor = TRUE,
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Listwise deletion ####
 
   if (isTRUE(na.omit && any(is.na(data[, var.formula])))) {
 
-    #...................
-    ### No group and split variable ####
+    #—————————————————————————————————————— #
+    ### No Group and Split Variable ####
+
     if (isTRUE(is.null(group) && is.null(split))) {
 
       x <- na.omit(as.data.frame(data[, var.formula]))
 
       warning(paste0("Listwise deletion of incomplete data, number of cases removed from the analysis: ", length(attributes(x)$na.action)), call. = FALSE)
 
-    #...................
-    ### Group variable, no split variable ####
+    #—————————————————————————————————————— #
+    ### Group Variable, No Split Variable ####
+
     } else if (isTRUE(!is.null(group) && is.null(split))) {
 
       data.group <- na.omit(data.frame(data[, var.formula], group = group))
@@ -802,8 +816,9 @@ cohens.d.formula <- function(formula, data, weighted = TRUE, cor = TRUE,
 
       warning(paste0("Listwise deletion of incomplete data, number of cases removed from the analysis: ", length(attributes(data.group)$na.action)), call. = FALSE)
 
-    #...................
-    ### No group variable, split variable ####
+    #—————————————————————————————————————— #
+    ### No Group Variable, Split Variable ####
+
     } else if (isTRUE(is.null(group) && !is.null(split))) {
 
       data.split <- na.omit(data.frame(data[, var.formula], split = split))
@@ -813,8 +828,9 @@ cohens.d.formula <- function(formula, data, weighted = TRUE, cor = TRUE,
 
       warning(paste0("Listwise deletion of incomplete data, number of cases removed from the analysis: ", length(attributes(data.split)$na.action)), call. = FALSE)
 
-    #...................
-    ### Group variable, split variable ####
+    #—————————————————————————————————————— #
+    ### Group Variable, Split Variable ####
+
     } else if (isTRUE(!is.null(group) && !is.null(split))) {
 
       data.group.split <- na.omit(data.frame(data[, var.formula], group = group, split = split))
@@ -827,8 +843,8 @@ cohens.d.formula <- function(formula, data, weighted = TRUE, cor = TRUE,
 
     }
 
-    #...................
-    ### Variable with missing values only ####
+    #—————————————————————————————————————— #
+    ### Variable with Missing Values Only ####
 
     data.miss <- vapply(data[, var.formula], function(y) all(is.na(y)), FUN.VALUE = logical(1L))
     if (isTRUE(any(data.miss))) {
@@ -843,13 +859,13 @@ cohens.d.formula <- function(formula, data, weighted = TRUE, cor = TRUE,
   #
   # Arguments ------------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Alternative hypothesis ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Alternative Hypothesis ####
 
   if (isTRUE(all(c("two.sided", "less", "greater") %in% alternative))) { alternative <- "two.sided" }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Reference group ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Reference Group ####
 
   ref.return <- ref
 
@@ -859,8 +875,9 @@ cohens.d.formula <- function(formula, data, weighted = TRUE, cor = TRUE,
   #
   # Main Function --------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## No Grouping, No Split ####
+
   if (isTRUE(is.null(group) && is.null(split))) {
 
     result <- data.frame(matrix(NA, ncol = 11L, nrow = length(y.vars)*2L, dimnames = list(NULL, c("variable", "between", "n", "nNA", "m", "m.diff", "sd", "d", "se", "low", "upp"))))
@@ -902,8 +919,9 @@ cohens.d.formula <- function(formula, data, weighted = TRUE, cor = TRUE,
 
     }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Grouping, No Split ####
+
   } else if (isTRUE(!is.null(group) && is.null(split))) {
 
     object.group <- lapply(split(data[, var.formula], f = group),
@@ -917,8 +935,9 @@ cohens.d.formula <- function(formula, data, weighted = TRUE, cor = TRUE,
                          eval(parse(text = paste0("rbind(", paste0("object.group[[", seq_len(length(object.group)), "]]",
                                                                    collapse = ", "), ")"))))
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## No Grouping, Split ####
+
   } else if (isTRUE(is.null(group) && !is.null(split))) {
 
     result <- lapply(split(data[, var.formula], f = split),
@@ -928,8 +947,9 @@ cohens.d.formula <- function(formula, data, weighted = TRUE, cor = TRUE,
                                                   sort.var = sort.var, digits = digits, as.na = NULL,
                                                   check = check, output = FALSE)$result)
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Grouping, Split ####
+
   } else if (isTRUE(!is.null(group) && !is.null(split))) {
 
     result <- lapply(split(data.frame(data[, var.formula], .group = group), f = split),
@@ -965,7 +985,7 @@ cohens.d.formula <- function(formula, data, weighted = TRUE, cor = TRUE,
 
   if (isTRUE(!is.null(write))) {
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Text file ####
 
     # Send R output to textfile

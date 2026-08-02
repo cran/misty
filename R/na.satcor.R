@@ -116,12 +116,12 @@ na.satcor <- function(model, data, aux, fun = c("cfa", "sem", "growth", "lavaan"
 
   if (isTRUE(all(c("cfa", "sem", "growth", "lavaan") %in% fun))) { fun <- "sem" }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## lavaan Environment ####
 
   envir <- getNamespace("lavaan")
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## lavaan Arguments ####
 
   lavArgs <- list(...)
@@ -131,7 +131,7 @@ na.satcor <- function(model, data, aux, fun = c("cfa", "sem", "growth", "lavaan"
   lavArgs$meanstructure <- TRUE
   lavArgs$ordered <- NULL
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Parameter table ####
 
   ptArgs <- lavArgs
@@ -140,7 +140,7 @@ na.satcor <- function(model, data, aux, fun = c("cfa", "sem", "growth", "lavaan"
 
   PT <- lavaan::parTable(do.call(fun, ptArgs, envir = envir))[c("lhs", "op", "rhs", "user", "block", "group", "free", "label", "plabel", "start")]
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Constraints and User-Defined Parameters ####
 
   conRows <- PT$op %in% c("==", "<", ">", ":=")
@@ -159,7 +159,7 @@ na.satcor <- function(model, data, aux, fun = c("cfa", "sem", "growth", "lavaan"
   #
   # Model specification --------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Specify Saturated Correlates Model ####
 
   satPT <- outer(aux, aux, function(x, y) paste(x, "~~", y)) |>
@@ -167,7 +167,7 @@ na.satcor <- function(model, data, aux, fun = c("cfa", "sem", "growth", "lavaan"
                               outer(aux, lavaan::lavNames(PT, type = "ov"), function(x, y) paste(x, "~~", y))),
                             ngroups = max(PT$group))[c("lhs", "op", "rhs", "user", "block", "group")])()
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Check Number of Added Parameters and Add Columns ####
 
   mergedPT <- lavaan::lav_partable_merge(PT, satPT, remove.duplicated = TRUE, warn = FALSE)
@@ -183,12 +183,12 @@ na.satcor <- function(model, data, aux, fun = c("cfa", "sem", "growth", "lavaan"
   #
   # Model Estimation -----------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Main Model ####
 
   model.fit <- do.call(fun, lavArgs, envir = envir)
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Baseline Model ####
 
   baseArgs <- list()

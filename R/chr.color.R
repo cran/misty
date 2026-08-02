@@ -5,13 +5,13 @@
 #' function.
 #'
 #' @param x      a character vector.
-#' @param color  a character string indicating the text color, e.g., \code{red}
-#'               for red and \code{b.red} for bright red text.
+#' @param color  a character string indicating the text color, e.g., \code{"red"}
+#'               for red and \code{"b.red"} for bright red text.
 #' @param bg     a character string indicating the background color of the text,
-#'               e.g., \code{red} for red background.
-#' @param style  a character vector indicating the font style, i.e., \code{regular},
-#'               (default) for regular text, \code{bold} for bold text, \code{italic},
-#'               for italic text, and \code{underline} for underline text. Note
+#'               e.g., \code{"red"} for red background.
+#' @param style  a character vector indicating the font style, i.e., \code{"regular"}
+#'               (default) for regular text, \code{"bold"} for bold text, \code{"italic"},
+#'               for italic text, and \code{"underline"} for underline text. Note
 #'               that font styles can be combined, e.g., \code{style = c("bold", "italic")}
 #'               provides a bold and italic text.
 #' @param check  logical: if \code{TRUE} (default), argument specification is
@@ -72,34 +72,23 @@ chr.color <- function(x,
   # Input Check ----------------------------------------------------------------
 
   # Check inputs 'style'
-  .check.input(m.character = list(style = c("regular", "bold", "italic", "underline")), envir = environment(), input.check = check)
-
-  # Additional checks
-  if (isTRUE(check)) {
-
-    # Check input 'color'
-    if (isTRUE(!all(color %in% c("black", "red", "green", "yellow", "blue", "violet", "cyan", "white", "gray1", "gray2", "gray3", "b.red", "b.green", "b.yellow", "b.blue", "b.violet", "b.cyan", "b.white")))) { stop("Character string in the argument 'color' does not match with \"black\", \"red\", \"green\", \"yellow\", \"blue\", \"violet\", \"cyan\", \"white\", \"gray1\" etc.", call. = FALSE) }
-
-    # Check input 'bg'
-    if (isTRUE(!all(bg %in% c("none", "black", "red", "green", "yellow", "blue", "violet", "cyan", "white")))) { stop("Character string in the argument 'bg' does not match with \"black\", \"red\", \"green\", \"yellow\", \"blue\", \"violet\", \"cyan\", or \"white\".", call. = FALSE) }
-
-  }
+  .check.input(s.character = list(bg = c("none", "black", "red", "green", "yellow", "blue", "violet", "cyan", "white")), m.character = list(style = c("regular", "bold", "italic", "underline")), args = "color", envir = environment(), input.check = check)
 
   #_____________________________________________________________________________
   #
   # Arguments ------------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## color Argument ####
 
   if (isTRUE(all(c("black", "red", "green", "yellow", "blue", "violet", "cyan", "white", "gray1", "gray2", "gray3", "b.red", "b.green", "b.yellow", "b.blue", "b.violet", "b.cyan", "b.white") %in% color))) { color <- "black" }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## bg Argument ####
 
   if (isTRUE(all(c("black", "red", "green", "yellow", "blue", "violet", "cyan", "white") %in% bg))) { bg <- "none" }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## style Argument ####
 
   if (isTRUE(all(c("regular", "bold", "italic", "underline") %in% style))) { style <- "regular" }
@@ -108,7 +97,7 @@ chr.color <- function(x,
   #
   # Main Function --------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Color ####
 
   switch(color,
@@ -131,7 +120,7 @@ chr.color <- function(x,
          b.cyan =    { x[!is.na(x)] <- paste0("\033[96m", x[!is.na(x)], "\033[39m") },
          b.white =   { x[!is.na(x)] <- paste0("\033[97m", x[!is.na(x)], "\033[39m") })
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Background ####
 
   if (isTRUE(bg != "none")) {
@@ -148,7 +137,7 @@ chr.color <- function(x,
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Style ####
 
   if (isTRUE("bold" %in% style))      { x[!is.na(x)] <- paste0("\033[1m", x[!is.na(x)], "\033[22m") }

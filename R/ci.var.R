@@ -28,7 +28,7 @@
 #'                          acceleration), and \code{"bca"} for the bias-corrected
 #'                          and accelerated (BCa) bootstrap CI, see 'Details' in
 #'                          the \code{\link{ci.cor}} function.
-#' @param R                 a numeric value indicating the number of bootstrap
+#' @param nrep              a numeric value indicating the number of bootstrap
 #'                          replicates (default is 1000).
 #' @param seed              a numeric value specifying seeds of the pseudo-random
 #'                          numbers used in the bootstrap algorithm when conducting
@@ -189,7 +189,7 @@
 #'
 #' # Example 3b: Bias-corrected and accelerated (BCa) bootstrap CI,
 #' # 5000 bootstrap replications, set seed of the pseudo-random number generator
-#' ci.var(mtcars, boot = "bca", R = 5000, seed = 42)
+#' ci.var(mtcars, boot = "bca", nrep = 5000, seed = 42)
 #'
 #' #————————————————————————————————————————————————————————————————————————————
 #' # Grouping and Split Variable
@@ -260,7 +260,7 @@
 #'         width = 9, height = 6)
 #' }
 ci.var <- function(data, ..., method = c("chisq", "bonett"),
-                   boot = c("none", "perc", "bc", "bca"), R = 1000, seed = NULL,
+                   boot = c("none", "perc", "bc", "bca"), nrep = 1000, seed = NULL,
                    alternative = c("two.sided", "less", "greater"),
                    conf.level = 0.95, group = NULL, split = NULL, sort.var = FALSE,
                    na.omit = FALSE, digits = 2, as.na = NULL,
@@ -281,7 +281,7 @@ ci.var <- function(data, ..., method = c("chisq", "bonett"),
   # Data -----------------------------------------------------------------------
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data using the argument 'data' ####
+  ## Using the Argument 'data' ####
 
   if (isTRUE(!missing(...))) {
 
@@ -295,7 +295,7 @@ ci.var <- function(data, ..., method = c("chisq", "bonett"),
     if (isTRUE(!is.null(split))) { split <- data[, split] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { unname(unlist(y)) } else { return(y) })() }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data without using the argument 'data' ####
+  ## Without Using the Argument 'data' ####
 
   } else {
 
@@ -387,13 +387,10 @@ ci.var <- function(data, ..., method = c("chisq", "bonett"),
   # Check inputs
   .check.input(logical = c("sort.var", "na.omit", "append", "output"), numeric = list(seed = 1L, width = 1L, height = 1L, dpi = 1L),
                s.character = list(method = c("chisq", "bonett"), boot = c("none", "perc", "bc", "bca"), plot = c("none", "ci", "boot")),
-               args = c("R", "alternative", "conf.level", "digits", "write2"), envir = environment(), input.check = check)
+               args = c("nrep", "alternative", "conf.level", "digits", "nrep", "write2"), envir = environment(), input.check = check)
 
   # Additional checks
   if (isTRUE(check)) {
-
-    # Check input 'R'
-    if (isTRUE(R %% 1L != 0L || R <= 0L)) { stop("Please specify a positive integer number for the argument 'R'.", call. = FALSE) }
 
     # Check input 'group'
     if (isTRUE(!is.null(group))) {
@@ -447,7 +444,7 @@ ci.var <- function(data, ..., method = c("chisq", "bonett"),
 
   if (isTRUE(is.null(group) && is.null(split))) {
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— #
     ### No Bootstrapping ####
 
     if (isTRUE(boot == "none")) {
@@ -469,13 +466,13 @@ ci.var <- function(data, ..., method = c("chisq", "bonett"),
                            upp = vapply(x, .var.conf, method = method, alternative = alternative, conf.level = conf.level, side = "upp", FUN.VALUE = double(1L)),
                            row.names = NULL, check.names = FALSE)
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— #
     ### Bootstrapping ####
 
     } else {
 
       result.boot <- apply(matrix(seq_len(ncol(x)), nrow = 1L), 2L, function(y) x |>
-                             (\(z) suppressWarnings(.ci.boot(data = x[, y], statistic = .boot.func.var, boot = boot, R = R, alternative = alternative, conf.level = conf.level, seed = seed)))() |>
+                             (\(z) suppressWarnings(.ci.boot(data = x[, y], statistic = .boot.func.var, boot = boot, nrep = nrep, alternative = alternative, conf.level = conf.level, seed = seed)))() |>
                              (\(w) list(t = data.frame(variable = colnames(x)[y], var = w$t), result = data.frame(variable = colnames(x)[y], n = w$n, nNA = w$nNA, pNA = w$pNA, skew = w$skew, kurt = w$kurt, m = w$m, var = w$t0, low = w$ci[1L], upp = w$ci[2L], row.names = NULL)))())
 
       boot.sample <- do.call("rbind", lapply(result.boot, function(y) y$t))
@@ -488,7 +485,7 @@ ci.var <- function(data, ..., method = c("chisq", "bonett"),
 
   } else if (isTRUE(!is.null(group) && is.null(split))) {
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— #
     ### No Bootstrapping ####
 
     if (isTRUE(boot == "none")) {
@@ -497,13 +494,13 @@ ci.var <- function(data, ..., method = c("chisq", "bonett"),
 
       result <- data.frame(group = rep(names(object.group), each = ncol(x)), eval(parse(text = paste0("rbind(", paste0("object.group[[", seq_len(length(object.group)), "]]", collapse = ", "), ")"))))
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— #
     ### Bootstrapping ####
 
     } else {
 
-      result.boot <- lapply(split(x, f = group), function(y) misty::ci.var(y, group = NULL, split = NULL, seed = seed, boot = boot, R = R, alternative = alternative, conf.level = conf.level, check = FALSE, output = FALSE)) |>
-        (\(z) list(boot.sample = data.frame(group = rep(names(z), each = R*unique(unlist(lapply(z, function(q) nrow(q$result))))), do.call("rbind", lapply(z, function(w) w$boot)), row.names = NULL),
+      result.boot <- lapply(split(x, f = group), function(y) misty::ci.var(y, group = NULL, split = NULL, seed = seed, boot = boot, nrep = nrep, alternative = alternative, conf.level = conf.level, check = FALSE, output = FALSE)) |>
+        (\(z) list(boot.sample = data.frame(group = rep(names(z), each = nrep*unique(unlist(lapply(z, function(q) nrow(q$result))))), do.call("rbind", lapply(z, function(w) w$boot)), row.names = NULL),
                    result = data.frame(group = rep(names(z), each = unique(unlist(lapply(z, function(q) nrow(q$result))))), do.call("rbind", lapply(z, function(w) w$result)), row.names = NULL)))()
 
       boot.sample <- result.boot$boot.sample
@@ -516,20 +513,20 @@ ci.var <- function(data, ..., method = c("chisq", "bonett"),
 
   } else if (isTRUE(is.null(group) && !is.null(split))) {
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— #
     ### No Bootstrapping ####
 
     if (isTRUE(boot == "none")) {
 
       result <- lapply(split(data.frame(x, stringsAsFactors = FALSE), f = split), function(y) misty::ci.var(y, group = NULL, split = NULL, method = method, alternative = alternative, conf.level = conf.level, sort.var = sort.var,  check = FALSE, output = FALSE)$result)
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— #
     ### Bootstrapping ####
 
     } else {
 
-      result.boot <- lapply(split(x, f = split), function(y) misty::ci.var(y, group = NULL, split = NULL, seed = seed, boot = boot, R = R, alternative = alternative, conf.level = conf.level, check = FALSE, output = FALSE)) |>
-        (\(z) list(boot.sample = data.frame(split = rep(names(z), each = R*unique(unlist(lapply(z, function(q) nrow(q$result))))), do.call("rbind", lapply(z, function(w) w$boot)), row.names = NULL), result = lapply(z, function(w) w$result)))()
+      result.boot <- lapply(split(x, f = split), function(y) misty::ci.var(y, group = NULL, split = NULL, seed = seed, boot = boot, nrep = nrep, alternative = alternative, conf.level = conf.level, check = FALSE, output = FALSE)) |>
+        (\(z) list(boot.sample = data.frame(split = rep(names(z), each = nrep*unique(unlist(lapply(z, function(q) nrow(q$result))))), do.call("rbind", lapply(z, function(w) w$boot)), row.names = NULL), result = lapply(z, function(w) w$result)))()
 
       boot.sample <- result.boot$boot.sample
       result <- result.boot$result
@@ -541,20 +538,20 @@ ci.var <- function(data, ..., method = c("chisq", "bonett"),
 
   } else if (isTRUE(!is.null(group) && !is.null(split))) {
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— #
     ### No Bootstrapping ####
 
     if (isTRUE(boot == "none")) {
 
     result <- lapply(split(data.frame(x, group = group, stringsAsFactors = FALSE), f = split), function(y) misty::ci.var(y[, -grep("group", names(y))], group = y$group, split = NULL, method = method, alternative = alternative, conf.level = conf.level, sort.var = sort.var, check = FALSE, output = FALSE)$result)
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— #
     ### Bootstrapping ####
 
     } else {
 
-      result.boot <- lapply(split(data.frame(x, group = group), f = split), function(y) misty::ci.var(y[, -grep("group", names(y))], group = y$group, split = NULL, seed = seed, boot = boot, R = R, alternative = alternative, conf.level = conf.level, check = FALSE, output = FALSE)) |>
-        (\(z) list(boot.sample = data.frame(split = rep(names(z), each = R*unique(unlist(lapply(z, function(q) nrow(q$result))))), do.call("rbind", lapply(z, function(w) w$boot)), row.names = NULL), result = lapply(z, function(w) w$result)))()
+      result.boot <- lapply(split(data.frame(x, group = group), f = split), function(y) misty::ci.var(y[, -grep("group", names(y))], group = y$group, split = NULL, seed = seed, boot = boot, nrep = nrep, alternative = alternative, conf.level = conf.level, check = FALSE, output = FALSE)) |>
+        (\(z) list(boot.sample = data.frame(split = rep(names(z), each = nrep*unique(unlist(lapply(z, function(q) nrow(q$result))))), do.call("rbind", lapply(z, function(w) w$boot)), row.names = NULL), result = lapply(z, function(w) w$result)))()
 
       boot.sample <- result.boot$boot.sample
       result <- result.boot$result
@@ -570,7 +567,7 @@ ci.var <- function(data, ..., method = c("chisq", "bonett"),
   object <- list(call = match.call(),
                  type = "ci.var",
                  data = list(x = x, group = group, split = split),
-                 args = list(method = method, boot = boot, R = R, seed = seed, sample = sample, alternative = alternative, conf.level = conf.level, sort.var = sort.var, na.omit = na.omit, digits = digits, as.na = as.na, plot = plot, hist = hist, density = density, point = point, ci = ci, line = line, filename = filename, width = width, height = height, dpi = dpi, write = write, append = append, check = check, output = output),
+                 args = list(method = method, boot = boot, nrep = nrep, seed = seed, sample = sample, alternative = alternative, conf.level = conf.level, sort.var = sort.var, na.omit = na.omit, digits = digits, as.na = as.na, plot = plot, hist = hist, density = density, point = point, ci = ci, line = line, filename = filename, width = width, height = height, dpi = dpi, write = write, append = append, check = check, output = output),
                  boot = if (isTRUE(boot != "none")) { boot.sample } else { NULL },
                  plot = NULL, result = result)
 
@@ -603,7 +600,7 @@ ci.var <- function(data, ..., method = c("chisq", "bonett"),
 
 #' @rdname ci.sd
 ci.sd <- function(data, ..., method = c("chisq", "bonett"),
-                  boot = c("none", "perc", "bc", "bca"), R = 1000, seed = NULL,
+                  boot = c("none", "perc", "bc", "bca"), nrep = 1000, seed = NULL,
                   alternative = c("two.sided", "less", "greater"),
                   conf.level = 0.95, group = NULL, split = NULL, sort.var = FALSE,
                   na.omit = FALSE, digits = 2, as.na = NULL,
@@ -624,7 +621,7 @@ ci.sd <- function(data, ..., method = c("chisq", "bonett"),
   # Data -----------------------------------------------------------------------
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data using the argument '...' ####
+  ## Using the Argument '...' ####
 
   if (isTRUE(!missing(...))) {
 
@@ -638,7 +635,7 @@ ci.sd <- function(data, ..., method = c("chisq", "bonett"),
     if (isTRUE(!is.null(split))) { split <- data[, split] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { unname(unlist(y)) } else { return(y) })() }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data without using the argument '...' ####
+  ## Without Using the Argument '...' ####
 
   } else {
 
@@ -730,13 +727,10 @@ ci.sd <- function(data, ..., method = c("chisq", "bonett"),
   # Check inputs
   .check.input(logical = c("sort.var", "na.omit", "append", "output"), numeric = list(seed = 1L, width = 1L, height = 1L, dpi = 1L),
                s.character = list(method = c("chisq", "bonett"), boot = c("none", "perc", "bc", "bca"), plot = c("none", "ci", "boot")),
-               args = c("R", "alternative", "conf.level", "digits", "write2"), envir = environment(), input.check = check)
+               args = c("alternative", "conf.level", "digits", "nrep", "write2"), envir = environment(), input.check = check)
 
   # Additional checks
   if (isTRUE(check)) {
-
-    # Check input 'R'
-    if (isTRUE(R %% 1L != 0L || R <= 0L)) { stop("Please specify a positive integer number for the argument 'R'.", call. = FALSE) }
 
     # Check input 'group'
     if (isTRUE(!is.null(group))) {
@@ -790,7 +784,7 @@ ci.sd <- function(data, ..., method = c("chisq", "bonett"),
 
   if (isTRUE(is.null(group) && is.null(split))) {
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— #
     ### No Bootstrapping ####
 
     if (isTRUE(boot == "none")) {
@@ -812,13 +806,13 @@ ci.sd <- function(data, ..., method = c("chisq", "bonett"),
                            upp = vapply(x, .sd.conf, method = method, alternative = alternative, conf.level = conf.level, side = "upp", FUN.VALUE = double(1L)),
                            row.names = NULL, check.names = FALSE)
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— #
     ### Bootstrapping ####
 
     } else {
 
       result.boot <- apply(matrix(seq_len(ncol(x)), nrow = 1L), 2L, function(y) x |>
-                             (\(z) suppressWarnings(.ci.boot(data = x[, y], statistic = .boot.func.sd, boot = boot, R = R, alternative = alternative, conf.level = conf.level, seed = seed)))() |>
+                             (\(z) suppressWarnings(.ci.boot(data = x[, y], statistic = .boot.func.sd, boot = boot, nrep = nrep, alternative = alternative, conf.level = conf.level, seed = seed)))() |>
                              (\(w) list(t = data.frame(variable = colnames(x)[y], sd = w$t), result = data.frame(variable = colnames(x)[y], n = w$n, nNA = w$nNA, pNA = w$pNA, skew = w$skew, kurt = w$kurt, m = w$m, sd = w$t0, low = w$ci[1L], upp = w$ci[2L], row.names = NULL)))())
 
       boot.sample <- do.call("rbind", lapply(result.boot, function(y) y$t))
@@ -831,7 +825,7 @@ ci.sd <- function(data, ..., method = c("chisq", "bonett"),
 
   } else if (isTRUE(!is.null(group) && is.null(split))) {
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— #
     ### No Bootstrapping ####
 
     if (isTRUE(boot == "none")) {
@@ -839,13 +833,13 @@ ci.sd <- function(data, ..., method = c("chisq", "bonett"),
       result <- lapply(split(x, f = group), function(y) misty::ci.sd(y, group = NULL, split = NULL, method = method, alternative = alternative, conf.level = conf.level, sort.var = sort.var, check = FALSE, output = FALSE)$result) |>
         (\(y) data.frame(group = rep(names(y), each = ncol(x)), eval(parse(text = paste0("rbind(", paste0("y[[", seq_len(length(y)), "]]", collapse = ", "), ")")))))()
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— #
     ### Bootstrapping ####
 
     } else {
 
-      result.boot <- lapply(split(x, f = group), function(y) misty::ci.sd(y, group = NULL, split = NULL, seed = seed, boot = boot, R = R, alternative = alternative, conf.level = conf.level, check = FALSE, output = FALSE)) |>
-        (\(z) list(boot.sample = data.frame(group = rep(names(z), each = R*unique(unlist(lapply(z, function(q) nrow(q$result))))), do.call("rbind", lapply(z, function(w) w$boot)), row.names = NULL),
+      result.boot <- lapply(split(x, f = group), function(y) misty::ci.sd(y, group = NULL, split = NULL, seed = seed, boot = boot, nrep = nrep, alternative = alternative, conf.level = conf.level, check = FALSE, output = FALSE)) |>
+        (\(z) list(boot.sample = data.frame(group = rep(names(z), each = nrep*unique(unlist(lapply(z, function(q) nrow(q$result))))), do.call("rbind", lapply(z, function(w) w$boot)), row.names = NULL),
                    result = data.frame(group = rep(names(z), each = unique(unlist(lapply(z, function(q) nrow(q$result))))), do.call("rbind", lapply(z, function(w) w$result)), row.names = NULL)))()
 
       boot.sample <- result.boot$boot.sample
@@ -858,20 +852,20 @@ ci.sd <- function(data, ..., method = c("chisq", "bonett"),
 
   } else if (isTRUE(is.null(group) && !is.null(split))) {
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— #
     ### No Bootstrapping ####
 
     if (isTRUE(boot == "none")) {
 
       result <- lapply(split(data.frame(x, stringsAsFactors = FALSE), f = split), function(y) misty::ci.sd(y, group = NULL, split = NULL, method = method, alternative = alternative, conf.level = conf.level, sort.var = sort.var, check = FALSE, output = FALSE)$result)
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— #
     ### Bootstrapping ####
 
     } else {
 
-      result.boot <- lapply(split(x, f = split), function(y) misty::ci.sd(y, group = NULL, split = NULL, seed = seed, boot = boot, R = R, alternative = alternative, conf.level = conf.level, check = FALSE, output = FALSE)) |>
-        (\(z) list(boot.sample = data.frame(split = rep(names(z), each = R*unique(unlist(lapply(z, function(q) nrow(q$result))))), do.call("rbind", lapply(z, function(w) w$boot)), row.names = NULL), result = lapply(z, function(w) w$result)))()
+      result.boot <- lapply(split(x, f = split), function(y) misty::ci.sd(y, group = NULL, split = NULL, seed = seed, boot = boot, nrep = nrep, alternative = alternative, conf.level = conf.level, check = FALSE, output = FALSE)) |>
+        (\(z) list(boot.sample = data.frame(split = rep(names(z), each = nrep*unique(unlist(lapply(z, function(q) nrow(q$result))))), do.call("rbind", lapply(z, function(w) w$boot)), row.names = NULL), result = lapply(z, function(w) w$result)))()
 
       boot.sample <- result.boot$boot.sample
       result <- result.boot$result
@@ -883,20 +877,20 @@ ci.sd <- function(data, ..., method = c("chisq", "bonett"),
 
   } else if (isTRUE(!is.null(group) && !is.null(split))) {
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— #
     ### No Bootstrapping ####
 
     if (isTRUE(boot == "none")) {
 
       result <- lapply(split(data.frame(x, group = group, stringsAsFactors = FALSE), f = split), function(y) misty::ci.sd(y[, -grep("group", names(y))], group = y$group, split = NULL, method = method, alternative = alternative, conf.level = conf.level, sort.var = sort.var, check = FALSE, output = FALSE)$result)
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— #
     ### Bootstrapping ####
 
     } else {
 
-      result.boot <- lapply(split(data.frame(x, group = group), f = split), function(y) misty::ci.sd(y[, -grep("group", names(y))], group = y$group, split = NULL, seed = seed, boot = boot, R = R, alternative = alternative, conf.level = conf.level, check = FALSE, output = FALSE)) |>
-        (\(z) list(boot.sample = data.frame(split = rep(names(z), each = R*unique(unlist(lapply(z, function(q) nrow(q$result))))), do.call("rbind", lapply(z, function(w) w$boot)), row.names = NULL), result = lapply(z, function(w) w$result)))()
+      result.boot <- lapply(split(data.frame(x, group = group), f = split), function(y) misty::ci.sd(y[, -grep("group", names(y))], group = y$group, split = NULL, seed = seed, boot = boot, nrep = nrep, alternative = alternative, conf.level = conf.level, check = FALSE, output = FALSE)) |>
+        (\(z) list(boot.sample = data.frame(split = rep(names(z), each = nrep*unique(unlist(lapply(z, function(q) nrow(q$result))))), do.call("rbind", lapply(z, function(w) w$boot)), row.names = NULL), result = lapply(z, function(w) w$result)))()
 
       boot.sample <- result.boot$boot.sample
       result <- result.boot$result
@@ -912,7 +906,7 @@ ci.sd <- function(data, ..., method = c("chisq", "bonett"),
   object <- list(call = match.call(),
                  type = "ci.sd",
                  data = list(x = x, group = group, split = split),
-                 args = list(method = method, boot = boot, R = R, seed = seed, sample = sample, alternative = alternative, conf.level = conf.level, sort.var = sort.var, na.omit = na.omit, digits = digits, as.na = as.na, plot = plot, hist = hist, density = density, point = point, ci = ci, line = line, filename = filename, width = width, height = height, dpi = dpi, write = write, append = append, check = check, output = output),
+                 args = list(method = method, boot = boot, nrep = nrep, seed = seed, sample = sample, alternative = alternative, conf.level = conf.level, sort.var = sort.var, na.omit = na.omit, digits = digits, as.na = as.na, plot = plot, hist = hist, density = density, point = point, ci = ci, line = line, filename = filename, width = width, height = height, dpi = dpi, write = write, append = append, check = check, output = output),
                  boot = if (isTRUE(boot != "none")) { boot.sample } else { NULL },
                  plot = NULL, result = result)
 

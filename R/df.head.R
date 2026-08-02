@@ -95,7 +95,7 @@ df.head <- function(data, n = 6, digits = 3, width = 20, factor.labels = TRUE,
   #
   # Main Function --------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Remove Rows ####
 
   if (isTRUE(n < nrow(data))) {
@@ -108,12 +108,12 @@ df.head <- function(data, n = 6, digits = 3, width = 20, factor.labels = TRUE,
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Format Data Frame ####
 
   object <- sapply(object, function(y) {
 
-    #...................
+    #—————————————————————————————————————— #
     ### Numeric ####
 
     if (isTRUE(is.numeric(y) && any(y %% 1L != 0L))) {
@@ -130,7 +130,7 @@ df.head <- function(data, n = 6, digits = 3, width = 20, factor.labels = TRUE,
 
       }
 
-    #...................
+    #—————————————————————————————————————— #
     ### Character ####
 
     } else if (isTRUE(is.character(y))) {
@@ -138,7 +138,7 @@ df.head <- function(data, n = 6, digits = 3, width = 20, factor.labels = TRUE,
       # Truncate character vector if > 'width'
       if (isTRUE(any(nchar(as.character(y)) > width))) { ifelse(!is.na(y), misty::chr.trunc(y, width = width, check = FALSE), y) } else { as.character(y) }
 
-    #...................
+    #—————————————————————————————————————— #
     ### Factor ####
 
     } else if (isTRUE(is.factor(y))) {
@@ -156,7 +156,7 @@ df.head <- function(data, n = 6, digits = 3, width = 20, factor.labels = TRUE,
 
       }
 
-    #...................
+    #—————————————————————————————————————— #
     ### Dates and Times ####
 
     } else if (isTRUE(any(class(y) %in% c("POSIXct", "POSIXt", "Date")))) {
@@ -172,7 +172,7 @@ df.head <- function(data, n = 6, digits = 3, width = 20, factor.labels = TRUE,
 
   }) |> (\(y) if (isTRUE(is.null(dim(y)))) { as.data.frame(t(y)) } else if (isTRUE(!is.data.frame(y))) { as.data.frame(y) } else { return(y) })()
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Add Row Names ####
 
   if (isTRUE(row.names)) {
@@ -185,7 +185,7 @@ df.head <- function(data, n = 6, digits = 3, width = 20, factor.labels = TRUE,
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Fit Console ####
 
   if (isTRUE(max(nchar(apply(object, 1L, function(y) paste(y, collapse = " "))), na.rm = TRUE) > getOption("width"))) {
@@ -194,12 +194,12 @@ df.head <- function(data, n = 6, digits = 3, width = 20, factor.labels = TRUE,
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Format Row Names ####
 
   if (isTRUE(row.names && is.null(getOption("knitr.in.progress")))) { object[, 1L] <- misty::chr.color(object[, 1L], color = row.names.col, check = FALSE) }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Message ####
 
   if (message) {
@@ -253,8 +253,8 @@ df.head <- function(data, n = 6, digits = 3, width = 20, factor.labels = TRUE,
 
 }
 
-#-------------------------------------------------------------------------------
-#-------------------------------------------------------------------------------
+#----------------------------------------------------------------------------- #
+#----------------------------------------------------------------------------- #
 
 #' @rdname df.tail
 df.tail <- function(data, n = 6, digits = 3, width = 20, factor.labels = TRUE,
@@ -293,7 +293,7 @@ df.tail <- function(data, n = 6, digits = 3, width = 20, factor.labels = TRUE,
   #
   # Main Function --------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Remove Rows ####
 
   if (isTRUE(n < nrow(data))) {
@@ -306,12 +306,12 @@ df.tail <- function(data, n = 6, digits = 3, width = 20, factor.labels = TRUE,
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Format Data Frame ####
 
   object <- sapply(object, function(y) {
 
-    #...................
+    #—————————————————————————————————————— #
     ### Numeric ####
 
     if (isTRUE(is.numeric(y) && any(y %% 1L != 0L))) {
@@ -328,7 +328,7 @@ df.tail <- function(data, n = 6, digits = 3, width = 20, factor.labels = TRUE,
 
       }
 
-    #...................
+    #—————————————————————————————————————— #
     ### Character ####
 
     } else if (isTRUE(is.character(y))) {
@@ -336,7 +336,7 @@ df.tail <- function(data, n = 6, digits = 3, width = 20, factor.labels = TRUE,
       # Truncate character vector if > 'width'
       if (isTRUE(any(nchar(as.character(y)) > width))) { ifelse(!is.na(y), misty::chr.trunc(y, width = width, check = FALSE), y) } else { as.character(y) }
 
-    #...................
+    #—————————————————————————————————————— #
     ### Factor ####
 
     } else if (isTRUE(is.factor(y))) {
@@ -354,7 +354,7 @@ df.tail <- function(data, n = 6, digits = 3, width = 20, factor.labels = TRUE,
 
       }
 
-    #...................
+    #—————————————————————————————————————— #
     ### Dates and Times ####
 
     } else if (isTRUE(any(class(y) %in% c("POSIXct", "POSIXt", "Date")))) {
@@ -370,7 +370,7 @@ df.tail <- function(data, n = 6, digits = 3, width = 20, factor.labels = TRUE,
 
   }) |> (\(y) if (isTRUE(is.null(dim(y)))) { as.data.frame(t(y)) } else if (isTRUE(!is.data.frame(y))) { as.data.frame(y) } else { return(y) })()
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Add Row Names ####
 
   if (isTRUE(row.names)) {
@@ -383,7 +383,7 @@ df.tail <- function(data, n = 6, digits = 3, width = 20, factor.labels = TRUE,
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Fit Console ####
 
   if (isTRUE(max(nchar(apply(object, 1L, function(y) paste(y, collapse = " "))), na.rm = TRUE) > getOption("width"))) {
@@ -392,12 +392,12 @@ df.tail <- function(data, n = 6, digits = 3, width = 20, factor.labels = TRUE,
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Format Row Names ####
 
   if (isTRUE(row.names && is.null(getOption("knitr.in.progress")))) { object[, 1L] <- misty::chr.color(object[, 1L], color = row.names.col, check = FALSE) }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Message ####
 
   if (message) {

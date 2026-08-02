@@ -6,7 +6,7 @@
 \title{(Bootstrap) Confidence Intervals for Variances and Standard Deviations}
 \usage{
 ci.var(data, ..., method = c("chisq", "bonett"),
-       boot = c("none", "perc", "bc", "bca"), R = 1000, seed = NULL,
+       boot = c("none", "perc", "bc", "bca"), nrep = 1000, seed = NULL,
        alternative = c("two.sided", "less", "greater"),
        conf.level = 0.95, group = NULL, split = NULL, sort.var = FALSE,
        na.omit = FALSE, digits = 2, as.na = NULL, plot = c("none", "ci", "boot"),
@@ -15,7 +15,7 @@ ci.var(data, ..., method = c("chisq", "bonett"),
        append = TRUE, check = TRUE, output = TRUE)
 
 ci.sd(data, ..., method = c("chisq", "bonett"),
-      boot = c("none", "perc", "bc", "bca"), R = 1000, seed = NULL,
+      boot = c("none", "perc", "bc", "bca"), nrep = 1000, seed = NULL,
       alternative = c("two.sided", "less", "greater"),
       conf.level = 0.95, group = NULL, split = NULL, sort.var = FALSE,
       na.omit = FALSE, digits = 2, as.na = NULL, plot = c("none", "ci", "boot"),
@@ -48,7 +48,7 @@ acceleration), and \code{"bca"} for the bias-corrected
 and accelerated (BCa) bootstrap CI, see 'Details' in
 the \code{\link{ci.cor}} function.}
 
-\item{R}{a numeric value indicating the number of bootstrap
+\item{nrep}{a numeric value indicating the number of bootstrap
 replicates (default is 1000).}
 
 \item{seed}{a numeric value specifying seeds of the pseudo-random
@@ -217,7 +217,7 @@ ci.var(mtcars, boot = "bc")
 
 # Example 3b: Bias-corrected and accelerated (BCa) bootstrap CI,
 # 5000 bootstrap replications, set seed of the pseudo-random number generator
-ci.var(mtcars, boot = "bca", R = 5000, seed = 42)
+ci.var(mtcars, boot = "bca", nrep = 5000, seed = 42)
 
 #————————————————————————————————————————————————————————————————————————————
 # Grouping and Split Variable

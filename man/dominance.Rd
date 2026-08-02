@@ -103,7 +103,7 @@ package (Luchman, 2023).
 }
 \examples{
 #————————————————————————————————————————————————————————————————————————————
-# Example 1: Dominance analysis for a linear model
+# Example 1: Dominance Analysis for a Linear Model
 
 # Example 1
 mod <- lm(mpg ~ cyl + disp + hp, data = mtcars)
@@ -114,7 +114,7 @@ dominance(mod, print = "all")
 
 \dontrun{
 #————————————————————————————————————————————————————————————————————————————
-# Write results into a Text or Excel file
+# Write results into a Text or Excel File
 
 # Example 2a: Text file
 dominance(mod, write = "Dominance.txt", output = FALSE)

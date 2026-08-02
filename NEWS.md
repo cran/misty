@@ -1,3 +1,63 @@
+### misty 0.8.3 (2026-08-02)
+
+##### New features
+* New function `multilevel.alpha()` for computing point estimate and Monte Carlo confidence interval 
+for multilevel coefficient alpha defined by Lai (2021).
+* New function `item.stats()` for conducting item analysis for dichotomous, polytomous, 
+and continuous items. 
+* New function `item.distract()` for conducting distractor analysis for multiple-choice
+items.
+* Added the data set `data.items`, Multiple-Choice, Dichotomous, and Polytomous Item Data,
+to the package.
+* Added the option `opdyke` to the functions `item.cfa()`, `item.invar()`, `multilevel.cfa()`,
+`multilevel.invar()`to compute the discrepancy between model-implied and observed 
+correlation expressed in terms of the relative percentile of an Opdyke distribution (McNeish, 2025).
+
+##### Minor features and improvements
+* Added the arguments `test` and `se` to the functions `item.cfa()` and `multilevel.cfa()`.
+* Added the arguments `se` to the function `multilevel.omega()` to save computation
+time by specifying `se = "none"`.
+* The function `df.subset()` can subset rows based on variables that were not selected, e.g.,
+`df.subset(iris, Sepal.Length, subset = Species == "setosa")`.
+* Added 'Details' in the help page of the functions `multilevel.cfa()` and `multilevel.omega()`.
+* Added the argument `r.digits` to the functions `item.alpha()`, `item.omega()`, 
+and `multilevel.omega()`
+* Added the argument `exact`, `ml`, `color`, and `style` to the function `cor.matrix()`.
+* The function `cor.matrix` computes p-values also for the tetrachoric and 
+polychoric correlation coefficient.
+* Added the character `summary` to the argument `print` in the function `multilevel.cor()`
+* Added the new goodness-of-fit index (GFI, Maydeu-Olivares et al. 2024) to the
+output of the function `item.cfa()`, `item.invar()`, `modcomp()`, `multilevel.cfa()`, 
+and `multilevel.invar()`
+* Added the options `"WLSMVS"` and `"ULSMV"` to the argument `estimator` in the function `item.cfa()`
+`item.invar()`, and `item.noninvar()`.
+* Added the options `"mean.var.adjusted.corrected"` and `"scaled.shifted.corrected"`
+to the argument `test` in the function `item.cfa()`.
+
+##### User-visible changes
+* Changed the default setting of the argument `print` in the functions `multilevel.omega` 
+to `omega`.
+* Changed the default setting of the argument `print` in the functions `multilevel.cor` 
+to `cor`.
+* Renamed `Yuan-Bentler` to `Asymptotic Yuan-Bentler` in the summary table of the
+functions `item.cfa()` and `multilevel.cfa()` when specifying `test = yuan.bentler.mplus`, 
+i.e., default when specifying `estimator = MLR`.
+* Renamed the argument `R` in the functions `boot.bs`, `ci.cor`, `ci.mean`,
+`ci.median`, `ci.prop`, `ci.var`, `ci.sd`, `mplus.lca`, and `summa` to `nrep`.
+* Revised the help pages for the functions `item.alpha`, `item.omega`, `item.reverse`,
+and `item.score`.
+* Removed the arguments `type` and added the argument `ordered` in the function
+`item.alpha`.
+* Removed the argument `sig` from the function `multilevel.cor()` and `multilevel.cor()` 
+and added the arguments `color`, and `style`.
+* Added the arguments `color`, and `style` to the function `item.cfa()`, `item.invar()`
+`multilevel.cfa()`, and `multilevel.invar()`.
+* Removed the arguments `print`, `freq`, `hypo`, `descript`, `epsilon`, `effsize`,
+`posthoc`, `order`, `split`, `tri`, `table`, and `horiz` from the function `print.misty.object()`.
+* Removed the arguments `write` and `tri` from the function `write.result()`.
+* Added a note about the sample size when using pairwise deletion and residual 
+covariances to the output of the `item.alpha()` and `item.omega()` function.
+
 ### misty 0.8.2 (2026-05-16)
 
 ##### New features
@@ -20,7 +80,7 @@ non-normal, likert-type, and categorical data.
 
 ##### User-visible changes
 * Removed the option `aov` from the `method` argument in the `multilevel.icc()` 
-function.
+and `multilevel.descript()` function.
 * Moved the package `data.table` from `Suggests` to `Imports`.
 * Changed the default setting of the argument `hypo` and `descript` in the functions
 `aov.b`, `test.levene`, `test.welch`, `test.t`, `test.z` to `FALSE`.
@@ -104,6 +164,8 @@ arguments `width.ind`, `width.nclass`, and `height.categ`.
 * Removed the argument `within` in the function `multilevel.cor()`, i.e., the 
 function automatically identifies variables that are measured at the within level
 and modeled only at the within level.
+* Removed the argument `sig` in the function `cor.matrix` and `multilevel.cor`,
+and added the arguments `color` and `style`.
 
 ### misty 0.7.6 (2025-10-25)
 

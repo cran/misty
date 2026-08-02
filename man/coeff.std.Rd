@@ -236,11 +236,11 @@ mod1b <- lme(y1 ~ x2.c + w1.c, random = ~ 1 + x2.c | cluster, data = Demo.twolev
 mod2b <- lme(y1 ~ x2.c + w1.c + x2.c:w1.c, random = ~ 1 + x2.c | cluster,
              data = Demo.twolevel, method = "ML")
 
-# Example 2: Continuous predictors
+# Example 2a: Continuous predictors
 coeff.std(mod1a)
 coeff.std(mod1b)
 
-# Example 2: Continuous predictors with cross-level interaction
+# Example 2b: Continuous predictors with cross-level interaction
 coeff.std(mod2a)
 coeff.std(mod2b)
 
@@ -249,10 +249,10 @@ coeff.std(mod2b)
 # Example 3: Write Results into a text or Excel file
 
 # Example 3a: Text file
-coeff.std(mod.lm1, write = "Std_Coef.txt", output = FALSE, check = FALSE)
+coeff.std(mod.lm1, write = "Std_Coef.txt", output = FALSE)
 
 # Example 3b: Excel file
-coeff.std(mod.lm1, write = "Std_Coef.xlsx", output = FALSE, check = FALSE)
+coeff.std(mod.lm1, write = "Std_Coef.xlsx", output = FALSE)
 }
 }
 \references{

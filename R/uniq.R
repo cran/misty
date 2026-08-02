@@ -120,7 +120,7 @@ uniq <- function(data, ..., na.rm = TRUE, sort = TRUE, decreasing = FALSE, digit
   # Data ———————————————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data using the argument '...' ####
+  ## Using the argument '...' ####
 
   if (isTRUE(!missing(...))) {
 
@@ -131,7 +131,7 @@ uniq <- function(data, ..., na.rm = TRUE, sort = TRUE, decreasing = FALSE, digit
     x <- data[, var.names] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(y)) == 1L)) { unname(unlist(y)) } else { as.data.frame(y) } } else { y })()
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data without using the argument '...' ####
+  ## Without using the argument '...' ####
 
   } else {
 
@@ -220,7 +220,7 @@ uniq.n <- function(data, ..., na.rm = TRUE, digits = NULL, check = TRUE) {
   # Data ———————————————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data using the argument '...' ####
+  ## Using the argument '...' ####
 
   if (isTRUE(!missing(...))) {
 
@@ -231,7 +231,7 @@ uniq.n <- function(data, ..., na.rm = TRUE, digits = NULL, check = TRUE) {
     x <- data[, var.names] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(y)) == 1L)) { unname(unlist(y)) } else { as.data.frame(y) } } else { y })()
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data without using the argument '...' ####
+  ## Without using the argument '...' ####
 
   } else {
 

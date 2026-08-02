@@ -6,15 +6,22 @@
 \usage{
 item.cfa(data, ..., model = NULL, rescov = NULL, hierarch = FALSE,
          meanstructure = TRUE, ident = c("marker", "var", "effect"),
-         parameterization = c("delta", "theta"), ordered = NULL, cluster = NULL,
+         parameterization = c("delta", "theta"), ordered = FALSE, cluster = NULL,
          estimator = c("ML", "MLM", "MLMV", "MLMVS", "MLF", "MLR",
-                       "GLS", "WLS", "DWLS", "WLSM", "WLSMV",
-                       "ULS", "ULSM", "ULSMV", "DLS", "PML"),
-         missing = c("listwise", "pairwise", "fiml",
-                     "two.stage", "robust.two.stage", "doubly.robust"),
+                       "GLS", "WLS", "DWLS", "WLSM", "WLSMV", "WLSMVS",
+                       "ULS", "ULSM", "ULSMV", "ULSMVS", "DLS", "PML"),
+         test = c("none", "standard", "satorra.bentler", "scaled.shifted",
+                  "mean.var.adjusted", "yuan.bentler", "yuan.bentler.mplus",
+                  "browne.residual.adf", "browne.residual.nt",
+                  "mean.var.adjusted.corrected", "scaled.shifted.corrected"),
+         se = c("none", "standard", "robust.sem", "robust.huber.white"),
+         missing = c("listwise", "pairwise", "fiml", "two.stage",
+                     "robust.two.stage", "doubly.robust"),
          print = c("all", "summary", "coverage", "descript", "fit", "est",
-                   "modind", "resid"),
-         mod.minval = 6.63, resid.minval = 0.1, digits = 3, p.digits = 3,
+                  "modind", "resid", "opdyke"),
+         mod.minval = 6.63, resid.minval = 0.1, opdyke.prec = 1,
+         opdyke.minmax = c(0.40, 0.60), color = "b.red",
+         style = c("regular", "bold", "italic"), digits = 3, p.digits = 3,
          as.na = NULL, write = NULL, append = TRUE, check = TRUE, output = TRUE)
 }
 \arguments{
@@ -88,7 +95,7 @@ are ordered, i.e., \code{"delta"} (default) for delta
 parameterization and \code{"theta"} for theta
 parameterization.}
 
-\item{ordered}{if \code{NULL} (default), all indicators of the
+\item{ordered}{if \code{FALSE} (default), all indicators of the
 measurement model are treated as continuous. If
 \code{TRUE}, all indicators of the measurement model
 are treated as ordered (ordinal). Alternatively, a
@@ -110,6 +117,41 @@ CFA models with continuous indicators (i.e.,
 CFA model with ordered-categorical indicators (i.e.,
 ordered = TRUE).}
 
+\item{test}{a character string indicating the test statistics, i.e.,
+\code{"none"} for no test statistic, \code{"standard"}
+for a conventional chi-square test, \code{"satorra.bentler"}
+for a Satorra-Bentler scaled test statistic,
+\code{"scaled.shifted"} for a mean and variance adjusted
+test statistic (scaled and shifted), \code{"mean.var.adjusted"}
+for a mean and variance adjusted test statistic (Satterthwaite
+style), \code{"yuan.bentler"} for a Yuan-Bentler scaled
+test statistic, \code{"yuan.bentler.mplus"} for a test
+statistic which is asymptotically equivalent to the
+Yuan-Bentler T2-star test statistic, \code{"browne.residual.adf"}
+for a Browne’s residual-based test statistic using ADF
+theory, \code{"browne.residual.nt"} for Browne’s
+residual-based test statistic using normal theory,
+\code{"mean.var.adjusted.corrected"} and
+\code{"scaled.shifted.corrected"} for a test statistic
+with the corrected (unbiased) estimator of the trace
+of the squared UGamma matrix (Hayakawa, 2019), which remains accurate
+when the number of observed variables is large relative
+to the sample size. Note that the default setting is
+depending on the argument \code{estimator} and the argument
+\code{cluster} (see 'Details').}
+
+\item{se}{a character string indicating the standard errors, i.e.,
+\code{"none"} for no standard errors, \code{"standard"}
+for conventional standard error based on inverting the
+expected observed or first.order information matrix,
+\code{"robust.sem"} for conventional robust standard
+errors, and \code{"robust.huber.white"} for the 'MLR'
+(aka pseudo ML, Huber-White) approach. The argument
+\code{"se"} is set to \code{"two.stage"} or \code{"robust.two.stage"}
+when specifying \code{missing = "two.stage"} or \code{missing = "robust.two.stage"}.
+Note that the default setting is depending on the argument \code{estimator}
+and the argument \code{cluster} (see 'Details').}
+
 \item{missing}{a character string indicating how to deal with missing
 data, i.e., \code{"listwise"} for listwise deletion,
 \code{"pairwise"} for pairwise deletion, \code{"fiml"}
@@ -119,11 +161,9 @@ method, \code{"robust.two.stage"} for robust two-stage
 maximum likelihood method, and \code{"doubly-robust"}
 for doubly-robust method (see 'Details'). By default,
 \code{"fiml"} is used for CFA models with continuous
-indicators which are estimated by using
-\code{estimator = "MLR"}, and \code{"pairwise"} for
-CFA models with ordered-categorical indicators which
-are estimated by using \code{estimator = "pairwise"}
-by default.}
+indicators when using \code{estimator = "MLR"}, and
+\code{"pairwise"} for CFA models with ordered-categorical
+indicators when using \code{estimator = "pairwise"}.}
 
 \item{print}{a character string or character vector indicating which
 results to show on the console, i.e. \code{"all"} for
@@ -133,12 +173,14 @@ data handling in lavaan, \code{"coverage"} for the
 variance-covariance coverage of the data,
 \code{"descript"} for descriptive statistics,
 \code{"fit"} for model fit, \code{"est"} for parameter
-estimates, \code{"modind"} for modification
-indices and \code{"resid"} for the residual correlation
-matrix and standardized residual means By default, a
+estimates, \code{"modind"} for modification indices,
+\code{"resid"} for the residual correlation, and
+\code{"opdyke"} for the discrepancy between model-implied
+and observed correlation expressed in terms of the relative
+percentile of an Opdyke distribution (McNeish, 2025). By default, a
 summary of the specification, model fit, and parameter
-estimates are printed.. By default, a summary of the specification,
-model fit, and parameter estimates are printed.}
+estimates are printed. Note that \code{"fit"} will be
+excluded when specifying the argument \code{test = "none"}.}
 
 \item{mod.minval}{numeric value to filter modification indices and only
 show modifications with a modification index value equal
@@ -149,10 +191,53 @@ significance level of \eqn{\alpha = .01}.}
 
 \item{resid.minval}{numeric value indicating the minimum absolute residual
 correlation coefficients and standardized means to
-highlight in boldface. By default, absolute residual
+highlight. By default, absolute residual
 correlation coefficients and standardized means equal
 or higher 0.1 are highlighted. Note that highlighting
-can be disabled by setting the minimum value to 1.}
+can be disabled by setting the minimum value to 1 or by setting the argument
+\code{color} to \code{"default"}.}
+
+\item{opdyke.prec}{a numeric value indicating the precision of the probability
+density function calculations of the Opdyke distribution.
+The default is \code{1} which calculates the PDF
+for polar angles between \eqn{(0, pi)} in \eqn{0.01}
+increments. Specifying \code{10} calculates the PDF
+polar angles between \eqn{(0, pi)} in 0.001 increments,
+which takes considerably longer, especially if there
+are many correlation elements.}
+
+\item{opdyke.minmax}{a numeric vector with two elements indicating the
+minimum and maximum percentile of the Opdyke distribution
+that is considered to be acceptably close to the
+observed correlation represented by the Opdyke distribution
+median. Predicted correlation outside the range will be
+color highlighted in line with to the argument \code{color}.}
+
+\item{color}{a character string indicating the text color for
+highlighting absolute residual correlation coefficients
+and standardized means equal or higher \code{resid.minval}
+and predicted correlations outside the minimum and
+maximum percentile of the Opdyke distribution, i.e.,
+i.e., \code{"default"} for the default text color without
+color coding and various text colors for highlighting
+\code{"red"}, \code{"b.red"} (default), \code{"green"},
+\code{"b.green"}, \code{"blue"}, or \code{"b.blue"},
+see the help page of the \code{\link{chr.color}} function.
+Note that this option is not supported when using R
+Markdown and when writing the output into a text file
+(\code{.txt}).}
+
+\item{style}{a character vector indicating the font style for
+highlighting absolute residual correlation coefficients
+and standardized means equal or higher \code{resid.minval},
+i.e., \code{"regular"} (default) for regular text, \code{"bold"}
+for bold text, and \code{"italic"} for italic text. Note
+that the font style \code{"bold"} and \code{"italic"} can
+be combined, i.e., style = c("bold", "italic") provides a
+bold and italic text. Note that the argument \code{color}
+needs to be specified to change the style of the text, e.g.
+\code{color = "black"} and \code{style = "bold"} to for
+bold text.}
 
 \item{digits}{an integer value indicating the number of decimal places
 to be used for displaying results.}
@@ -193,19 +278,24 @@ entries:
   \item{\code{model.fit}}{fitted lavaan object (\code{mod.fit})}
   \item{\code{check}}{results of the convergence and model identification check}
   \item{\code{result}}{list with result tables, i.e., \code{summary} for the
-                       specification of the estimation method and missing data
-                       handling in lavaan, \code{"coverage"} for the
-                       variance-covariance coverage of the data, \code{"descript"}
-                       for descriptive statistics, \code{itemfreq} for absolute
-                       frequencies (\code{freq}), percentages (\code{perc}),
-                       and  (\code{v.perc}) valid percentages, \code{"fit"} for
-                       model fit, \code{"param"} for parameter estimates, and
-                       \code{"modind"} for modification indices.}
+                       summary of the specification of the estimation method and
+                       missing data handling in lavaan, \code{coverage} for the
+                       variance-covariance coverage of the data, \code{descript}
+                       for descriptive statistics, \code{fit} for model fit
+                       \code{est} for  parameter estimates, \code{modind} for
+                       modification indices, \code{resid} for the residual
+                       correlation matrices and standardized residual means,
+                       and \code{opdyke} for the relative Opdyke distribution
+                       percentile matrix}
 }
 \description{
 This function is a wrapper function for conducting confirmatory factor analysis
 with continuous and/or ordered-categorical indicators by calling the \code{cfa}
-function in the R package \pkg{lavaan}.
+function in the R package \pkg{lavaan}. By default, the function provides a
+table with univariate sample statistics, model fit information, and parameter
+estimates. Additionally, variance-covariance coverage of the data, modification
+indices, residual correlation matrix, and relative Opdyke distribution percentile
+matrix can be requested by specifying the argument \code{print}.
 }
 \details{
 \describe{
@@ -216,69 +306,94 @@ for the argument \code{estimator} combine these estimators with various standard
 error and chi-square test statistic computation. Note that the estimators also
 differ in how missing values can be dealt with (e.g., listwise deletion,
 pairwise deletion, or full information maximum likelihood, FIML).
-  \itemize{
-     \item{\code{"ML"}}: Maximum likelihood parameter estimates with conventional standard errors
-     and conventional test statistic. For both complete and incomplete data
-     using pairwise deletion or FIML.
-     \item{\code{"MLM"}}: Maximum likelihood parameter estimates with conventional
-     robust standard errors and a Satorra-Bentler scaled test statistic that
-     are robust to non-normality. For complete data only.
-     \item{\code{"MLMV"}}: Maximum likelihood parameter estimates with conventional
-     robust standard errors and a mean and a variance adjusted test statistic
-     using a scale-shifted approach that are robust to non-normality. For complete
-     data only.
-     \item{\code{"MLMVS"}}: Maximum likelihood parameter estimates with conventional
-     robust standard errors and a mean and a variance adjusted test statistic
-     using the Satterthwaite approach that are robust to non-normality. For complete
-     data only.
-     \item{\code{"MLF"}}: Maximum likelihood parameter estimates with standard
-     errors approximated by first-order derivatives and conventional test statistic.
-     For both complete and incomplete data using pairwise deletion or FIML.
-     \item{\code{"MLR"}}: Maximum likelihood parameter estimates with Huber-White
-     robust standard errors a test statistic which is asymptotically equivalent
-     to the Yuan-Bentler T2* test statistic that are robust to non-normality
-     and non-independence of observed when specifying a cluster variable using
-     the argument \code{cluster}. For both complete and incomplete data using
-     pairwise deletion or FIML.
-     \item{\code{"GLS"}}: Generalized least squares parameter estimates with
-     conventional standard errors and conventional test statistic that uses a
-     normal-theory based weight matrix. For complete data only.
-     and conventional chi-square test. For both complete and incomplete data.
-     \item{\code{"WLS"}}: Weighted least squares parameter estimates (sometimes
-     called ADF estimation) with conventional standard errors and conventional
-     test statistic that uses a full weight matrix. For complete data only.
-     \item{\code{"DWLS"}}: Diagonally weighted least squares parameter estimates
-     which uses the diagonal of the weight matrix for estimation with conventional
-     standard errors and conventional test statistic. For both complete and
-     incomplete data using pairwise deletion.
-     \item{\code{"WLSM"}}: Diagonally weighted least squares parameter estimates
-     which uses the diagonal of the weight matrix for estimation, but uses the
-     full weight matrix for computing the conventional robust standard errors
-     and a Satorra-Bentler scaled test statistic. For both complete and incomplete
-     data using pairwise deletion.
-     \item{\code{"WLSMV"}}: Diagonally weighted least squares parameter estimates
-     which uses the diagonal of the weight matrix for estimation, but uses the
-     full weight matrix for computing the conventional robust standard errors
-     and a mean and a variance adjusted test statistic using a scale-shifted
-     approach. For both complete and incomplete data using pairwise deletion.
-     \item{\code{"ULS"}}: Unweighted least squares parameter estimates with
-     conventional standard errors and conventional test statistic. For both
-     complete and incomplete data using pairwise deletion.
-     \item{\code{"ULSM"}}: Unweighted least squares parameter estimates with
-     conventional robust standard errors and a Satorra-Bentler scaled test
-     statistic. For both complete and incomplete data using pairwise deletion.
-     \item{\code{"ULSMV"}}: Unweighted least squares parameter estimates with
-     conventional robust standard errors and a mean and a variance adjusted
-     test statistic using a scale-shifted approach. For both complete and
-     incomplete data using pairwise deletion.
-     \item{\code{"DLS"}}: Distributionally-weighted least squares parameter
-     estimates with conventional robust standard errors and a Satorra-Bentler
-     scaled test statistic. For complete data only.
-     \item{\code{"PML"}}: Pairwise maximum likelihood parameter estimates
-     with Huber-White robust standard errors and a mean and a variance adjusted
-     test statistic using the Satterthwaite approach. For both complete and
-     incomplete data using pairwise deletion.
-  }
+   \itemize{
+      \item{\code{"ML"}}: Maximum likelihood with conventional standard errors
+      (\code{se = "standard"}) and conventional test statistic (\code{test = "standard"}).
+      For both complete and incomplete data using pairwise deletion or FIML.
+      \item{\code{"MLM"}}: Maximum likelihood parameter estimates with conventional
+      robust standard errors (\code{se = "robust.sem"}) and a Satorra-Bentler
+      scaled test statistic (\code{test = "satorra.bentler"}) that are robust
+      to non-normality. For complete data only.
+      \item{\code{"MLMV"}}: Maximum likelihood parameter estimates with conventional
+      robust standard errors (\code{se = "robust.sem"}) and a mean and a variance
+      adjusted test statistic (\code{test = "scaled.shifted"}) using a scale-shifted
+      approach that are robust to non-normality. For complete data only.
+      \item{\code{"MLMVS"}}: Maximum likelihood parameter estimates with conventional
+      robust standard errors (\code{se = "robust.sem"}) and a mean and a variance
+      adjusted test statistic (\code{test = "mean.var.adjusted"}) using the
+      Satterthwaite approach that are robust to non-normality. For complete data
+      only.
+      \item{\code{"MLF"}}: Maximum likelihood parameter estimates with standard
+      errors approximated by first-order derivatives (\code{se = "standard"})
+      and conventional test statistic (\code{test = "standard"}).
+      For both complete and incomplete data using pairwise deletion or FIML.
+      \item{\code{"MLR"}}: Maximum likelihood parameter estimates with Huber-White
+      robust standard errors (\code{se = "robust.huber.white"}) a test statistic
+      which is asymptotically equivalent to the Yuan-Bentler T2* test statistic
+      (\code{test = "yuan.bentler.mplus"}) that are robust to non-normality and
+      non-independence of observed when specifying a cluster variable using the
+      argument \code{cluster}. For both complete and incomplete data using
+      pairwise deletion or FIML.
+      \item{\code{"GLS"}}: Generalized least squares parameter estimates with
+      conventional standard errors (\code{se = "standard"}) and conventional
+      test statistic (\code{test = "standard"}) that uses a normal-theory based
+      weight matrix. For complete data only.
+      \item{\code{"WLS"}}: Weighted least squares parameter estimates (sometimes
+      called ADF estimation) with conventional standard errors (\code{se = "standard"})
+      and conventional test statistic that uses a full weight matrix
+      (\code{test = "standard"}). For both complete and incomplete data using
+      pairwise deletion.
+      \item{\code{"DWLS"}}: Diagonally weighted least squares parameter estimates
+      which uses the diagonal of the weight matrix for estimation with conventional
+      standard errors (\code{se = "standard"}) and conventional test statistic
+      (\code{test = "standard"}). For both complete and incomplete data using
+      pairwise deletion.
+      \item{\code{"WLSM"}}: Diagonally weighted least squares parameter estimates
+      which uses the diagonal of the weight matrix for estimation, but uses the
+      full weight matrix for computing the conventional robust standard errors
+      (\code{se = "robust.sem"}) and a Satorra-Bentler scaled test statistic
+      (\code{test = "satorra.bentler"}). For both complete and incomplete
+      data using pairwise deletion.
+      \item{\code{"WLSMV"}}: Diagonally weighted least squares parameter estimates
+      which uses the diagonal of the weight matrix for estimation, but uses the
+      full weight matrix for computing the conventional robust standard errors
+      (\code{se = "robust.sem"}) and a mean and a variance adjusted test statistic
+      (\code{test = "scaled.shifted"}) using a scale-shifted approach. For both
+      complete and incomplete data using pairwise deletion.
+      \item{\code{"WLSMVS"}}: Diagonally weighted least squares parameter estimates
+      which uses the diagonal of the weight matrix for estimation, but uses the
+      full weight matrix for computing the conventional robust standard errors
+      (\code{se = "robust.sem"}) and a mean and a variance adjusted test statistic
+      (\code{test = "mean.var.adjusted"}) using the Satterthwaite approach.
+      For both complete and incomplete data using pairwise deletion.
+      \item{\code{"ULS"}}: Unweighted least squares parameter estimates with
+      conventional standard errors (\code{se = "standard"}) and conventional
+      test statistic (\code{test = "standard"}). For both complete and incomplete
+      data using pairwise deletion.
+      \item{\code{"ULSM"}}: Unweighted least squares parameter estimates with
+      conventional robust standard errors (\code{se = "robust.sem"}) and a
+      Satorra-Bentler scaled test statistic (\code{test = "satorra.bentler"}).
+      For both complete and incomplete data using pairwise deletion.
+      \item{\code{"ULSMV"}}: Unweighted least squares parameter estimates with
+      conventional robust standard errors (\code{se = "robust.sem"}) and a mean
+      and a variance adjusted test statistic (\code{test = "scaled.shifted"})
+      using a scale-shifted approach. For both complete and incomplete data using
+      pairwise deletion.
+      \item{\code{"ULSMVS"}}: Unweighted least squares parameter estimates with
+      conventional robust standard errors (\code{se = "robust.sem"}) and a mean
+      and a variance adjusted test statistic (\code{test = "mean.var.adjusted"})
+      using the Satterthwaite approach. For both complete and incomplete data using
+      pairwise deletion.
+      \item{\code{"DLS"}}: Distributionally-weighted least squares parameter
+      estimates with conventional robust standard errors (\code{se = "robust.sem"})
+      and a Satorra-Bentler scaled test statistic (\code{test = "satorra.bentler"}).
+      For complete data only.
+      \item{\code{"PML"}}: Pairwise maximum likelihood parameter estimates
+      with Huber-White robust standard errors (\code{se = "robust.huber.white"})
+      and a mean and a variance adjusted test statistic (\code{test = "mean.var.adjusted"})
+      using the Satterthwaite approach. For both complete and incomplete data
+      using pairwise deletion.
+   }
 }
 \item{\strong{Missing Data}}{The R package \pkg{lavaan} provides six methods
 for dealing with missing data:
@@ -306,10 +421,10 @@ for dealing with missing data:
      two-stage method is only applicable for following estimators: \code{"ML"},
      \code{"MLF"}, and \code{"MLR"}.
      \item{\code{"doubly.robust"}}: Doubly-robust method only applicable for
-     pairwise maximum likelihood estimation (i.e., \code{estimator = "PML"}.
+     pairwise maximum likelihood estimation (i.e., \code{estimator = "PML"}).
   }
 }
-\item{\strong{Convergence and model idenfitification checks}}{In line with the
+\item{\strong{Convergence and Model Idenfitification Checks}}{In line with the
 R package \pkg{lavaan}, this functions provides several checks for model
 convergence and model identification:
   \itemize{
@@ -379,17 +494,18 @@ Unlike the R package \pkg{lavaan}, the different versions are labeled with
   correction does not appear to adjust fit indices sufficiently to counteract
   the effect of non-normality (Brosseau-Liard & Savalei, 2014).
 }
-\item{\strong{Modification Indices and Residual Correlation Matrix}}{The \code{item.cfa}
-function provides modification indices and the residual correlation matrix when
-requested by using the \code{print} argument. Modification indices (aka score
+\item{\strong{Modification Indices}}{The \code{item.cfa} function provides modification
+indices when requested by using the \code{print} argument. Modification indices (aka score
 tests) are univariate Lagrange Multipliers (LM) representing a chi-square
 statistic with a single degree of freedom. LM approximates the amount by which
 the chi-square test statistic would decrease if a fixed or constrained parameter
 is freely estimated (Kline, 2023). However, (standardized) expected parameter
 change (EPC) values should also be inspected since modification indices are
 sensitive to sample size. EPC values are an estimate of how much the parameter
-would be expected to change if it were freely estimated (Brown, 2023). The residual
-correlation matrix is computed by separately converting the sample covariance
+would be expected to change if it were freely estimated (Brown, 2023).}
+\item{\strong{Residual Correlation Matrix}}{The \code{item.cfa} function provides
+the residual correlation matrix when requested by using the \code{print} argument.
+The residual correlation matrix is computed by separately converting the sample covariance
 and model-implied covariance matrices to correlation matrices before calculation
 differences between observed and predicted covariances (i.e., \code{type = "cor.bollen"}).
 As a rule of thumb, absolute correlation residuals greater than .10 indicate
@@ -401,14 +517,37 @@ misspecification since (1) diagnostic statistics are themselves affected by
 misspecification, (2) misspecification in one part of the model distorts estimates
 in other parts of the model (i.e., error propagation), and (3) equivalent models
 have identical residuals but contradict the pattern of causal effects (Kline, 2023).
-Note that according to Kline' (2023) "any report of the results without information
+Note that according to Kline (2023) "any report of the results without information
 about the residuals is deficient" (p. 172).}
+\item{\strong{Relative Opdyke Distribution Percentile Matrix}}{The \code{item.cfa}
+function provides the relative Opdyke distribution percentile matrix (McNeish, 2025)
+when requested by using the \code{print} argument. Approximate local fit evaluation
+based on the relative Opdyke distribution percentile does not rely on a fixed interval,
+such as the common \eqn{r \pm 0.10} rule of thumb for interpreting correlation
+residuals. Instead, it is based on the percentiles of the distribution of values that an
+observed correlation could take while still yielding a valid correlation matrix.
+The Opdyke distribution for the observed correlation can determine the percentile
+rank associated with the model-implied correlation. Accordingly, approximate
+local fit can be evaluated by whether  the model-implied correlation falls within
+a certain percentile of the observed correlation's distribution, rather than using a
+heuristic fixed interval. The observed correlation corresponds to the median of
+the Opdyke distribution, i.e., approximate fit can be gauged by proximity to the
+50th percentile of the distribution. In other words, correlation discrepancies are
+expressed in terms of relative percentiles of the Opdyke distribution. Note that
+the common \eqn{r \pm 0.10} rule of thumb for interpreting correlation residuals
+roughly corresponds to a model-implied correlation between the 40th and 60th
+percentiles of the observed correlation's Opdyke distribution. However, this rule
+may not necessarily generalize to all observed correlations. Note that Opdyke
+percentiles are only applicable to correlation structure elements, but are
+not applicable to mean structure residuals.}
 }
 }
 \note{
 The function uses the functions \code{cfa}, \code{lavInspect}, \code{lavTech},
 \code{modindices}, \code{parameterEstimates}, and \code{standardizedsolution}
-provided in the R package \pkg{lavaan} by Yves Rosseel (2012).
+provided in the R package \pkg{lavaan} by Yves Rosseel (2012). The relative Opdyke
+distribution percentile matrix is based on the functions \code{opdyke} and
+\code{opdyke.percentiles} provided in the R package \pkg{opddyke} by Dan McNeish (2026).
 }
 \examples{
 \dontrun{
@@ -470,7 +609,7 @@ item.cfa(HolzingerSwineford1939,
 # Measurement Model with Ordered-Categorical Indicators
 
 # Example 5
-item.cfa(round(HolzingerSwineford1939[, c("x4", "x5", "x6")]), ordered = TRUE)
+item.cfa(data.items, pitem1, pitem2r, pitem3r, pitem4, ordered = TRUE)
 
 #————————————————————————————————————————————————————————————————————————————
 # Cluster-Robust Standard Errors
@@ -488,13 +627,21 @@ item.cfa(Demo.twolevel[, c("y4", "y5", "y6")], cluster = Demo.twolevel$cluster)
 item.cfa(Demo.twolevel[, c("y4", "y5", "y6", "cluster")], cluster = "cluster")
 
 #————————————————————————————————————————————————————————————————————————————
-# Print Argument
+# Argument 'print'
 
 # Example 7a: Request all results
-item.cfa(HolzingerSwineford1939, x1, x2, x3, print = "all")
+item.cfa(HolzingerSwineford1939, x1::x9, print = "all")
 
-# Example 7b: Request modification indices with value equal or higher than 5
-item.cfa(HolzingerSwineford1939, x1, x2, x3, x4, print = "modind", mod.minval = 5)
+# Example 7b: Request modification indices with value equal or higher than 20
+item.cfa(HolzingerSwineford1939, x1::x9, print = "modind", mod.minval = 20)
+
+# Example 7c: Highlight absolute residual correlation equal or higher than 0.05
+item.cfa(HolzingerSwineford1939, x1::x9, print = "resid", resid.minval = 0.05,
+         color = "b.blue")
+
+# Example 7d: Highlight Opdyke distribution percentiles outside 0.45 and 0.55
+item.cfa(HolzingerSwineford1939, x1::x9, print = "opdyke", opdyke.minmax = c(0.45, 0.55),
+         color = "black", style = "bold")
 
 #————————————————————————————————————————————————————————————————————————————
 # lavaan Summary of the Estimated Model
@@ -508,10 +655,10 @@ lavaan::summary(mod$model.fit, standardized = TRUE, fit.measures = TRUE)
 # Write Results
 
 # Example 9a: Write Results into a text file
-item.cfa(HolzingerSwineford1939, x1, x2, x3, write = "CFA.txt")
+item.cfa(HolzingerSwineford1939, x1, x2, x3, print = "all", write = "CFA.txt")
 
 # Example 9b: Write Results into an Excel file
-item.cfa(HolzingerSwineford1939, x1, x2, x3, write = "CFA.xlsx")
+item.cfa(HolzingerSwineford1939, x1, x2, x3, print = "all", write = "CFA.xlsx")
 }
 }
 \references{
@@ -528,6 +675,9 @@ Brown, T. A. (2023). Confirmatory factor analysis. In R. H. Hoyle (Ed.),
 \emph{Handbook of structural equation modeling} (2nd ed.) (pp. 361–379). The
 Guilford Press.
 
+Hayakawa K. (2019). Corrected goodness-of-fit test in covariance structure analysis.
+\emph{Psychological Methods, 24}(3), 371-389. https://doi.org/10.1037/met0000180
+
 Kline, R. B. (2023). \emph{Principles and practice of structural equation modeling} (5th ed.).
 Guilford Press.
 
@@ -537,6 +687,14 @@ hypothesis of close fit of misspecified mean and covariance structural models.
 
 Maydeu-Olivares, A. (2017). Assessing the size of model misfit in structural
 equation models. \emph{Psychometrika, 82}(3), 533–558. https://doi.org/10.1007/s11336-016-9552-7
+
+McNeish, D. (2025). Less Heuristic Approximate Local Fit Evaluation in Structural Equation Models.
+\emph{Structural Equation Modeling: A Multidisciplinary Journal, 32}(4), 590-605.
+https://doi.org/10.1080/10705511.2025.2473342
+
+McNeish D (2026). opdyke: Opdyke Percentiles for Approximate Local Fit in
+Structural Equation Models. R package version 1.0.0. Retrieved from
+https://github.com/dmcneish18/opdyke
 
 Rosseel, Y. (2012). lavaan: An R Package for Structural Equation Modeling.
 \emph{Journal of Statistical Software, 48}, 1-36. https://doi.org/10.18637/jss.v048.i02

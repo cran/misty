@@ -59,54 +59,54 @@ dat <- data.frame(x1 = c(1, 1, 2, 1, 4), x2 = c(1, 1, 2, 1, 6),
                   x5 = c(1, 1, 4, 4, 3))
 
 #————————————————————————————————————————————————————————————————————————————
-# df.duplicated() function
+# df.duplicated() Function
 
-# Example 1: Extract duplicated rows based on all variables
+# Example 1a: Extract duplicated rows based on all variables
 df.duplicated(dat)
 
-# Example 2: Extract duplicated rows based on 'x4'
+# Example 1b: Extract duplicated rows based on 'x4'
 df.duplicated(dat, x4)
 
-# Example 3: Extract duplicated rows based on 'x2' and 'x3'
+# Example 1c: Extract duplicated rows based on 'x2' and 'x3'
 df.duplicated(dat, x2, x3)
 
-# Example 4: Extract duplicated rows based on all variables
+# Example 1d: Extract duplicated rows based on all variables
 # exclude first of identical rows
 df.duplicated(dat, first = FALSE)
 
-# Example 5: Extract duplicated rows based on 'x2' and 'x3'
+# Example 1e: Extract duplicated rows based on 'x2' and 'x3'
 # do not return all variables
 df.duplicated(dat, x2, x3, keep.all = FALSE)
 
-# Example 6: Extract duplicated rows based on 'x4'
+# Example 1f: Extract duplicated rows based on 'x4'
 # consider duplication from the reversed side
 df.duplicated(dat, x4, first = FALSE, from.last = TRUE)
 
-# Example 7: Extract duplicated rows based on 'x2' and 'x3'
+# Example 1g: Extract duplicated rows based on 'x2' and 'x3'
 # set row names to NULL
 df.duplicated(dat, x2, x3, keep.row.names = FALSE)
 
 #————————————————————————————————————————————————————————————————————————————
-# df.unique() function
+# df.unique() Function
 
-# Example 8: Extract unique rows based on all variables
+# Example 2a: Extract unique rows based on all variables
 df.unique(dat)
 
-# Example 9: Extract unique rows based on 'x4'
+# Example 2b: Extract unique rows based on 'x4'
 df.unique(dat, x4)
 
-# Example 10: Extract unique rows based on 'x1', 'x2', and 'x3'
+# Example 2c: Extract unique rows based on 'x1', 'x2', and 'x3'
 df.unique(dat, x1, x2, x3)
 
-# Example 11: Extract unique rows based on 'x2' and 'x3'
+# Example 2d: Extract unique rows based on 'x2' and 'x3'
 # do not return all variables
 df.unique(dat, x2, x3, keep.all = FALSE)
 
-# Example 12: Extract unique rows based on 'x4'
+# Example 2e: Extract unique rows based on 'x4'
 # consider duplication from the reversed side
 df.unique(dat, x4, from.last = TRUE)
 
-# Example 13: Extract unique rows based on 'x2' and 'x3'
+# Example 2f: Extract unique rows based on 'x2' and 'x3'
 # set row names to NULL
 df.unique(dat, x2, x3, keep.row.names = FALSE)
 }

@@ -241,15 +241,17 @@ write.sav <- function(x, file = "SPSS_Data.sav", var.attr = NULL, pspp.path = NU
     # Package haven installed?
     if (isTRUE(!requireNamespace("haven", quietly = TRUE))) { stop("Package \"haven\" is needed for this function to work, please install it.", call. = FALSE ) }
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— #
     ### Without variable attributes ####
+
     if (isTRUE(is.null(var.attr))) {
 
       # Write .sav
       haven::write_sav(x, paste0(file, ".sav"), compress = FALSE)
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— #
     ### With Variable Attributes ####
+
     } else {
 
       # Variable labels, value labels, and user-missing values
@@ -324,6 +326,7 @@ write.sav <- function(x, file = "SPSS_Data.sav", var.attr = NULL, pspp.path = NU
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Use PSPP ####
+
   } else {
 
     # Function to add quotes
@@ -346,7 +349,7 @@ write.sav <- function(x, file = "SPSS_Data.sav", var.attr = NULL, pspp.path = NU
 
     utils::write.csv2(xf, paste0(file, ".csv"), row.names = FALSE, quote = FALSE, na = na)
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— #
     ### Variable Formats ####
 
     type <- rep("F", times = var.length)
@@ -380,8 +383,9 @@ write.sav <- function(x, file = "SPSS_Data.sav", var.attr = NULL, pspp.path = NU
     # PSPP variable format
     variables <- paste(varnames, ifelse(!is.na(decimals), paste0(type, paste(width, decimals, sep = ".")), paste0(type, width)), collapse = "\n  ")
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— #
     ### Write PSPP Syntax ####
+
     code <- paste0(file, ".sps")
 
     cat(paste0("GET DATA\n",
@@ -395,7 +399,7 @@ write.sav <- function(x, file = "SPSS_Data.sav", var.attr = NULL, pspp.path = NU
                "  /VARIABLES=\n"),  file = code)
     cat(paste0("  ", variables, " ."), file = code, append = TRUE)
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— #
     ### Variable Attributes ####
 
     # Attributes from object var.attr
@@ -441,7 +445,7 @@ write.sav <- function(x, file = "SPSS_Data.sav", var.attr = NULL, pspp.path = NU
       }
 
       #···················
-      #### alues from Factor Levels ####
+      #### Values from Factor Levels ####
 
       if (isTRUE(any.factors)) {
 
@@ -515,7 +519,7 @@ write.sav <- function(x, file = "SPSS_Data.sav", var.attr = NULL, pspp.path = NU
 
     }
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— #
     ### Save PSPP ####
 
     cat("\nEXECUTE.\n", file = code, append = TRUE)
@@ -523,12 +527,12 @@ write.sav <- function(x, file = "SPSS_Data.sav", var.attr = NULL, pspp.path = NU
     cat(paste0( "\nSAVE OUTFILE='", getwd() , "/" , file , ".sav'.\nEXECUTE."),
         file = code, append = TRUE)
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— #
     ### Run PSPP ####
 
     system(paste0("\"", pspp.path, "/bin/pspp.exe\" ", code))
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— #
     ### Remove sps and csv File ####
 
     if (!isTRUE(write.sps)) { unlink(paste0(file, ".sps")) }

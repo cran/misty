@@ -447,32 +447,32 @@ aov.w <- function(formula, data, print = c("all", "none", "GG", "HF", "LB"),
 
   dc.matrix <- cov(data.id[, var.formula], use = "pairwise.complete.obs") |> (\(y) y - (y*0L + colMeans(y)) - (t(y*0L + rowMeans(y))) + mean(y))()
 
-  #——————————————————————————————————————
+  #—————————————————————————————————————— #
   ### Lower Bound ####
 
   lb <- 1L  / (k - 1L)
 
-  #——————————————————————————————————————
+  #—————————————————————————————————————— #
   ### Greenhouse-Geisser ####
 
   gg <- sum(diag(dc.matrix))^2L / ((nrow(dc.matrix) - 1L) * sum(dc.matrix^2L))
 
-  #——————————————————————————————————————
+  #—————————————————————————————————————— #
   ### Huynh-Feldt ####
 
   hf <- (n*(k - 1L)*gg - 2L) / ((k - 1L) * (n - 1L - (k - 1L)*gg))
 
-  #——————————————————————————————————————
+  #—————————————————————————————————————— #
   ### Average of Greenhouse-Geisser and Huynh-Feldt ####
 
   gg.hf <- mean(c(gg, hf), na.rm = TRUE)
 
-  #——————————————————————————————————————
+  #—————————————————————————————————————— #
   ### Epsilon table ####
 
   epsilon.table <- data.frame(index = c("greenhouse and geisser", "huynh and feldt", "average of gg and hf", "lower bound"), epsilon = c(gg, hf, gg.hf, lb))
 
-  #——————————————————————————————————————
+  #—————————————————————————————————————— #
   ### print Argument ####
   #
   # Baguley (2012), p. 633
@@ -525,22 +525,22 @@ aov.w <- function(formula, data, print = c("all", "none", "GG", "HF", "LB"),
   #
   # Olejnik and Algina (2000), Table 17
 
-  #——————————————————————————————————————
+  #—————————————————————————————————————— #
   ### Eta squared ####
 
   eta.sq <- ss.e.within / ss.t
 
-  #——————————————————————————————————————
+  #—————————————————————————————————————— #
   ### Partial Eta Squared ####
 
   eta.sq.p <- ss.e.within / sum(aov.table.within[[1L]][, "Sum Sq"])
 
-  #——————————————————————————————————————
+  #—————————————————————————————————————— #
   ### Omega Squared ####
 
   omega.sq <- (df.e.within*(ms.e.within - ms.r.within)) / (ss.t + ms.id) |> (\(y) ifelse(y < 0L, 0L, y))()
 
-  #——————————————————————————————————————
+  #—————————————————————————————————————— #
   ### Partial Omega Squared ####
 
   omega.sq.p <- (df.e.within*(ms.e.within - ms.r.within)) / (df.e.within*ms.e.within + (nrow(data.l) - df.e.within)*ms.r.within) |> (\(y) ifelse(y < 0L, 0L, y))()
@@ -548,7 +548,7 @@ aov.w <- function(formula, data, print = c("all", "none", "GG", "HF", "LB"),
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## ANOVA Table ####
 
-  #——————————————————————————————————————
+  #—————————————————————————————————————— #
   ### Sphericity Correction: None ####
 
   test.none <- data.frame(source = c("Within-Subjects", "Factor", "Residuals", "Between-Subjects", "Total"),
@@ -564,7 +564,7 @@ aov.w <- function(formula, data, print = c("all", "none", "GG", "HF", "LB"),
 
   test.lb <- test.hf <- test.gg <- test.none
 
-  #——————————————————————————————————————
+  #—————————————————————————————————————— #
   ### Sphericity Correction: Greenhouse-Geisser ####
 
   # Correct degrees of freedom
@@ -576,7 +576,7 @@ aov.w <- function(formula, data, print = c("all", "none", "GG", "HF", "LB"),
   # Correct p value
   test.gg[test.gg$source == "Factor", "p"] <- pf(test.gg[test.gg$source == "Factor", "F"], df1 = test.gg[test.gg$source == "Factor", "df"], df2 = test.gg[test.gg$source == "Residuals", "df"], lower.tail = FALSE)
 
-  #——————————————————————————————————————
+  #—————————————————————————————————————— #
   ### Sphericity Correction: Huynh-Feldt ####
 
   # Correct degrees of freedom
@@ -588,7 +588,7 @@ aov.w <- function(formula, data, print = c("all", "none", "GG", "HF", "LB"),
   # Correct p value
   test.hf[test.hf$source == "Factor", "p"] <- pf(test.hf[test.hf$source == "Factor", "F"], df1 = test.hf[test.hf$source == "Factor", "df"], df2 = test.hf[test.hf$source == "Residuals", "df"], lower.tail = FALSE)
 
-  #——————————————————————————————————————
+  #—————————————————————————————————————— #
   ### Sphericity Correction: Lower Bound ####
 
   # Correct degrees of freedom

@@ -1,7 +1,7 @@
 #' Coefficient Omega, Hierarchical Omega, and Categorical Omega
 #'
 #' This function computes point estimate and confidence interval for the coefficient
-#' omega (McDonald, 1978), hierarchical coefficient omega (Kelley & Pornprasertmanit,
+#' omega (McDonald, 1990), hierarchical coefficient omega (Kelley & Pornprasertmanit,
 #' 2016), and categorical coefficient omega (Green & Yang, 2009) along with
 #' standardized factor loadings and omega if item deleted. By default, the function
 #' computes coefficient omega based on maximum likelihood parameter (ML) estimates
@@ -45,6 +45,9 @@
 #'                   \code{"all"} for all results \code{"omega"} (default) for
 #'                   the coefficient omega, and \code{"item"} for item statistics.
 #' @param digits     an integer value indicating the number of decimal places to
+#'                   be used for displaying mean, standard deviation, minimum,
+#'                   and maximum.
+#' @param r.digits   an integer value indicating the number of decimal places to
 #'                   be used for displaying omega and standardized factor loadings.
 #' @param conf.level a numeric value between 0 and 1 indicating the confidence
 #'                   level of the interval.
@@ -66,15 +69,17 @@
 #' @param output     logical: if \code{TRUE} (default), output is shown.
 #'
 #' @details
-#' Coefficient omega is computed by conducting a confirmatory factor analysis based
-#' on the congeneric measurement model (Graham, 2006) using the \code{cfa()} function
-#' in the \pkg{lavaan} package by Yves Rosseel (2019).
-#'
-#' Approximate confidence intervals are computed using the procedure by Feldt,
-#' Woodruff and Salih (1987). Note that there are at least 10 other procedures
-#' for computing the confidence interval (see Kelley and Pornprasertmanit, 2016),
-#' which are implemented in the \code{ci.reliability()} function in the
-#' \pkg{MBESSS} package by Ken Kelley (2019).
+#' \describe{
+#  \item{\strong{Coefficient Omega}}{This function computes the coefficient omega
+#' by conducting a confirmatory factor analysis based on the congeneric measurement
+#' model (Graham, 2006) using the \code{cfa()} function in the \pkg{lavaan} package
+#' by Yves Rosseel (2019).}
+#' \item{\strong{Confidence Interval}}{The confidence interval for the (ordinal)
+#'  coefficient alpha is computed using the procedure by Feldt et al. (1987).
+#'  Note that there are at least 10 other procedures for computing the confidence
+#'  interval (see Kelley and Pornprasertmanit, 2016), which are implemented in the
+#'  \code{ci.reliability()} function in the \pkg{MBESSS} package by Ken Kelley (2019).}
+#' }
 #'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
@@ -84,17 +89,6 @@
 #' \code{\link{item.reverse}}, \code{\link{item.scores}}, \code{\link{write.result}}
 #'
 #' @references
-#' Chalmers, R. P. (2018). On misconceptions and the limited usefulness of ordinal alpha.
-#' \emph{Educational and Psychological Measurement, 78}, 1056-1071.
-#' https://doi.org/10.1177/0013164417727036
-#'
-#' Cronbach, L.J. (1951). Coefficient alpha and the internal structure of tests.
-#' \emph{Psychometrika, 16}, 297-334. https://doi.org/10.1007/BF02310555
-#'
-#' Cronbach, L.J. (2004). My current thoughts on coefficient alpha and successor
-#' procedures. \emph{Educational and Psychological Measurement, 64}, 391-418.
-#' https://doi.org/10.1177/0013164404266386
-#'
 #' Feldt, L. S., Woodruff, D. J., & Salih, F. A. (1987). Statistical inference for
 #' coefficient alpha. \emph{Applied Psychological Measurement}, 11 93-103.
 #' https://doi.org/10.1177/014662168701100107
@@ -102,6 +96,10 @@
 #' Graham, J. M. (2006). Congeneric and (essentially) tau-equivalent estimates of
 #' score reliability: What they are and how to use them. \emph{Educational and
 #' Psychological Measurement, 66}(6), 930–944. https://doi.org/10.1177/0013164406288165
+#'
+#' Green, S. B., & Yang, Y. (2009). Reliability of summed item scores using structural
+#' equation modeling: An alternative to coefficient alpha. \emph{Psychometrika, 74}, 155167.
+#' https://doi.org/10.1007/s11336-008-9099-3
 #'
 #' Kelley, K., & Pornprasertmanit, S. (2016). Confidence intervals for population
 #' reliability coefficients: Evaluation of methods, recommendations, and software
@@ -111,18 +109,8 @@
 #' Ken Kelley (2019). \emph{MBESS: The MBESS R Package}. R package version 4.6.0.
 #' https://CRAN.R-project.org/package=MBESS
 #'
-#' Revelle, W. (2025). \emph{psych: Procedures for psychological, psychometric,
-#' and personality research}.  Northwestern University, Evanston, Illinois.
-#' R package version 2.5.3,  https://CRAN.R-project.org/package=psych.
-#'
-#' Zumbo, B. D., & Kroc, E. (2019). A measurement is a choice and Stevens' scales
-#' of measurement do not help make it: A response to Chalmers. \emph{Educational
-#' and Psychological Measurement, 79}, 1184-1197.
-#' https://doi.org/10.1177/0013164419844305
-#'
-#' Zumbo, B. D., Gadermann, A. M., & Zeisser, C. (2007). Ordinal versions of coefficients
-#' alpha and theta for Likert rating scales. \emph{Journal of Modern Applied Statistical
-#' Methods, 6}, 21-29. https://doi.org/10.22237/jmasm/1177992180
+#' McDonald, R. P. (1999). \emph{Test theory: A unified treatment}. Lawrence
+#' Erlbaum Associates Publishers.
 #'
 #' @return
 #' Returns an object of class \code{misty.object}, which is a list with following
@@ -145,43 +133,53 @@
 #'
 #' @examples
 #' \dontrun{
-#' dat <- data.frame(item1 = c(3, NA, 3, 4, 1, 2, 4, 2), item2 = c(5, 3, 3, 2, 2, 1, 3, 1),
-#'                   item3 = c(4, 2, 4, 2, 1, 3, 4, 1), item4 = c(4, 1, 2, 2, 1, 3, 4, 3))
+#' # Load data set "HolzingerSwineford1939" in the lavaan package
+#' data("HolzingerSwineford1939", package = "lavaan")
 #'
-#' # Example 1a: Coefficient omega, full information maximum likelihood method
-#' item.omega(dat)
+#' #————————————————————————————————————————————————————————————————————————————
+#' # Continuous Data
 #'
-#' # Example 1b: Coefficient omega, listwise deletion
-#' item.omega(dat, missing = "listwise")
+#' # Example 1a: Coefficient omega
+#' item.omega(HolzingerSwineford1939, x1::x9)
 #'
-#' # Example 2: Coefficient omega and item statistics after excluding item3
-#' item.omega(dat, exclude = "item3", print = "all")
+#' # Example 1b: Coefficient omega and item statistics after excluding 'x3'
+#' item.omega(HolzingerSwineford1939, x1::x9, exclude = "x3", print = "all")
 #'
-#' # Example 3a: Coefficient omega with a residual covariance
-#' item.omega(dat, rescov = c("item1", "item2"))
+#' # Example 2: Hierarchical Omega
+#' item.omega(HolzingerSwineford1939, x1::x9, type = "hierarch")
 #'
-#' # Example 3b: Coefficient omega with residual covariances
-#' item.omega(dat, rescov = list(c("item1", "item2"), c("item1", "item3")))
+#' # Example 3a: Residual covariance between 'x1' and 'x2'
+#' item.omega(HolzingerSwineford1939, x1::x9, rescov = c("x1", "x2"))
 #'
-#' # Example 4: Ordinal coefficient omega and item statistics
-#' item.omega(dat, type = "categ", print = "all")
+#' # Example 3b: Residual covariances between 'x1' and 'x2', and 'x2' and 'x3'
+#' item.omega(HolzingerSwineford1939, x1::x9, rescov = list(c("x1", "x2"), c("x2", "x3")))
 #'
-#' # Example 6: Summary of the CFA model used to compute coefficient omega
-#' lavaan::summary(item.omega(dat, output = FALSE)$model.fit,
-#'                 fit.measures = TRUE, standardized = TRUE)
+#' # Example 4: Summary of the CFA model used to compute coefficient omega
+#' lavaan::summary(item.omega(HolzingerSwineford1939, x1::x9, output = FALSE)$model.fit,
+#'                 standardized = TRUE)
 #'
-#' # Example 7a: Write Results into a text file
-#' item.omega(dat, write = "Omega.txt")
+#' #————————————————————————————————————————————————————————————————————————————
+#' # Polytomous Data
 #'
-#' # Example 7b: Write Results into an Excel file
-#' item.omega(dat, write = "Omega.xlsx")
+#' # Example 5: Ordinal coefficient omega and item statistics
+#' item.omega(data.items, pitem1, pitem2r, pitem3r, pitem4::pitem6, type = "categ",
+#'            print = "all")
+#'
+#' #————————————————————————————————————————————————————————————————————————————
+#' # Write Results
+#'
+#' # Example 6a: Write Results into a text file
+#' item.omega(HolzingerSwineford1939, x1::x9, print = "all", write = "Omega.txt")
+#'
+#' # Example 6b: Write Results into an Excel file
+#' item.omega(HolzingerSwineford1939, x1::x9, print = "all", write = "Omega.xlsx")
 #' }
 item.omega <- function(data, ..., rescov = NULL,
                        type = c("omega", "hierarch", "categ"), exclude = NULL,
                        std = FALSE, estimator = c("ML", "GLS", "WLS", "DWLS", "ULS", "PML"),
                        missing = c("listwise", "pairwise", "fiml"), print = c("all", "omega", "item"),
-                       digits = 2, conf.level = 0.95, as.na = NULL, write = NULL,
-                       append = TRUE, check = TRUE, output = TRUE) {
+                       digits = 2, r.digits = 3, conf.level = 0.95, as.na = NULL,
+                       write = NULL, append = TRUE, check = TRUE, output = TRUE) {
 
   #_____________________________________________________________________________
   #
@@ -194,16 +192,16 @@ item.omega <- function(data, ..., rescov = NULL,
   #
   # Data -----------------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data Using the Argument '...' ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Using the Argument '...' ####
 
   if (isTRUE(!missing(...))) {
 
     # Extract data and convert tibble into data frame or vector
     x <- as.data.frame(data[, .var.names(data = data, ...), drop = FALSE])
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data Without Using the Argument '...' ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Without Using the Argument '...' ####
 
   } else {
 
@@ -212,17 +210,17 @@ item.omega <- function(data, ..., rescov = NULL,
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Non-Numeric Variables ####
 
-  x <- .exclude.non.numeric(x, func = "omega")
+  x <- .exclude.non.numeric(x, func = "item.omega")
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Exclude Items ####
 
   if (isTRUE(!is.null(exclude))) { x <- x[, which(!colnames(x) %in% exclude)] |> (\(y) if (isTRUE(ncol(y) < 3L)) { stop("At least three items after excluding items are needed to compute coefficient omega.", call. = FALSE) } else { return(y) })() }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Convert User-missing Values into NA ####
 
   if (isTRUE(!is.null(as.na))) { x <- .as.na(x, na = as.na) }
@@ -234,23 +232,26 @@ item.omega <- function(data, ..., rescov = NULL,
   # Check inputs
   .check.input(logical = c("std", "append", "output"),
                s.character = list(type = c("omega", "hierarch", "categ"), estimator = c("ML", "GLS", "WLS", "DWLS", "ULS", "PML"), missing = c("listwise", "pairwise", "fiml")),
-               m.character = list(print = c("all", "omega", "item")), args = c("digits", "conf.level"), package = "lavaan", envir = environment(), input.check = check)
+               m.character = list(print = c("all", "omega", "item")), args = c("digits", "r.digits", "conf.level"), package = "lavaan", envir = environment(), input.check = check)
 
-  # Additional checks
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Additional Checks ####
+
   if (isTRUE(check)) {
 
     # Package 'mnormt' installed?
     if (isTRUE(all(type == "categ"))) { if (isTRUE(!requireNamespace("mnormt", quietly = TRUE))) { stop("Package \"mnormt\" is needed for this function to work, please install it.", call. = FALSE) } }
 
-    ## Check input 'data' ##
+    #—————————————————————————————————————— #
+    ### 'data' Argument ####
 
     # At least three items
     if (isTRUE(ncol(x) < 3L)) { stop("Please specify at least three items to compute coefficient omega", call. = FALSE) }
 
-    # Zero variance
-    if (isTRUE(nrow(x) != ncol(x))) { vapply(as.data.frame(x), function(y) length(na.omit(unique(y))) == 1L, FUN.VALUE = logical(1L)) |> (\(y) if (isTRUE(any(y))) { stop(paste0("Following variables in the data frame specified in 'data' have zero variance: ", paste(names(which(y)), collapse = ", ")), call. = FALSE) })() }
+    #—————————————————————————————————————— #
+    ### 'resocv' Argument ####
 
-    ## Check input 'rescov' ##
     if (isTRUE(!is.null(rescov))) {
 
       # More than one residual covariance specified as list
@@ -270,8 +271,11 @@ item.omega <- function(data, ..., rescov = NULL,
 
     }
 
-    ## Check input 'estimator' and 'missing'
+    #—————————————————————————————————————— #
+    ### 'estimator' and 'missing' Arguments ####
+
     if (isTRUE(all(estimator == "ULS") && all(missing == "pairwise"))) { stop("Pairwise deletion is not available when estimator = \"ULS\".", call. = FALSE) }
+
     if (isTRUE(all(estimator == "DWLS") && all(missing == "pairwise"))) { stop("Pairwise deletion is not available when estimator = \"DWLS\".", call. = FALSE) }
 
   }
@@ -280,26 +284,22 @@ item.omega <- function(data, ..., rescov = NULL,
   #
   # Arguments ------------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Type of Omega ####
 
   if (isTRUE(all(c("omega", "hierarch", "categ") %in% type))) { type <- "omega" }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Estimator ####
 
-  #...................
+  #—————————————————————————————————————— #
   ### Coefficient Omega or Hierarchical Omega ####
 
   if (isTRUE(type %in% c("omega", "hierarch"))) {
 
-    if (isTRUE(all(c("ML", "GLS", "WLS", "DWLS", "ULS", "PML") %in% estimator))) {
+    if (isTRUE(all(c("ML", "GLS", "WLS", "DWLS", "ULS", "PML") %in% estimator))) { estimator <- "ML" }
 
-      estimator <- "ML"
-
-    }
-
-  #...................
+  #—————————————————————————————————————— #
   ### Categorical Coefficient Omega ####
 
   } else {
@@ -316,34 +316,25 @@ item.omega <- function(data, ..., rescov = NULL,
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Missing Data ####
 
-  #...................
-  ### Coefficient Omega or Hierarchical Omega ####
+  #—————————————————————————————————————— #
+  ### Missing Values ####
 
-  if (isTRUE(type %in% c("omega", "hierarch"))) {
+  if (isTRUE(any(is.na(x)))) {
 
-    if (isTRUE(any(is.na(x)))) {
+    #···················
+    #### Coefficient Omega or Hierarchical Omega ####
 
-      if (isTRUE(all(c("listwise", "pairwise", "fiml") %in% missing))) {
+    if (isTRUE(type %in% c("omega", "hierarch"))) {
 
-        missing <- "fiml"
+      if (isTRUE(all(c("listwise", "pairwise", "fiml") %in% missing))) { missing <- "fiml" }
 
-      }
+    #···················
+    #### Categorical Coefficient Omega ####
 
     } else {
-
-      missing <- "listwise"
-
-    }
-
-  #...................
-  ### Categorical Coefficient Omega ####
-
-  } else {
-
-    if (isTRUE(any(is.na(x)))) {
 
       if (isTRUE(all(c("listwise", "pairwise", "fiml") %in% missing))) {
 
@@ -357,79 +348,115 @@ item.omega <- function(data, ..., rescov = NULL,
 
       }
 
-    } else {
-
-      missing <- "listwise"
-
     }
+
+  #—————————————————————————————————————— #
+  ### No Missing Values ####
+
+  } else {
+
+    missing <- "listwise"
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Residual Covariance ####
 
   if (isTRUE(!is.null(rescov) & !is.list(rescov))) { rescov <- list(rescov) }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Print Coefficient Omega and/or Item Statistic ####
 
-  if (isTRUE(all(c("all", "omega", "item") %in% print))) { print <- "omega" }
+  if (isTRUE(all(c("all", "omega", "item") %in% print))) {
 
-  if (isTRUE(length(print) == 1L && "all" %in% print)) { print <- c("omega", "item") }
+    print <- "omega"
+
+  } else if (isTRUE(all(print == "all"))) {
+
+    print <- c("omega", "item")
+
+  }
 
   #_____________________________________________________________________________
   #
   # Main Function --------------------------------------------------------------
 
-  omega.mod <- .alpha.omega(y = x, alpha = FALSE, y.rescov = rescov, y.type = type, y.std = std, estimator = estimator, missing = missing, check = TRUE)
+  omega <- .omega(y = x, rescov = rescov, type = type, std = std, estimator = estimator, missing = missing, check = check)
 
-  omega.x <- data.frame(n = lavaan::lavInspect(omega.mod$mod.fit, "nobs"), nNA = nrow(x) - lavaan::lavInspect(omega.mod$mod.fit, "nobs"), items = ncol(lavaan::lavInspect(omega.mod$mod.fit, "data")), omega = omega.mod$coef.alpha.omega)
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Confidence Interval ####
 
-  df1 <- omega.x$n - 1L
-  df2 <- (omega.x$items - 1) * df1
+  df1 <- lavaan::lavInspect(omega$mod.fit, "nobs") - 1L
+  df2 <- (n.items = ncol(lavaan::lavInspect(omega$mod.fit, "data")) - 1L) * df1
 
-  omega.x <- data.frame(omega.x,
-                        low = 1L - (1L - omega.x$omega) * qf(1L - (1L - conf.level) / 2L, df1, df2),
-                        upp = 1L - (1L - omega.x$omega) * qf((1L - conf.level) / 2L, df1, df2))
+  restab <- data.frame(n = lavaan::lavInspect(omega$mod.fit, what = "nobs"),
+                       nNA = nrow(x) - lavaan::lavInspect(omega$mod.fit, what = "nobs"),
+                       n.items = ncol(lavaan::lavInspect(omega$mod.fit, what = "data")),
+                       omega = omega$omega,
+                       low = 1L - (1L - omega$omega) * qf(1L - (1L - conf.level) / 2L, df1, df2),
+                       upp = 1L - (1L - omega$omega) * qf((1L - conf.level) / 2L, df1, df2))
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Standardized Factor Loading and Omega if Item Deleted ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Descriptive Statistics, Std. Factor Loadings, and Omega if Item Deleted ####
 
-  itemstat <- matrix(rep(NA, times = ncol(x)*2L), ncol = 2L, dimnames = list(NULL, c("std.ld", "omega")))
+  itemstat <- NULL
+  if (isTRUE("item" %in% print)) {
 
-  # Standardized factor loadings
-  itemstat[, "std.ld"] <- lavaan::inspect(omega.mod$mod.fit, what = "std")$lambda
+    #—————————————————————————————————————— #
+    ### Standardized Factor Loading and Omega if Item Deleted ####
 
-  if (isTRUE("item" %in% print && ncol(x) > 3L)) {
+    # Result table
+    itemstat <- matrix(rep(NA, times = ncol(x)*3L), ncol = 3L, dimnames = list(NULL, c("std.ld", "omega", "d.omega")))
 
-    for (i in seq_len(ncol(x))) {
+    # Standardized factor loadings
+    itemstat[, "std.ld"] <- lavaan::inspect(omega$mod.fit, what = "std")$lambda
 
-      var <- colnames(x)[i]
+    if (isTRUE(ncol(x) > 3L)) {
 
-      # Residual covariance
-      if (isTRUE(!is.null(rescov))) {
+      #···················
+      #### No Residual Covariances ####
 
-        rescov.i <- rescov[-which(unlist(lapply(rescov, function(y) any(y %in% var))))] |> (\(y) if (isTRUE(length(y) == 0L)) { NULL } else { y })()
+      if (isTRUE(is.null(rescov))) {
+
+        itemstat[, "omega"] <- sapply(seq_len(ncol(x)), function(y) suppressWarnings(.omega(x[, -y, drop = FALSE], rescov = NULL, type = type, std = std, estimator = estimator, missing = missing, check = check)$omega))
+
+      #···················
+      #### Residual Covariances ####
 
       } else {
 
-        rescov.i <- NULL
+        for (i in seq_len(ncol(x))) {
+
+          var <- colnames(x)[i]
+
+          # Residual covariance
+          if (isTRUE(!is.null(rescov))) {
+
+            rescov.i <- rescov[-which(unlist(lapply(rescov, function(y) any(y %in% var))))] |> (\(y) if (isTRUE(length(y) == 0L)) { NULL } else { y })()
+
+          } else {
+
+            rescov.i <- NULL
+
+          }
+
+          itemstat[i, "omega"] <- .omega(x[, -grep(var, colnames(x))], rescov = rescov.i, type = type, std = std, estimator = estimator, missing = missing, check = FALSE)$omega
+
+        }
 
       }
 
-      itemstat[i, 2L] <- .alpha.omega(y = x[, -grep(var, colnames(x))], alpha = FALSE, y.rescov = rescov.i, y.type = type, y.std = std, estimator = estimator, missing = missing, check = FALSE)$coef.alpha.omega
+      # Difference in coefficient omega
+      itemstat[, "d.omega"] <- itemstat[, "omega"] - restab$omega
 
     }
 
+    #—————————————————————————————————————— #
+    ### Descriptive Statistics ####
+
+    itemstat <- data.frame(item = colnames(x), misty::descript(x, output = FALSE)$result[, c("n", "nNA", "pNA", "m", "sd", "min", "max")], itemstat)
+
   }
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Descriptive Statistics ####
-
-  itemstat <- data.frame(var = colnames(x), misty::descript(x, output = FALSE)$result[, c("n", "nNA", "pNA", "m", "sd", "min", "max")], itemstat)
 
   #_____________________________________________________________________________
   #
@@ -438,9 +465,9 @@ item.omega <- function(data, ..., rescov = NULL,
   object <- list(call = match.call(),
                  type = "item.omega",
                  data = x,
-                 args = list(rescov = rescov, type = type, exclude = exclude, estimator = estimator, missing = missing, print = print, digits = digits, conf.level = conf.level, as.na = as.na, write = write, append = append, check = check, output = output),
-                 model.fit = omega.mod$mod.fit,
-                 result = list(omega = omega.x, itemstat = itemstat))
+                 args = list(rescov = rescov, type = type, exclude = exclude, estimator = estimator, missing = missing, print = print, digits = digits, r.digits = r.digits, conf.level = conf.level, as.na = as.na, write = write, append = append, check = check, output = output),
+                 model.fit = omega$mod.fit,
+                 result = list(omega = restab, itemstat = itemstat))
 
   class(object) <- "misty.object"
 

@@ -74,7 +74,7 @@
 #' @export
 #'
 #' @examples
-#' #----------------------------------------------------------------------------
+#' #————————————————————————————————————————————————————————————————————————————
 #' # Single-Level Data
 #'
 #' # Example 1: Descriptive statistics for missing data
@@ -86,7 +86,7 @@
 #' # Example 3: Descriptive statistics for missing data with frequency table
 #' na.descript(airquality, table = TRUE)
 #'
-#' #----------------------------------------------------------------------------
+#' #————————————————————————————————————————————————————————————————————————————
 #' # Two-Level Data
 #'
 #' # Load data set "Demo.twolevel" in the lavaan package
@@ -95,7 +95,7 @@
 #' # Example 4: Descriptive statistics for missing data
 #' na.descript(Demo.twolevel, cluster = "cluster")
 #'
-#' #----------------------------------------------------------------------------
+#' #————————————————————————————————————————————————————————————————————————————
 #' # Three-Level Data
 #'
 #' # Create arbitrary three-level data
@@ -105,7 +105,7 @@
 #' # Example 5: Descriptive statistics for missing data
 #' na.descript(Demo.threelevel, cluster = c("cluster3", "cluster2"))
 #'
-#' #----------------------------------------------------------------------------
+#' #————————————————————————————————————————————————————————————————————————————
 #' # Write Results
 #'
 #' # Example 6a: Write Results into a text file
@@ -128,8 +128,8 @@ na.descript <- function(data, ..., cluster = NULL, table = FALSE, digits = 2,
   #
   # Data -----------------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data using the argument '...' ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Using the Argument '...' ####
 
   if (isTRUE(!missing(...))) {
 
@@ -139,8 +139,8 @@ na.descript <- function(data, ..., cluster = NULL, table = FALSE, digits = 2,
     # Cluster variable
     if (isTRUE(!is.null(cluster))) { cluster <- data[, cluster] |>  (\(p) if (isTRUE(!is.null(dim(p)))) { setNames(p, nm = c("cluster3", "cluster2")) } else { return(p) })() }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data without using the argument '...' ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Without Using the Argument '...' ####
 
   } else {
 
@@ -159,13 +159,13 @@ na.descript <- function(data, ..., cluster = NULL, table = FALSE, digits = 2,
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Convert user-missing values into NA ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Convert User-Missing Values into NA ####
 
   if (isTRUE(!is.null(as.na))) { x <- .as.na(x, na = as.na) }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Cluster variables ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Cluster Variables ####
 
   no.clust <- "none"
   if (isTRUE(!is.null(cluster))) {
@@ -198,13 +198,13 @@ na.descript <- function(data, ..., cluster = NULL, table = FALSE, digits = 2,
   #
   # Main Function --------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Variable ####
 
   if (isTRUE(!is.null(cluster))) {
 
-    #...................
-    ### One cluster variable ####
+    #—————————————————————————————————————— #
+    ### One Cluster Variable ####
 
     if (isTRUE(no.clust == "one")) {
 
@@ -217,8 +217,8 @@ na.descript <- function(data, ..., cluster = NULL, table = FALSE, digits = 2,
       # Level-2 Variable
       L2.var <- setdiff(colnames(x), L1.var)
 
-    #...................
-    ### Two cluster variables ####
+    #—————————————————————————————————————— #
+    ### Two Cluster Variables ####
 
     } else if (isTRUE(no.clust == "two")) {
 
@@ -239,8 +239,8 @@ na.descript <- function(data, ..., cluster = NULL, table = FALSE, digits = 2,
 
     }
 
-  #...................
-  ### No cluster variable ####
+  #——————————————————————————————————————
+  ### No Cluster Variable ####
 
   } else {
 
@@ -248,21 +248,24 @@ na.descript <- function(data, ..., cluster = NULL, table = FALSE, digits = 2,
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Descriptive Statistics for Missing Data ####
 
-  #...................
+  #—————————————————————————————————————— #
   ### Level-1 Variables ####
 
-  ##### Level-1 Variables
   if (isTRUE(length(L1.var) != 0L)) {
 
-    ##### No cluster variable
+    #···················
+    #### No Cluster Variable ####
+
     if (isTRUE(is.null(cluster))) {
 
       x.L1 <- x
 
-    ##### Cluster variable(s)
+    #···················
+    #### Cluster Variable ####
+
     } else {
 
       x.L1 <- x[, L1.var, drop = FALSE]
@@ -325,7 +328,9 @@ na.descript <- function(data, ..., cluster = NULL, table = FALSE, digits = 2,
                                    matrix(c(no.observed.var.l1, perc.observed.var.l1, no.missing.var.l1, perc.missing.var.l1), ncol = 4L,
                                           dimnames = list(NULL, c("nOb", "pOb", "nNA", "pNA"))))
 
-  # No Level-1 Variables
+  #—————————————————————————————————————— #
+  ### No Level-1 Variables ####
+
   } else {
 
     no.complete.l1 <- perc.complete.l1 <- no.incomplete.l1 <- perc.incomplete.l1 <- no.values.l1 <- no.observed.values.l1 <- perc.observed.values.l1 <-
@@ -335,7 +340,7 @@ na.descript <- function(data, ..., cluster = NULL, table = FALSE, digits = 2,
 
   }
 
-  #...................
+  #—————————————————————————————————————— #
   ### Level-2 Variables ####
 
   if (isTRUE(!is.null(cluster))) {
@@ -420,12 +425,14 @@ na.descript <- function(data, ..., cluster = NULL, table = FALSE, digits = 2,
 
   }
 
-  #...................
+  #—————————————————————————————————————— #
   ### Level-3 Variables ####
 
   if (isTRUE(no.clust == "two")) {
 
-    ##### Level-3 Variables
+    #···················
+    #### Level-3 Variables ####
+
     if (isTRUE(length(L3.var) != 0L)) {
 
       x.l3 <- x[!duplicated(cluster[, 1L]), L3.var, drop = FALSE]
@@ -483,7 +490,9 @@ na.descript <- function(data, ..., cluster = NULL, table = FALSE, digits = 2,
                                      matrix(c(no.observed.var.l3, perc.observed.var.l3, no.missing.var.l3, perc.missing.var.l3), ncol = 4L,
                                             dimnames = list(NULL, c("nOb", "pOb", "nNA", "pNA"))))
 
-    # No Level-3 Variables
+    #···················
+    #### No Level-3 Variables ####
+
     } else {
 
       no.complete.l3 <- perc.complete.l3 <- no.incomplete.l3 <- perc.incomplete.l3 <- no.values.l3 <- no.observed.values.l3 <- perc.observed.values.l3 <-

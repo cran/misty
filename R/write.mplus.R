@@ -1,4 +1,4 @@
-#' Write Mplus Data File
+#' Write Mplus Data File and Mplus Input Template
 #'
 #' This function writes a matrix or data frame to a tab-delimited file without
 #' variable names, a Mplus input template, and a text file with variable names.
@@ -66,7 +66,7 @@ write.mplus <- function(x, file = "Mplus_Data.dat", data = TRUE, input = TRUE,
   # Data ———————————————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data frame ####
+  ## Data Frame ####
 
   x <- as.data.frame(x)
 
@@ -145,7 +145,7 @@ write.mplus <- function(x, file = "Mplus_Data.dat", data = TRUE, input = TRUE,
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Prepare and Save Variable Names ####
 
-  #——————————————————————————————————————
+  #—————————————————————————————————————— #
   ### Prepare Variable Names ####
 
   names.are <- names.temp <- names.length <- "           "
@@ -169,7 +169,7 @@ write.mplus <- function(x, file = "Mplus_Data.dat", data = TRUE, input = TRUE,
 
   names.are <- paste0(names.are, ";")
 
-  #——————————————————————————————————————
+  #—————————————————————————————————————— #
   ### Save Variable Names ####
 
   if (isTRUE(var)) {

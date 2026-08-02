@@ -127,16 +127,16 @@ crosstab <- function(data, ..., print = c("no", "all", "row", "col", "total"),
   #
   # Data -----------------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data using the argument '...' ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Using the Argument '...' ####
 
   if (isTRUE(!missing(...))) {
 
     # Extract data and convert tibble into data frame or vector
     x <- data[, .var.names(data = data, ...)] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { as.data.frame(y) } else { y })()
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data without using the argument '...' ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Without Using the Argument '...' ####
 
   } else {
 
@@ -145,7 +145,7 @@ crosstab <- function(data, ..., print = c("no", "all", "row", "col", "total"),
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Convert user-missing values into NA ####
 
   if (isTRUE(!is.null(as.na))) { x <- .as.na(x, na = as.na) }
@@ -189,8 +189,8 @@ crosstab <- function(data, ..., print = c("no", "all", "row", "col", "total"),
   #
   # Main Function --------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Two variables ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Two Variables ####
 
   if (isTRUE(ncol(x) == 2L)) {
 
@@ -209,11 +209,11 @@ crosstab <- function(data, ..., print = c("no", "all", "row", "col", "total"),
 
     }
 
-    #...................
+    #—————————————————————————————————————— #
     ### Absolute frequencies without margins ####
     freq.a <- table(x)
 
-    #...................
+    #—————————————————————————————————————— #
     ### Row-wise percentages ####
 
     perc.r <- addmargins(prop.table(freq.a, margin = 1L) * 100L)
@@ -222,7 +222,7 @@ crosstab <- function(data, ..., print = c("no", "all", "row", "col", "total"),
     rownames(perc.r)[nrow(perc.r)] <- "Total"
     colnames(perc.r)[ncol(perc.r)] <- "Total"
 
-    #...................
+    #—————————————————————————————————————— #
     ### Column-wise percentages ####
 
     perc.c <- addmargins(prop.table(freq.a, margin = 2L) * 100L)
@@ -231,7 +231,7 @@ crosstab <- function(data, ..., print = c("no", "all", "row", "col", "total"),
     rownames(perc.c)[nrow(perc.c)] <- "Total"
     colnames(perc.c)[ncol(perc.c)] <- "Total"
 
-    #...................
+    #—————————————————————————————————————— #
     ### Total percentages ####
 
     perc.t <- addmargins(prop.table(freq.a) * 100L)
@@ -239,14 +239,14 @@ crosstab <- function(data, ..., print = c("no", "all", "row", "col", "total"),
     rownames(perc.t)[nrow(perc.t)] <- "Total"
     colnames(perc.t)[ncol(perc.t)] <- "Total"
 
-    #...................
+    #—————————————————————————————————————— #
     ### Add margins ####
     freq.a <- addmargins(freq.a)
 
     rownames(freq.a)[nrow(freq.a)] <- "Total"
     colnames(freq.a)[ncol(freq.a)] <- "Total"
 
-    #...................
+    #—————————————————————————————————————— #
     ### Table ####
 
     result <- data.frame(rep(names(freq.a[, 1L]), times = 4L),
@@ -254,7 +254,7 @@ crosstab <- function(data, ..., print = c("no", "all", "row", "col", "total"),
                              misty::as.na(rbind(freq.a, perc.r, perc.c, perc.t), na = "NaN", check = FALSE),
                              row.names = NULL, check.rows = FALSE, check.names = FALSE, fix.empty.names = FALSE)
 
-    #...................
+    #—————————————————————————————————————— #
     ### Sort Table ####
 
     #### First variable is a factor ####
@@ -317,8 +317,9 @@ crosstab <- function(data, ..., print = c("no", "all", "row", "col", "total"),
 
     rownames(result) <- NULL
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Three variables ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Three Variables ####
+
   } else if (isTRUE(ncol(x) == 3L)) {
 
     # If na.omit = FALSE, then include NA if any present
@@ -336,7 +337,7 @@ crosstab <- function(data, ..., print = c("no", "all", "row", "col", "total"),
 
     }
 
-    #...................
+    #—————————————————————————————————————— #
     ### Absolute frequencies without margins ####
 
     x.table <- table(x[, names(x)[c(2L, 3L, 1L)]])
@@ -346,22 +347,22 @@ crosstab <- function(data, ..., print = c("no", "all", "row", "col", "total"),
 
     names(freq.a) <- dimnames(x.table)[[3L]]
 
-    #...................
+    #—————————————————————————————————————— #
     ### Row-wise percentages ####
 
     perc.r <- lapply(freq.a, function(y) prop.table(y, margin = 1L) * 100L)
 
-    #...................
+    #—————————————————————————————————————— #
     ### Column-wise percentages ####
 
     perc.c <- lapply(freq.a, function(y) prop.table(y, margin = 2L) * 100L)
 
-    #...................
+    #—————————————————————————————————————— #
     ### Total percentages ####
 
     perc.t <- lapply(freq.a, function(y) prop.table(y) * 100L)
 
-    #...................
+    #—————————————————————————————————————— #
     ### Absolute frequencies a add margins ####
 
     freq.a <- lapply(freq.a, function(y) rbind(y, colSums(y)))
@@ -374,7 +375,7 @@ crosstab <- function(data, ..., print = c("no", "all", "row", "col", "total"),
 
     }
 
-    #...................
+    #—————————————————————————————————————— #
     ### Row-wise percentages a add margins ####
 
     for (i in names(perc.r)) {
@@ -387,7 +388,7 @@ crosstab <- function(data, ..., print = c("no", "all", "row", "col", "total"),
 
     }
 
-    #...................
+    #—————————————————————————————————————— #
     ### Column-wise percentages a add margins ####
 
     for (i in names(perc.c)) {
@@ -400,7 +401,7 @@ crosstab <- function(data, ..., print = c("no", "all", "row", "col", "total"),
 
     }
 
-    #...................
+    #—————————————————————————————————————— #
     ### Total percentages add margins ####
 
     for (i in names(perc.t)) {
@@ -413,7 +414,7 @@ crosstab <- function(data, ..., print = c("no", "all", "row", "col", "total"),
 
     }
 
-    #...................
+    #—————————————————————————————————————— #
     ### Merge lists ####
 
     # Absolute frequencies
@@ -432,7 +433,7 @@ crosstab <- function(data, ..., print = c("no", "all", "row", "col", "total"),
     perc.t.merge <- NULL
     for (i in seq_len(length(perc.t))) { perc.t.merge <- rbind(perc.t.merge, perc.t[[i]]) }
 
-    #...................
+    #—————————————————————————————————————— #
     ### Result table ####
 
     result <- data.frame(rep(names(freq.a), each = nrow(freq.a[[1L]]), times = 4L),
@@ -441,7 +442,7 @@ crosstab <- function(data, ..., print = c("no", "all", "row", "col", "total"),
                          misty::as.na(rbind(freq.a.merge, perc.r.merge, perc.c.merge, perc.t.merge), na = "NaN", check = FALSE),
                          row.names = NULL, check.rows = FALSE, check.names = FALSE, fix.empty.names = FALSE)
 
-    #...................
+    #—————————————————————————————————————— #
     ### Sort Table ####
 
     #### First and second variables are factors
@@ -649,7 +650,7 @@ crosstab <- function(data, ..., print = c("no", "all", "row", "col", "total"),
 
     }
 
-    #...................
+    #—————————————————————————————————————— #
     ### Add results for total ####
 
     result <- rbind(result,
@@ -657,7 +658,7 @@ crosstab <- function(data, ..., print = c("no", "all", "row", "col", "total"),
 
     rownames(result) <- NULL
 
-    #...................
+    #—————————————————————————————————————— #
     ### Return objects ####
 
     freq.a <- freq.a.merge

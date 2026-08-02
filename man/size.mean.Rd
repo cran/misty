@@ -74,7 +74,7 @@ size).
 }
 \examples{
 #————————————————————————————————————————————————————————————————————————————
-# Example 1: One- and two-sample t-test
+# One- and Two-Sample t-Test
 
 # Example 1a: One-sample t-test
 # H0: mu = mu.0, H1: mu != mu.0
@@ -89,7 +89,7 @@ size.mean(delta = 1, sample = "two.sample",
           alternative = "less", alpha = 0.01, beta = 0.1)
 
 #————————————————————————————————————————————————————————————————————————————
-# Example 2: One- and two-sample test for proportions
+# One- and Two-Sample Test for Proportions
 
 # Example 2a: Two-sided one-sample test
 # H0: pi = 0.5, H1: pi != 0.5
@@ -104,7 +104,7 @@ size.prop(pi = 0.5, delta = 0.2, sample = "two.sample",
           alternative = "greater", alpha = 0.01, beta = 0.1)
 
 #————————————————————————————————————————————————————————————————————————————
-# Example 3: Testing the Pearson product-moment correlation coefficient
+# Testing the Pearson Product-Moment Correlation Coefficient
 
 # H0: rho = 0.3, H1: rho != 0.3
 # alpha = 0.05, beta = 0.2, delta = 0.2

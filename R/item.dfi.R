@@ -179,7 +179,7 @@
 #' #————————————————————————————————————————————————————————————————————————————
 #' # Object of Class misty
 #'
-#' #.....................
+#' #——————————————————————————————————————
 #' ## Multivariate Normality across all Items
 #'
 #' # Conduct confirmatory factor analysis: Continuous items
@@ -188,7 +188,7 @@
 #' # Example 1a: Simulate DFI cutoffs, multivariate normality
 #' item.dfi(mod1a.fit, type = "norm")
 #'
-#' #.....................
+#' #——————————————————————————————————————
 #' ## Multivariate Non-Normality across all Items
 #'
 #' # Conduct confirmatory factor analysis: Continuous items
@@ -197,24 +197,23 @@
 #' # Example 1b: Simulate DFI cutoffs, multivariate non-normality (default)
 #' item.dfi(mod1b.fit)
 #'
-#' #.....................
+#' #——————————————————————————————————————
 #' ## Likert-Type Items Treated as Continuous
 #'
 #' # Conduct confirmatory factor analysis: Likert-type items as continuous
-#' mod1c.fit <- item.cfa(round(HolzingerSwineford1939[, c("x4", "x5", "x6", "x7")]))
+#' mod1c.fit <- item.cfa(data.items, pitem1, pitem2r, pitem3r, pitem4)
 #'
 #' # Example 1c: Simulate DFI cutoffs, Likert-type
 #' item.dfi(mod1c.fit, type = "likert")
 #'
-#' #.....................
+#' #——————————————————————————————————————
 #' ## Ordered-Categorical Items
 #'
 #' # Conduct confirmatory factor analysis: Ordered-categorical items
-#' mod1d.fit <- item.cfa(round(HolzingerSwineford1939[, c("x4", "x5", "x6", "x7")]),
-#'                       ordered = TRUE)
+#' mod1d.fit <- item.cfa(data.items, pitem1, pitem2r, pitem3r, pitem4, ordered = TRUE)
 #'
 #' # Example 1d: Simulate DFI cutoffs, ordered-categorical
-#' item.dfi(mod1d.fit, nrep = 50)
+#' item.dfi(mod1d.fit)
 #'
 #' #————————————————————————————————————————————————————————————————————————————
 #' # Object of Class lavaan
@@ -222,7 +221,7 @@
 #' # Model specification
 #' mod <- 'f =~ x1 + x2 + x3 + x4 + x5 + x6'
 #'
-#' #.....................
+#' #——————————————————————————————————————
 #' ## Multivariate Normality across all Items
 #'
 #' # Model estimation
@@ -231,7 +230,7 @@
 #' # Example 2a: Simulate DFI cutoffs, multivariate normality
 #' mod2a.dfi <- item.dfi(mod2a.fit, type = "norm")
 #'
-#' #.....................
+#' #——————————————————————————————————————
 #' ## Multivariate Non-Normality across all Items
 #'
 #' # Model estimation
@@ -240,7 +239,7 @@
 #' # Example 2b: Simulate DFI cutoffs, multivariate non-normality (default)
 #' mod2b.fit <- item.dfi(mod2b.fit)
 #'
-#' #.....................
+#' #——————————————————————————————————————
 #' ## Arguments 'print' and 'level'
 #'
 #' # Model estimation
@@ -277,7 +276,7 @@
 #' mod3.fit <- item.cfa(HolzingerSwineford1939, x1:x6)
 #'
 #' # Example 4: Plot distributions of fit indices for each level of misspecification
-#' item.dfi(mod3.fit, plot = TRUE, nrep = 100)
+#' item.dfi(mod3.fit, plot = TRUE)
 #'
 #' #————————————————————————————————————————————————————————————————————————————
 #' # Write Results and Save Plot
@@ -317,11 +316,11 @@ item.dfi <- function(model, data = NULL, n = NULL,
   #
   # Input Check ----------------------------------------------------------------
 
-  # Check inputs
-  .check.input(logical = c("seed", "progress", "plot", "append", "output"), s.character = list(type = c("norm", "nnorm", "likert", "categ"), fit.indices = c("standard", "scaled", "robust")), m.character = list(print = c("all", "summary", "model", "cutoff")),
-               args = c("res.cor", "specific", "sensitiv", "n", "nrep", "digits", "write2"), package = "lavaan", envir = environment(), input.check = check)
+  .check.input(logical = c("seed", "progress", "plot", "append", "output"), s.character = list(type = c("norm", "nnorm", "likert", "categ"), fit.indices = c("standard", "scaled", "robust")), m.character = list(print = c("all", "summary", "model", "cutoff")), args = c("res.cor", "specific", "sensitiv", "n", "nrep", "digits", "write2"), package = "lavaan", envir = environment(), input.check = check)
 
-  # Additional checks
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  # Additional Checks
+
   if (isTRUE(check)) {
 
     # Argument 'level'
@@ -386,7 +385,7 @@ item.dfi <- function(model, data = NULL, n = NULL,
 
   if (isTRUE(check)) {
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— #
     ### Multilevel ####
 
     if (isTRUE(inherits(model, what = "misty.object") || inherits(model, what = "lavaan"))) {
@@ -407,7 +406,7 @@ item.dfi <- function(model, data = NULL, n = NULL,
 
     }
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— #
     ### Regression Paths ####
 
     if (isTRUE(lavaan::lavaanify(model.syntax) |> (\(p) all(p$op != "=~") || any(p$op == "~"))())) {
@@ -416,7 +415,7 @@ item.dfi <- function(model, data = NULL, n = NULL,
 
     }
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— #
     ### Hierarchical Model ####
 
     if (isTRUE(lavaan::lavaanify(model.syntax) |> (\(p) any(p[p$op == "=~", "rhs"] %in% p[p$op == "=~", "lhs"]))())) {
@@ -425,7 +424,7 @@ item.dfi <- function(model, data = NULL, n = NULL,
 
     }
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— #
     ### Bifactor Model ####
 
     if (isTRUE(lavaan::lavaanify(model.syntax) |> (\(p) misty::uniq.n(p[p$op == "=~", "lhs"]))() > 1L && lavaan::lavaanify(model.syntax) |> (\(p) p[p$op == "=~", ])() |> (\(q) any(unlist(lapply(split(q, f = q$lhs), function(y) all(lavaan::lavaanify(model.syntax) |> (\(p) unique(p[p$op == "=~", "rhs"]))() %in% y$rhs)))))())) {
@@ -433,7 +432,7 @@ item.dfi <- function(model, data = NULL, n = NULL,
       stop("This function does not support bifactor CFA models.", call. = FALSE)
 
     }
-    #——————————————————————————————————————
+    #—————————————————————————————————————— #
     ### Degrees of Freedom 0 ####
 
     if (isTRUE(inherits(model, what = "misty.object") || inherits(model, what = "lavaan"))) {
@@ -454,7 +453,7 @@ item.dfi <- function(model, data = NULL, n = NULL,
 
     }
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— #
     ### Standardized Factor Loadings, Latent or Residual Correlations Greater than 1 ####
 
     lavaan::lavaanify(model.syntax) |>
@@ -474,7 +473,7 @@ item.dfi <- function(model, data = NULL, n = NULL,
 
       })()
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— #
     ### Items for Misspecification ####
 
     # One-Factor CFA Model
@@ -514,7 +513,7 @@ item.dfi <- function(model, data = NULL, n = NULL,
   # Default setting
   if (isTRUE(all(c("norm", "nnorm", "likert", "categ") %in% type))) {
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— #
     ### Data Available ####
 
     if (isTRUE(!is.null(data))) {
@@ -547,7 +546,7 @@ item.dfi <- function(model, data = NULL, n = NULL,
 
       }
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— #
     ### Data Not Available ####
 
     } else {
@@ -584,7 +583,7 @@ item.dfi <- function(model, data = NULL, n = NULL,
 
   }
 
-  #——————————————————————————————————————
+  #—————————————————————————————————————— #
   ### Check 'data' ####
 
   # Object misty or lavaan
@@ -684,7 +683,7 @@ item.dfi <- function(model, data = NULL, n = NULL,
 
     print  <- c("summary", "cutoff")
 
-  } else if (isTRUE(length(print) == 1L && "all" %in% print)) {
+  } else if (isTRUE(all(print == "all"))) {
 
     print <- c("summary", "model", "cutoff")
 
@@ -747,7 +746,7 @@ item.dfi <- function(model, data = NULL, n = NULL,
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Determine Dynamic Fit Index Cutoffs ####
 
-  #——————————————————————————————————————
+  #—————————————————————————————————————— #
   ### Determine Quantiles ####
 
   fit.quant <- sapply(names(sim.result), function(y)
@@ -764,7 +763,7 @@ item.dfi <- function(model, data = NULL, n = NULL,
 
   })
 
-  #——————————————————————————————————————
+  #—————————————————————————————————————— #
   ### Determine Cutoff Values for Each Misspecification Level Except Level 0 ####
 
   fit.cutoff <- list()
@@ -798,7 +797,7 @@ item.dfi <- function(model, data = NULL, n = NULL,
 
   }
 
-  #——————————————————————————————————————
+  #—————————————————————————————————————— #
   ### Combine Levels ####
 
   # Level 0 Misspecification Model
@@ -835,14 +834,14 @@ item.dfi <- function(model, data = NULL, n = NULL,
   model.fit <- n.emp <- estimator.emp <- fit.indices.emp <- NULL
   if (isTRUE(inherits(model, what = "misty.object") || inherits(model, what = "lavaan"))) {
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— #
     ### Number of Observations ####
 
     n.emp <- lavaan::inspect(if (isTRUE(inherits(model, what = "misty.object"))) { model$model.fit } else { model }, what = "nobs")
 
     if (isTRUE(n.emp != n)) { warning("The number of observations between the simulated and fitted model does not align.", call. = FALSE) }
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— #
     ### Estimator ####
 
     estimator.emp <- lavaan::inspect(if (isTRUE(inherits(model, what = "misty.object"))) { model$model.fit } else { model }, what = "options")$estimator.orig
@@ -850,7 +849,7 @@ item.dfi <- function(model, data = NULL, n = NULL,
     if (isTRUE(estimator.emp != estimator)) { warning("The estimator between the simulated and fitted model does not align.", call. = FALSE) }
 
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— #
     ### Empirical Fit Indices ####
 
     # Version of the CFI, TLI, and RMSEA
@@ -898,7 +897,7 @@ item.dfi <- function(model, data = NULL, n = NULL,
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## lavaan summary ####
 
-  #——————————————————————————————————————
+  #—————————————————————————————————————— #
   ### Simulation ####
 
   lavaan.summary <- data.frame(### First column
@@ -942,7 +941,7 @@ item.dfi <- function(model, data = NULL, n = NULL,
                                  # Number of Replications
                                  nrep), fix.empty.names = FALSE)
 
-  #——————————————————————————————————————
+  #—————————————————————————————————————— #
   ### Empirical ####
 
   lavaan.summary.empirical <- NULL

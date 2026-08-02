@@ -77,20 +77,19 @@ chr.grep <- function(pattern, x, ignore.case = FALSE, perl = FALSE, value = FALS
   #
   # Main Function --------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Matching Elements, invert = FALSE ####
 
   if (isTRUE(!invert)) {
 
-    #...................
+    #—————————————————————————————————————— #
     ### Character String to be Matched ####
 
     if (isTRUE(length(pattern) == 1L)) {
 
       object <- grep(pattern, x, ignore.case = ignore.case, perl = perl, value = FALSE, fixed = fixed, useBytes = useBytes, invert = FALSE)
 
-
-    #...................
+    #—————————————————————————————————————— #
     ### Character Vector to be Matched ####
 
     } else {
@@ -99,12 +98,12 @@ chr.grep <- function(pattern, x, ignore.case = FALSE, perl = FALSE, value = FALS
 
     }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Not Matching Elements, invert = TRUE ####
 
   } else {
 
-    #...................
+    #—————————————————————————————————————— #
     ### Character String to be Matched ####
 
     if (isTRUE(length(pattern) == 1L)) {
@@ -112,7 +111,7 @@ chr.grep <- function(pattern, x, ignore.case = FALSE, perl = FALSE, value = FALS
       object <- grep(pattern, x, ignore.case = ignore.case, perl = perl, value = FALSE, fixed = fixed, useBytes = useBytes, invert = TRUE)
 
 
-    #...................
+    #—————————————————————————————————————— #
     ### Character Vector to be Matched ####
 
     } else {
@@ -124,7 +123,7 @@ chr.grep <- function(pattern, x, ignore.case = FALSE, perl = FALSE, value = FALS
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Matching Elements, value = TRUE ####
 
   if (isTRUE(value)) { object <- x[object] }
@@ -171,14 +170,14 @@ chr.grepl <- function(pattern, x, ignore.case = FALSE, perl = FALSE, fixed = FAL
   #
   # Main Function --------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Character String to be Matched ####
 
   if (isTRUE(length(pattern) == 1L)) {
 
     object <- grepl(pattern, x, ignore.case = ignore.case, perl = perl, fixed = fixed, useBytes = useBytes)
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Character Vector to be Matched ####
 
   } else {

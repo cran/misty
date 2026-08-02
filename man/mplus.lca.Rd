@@ -17,7 +17,7 @@ mplus.lca(x, ind = NULL,
           write = c("all", "folder", "data", "input"),
           useobservations = NULL, estimator = "MLR",
           starts = c(100, 50), stiterations = 10, processors = c(8, 8),
-          boot = c("none", "perc", "bc"), R = 1000,
+          boot = c("none", "perc", "bc"), nrep = 1000,
           lrtbootstrap = 1000, lrtstarts = c(0, 0, 100, 50),
           output = c("all", "SVALUES", "CINTERVAL", "TECH7", "TECH8", "TECH11", "TECH14"),
           replace.inp = FALSE, mplus.run = FALSE, Mplus = "Mplus",
@@ -114,7 +114,7 @@ for the percentile bootstrap CI (i.e., Mplus command
 for the bias-corrected (BC) percentile bootstrap CI
 (i.e., Mplus command \code{OUTPUT: CINTERVAL (BCBOOTSTRAP)}).}
 
-\item{R}{a numeric value indicating the number of bootstrap
+\item{nrep}{a numeric value indicating the number of bootstrap
 replicates (default is 1000).}
 
 \item{lrtbootstrap}{an integer value for specifying the \code{LRTBOOTSTRAP}

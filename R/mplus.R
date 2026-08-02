@@ -121,7 +121,7 @@
 #'
 #' @examples
 #' \dontrun{
-#' #----------------------------------------------------------------------------
+#' #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #' # Example 1: Write data, specify input, and run input
 #'
 #' # Write Mplus data file
@@ -138,7 +138,7 @@
 #' # Run Mplus input
 #' mplus(input1, file = "ex3_1.inp")
 #'
-#' #----------------------------------------------------------------------------
+#' #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #' # Example 2: Alternative specification using the data argument
 #'
 #' # Read Mplus data file and set variables names
@@ -231,7 +231,7 @@ mplus <- function(x, file = "Mplus_Input.inp", data = NULL, comment = FALSE, rep
   #
   # Arguments ------------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## file Argument ####
 
   # File extension .inp
@@ -240,7 +240,7 @@ mplus <- function(x, file = "Mplus_Input.inp", data = NULL, comment = FALSE, rep
   # .out object
   file.out <- sub("\\.inp", ".out", file)
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## replace.out Argument ####
 
   if (isTRUE(all(c("always", "never", "modified") %in% replace.out))) { replace.out <- "always" }
@@ -249,7 +249,7 @@ mplus <- function(x, file = "Mplus_Input.inp", data = NULL, comment = FALSE, rep
   #
   # Main Function --------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Remove Comments ####
 
   if (isTRUE(!comment)) {
@@ -276,12 +276,12 @@ mplus <- function(x, file = "Mplus_Input.inp", data = NULL, comment = FALSE, rep
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Upper Case Characters ####
 
   x.upp <- toupper(x)
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Extract Position of Input Command Sections ####
 
   section.pos <- c(if (isTRUE(any(grepl("TITLE:", x.upp)))) { as.numeric(gregexec("TITLE:", x.upp)[[1L]]) } else { NULL },
@@ -317,132 +317,132 @@ mplus <- function(x, file = "Mplus_Input.inp", data = NULL, comment = FALSE, rep
                    if (isTRUE(any(grepl("OUTPUT:", x.upp)))) { as.numeric(gregexec("OUTPUT:", x.upp)[[1L]]) } else { NULL },
                    if (isTRUE(any(grepl("SAVEDATA:", x.upp)))) { as.numeric(gregexec("SAVEDATA:", x.upp)[[1L]]) } else { NULL })
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Extract Input Command Sections ####
 
   title <- inpdata <- data.imp <- data.wl <- data.lw <- data.tp <- data.miss <- data.surv <- data.coh <- inpvariable <- define <- analysis <- model <- mod.ind <- mod.test <- mod.prior <- montecarlo <- mod.pop <- mod.cov <- mod.miss <- mod.const <- plot <- inpoutput <- savedata <- NULL
 
-  #...................
+  #—————————————————————————————————————— #
   ### TITLE ####
 
   if (isTRUE(any(grepl("TITLE:", x.upp)))) { title <- .extract.section("TITLE:", x, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### DATA ####
 
   if (isTRUE(any(grepl("DATA:", x.upp)))) { inpdata <- .extract.section("DATA:", x, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### DATA IMPUTATION ####
 
   if (isTRUE(any(grepl("DATA IMPUTATION:", x.upp)))) { data.imp <- .extract.section("DATA IMPUTATION:", x, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### DATA WIDETOLONG ####
 
   if (isTRUE(any(grepl("DATA WIDETOLONG:", x.upp)))) { data.wl <- .extract.section("DATA WIDETOLONG:", x, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### DATA LONGTOWIDE ####
 
   if (isTRUE(any(grepl("DATA LONGTOWIDE:", x.upp)))) { data.lw <- .extract.section("DATA LONGTOWIDE:", x, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### DATA TWOPART ####
 
   if (isTRUE(any(grepl("DATA TWOPART:", x.upp)))) { data.tp <- .extract.section("DATA TWOPART:", x, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### DATA MISSING ####
 
   if (isTRUE(any(grepl("DATA MISSING:", x.upp)))) { data.miss <- .extract.section("DATA MISSING:", x, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### DATA SURVIVAL ####
 
   if (isTRUE(any(grepl("DATA SURVIVAL:", x.upp)))) { data.surv <- .extract.section("DATA SURVIVAL:", x, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### DATA COHORT ####
 
   if (isTRUE(any(grepl("DATA COHORT:", x.upp)))) { data.coh <- .extract.section("DATA COHORT:", x, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### VARIABLE ####
 
   if (isTRUE(any(grepl("VARIABLE:", x.upp)))) { inpvariable <- .extract.section("VARIABLE:", x, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### DEFINE ####
 
   if (isTRUE(any(grepl("DEFINE:", x.upp)))) { define <- .extract.section("DEFINE:", x, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### ANALYSIS ####
 
   if (isTRUE(any(grepl("ANALYSIS:", x.upp)))) { analysis <- .extract.section("ANALYSIS:", x, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### MODEL ####
 
   if (isTRUE(any(grepl("MODEL:", x.upp)))) { model <- .extract.section("MODEL:", x, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### MODEL INDIRECT ####
 
   if (isTRUE(any(grepl("MODEL INDIRECT:", x.upp)))) { mod.ind <- .extract.section("MODEL INDIRECT:", x, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### MODEL TEST ####
 
   if (isTRUE(any(grepl("MODEL TEST:", x.upp)))) { mod.test <- .extract.section("MODEL TEST:", x, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### MODEL PRIORS ####
 
   if (isTRUE(any(grepl("MODEL PRIORS:", x.upp)))) { mod.prior <- .extract.section("MODEL PRIORS:", x, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### MONTECARLO ####
 
   if (isTRUE(any(grepl("MONTECARLO:", x.upp)))) { montecarlo <- .extract.section("MONTECARLO:", x, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### MODEL POPULATION ####
 
   if (isTRUE(any(grepl("MODEL POPULATION:", x.upp)))) { mod.pop <- .extract.section("MODEL POPULATION:", x, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### MODEL COVERAGE ####
 
   if (isTRUE(any(grepl("MODEL COVERAGE:", x.upp)))) { mod.cov <- .extract.section("MODEL COVERAGE:", x, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### MODEL MISSING ####
 
   if (isTRUE(any(grepl("MODEL MISSING:", x.upp)))) { mod.miss <- .extract.section("MODEL MISSING:", x, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### MODEL CONSTRAINT ####
 
   if (isTRUE(any(grepl("MODEL CONSTRAINT:", x.upp)))) { mod.const <- .extract.section("MODEL CONSTRAINT:", x, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### PLOT ####
 
   if (isTRUE(any(grepl("PLOT:", x.upp)))) { plot <- .extract.section("PLOT:", x, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### OUTPUT ####
 
   if (isTRUE(any(grepl("OUTPUT:", x.upp)))) { inpoutput <- .extract.section("OUTPUT:", x, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### SAVEDATA ####
 
   if (isTRUE(any(grepl("SAVEDATA:", x.upp)))) { savedata <- .extract.section("SAVEDATA:", x, section.pos) }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Variable Names ####
 
   if (isTRUE(!is.null(data))) {
@@ -522,7 +522,7 @@ mplus <- function(x, file = "Mplus_Input.inp", data = NULL, comment = FALSE, rep
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Input Object ####
 
   input.object <- list(title = title,
@@ -533,7 +533,7 @@ mplus <- function(x, file = "Mplus_Input.inp", data = NULL, comment = FALSE, rep
                        montecarlo = montecarlo, mod.pop = mod.pop, mod.cov = mod.cov, mod.miss = mod.miss,
                        mod.const = mod.const, plot = plot, output = inpoutput, savedata = savedata)
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Write Object ####
 
   write.object <- paste(sapply(unlist(Filter(Negate(is.null), input.object)), function(y) {
@@ -550,7 +550,7 @@ mplus <- function(x, file = "Mplus_Input.inp", data = NULL, comment = FALSE, rep
 
   }), collapse = "\n")
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Write Input ####
 
   # Input file already exists
@@ -575,7 +575,7 @@ mplus <- function(x, file = "Mplus_Input.inp", data = NULL, comment = FALSE, rep
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Run Mplus ####
 
   if (isTRUE(mplus.run)) {
@@ -601,7 +601,7 @@ mplus <- function(x, file = "Mplus_Input.inp", data = NULL, comment = FALSE, rep
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Mplus Output ####
 
   if (isTRUE(mplus.run && output)) {

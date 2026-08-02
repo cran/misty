@@ -159,7 +159,7 @@ and \eqn{g_{av}} are computed when using \code{correct = TRUE} in addition.
 }
 \examples{
 #————————————————————————————————————————————————————————————————————————————
-# One-sample design
+# One-Sample Design
 
 # Example 1a: Cohen's d.z with two-sided 95% CI
 # population mean = 3
@@ -182,7 +182,7 @@ cohens.d(mtcars$mpg, mu = 20, split = mtcars$vs)
 cohens.d(mtcars$mpg, mu = 20, group = mtcars$vs, split = mtcars$am)
 
 #————————————————————————————————————————————————————————————————————————————
-# Two-sample design
+# Two-Sample Design
 
 # Example 2a: Cohen's d.s with two-sided 95% CI
 # weighted pooled SD
@@ -225,7 +225,7 @@ cohens.d(mpg ~ vs, data = mtcars, group = mtcars$am)
 cohens.d(mpg ~ vs, data = mtcars, split = mtcars$am)
 
 #————————————————————————————————————————————————————————————————————————————
-# Paired-sample design
+# Paired-Sample Design
 
 # Example 3a: Cohen's d.z with two-sided 95% CI
 # SD of the difference scores

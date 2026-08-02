@@ -164,7 +164,7 @@ ci.prop.diff.default <- function(x, y, method = c("wald", "newcombe"), paired = 
   # Convert 'x' into a vector
   x <- unlist(x, use.names = FALSE)
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Check 'y' ####
 
   if (isTRUE(missing(y))) { stop("Please specify a numeric vector for the argument 'y'", call. = FALSE) }
@@ -178,7 +178,7 @@ ci.prop.diff.default <- function(x, y, method = c("wald", "newcombe"), paired = 
   # Convert 'y' into a vector
   y <- unlist(y, use.names = FALSE)
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Check 'paired' ####
 
   if (isTRUE(!is.logical(paired))) { stop("Please specify TRUE or FALSE for the argument 'paired'.", call. = FALSE) }
@@ -190,7 +190,7 @@ ci.prop.diff.default <- function(x, y, method = c("wald", "newcombe"), paired = 
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Check 'group' ####
 
   if (isTRUE(!is.null(group))) {
@@ -210,7 +210,7 @@ ci.prop.diff.default <- function(x, y, method = c("wald", "newcombe"), paired = 
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Check 'split' ####
 
   if (isTRUE(!is.null(split))) {
@@ -230,7 +230,7 @@ ci.prop.diff.default <- function(x, y, method = c("wald", "newcombe"), paired = 
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## List or Dataframe ####
 
   # Independent samples
@@ -245,12 +245,12 @@ ci.prop.diff.default <- function(x, y, method = c("wald", "newcombe"), paired = 
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Convert user-missing values into NA ####
 
   if (isTRUE(!is.null(as.na))) { xy <- .as.na(xy, na = as.na) }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Listwise deletion ####
 
   if (isTRUE(paired)) {
@@ -305,12 +305,12 @@ ci.prop.diff.default <- function(x, y, method = c("wald", "newcombe"), paired = 
   #
   # Arguments ------------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Method ####
 
   if (isTRUE(all(c("wald", "newcombe") %in% method))) { method <- "newcombe" }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Alternative hypothesis ####
 
   if (isTRUE(all(c("two.sided", "less", "greater") %in% alternative))) { alternative <- "two.sided" }
@@ -319,12 +319,14 @@ ci.prop.diff.default <- function(x, y, method = c("wald", "newcombe"), paired = 
   #
   # Main Function --------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## No Grouping, No Split ####
+
   if (isTRUE(is.null(group) && is.null(split))) {
 
-    #...................
-    ### Two-samples ####
+    #—————————————————————————————————————— #
+    ### Two-Samples ####
+
     if (!isTRUE(paired)) {
 
       result <- misty::df.rbind(data.frame(variable = "y",
@@ -344,8 +346,9 @@ ci.prop.diff.default <- function(x, y, method = c("wald", "newcombe"), paired = 
                                                                 paired = FALSE, conf.level = conf.level, side = "upp"),
                                            row.names = NULL))
 
-    #...................
-    ### Paired-samples ####
+    #—————————————————————————————————————— #
+    ### Paired-Samples ####
+
     } else {
 
       result <- data.frame(variable = "y",
@@ -362,8 +365,9 @@ ci.prop.diff.default <- function(x, y, method = c("wald", "newcombe"), paired = 
 
     }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Grouping, No Split ####
+
   } else if (isTRUE(!is.null(group) && is.null(split))) {
 
     object.group <- lapply(split(xy, f = group),
@@ -378,8 +382,9 @@ ci.prop.diff.default <- function(x, y, method = c("wald", "newcombe"), paired = 
                          eval(parse(text = paste0("rbind(", paste0("object.group[[", seq_len(length(object.group)), "]]",
                                                                    collapse = ", "), ")"))))
 
-  #----------------------------------------
-  # No Grouping, Split
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## No Grouping, Split ####
+
   } else if (isTRUE(is.null(group) && !is.null(split))) {
 
     result <- lapply(split(data.frame(xy), f = split),
@@ -390,8 +395,9 @@ ci.prop.diff.default <- function(x, y, method = c("wald", "newcombe"), paired = 
                                                       na.omit = na.omit, as.na = as.na, check = FALSE,
                                                       output = FALSE)$result)
 
-  #----------------------------------------
-  # Grouping, Split
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Grouping, Split ####
+
   } else if (isTRUE(!is.null(group) && !is.null(split))) {
 
     result <- lapply(split(data.frame(xy, .group = group, row.names = NULL), f = split),
@@ -421,12 +427,12 @@ ci.prop.diff.default <- function(x, y, method = c("wald", "newcombe"), paired = 
 
   #_____________________________________________________________________________
   #
-  # Write results --------------------------------------------------------------
+  # Write Results --------------------------------------------------------------
 
   if (isTRUE(!is.null(write))) {
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Text file ####
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Text File ####
 
     # Send R output to textfile
     sink(file = write, append = ifelse(isTRUE(file.exists(write)), append, FALSE), type = "output", split = FALSE)
@@ -499,15 +505,15 @@ ci.prop.diff.formula <- function(formula, data, method = c("wald", "newcombe"),
   #
   # Data and Variables ---------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## As data frame ####
+  ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## As Data Frame ####
 
   data <- as.data.frame(data)
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Formula ####
 
-  #...................
+  #—————————————————————————————————————— #
   ### Variables ####
 
   var.formula <- all.vars(as.formula(formula))
@@ -518,7 +524,7 @@ ci.prop.diff.formula <- function(formula, data, method = c("wald", "newcombe"),
   # Outcome(s)
   y.vars <- var.formula[-grep(group.var, var.formula)]
 
-  #...................
+  #—————————————————————————————————————— #
   ### Check ####
 
   # Check if variables are in the data
@@ -527,8 +533,8 @@ ci.prop.diff.formula <- function(formula, data, method = c("wald", "newcombe"),
   # Check if input 'formula' has only one grouping variable
   if (isTRUE(length(group.var) != 1L)) { stop("Please specify a formula with only one grouping variable.", call. = FALSE) }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Convert user-missing values into NA ####
+  ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Convert User-Missing Values into NA ####
 
   if (isTRUE(!is.null(as.na))) {
 
@@ -547,13 +553,14 @@ ci.prop.diff.formula <- function(formula, data, method = c("wald", "newcombe"),
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Listwise deletion ####
+  ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Listwise Deletion ####
 
   if (isTRUE(na.omit && any(is.na(data[, var.formula])))) {
 
-    #...................
-    ### No group and split variable ####
+    #—————————————————————————————————————— #
+    ### No Group and Split Variable ####
+
     if (isTRUE(is.null(group) && is.null(split))) {
 
       x <- na.omit(as.data.frame(data[, var.formula]))
@@ -562,8 +569,9 @@ ci.prop.diff.formula <- function(formula, data, method = c("wald", "newcombe"),
 
     }
 
-    #...................
-    ### Group variable, no split variable ####
+    #—————————————————————————————————————— #
+    ### Group Variable, No Split Variable ####
+
     if (isTRUE(!is.null(group) && is.null(split))) {
 
       data.group <- na.omit(data.frame(data[, var.formula], group = group))
@@ -575,8 +583,9 @@ ci.prop.diff.formula <- function(formula, data, method = c("wald", "newcombe"),
 
     }
 
-    #...................
-    ### No group variable, split variable ####
+    #—————————————————————————————————————— #
+    ### No Group Variable, Split Variable ####
+
     if (isTRUE(is.null(group) && !is.null(split))) {
 
       data.split <- na.omit(data.frame(data[, var.formula], split = split))
@@ -588,8 +597,9 @@ ci.prop.diff.formula <- function(formula, data, method = c("wald", "newcombe"),
 
     }
 
-    #...................
-    ### Group variable, split variable ####
+    #—————————————————————————————————————— #
+    ### Group Variable, Split Variable ####
+
     if (isTRUE(!is.null(group) && !is.null(split))) {
 
       data.group.split <- na.omit(data.frame(data[, var.formula], group = group, split = split))
@@ -602,8 +612,8 @@ ci.prop.diff.formula <- function(formula, data, method = c("wald", "newcombe"),
 
     }
 
-    #...................
-    ### Variable with missing values only ####
+    #—————————————————————————————————————— #
+    ### Variable with Missing Values Only ####
 
     vapply(data[, var.formula], function(y) all(is.na(y)), FUN.VALUE = logical(1L)) |>
       (\(y) if (isTRUE(any(y))) {
@@ -614,7 +624,7 @@ ci.prop.diff.formula <- function(formula, data, method = c("wald", "newcombe"),
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Check ####
 
   if (isTRUE(length(na.omit(unique(data[, group.var]))) != 2L)) { stop("Please specify a grouping variable with exactly two levels.", call. = FALSE) }
@@ -623,12 +633,12 @@ ci.prop.diff.formula <- function(formula, data, method = c("wald", "newcombe"),
   #
   # Arguments ------------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Method ####
 
   if (isTRUE(all(c("wald", "newcombe") %in% method))) { method <- "newcombe" }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Alternative hypothesis ####
 
   if (isTRUE(all(c("two.sided", "less", "greater") %in% alternative))) { alternative <- "two.sided" }
@@ -637,8 +647,9 @@ ci.prop.diff.formula <- function(formula, data, method = c("wald", "newcombe"),
   #
   # Main Function --------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## No Grouping, No Split ####
+
   if (isTRUE(is.null(group) && is.null(split))) {
 
     result <- data.frame(matrix(NA, ncol = 8L, nrow = length(y.vars)*2L, dimnames = list(NULL, c("variable", "between", "n", "nNA", "p", "p.diff", "low", "upp"))))
@@ -659,8 +670,9 @@ ci.prop.diff.formula <- function(formula, data, method = c("wald", "newcombe"),
 
     }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Grouping, No Split ####
+
   } else if (isTRUE(!is.null(group) && is.null(split))) {
 
     object.group <- lapply(split(data[, var.formula], f = group),
@@ -674,8 +686,9 @@ ci.prop.diff.formula <- function(formula, data, method = c("wald", "newcombe"),
                          eval(parse(text = paste0("rbind(", paste0("object.group[[", seq_len(length(object.group)), "]]",
                                                                    collapse = ", "), ")"))))
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## No Grouping, Split ####
+
   } else if (isTRUE(is.null(group) && !is.null(split))) {
 
     result <- lapply(split(data.frame(data[, var.formula]), f = split),
@@ -684,8 +697,9 @@ ci.prop.diff.formula <- function(formula, data, method = c("wald", "newcombe"),
                                                      group = NULL, split = NULL, sort.var = sort.var, na.omit = na.omit,
                                                      as.na = as.na, check = FALSE, output = FALSE)$result)
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Grouping, Split ####
+
   } else if (isTRUE(!is.null(group) && !is.null(split))) {
 
     result <- lapply(split(data.frame(data[, var.formula], .group = group), f = split),
@@ -718,7 +732,7 @@ ci.prop.diff.formula <- function(formula, data, method = c("wald", "newcombe"),
 
   if (isTRUE(!is.null(write))) {
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Text file ####
 
     # Send R output to textfile

@@ -124,7 +124,7 @@
 #' @export
 #'
 #' @examples
-#' #————————————————————————————————————————————————————————————————————————————
+#' #—————————————————————————————————————— #——————————————————————————————————————
 #' # Two-Sample Design
 #'
 #' # Example 1a: Two-sided two-sample Welch-test
@@ -137,7 +137,7 @@
 #' # Print descriptive statistics and Cohen's d
 #' test.welch(hp ~ am, data = mtcars, descript = TRUE, effsize = TRUE)
 #'
-#' #————————————————————————————————————————————————————————————————————————————
+#' #—————————————————————————————————————— #——————————————————————————————————————
 #' # Multiple-Sample Design
 #'
 #' # Example 2a: Welch's ANOVA
@@ -150,7 +150,7 @@
 #' # Example 2c: Welch's ANOVA, print eta-squared and omega-squared
 #' test.welch(hp ~ gear, data = mtcars, effsize = TRUE)
 #'
-#' #————————————————————————————————————————————————————————————————————————————
+#' #—————————————————————————————————————— #——————————————————————————————————————
 #' # Plot
 #'
 #' # Example 3a: Plot results, default setting
@@ -166,7 +166,7 @@
 #' object <- test.welch(hp ~ gear, data = mtcars)
 #' plot(object, jitter = TRUE, jitter.alpha = 0.4, title = "Welch's Test")
 #'
-#' #————————————————————————————————————————————————————————————————————————————
+#' #—————————————————————————————————————— #——————————————————————————————————————
 #' # Create Plot Manually
 #'
 #' # Load ggplot2 package
@@ -184,7 +184,7 @@
 #'   geom_errorbar(aes(group, m, ymin = low, ymax = upp), width = 0.1) +
 #'   theme_bw()
 #'
-#' #————————————————————————————————————————————————————————————————————————————
+#' #—————————————————————————————————————— #——————————————————————————————————————
 #' # Write Results and Save Plot
 #'
 #' \dontrun{
@@ -287,7 +287,7 @@ test.welch <- function(formula, data, alternative = c("two.sided", "less", "grea
   sample <- ifelse(length(levels(group)) == 2L, "two", "multiple")
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Two-sample Welch Test ####
+  ## Two-Sample Welch Test ####
 
   if (isTRUE(sample == "two")) {
 
@@ -306,7 +306,7 @@ test.welch <- function(formula, data, alternative = c("two.sided", "less", "grea
     # Welch's test for two groups
     welch <- t.test(formula = formula, data = data, alternative = switch(alternative, two.sided = "two.sided", greater = "less", less = "greater"), var.equal = FALSE)
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— #
     ### Result object ####
 
     result <- data.frame(cbind(ci.table[, c("group", "n", "nNA", "m", "sd", "m.diff")],
@@ -322,12 +322,12 @@ test.welch <- function(formula, data, alternative = c("two.sided", "less", "grea
 
   } else if (isTRUE(sample == "multiple")) {
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— #
     ### Descriptive statistics ####
 
     ci.table <- misty::ci.mean(y, group = group, adjust = adjust, output = FALSE)$result[, c("group", "n", "nNA", "m", "low", "upp", "sd", "skew", "kurt")]
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— #
     ### ANOVA Table ####
 
     aov.table <- summary(aov(y ~ group))[[1L]]
@@ -338,22 +338,22 @@ test.welch <- function(formula, data, alternative = c("two.sided", "less", "grea
     ms.r <- aov.table[["Mean Sq"]][2L]
     ss.t <- sum(aov.table[["Sum Sq"]])
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— #
     ### Eta Squared ####
 
     eta.sq <- ss.m / ss.t
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— #
     ### Omega Squared ####
 
     omega.sq <- (ss.m - df.m*ms.r) / (ss.t + ms.r) |> (\(y) ifelse(y < 0L, 0L, y))()
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— #
     ### Welch's ANOVA ####
 
     welch <- oneway.test(y ~ as.factor(group), data = data, var.equal = FALSE)
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— #
     ### Post Hoc Test ####
 
     # Generate all pairwise combinations
@@ -425,7 +425,7 @@ test.welch <- function(formula, data, alternative = c("two.sided", "less", "grea
     # Convert to numeric
     result.ph[, c(3L:ncol(result.ph))] <- as.numeric(as.matrix(result.ph[, c(3L:ncol(result.ph))]))
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— #
     ### Result object ####
 
     result <- list(descript = ci.table,

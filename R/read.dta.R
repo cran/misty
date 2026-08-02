@@ -98,8 +98,8 @@ read.dta <- function(file, use.value.labels = FALSE, formats = FALSE, label = FA
   # Read Stata data
   object <- haven::read_dta(file)
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Remove format ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Remove Format ####
 
   if (isTRUE(!formats)) {
 
@@ -111,7 +111,7 @@ read.dta <- function(file, use.value.labels = FALSE, formats = FALSE, label = FA
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Remove Variable Label ####
 
   if (isTRUE(!label)) {
@@ -124,7 +124,7 @@ read.dta <- function(file, use.value.labels = FALSE, formats = FALSE, label = FA
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Remove Value Labels ####
 
   if (isTRUE(!labels)) {
@@ -137,8 +137,8 @@ read.dta <- function(file, use.value.labels = FALSE, formats = FALSE, label = FA
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Remove tagged missing values ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Remove Tagged Missing Values ####
 
   if (isTRUE(!missing)) {
 
@@ -150,8 +150,8 @@ read.dta <- function(file, use.value.labels = FALSE, formats = FALSE, label = FA
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Remove widths ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Remove Widths ####
 
   if (isTRUE(!widths)) {
 
@@ -163,8 +163,8 @@ read.dta <- function(file, use.value.labels = FALSE, formats = FALSE, label = FA
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## As data frame ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## As Data Frame ####
 
   if (isTRUE(as.data.frame)) {
 
@@ -172,8 +172,9 @@ read.dta <- function(file, use.value.labels = FALSE, formats = FALSE, label = FA
 
     object.attributes <- lapply(object, function(y) names(attributes(y)))
 
-    #...................
+    #—————————————————————————————————————— #
     ### Factors ####
+
     if (isTRUE(any(unlist(object.attributes) == "labels") && use.value.labels)) {
 
       var.labels.na <- NULL

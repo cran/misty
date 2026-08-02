@@ -377,8 +377,8 @@ blimp.plot <- function(x, plot = c("none", "trace", "post"), param = NULL, label
   # Check if input 'x' is missing or NULL
   if (isTRUE(missing(x) || is.null(x))) { stop("Please specify a character string indicating the name of folder or name of the posterior data file for the argument 'x'", call. = FALSE) }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Character string ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Character String ####
 
   if (isTRUE(is.character(x))) {
 
@@ -409,8 +409,8 @@ blimp.plot <- function(x, plot = c("none", "trace", "post"), param = NULL, label
 
     }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## misty object ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## misty Object ####
 
   } else if (isTRUE(inherits(x, "misty.object"))) {
 
@@ -438,13 +438,13 @@ blimp.plot <- function(x, plot = c("none", "trace", "post"), param = NULL, label
   #
   # Arguments ------------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## 'plot' Argument ####
 
   # Default setting
   if (isTRUE(all(c("none", "trace", "post") %in% plot))) { plot <- "trace" }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## 'param' Argument ####
 
   # Default setting
@@ -459,7 +459,7 @@ blimp.plot <- function(x, plot = c("none", "trace", "post"), param = NULL, label
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## 'point' Argument ####
 
   # Default setting
@@ -474,24 +474,24 @@ blimp.plot <- function(x, plot = c("none", "trace", "post"), param = NULL, label
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## 'ci' Argument ####
 
   # Default setting
   if (isTRUE(all(c("none", "eti", "hdi") %in% ci))) { ci <- "eti" }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## 'scales' Argument ####
 
   # Default setting
   if (isTRUE(all(c("free", "free_x", "free_y") %in% facet.scales))) { facet.scales <- "free" }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## 'nrow' and 'ncol' Argument ####
 
   if (isTRUE(is.null(nrow) && is.null(ncol))) { ncol <- 2L }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## 'saveplot' Argument ####
 
   # Default setting
@@ -505,7 +505,7 @@ blimp.plot <- function(x, plot = c("none", "trace", "post"), param = NULL, label
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## 'units' Argument ####
 
   # Default setting
@@ -517,12 +517,13 @@ blimp.plot <- function(x, plot = c("none", "trace", "post"), param = NULL, label
 
   posterior <- iter <- value <- chain <- stat <- low <- upp <- NULL
 
-  #----------------------------------------
-  # Blimp Plot Data in CSV File
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Blimp Plot Data in CSV File ####
+
   if (isTRUE(!inherits(x, "misty.object"))) {
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Read Blimp Posterior File ####
+    #—————————————————————————————————————— #
+    ### Read Blimp Posterior File ####
 
     tryCatch(
 
@@ -558,11 +559,11 @@ blimp.plot <- function(x, plot = c("none", "trace", "post"), param = NULL, label
 
       error = function(y) { stop("Reading posterior file specified in the argument 'x' failed.", call. = FALSE) })
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Data Preparation ####
+    #—————————————————————————————————————— #
+    ### Data Preparation ####
 
-    #...................
-    ### Number of Iterations and Number of Chains ####
+    #···················
+    #### Number of Iterations and Number of Chains ####
 
     # Number of iterations
     n.burnin <- max(plotdat[which(plotdat$postburn == 0), "iter"])
@@ -571,8 +572,8 @@ blimp.plot <- function(x, plot = c("none", "trace", "post"), param = NULL, label
     # Number of chains
     n.chains <- max(plotdat$chain)
 
-    #...................
-    ### Exclude Parameters with Zero Variance ####
+    #···················
+    #### Exclude Parameters with Zero Variance ####
 
     plotdat <- which(tapply(plotdat$value, plotdat$param, var) == 0L) |>
       (\(z) if (isTRUE(length(z) != 0L)) {
@@ -585,8 +586,8 @@ blimp.plot <- function(x, plot = c("none", "trace", "post"), param = NULL, label
 
       })()
 
-    #...................
-    ### Label ####
+    #···················
+    #### Labels ####
 
     # With Labels
     if (isTRUE(labels)) {
@@ -614,8 +615,8 @@ blimp.plot <- function(x, plot = c("none", "trace", "post"), param = NULL, label
 
     }
 
-    #...................
-    ### Select Parameters ####
+    #···················
+    #### Select Parameters ####
 
     if (isTRUE(!is.null(param))) {
 
@@ -627,21 +628,21 @@ blimp.plot <- function(x, plot = c("none", "trace", "post"), param = NULL, label
 
     }
 
-    #...................
-    ### Factors ####
+    #···················
+    #### Factors ####
 
     plotdat.post$postburn <- plotdat.trace$postburn <- factor(plotdat.trace$postburn, levels = unique(plotdat.trace$postburn))
     plotdat.post$chain <- plotdat.trace$chain <- factor(plotdat.trace$chain)
 
-    #...................
-    ### Discard burn-in iterations ####
+    #···················
+    #### Discard Burn-In Iterations ####
 
     if (isTRUE(!burnin)) { plotdat.trace <- plotdat.trace[which(!plotdat.trace$postburn == 0L), ] }
 
     plotdat.post <- plotdat.post[which(!plotdat.post$postburn == 0L), ]
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Trace Plots ####
+    #——————————————————————————————————————
+    ### Trace Plots ####
 
     # 'xlab' argument
     if (isTRUE(is.null(xlab))) { xlab.trace <- "Iteration" } else { xlab.trace <- xlab }
@@ -733,8 +734,8 @@ blimp.plot <- function(x, plot = c("none", "trace", "post"), param = NULL, label
 
     }
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Posterior Distribution ####
+    #——————————————————————————————————————
+    ### Posterior Distribution ####
 
     # 'xlab' argument
     if (isTRUE(is.null(xlab))) { xlab.post <- "" } else { xlab.post <- xlab }
@@ -777,6 +778,7 @@ blimp.plot <- function(x, plot = c("none", "trace", "post"), param = NULL, label
     # Density curve
     if (isTRUE(density)) { plot.post <- suppressMessages(plot.post + ggplot2::geom_density(color = density.col)) }
 
+    #···················
     #### Point Estimates ####
 
     if (isTRUE(all(point != "none"))) {
@@ -855,11 +857,12 @@ blimp.plot <- function(x, plot = c("none", "trace", "post"), param = NULL, label
 
     }
 
+    #···················
     #### Credible Interval ####
 
     if (isTRUE(ci != "none")) {
 
-      ##### Equal-Tailed Interval
+      ##### Equal-Tailed Interval ####
       switch(ci, eti = {
 
         plot.post <- suppressMessages(plot.post +
@@ -872,7 +875,7 @@ blimp.plot <- function(x, plot = c("none", "trace", "post"), param = NULL, label
                                         ggplot2::labs(caption = paste0(round(conf.level * 100, digits = 2), "% Equal-Tailed Interval")) +
                                         ggplot2::theme(plot.caption = ggplot2::element_text(hjust = 0.5, vjust = 7L)))
 
-      ##### Highest Density Interval
+      ##### Highest Density Interval ####
       }, hdi = {
 
         plot.post <- suppressMessages(plot.post +
@@ -917,8 +920,9 @@ blimp.plot <- function(x, plot = c("none", "trace", "post"), param = NULL, label
 
     class(object) <- "misty.object"
 
-  #----------------------------------------
-  # Blimp Plots in misty object
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Blimp Plots in misty object ####
+
   } else {
 
     x <- object

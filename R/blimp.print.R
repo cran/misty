@@ -101,7 +101,7 @@
 #'
 #' @examples
 #' \dontrun{
-#' #----------------------------------------------------------------------------
+#' #—————————————————————————————————————— #------------------------------------
 #' # Blimp Example 4.3: Linear Regression
 #'
 #' # Example 1a: Default setting
@@ -122,7 +122,7 @@
 #' # Example 1g: Print result section in a different order
 #' blimp.print("Ex4.3.blimp-out", result = c("model.info", "fit", "algo.options"))
 #'
-#' #----------------------------------------------------------------------------
+#' #—————————————————————————————————————— #------------------------------------
 #' # misty.object of type 'blimp.print'
 #'
 #' # Example 2
@@ -132,7 +132,7 @@
 #' # Print misty.object
 #' blimp.print(object)
 #'
-#' #----------------------------------------------------------------------------
+#' #—————————————————————————————————————— #------------------------------------
 #' # Write Results
 #'
 #' # Example 3: Write Results into a text file
@@ -259,8 +259,9 @@ blimp.print <- function(x,
                "WARNING MESSAGES:", "ERROR:", "MODEL FIT:", "CORRELATIONS AMONG RESIDUALS:", "OUTCOME MODEL ESTIMATES:",
                "PREDICTOR MODEL ESTIMATES:", "GENERATED PARAMETERS:", "VARIABLE ORDER IN IMPUTED DATA:")
 
-  #----------------------------------------
+  #—————————————————————————————————————— #
   # Blimp Output in Text File
+
   if (isTRUE(!inherits(x, "misty.object"))) {
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -511,7 +512,7 @@ blimp.print <- function(x,
                                         model.info = model.info, param.label = param.label, warn.mess = warn.mess, error.mess = error.mess, fit = fit,
                                         cor.resid = cor.resid, out.model = out.model, pred.model = pred.model, gen.param = gen.param, order.impdat = order.impdat))
 
-  #----------------------------------------
+  #—————————————————————————————————————— #
   # Blimp Output in misty object
   } else {
 

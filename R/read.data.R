@@ -155,7 +155,7 @@ read.data <- function(file, sheet = NULL, header = TRUE, select = NULL, drop = N
   #
   # Arguments ------------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## encoding Argument ####
 
   if (isTRUE(all(c("unknown", "UTF-8", "Latin-1") %in% encoding))) { encoding <- "Latin-1" }
@@ -164,8 +164,8 @@ read.data <- function(file, sheet = NULL, header = TRUE, select = NULL, drop = N
   #
   # Main Function --------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## CSV, DAT, or TXT file ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## CSV, DAT, or TXT File ####
 
   if (isTRUE(file.exten %in% c("csv", "dat", "txt"))) {
 
@@ -194,27 +194,27 @@ read.data <- function(file, sheet = NULL, header = TRUE, select = NULL, drop = N
 
     }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## SPSS, Excel, or Stat file ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## SPSS, Excel, or Stata File ####
 
   } else {
 
-    #...................
+    #—————————————————————————————————————— #
     ### SPSS File ####
 
     switch(file.exten, "sav" = {
 
       object <- misty::read.sav(file = file, use.value.labels = use.value.labels, use.missings = use.missings, formats = formats, label = label, labels = labels, missing = missing, widths = widths, as.data.frame = as.data.frame, check = check)
 
-    #...................
+    #—————————————————————————————————————— #
     ### Excel File ####
 
     }, "xlsx" =  {
 
       object <- misty::read.xlsx(file = file, sheet = sheet, header = header, na = na.strings, as.data.frame = as.data.frame, check = TRUE)
 
-    #...................
-    ### Stata File ####
+    #—————————————————————————————————————— #
+    ### Stats File ####
 
     }, "dta" = {
 

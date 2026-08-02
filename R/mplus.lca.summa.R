@@ -317,7 +317,7 @@
 #' mplus.lca(HolzingerSwineford1939, ind = c("x1", "x2", "x3", "x4"),
 #'           mplus.run = TRUE)
 #'
-#' #————————————————————————————————————————————————————————————————————————————
+#' #—————————————————————————————————————— #——————————————————————————————————————
 #' # Example 1: Summary Result Tables and Grouped Bar Charts
 #'
 #' # Example 1a: Read Mplus output files, create result table, write table, and save plots
@@ -326,7 +326,7 @@
 #' # Example 1b: Write results into a text file
 #' mplus.lca.summa(write = "Results_LCA.txt")
 #'
-#' #————————————————————————————————————————————————————————————————————————————
+#' #—————————————————————————————————————— #——————————————————————————————————————
 #' # Example 2: Draw bar chart manually
 #'
 #' library(ggplot2)
@@ -392,11 +392,10 @@ mplus.lca.summa <- function(folder = getwd(), exclude = NULL, sort.n = TRUE, sor
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Read Mplus Output Files ####
 
-  #--------------------------------------
+  #—————————————————————————————————————— #
   ### Subfolders ####
 
   # Exclude subfolders
-
   subfolder <- misty::chr.omit(list.dirs(folder, full.names = TRUE, recursive = FALSE), omit = file.path(folder, "_Plots"), check = FALSE)|>
                  (\(p) if (isTRUE(!is.null(exclude))) { p[-sapply(exclude, function(y) grep(y, p))] } else { return(p) })() |>
                  (\(q) if (length(q) == 0L) { return(folder)} else { return(q) })()
@@ -404,13 +403,13 @@ mplus.lca.summa <- function(folder = getwd(), exclude = NULL, sort.n = TRUE, sor
   # Mplus output files in the subfolders
   subfolder.out <- lapply(sapply(subfolder, list), list.files, pattern = ".out") |> (\(p) if (isTRUE(length(unlist(p)) == 0L)) { stop("No Mplus output files found in the subfolders specified in the argument 'folder'.", call. = FALSE) } else { return(p) })()
 
-  #--------------------------------------
+  #—————————————————————————————————————— #
   ### Subfolders with Mplus Outputs ####
 
   # Exclude folders without any Mplus outputs
   lca.folder <- subfolder[which(sapply(subfolder.out, length) > 0L)]
 
-  #--------------------------------------
+  #—————————————————————————————————————— #
   ### Read Mplus Outputs ####
 
   # Read outputs, iconv() removes Non-ASCII characters
@@ -425,7 +424,7 @@ mplus.lca.summa <- function(folder = getwd(), exclude = NULL, sort.n = TRUE, sor
 
     })()
 
-  #--------------------------------------
+  #—————————————————————————————————————— #
   ### Output Checks ####
 
   # Models with more than one latent class
@@ -442,7 +441,9 @@ mplus.lca.summa <- function(folder = getwd(), exclude = NULL, sort.n = TRUE, sor
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Extract Results ####
 
-  #--------------------------------------
+  lca.summary <- lca.bf <- lca.class <- lca.mean.var <- lca.prob <- lca.d <- NULL
+
+  #—————————————————————————————————————— #
   ### Maximum Number of Classes ####
 
   max.class <- max(unlist(lapply(lca.out, function(y) sapply(y, function(y) {
@@ -453,43 +454,43 @@ mplus.lca.summa <- function(folder = getwd(), exclude = NULL, sort.n = TRUE, sor
 
   }))))
 
-  #--------------------------------------
-  ### Apply .extract.lca.result() Function ####
-
-  lca.summary <- lca.bf <- lca.class <- lca.mean.var <- lca.prob <- lca.d <- NULL
-
-  #...................
-  #### Model Summary ####
+  #—————————————————————————————————————— #
+  ### Model Summary ####
 
   for (i in seq_along(lca.out)) { lca.summary <- misty::df.rbind(lca.summary, data.frame(folder = sapply(strsplit(lca.folder, "/"), function(y) rev(y)[1L])[i], do.call(misty::df.rbind, lapply(lca.out[[i]], function(z) .extract.lca.result(z, max.class = max.class, conf.level = conf.level, return = "model.summary")$model.summary)))) }
 
-  ##### Approximate correct model probability (cmP) ####
+  #···················
+  #### Approximate correct model probability (cmP) ####
 
   lca.summary <- misty::df.move(data.frame(lca.summary, cmp = (-0.5*lca.summary$bic) |> (\(p) exp(p - max(p, na.rm =TRUE)) / sum(exp(na.omit(p) - max(p, na.rm =TRUE))))()), "cmp", after = "awe")
 
-  ##### Sort table according to the number of classes ####
+  #···················
+  #### Sort Table According to the Number of Classes ####
 
   if (isTRUE(sort.n)) { lca.summary <- lca.summary[order(lca.summary$folder, lca.summary$nclass), ] }
 
-  ##### Exclude NA columns ####
+  #···················
+  #### Exclude NA Columns ####
 
   lca.summary <- lca.summary[, sapply(lca.summary, function(y) any(!is.na(y)))]
 
-  #...................
-  #### Approximate Bayes Factor ####
+  #—————————————————————————————————————— #
+  ### Approximate Bayes Factor ####
 
   lca.bf <- lca.summary |> (\(p) p[!is.na(p[, "bic"]), ])() |> (\(q) do.call("rbind", apply(combn(nrow(q), 2L), 2L, function(y) q[y, ] |> (\(r) data.frame(A.folder = r[1L, "folder"], A.nclass = r[1L, "nclass"], A.bic = r[1L, "bic"], B.folder = r[2L, "folder"], B.nclass = r[2L, "nclass"], B.bic = r[2L, "bic"], bf = exp(-0.5*r[1L, "bic"] - -0.5*r[2L, "bic"])))())))()
 
-  #...................
-  #### Classification Diagnostics ####
+  #—————————————————————————————————————— #
+  ### Classification Diagnostics ####
 
   for (i in seq_along(lca.out)) { lca.class <- misty::df.rbind(lca.class, data.frame(folder = sapply(strsplit(lca.folder, "/"), function(y) rev(y)[1L])[i], do.call(misty::df.rbind, lapply(lca.out[[i]], function(z) .extract.lca.result(z, max.class = max.class, conf.level = conf.level, return = "model.class")$model.class)))) }
 
-  ##### Sort table according to the number of classes ####
+  #···················
+  #### Sort Table According to the Number of Classes ####
 
   if (isTRUE(sort.n)) { lca.class <- lca.class[order(lca.class$folder, lca.class$nclass), ] }
 
-  ##### Sort class sizes, proportions, AVEs, and OCCs ####
+  #···················
+  #### Sort Class Sizes, Proportions, AVEs, and OCCs ####
 
   if (isTRUE(sort.p)) {
 
@@ -517,16 +518,18 @@ mplus.lca.summa <- function(folder = getwd(), exclude = NULL, sort.n = TRUE, sor
 
   }
 
-  ##### Add OCC to Model summary ####
+  #···················
+  #### Add OCC to Model Summary ####
 
   lca.summary <- misty::df.move(data.frame(lca.summary, occmin = apply(lca.class[, grep("occ", colnames(lca.class))], 1L, function(y) if (isTRUE(!all(is.na(y)))) { min(y, na.rm = TRUE) } else { NA })), occmin, after = "avemin")
 
-  ##### Remove One-Class Solutions ####
+  #···················
+  #### Remove One-Class Solutions ####
 
   if (isTRUE(any(lca.class$nclass == 1L))) { lca.class <- lca.class[which(lca.class$nclass != 1L), ] }
 
-  #...................
-  #### Means and Variances ####
+  #—————————————————————————————————————— #
+  ### Means and Variances ####
 
   misty::chr.trim(unlist(lca.out)) |>
     (\(p) if (isTRUE(!"Binary and ordered categorical (ordinal)" %in% p && !"Unordered categorical (nominal)" %in% p)) {
@@ -539,8 +542,8 @@ mplus.lca.summa <- function(folder = getwd(), exclude = NULL, sort.n = TRUE, sor
 
     })()
 
-  #...................
-  #### Probabilities ####
+  #—————————————————————————————————————— #
+  ### Probabilities ####
 
   misty::chr.trim(unlist(lca.out)) |>
     (\(p) if (isTRUE("Binary and ordered categorical (ordinal)" %in% p || "Unordered categorical (nominal)" %in% p)) {
@@ -554,8 +557,8 @@ mplus.lca.summa <- function(folder = getwd(), exclude = NULL, sort.n = TRUE, sor
 
     })()
 
-  #...................
-  #### Cohen's d ####
+  #—————————————————————————————————————— #
+  ### Cohen's d ####
 
   if (isTRUE(!is.null(lca.mean.var) && any(lca.mean.var$param == "Variance"))) {
 
@@ -612,12 +615,12 @@ mplus.lca.summa <- function(folder = getwd(), exclude = NULL, sort.n = TRUE, sor
 
     if (isTRUE(!is.null(lca.mean.var))) {
 
-      #--------------------------------------
+      #—————————————————————————————————————— #
       ### Extract Mean ####
 
       lca.mean <- lca.mean.var[which(lca.mean.var$param == "Mean"), ]
 
-      #--------------------------------------
+      #—————————————————————————————————————— #
       ### Arguments ####
 
       # y Label
@@ -647,12 +650,12 @@ mplus.lca.summa <- function(folder = getwd(), exclude = NULL, sort.n = TRUE, sor
 
                              })
 
-      #--------------------------------------
+      #—————————————————————————————————————— #
       ### Messages ####
 
       if (isTRUE(length(unique(paste0(lca.mean$folder, lca.mean$nclass))) > 10L)) { message(paste0("R is making ", length(unique(paste0(lca.mean$folder, lca.mean$nclass))), " plots in ", length(unique(lca.mean$folder)), ifelse(length(unique(lca.mean$folder)) == 1L, " folder", " folders" ), ", this may take a while.")) }
 
-      #--------------------------------------
+      #—————————————————————————————————————— #
       ### Create Folder ####
 
       if (isTRUE(length(unique(lca.mean$folder)) == 1L)) {
@@ -665,27 +668,28 @@ mplus.lca.summa <- function(folder = getwd(), exclude = NULL, sort.n = TRUE, sor
 
       }
 
-      #--------------------------------------
+      #—————————————————————————————————————— #
       ### ggplot Theme ####
 
       ggplot2::theme_set(ggplot2::theme_bw())
 
-      #--------------------------------------
-      ### Loop across Folders ####
+      #—————————————————————————————————————— #
+      ### Loop Across Folders ####
 
       for (i in unique(lca.mean$folder)) {
 
         # Select data
         temp1 <- lca.mean[lca.mean$folder == i, ]
 
-        #### Loop across number of latent classes ####
+        #···················
+        #### Loop Across Number of Latent Classes ####
 
         for (j in unique(temp1$nclass)) {
 
-          ##### Select data
+          ##### Select Data ####
           temp2 <- temp1[temp1$nclass == j, ]
 
-          ##### Limits
+          ##### Limits ####
           if (isTRUE(is.null(ylim))) {
 
             if (isTRUE(ci)) {
@@ -707,7 +711,7 @@ mplus.lca.summa <- function(folder = getwd(), exclude = NULL, sort.n = TRUE, sor
 
           }
 
-          ##### Breaks
+          ##### Breaks ####
           if (isTRUE(inherits(breaks, "waiver"))) {
 
             if (isTRUE(abs(limits.upp - limits.low) > 5L)) {
@@ -726,7 +730,7 @@ mplus.lca.summa <- function(folder = getwd(), exclude = NULL, sort.n = TRUE, sor
 
           }
 
-          ##### Plot
+          ##### Plot ####
           p <- ggplot2::ggplot(temp2, if (isTRUE(group.ind)) { ggplot2::aes(class, est, group = ind, fill = ind) } else { ggplot2::aes(ind, est, group = class, fill = class) }) +
                 ggplot2::geom_bar(stat = "identity", position = "dodge", color = "black", linewidth = 0.1) +
                 ggplot2::scale_x_discrete("") +
@@ -741,21 +745,21 @@ mplus.lca.summa <- function(folder = getwd(), exclude = NULL, sort.n = TRUE, sor
                                legend.text = ggplot2::element_text(size = legend.text),
                                legend.box.spacing = ggplot2::unit(-9L, "pt"))
 
-          ##### Confidence intervals
+          ##### Confidence Intervals ####
           if (isTRUE(ci)) { p <- p + ggplot2::geom_errorbar(ggplot2::aes(ymin = low, ymax = upp), width = errorbar.width + j / 30L, linewidth = 0.2, position = ggplot2::position_dodge(0.9)) }
 
-          ##### Gray color scales
+          ##### Gray Color Scales ####
           if (isTRUE(gray)) { p <- p + ggplot2::scale_fill_grey(start = end, end = start) }
 
-          ##### Argument 'width'
+          ##### Argument 'width' ####
           width.ij <- (length(unique(temp2$ind)) * width.ind) + (unique(temp2$nclass) * width.nclass)
 
-          ##### Save plots in one folder
+          ##### Save plots in one folder ####
           if (isTRUE(length(unique(lca.mean$folder)) == 1L)) {
 
             suppressMessages(ggplot2::ggsave(file.path(folder, "_Plots", paste0("Bar_Chart_", j, "-Class.png")), dpi = dpi, width = width.ij, height = height))
 
-          ##### Save plots in multiple folder
+          ##### Save plots in multiple folders ####
           } else {
 
             suppressMessages(ggplot2::ggsave(file.path(folder, i, "_Plots", paste0("Bar_Chart_", j, "-Class.png")), dpi = dpi, width = width.ij, height = height))
@@ -771,7 +775,7 @@ mplus.lca.summa <- function(folder = getwd(), exclude = NULL, sort.n = TRUE, sor
 
     } else if (isTRUE(!is.null(lca.prob))) {
 
-      #--------------------------------------
+      #—————————————————————————————————————— #
       ### Arguments ####
 
       # y Label
@@ -821,12 +825,12 @@ mplus.lca.summa <- function(folder = getwd(), exclude = NULL, sort.n = TRUE, sor
 
                              })
 
-      #--------------------------------------
+      #—————————————————————————————————————— #
       ### Messages ####
 
       if (isTRUE(length(unique(paste0(lca.prob$folder, lca.prob$nclass))) > 10L)) {       message(paste0("R is making ", length(unique(paste0(lca.prob$folder, lca.prob$nclass))), " plots in ", length(unique(lca.prob$folder)), ifelse(length(unique(lca.prob$folder)) == 1L, " folder", " folders" ), ", this may take a while.")) }
 
-      #--------------------------------------
+      #—————————————————————————————————————— #
       ### Create Folder ####
 
       if (isTRUE(length(unique(lca.prob$folder)) == 1L)) {
@@ -839,12 +843,12 @@ mplus.lca.summa <- function(folder = getwd(), exclude = NULL, sort.n = TRUE, sor
 
       }
 
-      #--------------------------------------
+      #—————————————————————————————————————— #
       ### ggplot Theme ####
 
       ggplot2::theme_set(ggplot2::theme_bw())
 
-      #--------------------------------------
+      #—————————————————————————————————————— #
       ### Loop across Folders ####
 
       for (i in unique(lca.prob$folder)) {

@@ -254,11 +254,11 @@
 #'
 #' @examples
 #' \dontrun{
-#' #----------------------------------------------------------------------------
+#' #—————————————————————————————————————— #———————————————————————————————————————
 #' # Mplus Example 3.18: Moderated Mediation with a Plot of the Indirect Effect
 #'
-#' #..........
-#' # Trace Plots
+#' #—————————————————————————————————————— #
+#' ## Trace Plots
 #'
 #' # Example 1a: Default setting
 #' mplus.plot("ex3.18.gh5")
@@ -278,8 +278,8 @@
 #' # Example 1f: Specify "Pastel 1" palette for the hcl.colors function
 #' mplus.plot("ex3.18.gh5", palette = "Pastel 1")
 #'
-#' #..........
-#' # Posterior Distribution Plots
+#' #—————————————————————————————————————— #
+#' ## Posterior Distribution Plots
 #'
 #' # Example 2a: Default setting, i.e., posterior median and equal-tailed interval
 #' mplus.plot("ex3.18.gh5", plot = "post")
@@ -296,8 +296,8 @@
 #' # Example 2d: Do not display histograms
 #' mplus.plot("ex3.18.gh5", plot = "post", hist = FALSE)
 #'
-#' #..........
-#' # Autocorrelation Plots
+#' #—————————————————————————————————————— #
+#' ## Autocorrelation Plots
 #'
 #' # Example 3a: Default setting, i.e., first chain
 #' mplus.plot("ex3.18.gh5", plot = "auto")
@@ -309,8 +309,8 @@
 #' mplus.plot("ex3.18.gh5", plot = "auto",
 #'            ylim = c(-0.05, 0.05), ybreaks = seq(-0.1, 0.1, by = 0.025))
 #'
-#' #..........
-#' # Posterior Predictive Check Plots
+#' #—————————————————————————————————————— #
+#' ## Posterior Predictive Check Plots
 #'
 #' # Example 4a: Default setting, i.e., 95% Interval
 #' mplus.plot("ex3.18.gh5", plot = "ppc")
@@ -318,8 +318,8 @@
 #' # Example 4b: Default setting, i.e., 99% Interval
 #' mplus.plot("ex3.18.gh5", plot = "ppc", conf.level = 0.99)
 #'
-#' #..........
-#' # Loop Plot
+#' #—————————————————————————————————————— #
+#' ## Loop Plot
 #'
 #' # Example 5a: Default setting
 #' mplus.plot("ex3.18.gh5", plot = "loop")
@@ -327,8 +327,8 @@
 #' # Example 5b: Do not fill area and draw vertical lines
 #' mplus.plot("ex3.18.gh5", plot = "loop", area = FALSE)
 #'
-#' #..........
-#' # Save Plots
+#' #—————————————————————————————————————— #
+#' ## Save Plots
 #'
 #' # Example 6a: Save all plots in pdf format
 #' mplus.plot("ex3.18.gh5", saveplot = "all")
@@ -340,7 +340,7 @@
 #' mplus.plot("ex3.18.gh5", plot = "none", saveplot = "loop",
 #'            width = 7.5, height = 7)
 #'
-#' #----------------------------------------------------------------------------
+#' #—————————————————————————————————————— #———————————————————————————————————————
 #' # Plot from misty.object
 #'
 #' # Create misty.object
@@ -361,7 +361,7 @@
 #' # Loop plot
 #' mplus.plot(object, plot = "loop")
 #'
-#' #----------------------------------------------------------------------------
+#' #—————————————————————————————————————— #———————————————————————————————————————
 #' # Create Plots Manually
 #'
 #' # Load ggplot2 package
@@ -398,8 +398,8 @@
 #'         legend.box.margin = margin(c(-16, 6, 6, 6)),
 #'         legend.background = element_rect(fill = "transparent"))
 #'
-#' #..........
-#' # Example 8: Posterior Distribution Plots
+#' #—————————————————————————————————————— #
+#' ## Example 8: Posterior Distribution Plots
 #'
 #' # Extract data in long format
 #' data.post <- object$data$post$long
@@ -445,8 +445,8 @@
 #'         legend.box.margin = margin(c(-30, 6, 6, 6)),
 #'         legend.background = element_rect(fill = "transparent"))
 #'
-#' #..........
-#' # Example 9: Autocorrelation Plots
+#' #—————————————————————————————————————— #
+#' ## Example 9: Autocorrelation Plots
 #'
 #' # Extract data in long format
 #' data.auto <- object$data$auto$long
@@ -468,8 +468,8 @@
 #'   theme_bw() +
 #'   theme(plot.margin = margin(c(4, 15, 4, 4)))
 #'
-#' #..........
-#' # Example 10: Posterior Predictive Check (PPC) Plots
+#' #—————————————————————————————————————— #
+#' ## Example 10: Posterior Predictive Check (PPC) Plots
 #'
 #' # Extract data
 #' data.ppc <- object$data$ppc
@@ -501,8 +501,8 @@
 #' # Combine plots using the patchwork package
 #' patchwork::wrap_plots(ppc.scatter, ppc.hist)
 #'
-#' #..........
-#' # Example 11: Loop Plot
+#' #—————————————————————————————————————— #
+#' ## Example 11: Loop Plot
 #'
 #' # Extract data
 #' data.loop <- object$data$loop
@@ -567,8 +567,8 @@ mplus.plot <- function(x, plot = c("none", "trace", "post", "auto", "ppc", "loop
   # Check if input 'x' is missing or NULL
   if (isTRUE(missing(x) || is.null(x))) { stop("Please specify a character string indicating the name of a Mplus GH5 file for the argument 'x'", call. = FALSE) }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Character string ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Character String ####
 
   if (isTRUE(is.character(x))) {
 
@@ -581,8 +581,8 @@ mplus.plot <- function(x, plot = c("none", "trace", "post", "auto", "ppc", "loop
     # Check if 'x' exists
     if (isTRUE(!file.exists(x))) { stop(paste0("Unable to read the Mplus GH5 file: ", sQuote(x), " does not exist."), call. = FALSE) }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## misty object ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## misty Object ####
 
   } else if (isTRUE(inherits(x, "misty.object"))) {
 
@@ -622,13 +622,13 @@ mplus.plot <- function(x, plot = c("none", "trace", "post", "auto", "ppc", "loop
   #
   # Arguments ------------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## 'plot' Argument ####
 
   # Default setting
   if (isTRUE(all(c("none", "trace", "post", "auto", "ppc", "loop") %in% plot))) { plot <- "trace" }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## 'param' Argument ####
 
   # Default setting
@@ -643,7 +643,7 @@ mplus.plot <- function(x, plot = c("none", "trace", "post", "auto", "ppc", "loop
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## 'std' Argument ####
 
   # Default setting
@@ -658,7 +658,7 @@ mplus.plot <- function(x, plot = c("none", "trace", "post", "auto", "ppc", "loop
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## 'point' Argument ####
 
   # Default setting
@@ -673,24 +673,24 @@ mplus.plot <- function(x, plot = c("none", "trace", "post", "auto", "ppc", "loop
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## 'ci' Argument ####
 
   # Default setting
   if (isTRUE(all(c("none", "eti", "hdi") %in% ci))) { ci <- "eti" }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## 'facet.scales' Argument ####
 
   # Default setting
   if (isTRUE(all(c("free", "free_x", "free_y") %in% facet.scales))) { facet.scales <- "free" }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## 'nrow' and 'ncol' Argument ####
 
   if (isTRUE(is.null(nrow) && is.null(ncol))) { ncol <- 2L }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## 'saveplot' Argument ####
 
   # Default setting
@@ -704,7 +704,7 @@ mplus.plot <- function(x, plot = c("none", "trace", "post", "auto", "ppc", "loop
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## 'units' Argument ####
 
   # Default setting
@@ -714,16 +714,17 @@ mplus.plot <- function(x, plot = c("none", "trace", "post", "auto", "ppc", "loop
   #
   # Main Function --------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Global Variables ####
 
   estimate <- iter <- low <- obs <- sig <- stat <- upp <- value <- xval <- NULL
 
-  #----------------------------------------
+  #—————————————————————————————————————— # #
   # Mplus Plot Data in GH5 File
+
   if (isTRUE(!inherits(x, "misty.object"))) {
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Read Mplus GH5 File ####
 
     gh5 <- tryCatch(hdf5r::h5file(x), error = function(y) { stop("Reading Mplus GH5 file using the h5file() function from the hdf5r package failed.", call. = FALSE) })
@@ -731,12 +732,12 @@ mplus.plot <- function(x, plot = c("none", "trace", "post", "auto", "ppc", "loop
     # "bayesian_data" or "loop_data" section
     if (isTRUE(all(!c("bayesian_data", "loop_data") %in% names(gh5)))) { stop("There is no \"bayesian_data\" or \"loop_data\" section in the Mplus GH5 file specified in the argument 'x'", call. = FALSE) }
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## "bayesian_data" section ####
 
     if (isTRUE("bayesian_data" %in% names(gh5))) {
 
-      #...................
+      #—————————————————————————————————————— #
       ### Extract Posterior Data, Labels, and Dimensionality ####
 
       # Posterior
@@ -759,13 +760,13 @@ mplus.plot <- function(x, plot = c("none", "trace", "post", "auto", "ppc", "loop
       # Number of chains
       n.chains <- post.dim[3L]
 
-      #...................
+      #—————————————————————————————————————— #
       ### Posterior in Wide Format ####
 
       # Data
       post.wide <- data.frame(chain = rep(seq_len(n.chains), each = n.iterations), do.call("rbind", lapply(apply(post, 3L, function(y) setNames(as.data.frame(t(y)), nm = labels)), function(z) data.frame(iter = seq_len(n.iterations), z, check.names = FALSE))), check.names = FALSE)
 
-      #...................
+      #—————————————————————————————————————— #
       ### Posterior in Long Format ####
 
       post.long <- subset(setNames(reshape(post.wide, varying = list(names(post.wide[-c(1L, 2L)])),
@@ -779,10 +780,12 @@ mplus.plot <- function(x, plot = c("none", "trace", "post", "auto", "ppc", "loop
       # Row names
       row.names(post.long) <- NULL
 
-      #...................
+      #—————————————————————————————————————— #
       ### Select Parameters ####
 
+      #···················
       #### Default or User-Specified Setting Setting: ON ####
+
       if (isTRUE(all(param == "on"))) {
 
         # ON parameter not available
@@ -814,7 +817,9 @@ mplus.plot <- function(x, plot = c("none", "trace", "post", "auto", "ppc", "loop
 
         }
 
+      #···················
       #### User-Specified Setting: BY ####
+
       } else if (isTRUE(all(param == "by") && all(!grepl(" BY ", names(post.wide))))) {
 
         param <- "with"
@@ -830,13 +835,16 @@ mplus.plot <- function(x, plot = c("none", "trace", "post", "auto", "ppc", "loop
 
         }
 
+      #···················
       #### User-Specified Setting: WITH ####
+
       } else if (isTRUE(all(param == "with") && all(!grepl(" WITH ", names(post.wide))))) {
 
         stop("There are no 'WITH' parameters available in the Mplus GH5 file.", call. = FALSE)
 
       }
 
+      #···················
       #### Extract Variables involved in BY, WITH, ON, [, $, or # ####
 
       var <- unname(unique(unlist(sapply(misty::chr.grep(c(" BY ", " WITH ", " ON ", "\\[", "\\]", "\\$"), names(post.wide), value = TRUE), function(y) {
@@ -845,7 +853,9 @@ mplus.plot <- function(x, plot = c("none", "trace", "post", "auto", "ppc", "loop
 
       }))))
 
-      # % statement
+      #···················
+      #### % statement ####
+
       if (isTRUE(any(grepl("%", var)))) {
 
         var <- unique(misty::chr.trim(sub(":", "", apply(rbind(var, unlist(lapply(strsplit(var, ""), function(y) grep(":", y)[1L])), nchar(var)), 2L, function(z) if (isTRUE(!is.na(z[2L]))) { substr(z[1L], start = z[2L], z[3L]) } else { z[1L]} )))) |>
@@ -853,6 +863,7 @@ mplus.plot <- function(x, plot = c("none", "trace", "post", "auto", "ppc", "loop
 
       }
 
+      #···················
       #### Select Parameters ####
 
       # Select ON, BY, WITH, intercept/threshold
@@ -887,7 +898,7 @@ mplus.plot <- function(x, plot = c("none", "trace", "post", "auto", "ppc", "loop
       # Include chain and iter
       plot.ind <- unique(sort(union(misty::chr.grep(c("chain", "iter"), names(post.wide)), plot.ind)))
 
-      #...........................................................................
+      #—————————————————————————————————————— #
       ### Trace Plots ####
 
       # Select Parameters
@@ -979,7 +990,7 @@ mplus.plot <- function(x, plot = c("none", "trace", "post", "auto", "ppc", "loop
 
       }
 
-      #...........................................................................
+      #—————————————————————————————————————— #
       ### Posterior Distribution ####
 
       # Discard burn-in iterations
@@ -1146,7 +1157,7 @@ mplus.plot <- function(x, plot = c("none", "trace", "post", "auto", "ppc", "loop
 
       }
 
-      #...................
+      #—————————————————————————————————————— #
       ### Extract Autocorrelation Data ####
 
       # Autocorrelation
@@ -1164,12 +1175,12 @@ mplus.plot <- function(x, plot = c("none", "trace", "post", "auto", "ppc", "loop
       # Number of chains
       n.chains <- auto.dim[3L]
 
-      #...................
+      #—————————————————————————————————————— #
       ### Autocorrelation Data in Wide Format ####
 
       auto.wide <- data.frame(chain = rep(seq_len(n.chains), each = n.lag), lag = seq_len(n.lag), do.call("rbind", apply(auto, 3L, function(y) setNames(as.data.frame(y), nm = labels))), check.names = FALSE)
 
-      #...................
+      #—————————————————————————————————————— #
       ### Autocorrelation Data in Long Format ####
 
       auto.long <- subset(setNames(reshape(auto.wide, varying = list(names(auto.wide[-c(1L, 2L)])),
@@ -1183,7 +1194,7 @@ mplus.plot <- function(x, plot = c("none", "trace", "post", "auto", "ppc", "loop
       # Row names
       row.names(auto.long) <- NULL
 
-      #...........................................................................
+      #—————————————————————————————————————— #
       ### Autocorrelation Plot ####
 
       # Select Parameters
@@ -1239,7 +1250,7 @@ mplus.plot <- function(x, plot = c("none", "trace", "post", "auto", "ppc", "loop
                      ggplot2::theme_bw() +
                      ggplot2::theme(plot.margin = ggplot2::margin(t = plot.margin.auto[1L], r = plot.margin.auto[2L], b = plot.margin.auto[3L], l = plot.margin.auto[4L])))
 
-      #...................
+      #—————————————————————————————————————— #
       ### Posterior Predictive Check ####
 
       if (isTRUE("predictive" %in% names(gh5[["bayesian_data"]]))) {
@@ -1349,17 +1360,17 @@ mplus.plot <- function(x, plot = c("none", "trace", "post", "auto", "ppc", "loop
 
     }
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## "loop_data" section ####
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## "loop_data" Section ####
 
     if (isTRUE("loop_data" %in% names(gh5))) {
 
-      #...................
-      ### No "bayesian_data" section ####
+      #—————————————————————————————————————— #
+      ### No "bayesian_data" Section ####
 
       if (isTRUE(!"bayesian_data" %in% names(gh5))) { plot <- "loop" }
 
-      #...................
+      #—————————————————————————————————————— #
       ### Extract Data ####
 
       # Multiple additional parameters
@@ -1462,7 +1473,7 @@ mplus.plot <- function(x, plot = c("none", "trace", "post", "auto", "ppc", "loop
 
     }
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Close Mplus GH5 File ####
 
     hdf5r::h5close(gh5)
@@ -1498,8 +1509,9 @@ mplus.plot <- function(x, plot = c("none", "trace", "post", "auto", "ppc", "loop
 
     class(object) <- "misty.object"
 
-  #----------------------------------------
-  # Mplus Plots in misty object
+  #—————————————————————————————————————— # #
+  # Mplus Plots in misty Object
+
   } else {
 
     x <- object

@@ -4,9 +4,9 @@
 #' by calling the \code{sem} function in the R package \pkg{lavaan} and provides
 #' standard errors, z test statistics, and significance values (\emph{p}-values)
 #' for testing the hypothesis H0: \eqn{\rho} = 0 for all pairs of variables within
-#' and between groups. By default, the function computes the within-group and
-#' between-group correlation matrix without standard errors, z test statistics,
-#' and significance value.
+#' and between groups. By default, the function provides the within-group and
+#' between-group correlation matrix. Statistically significant correlations can
+#' be highlighted by specifying the argument \code{color}.
 #'
 #' @param data         a data frame.
 #' @param ...          an expression indicating the variable names in \code{data},
@@ -21,40 +21,34 @@
 #'                     \code{"ML"} for maximum likelihood with conventional
 #'                     standard errors and \code{"MLR"} for maximum likelihood with
 #'                     Huber-White robust standard errors. The default setting
-#'                     depends on the argument \code{sig}, i.e., \code{"ML"} is
-#'                     used when specifying \code{sig = FALSE} (default) and
-#'                     \code{"MLR"} is used when specifying \code{sig = TRUE}.
+#'                     depends on the argument \code{color}, i.e., \code{"ML"} is
+#'                     used when specifying \code{color = "default"} (default) and
+#'                     \code{"MLR"} is used when specifying a color for the
+#'                     argument \code{color}.
 #' @param constr.var   logical: if \code{TRUE}, inequality constraints are imposed
 #'                     for the variance parameters at the between level, i.e.,
 #'                     variances are constrained to be greater than 0.
-#' @param optim.method a character string indicating the optimizer, i.e.,
-#'                     \code{"nlminb"} (default) for the unconstrained and
-#'                     bounds-constrained quasi-Newton method optimizer and
-#'                     \code{"em"} for the Expectation Maximization (EM) algorithm.
+#' @param optim.method a character string indicating the optimizer, i.e., \code{"nlminb"}
+#'                     for the unconstrained and bounds-constrained quasi-Newton
+#'                     method optimizer and \code{"em"} for the Expectation Maximization
+#'                     (EM) algorithm. By default, the optimizer \code{"nlminb"}
+#'                     is used with complete data or when using listwise deletion
+#'                     for missing data handling, while the optimizer \code{"em"}
+#'                     is used when using for full information maximum likelihood
+#'                     (FIML) method for missing data handling.
 #' @param optim.switch logical: if \code{TRUE} (default), model estimation switches
 #'                     to Expectation Maximization (EM) algorithm (\code{"em"})
-#'                     if the quasi-Newton optimization (\code{"nlminb"} (default))
+#'                     if the quasi-Newton optimization (\code{"nlminb"})
 #'                     does not converge.
-#' @param missing      a character string indicating how to deal with missing
-#'                     data, i.e., \code{"listwise"} for listwise deletion or
-#'                     \code{"fiml"} (default) for full information maximum
-#'                     likelihood (FIML) method. Note that it takes longer to
-#'                     estimate models while using FIML and using FIML is
-#'                     prone to issues with model convergence, these issues might
-#'                     be resolved by switching to listwise deletion.
-#' @param sig          logical: if \code{TRUE}, statistically significant
-#'                     correlation coefficients are shown in boldface on the
-#'                     console. Note that standard errors, z test statistics, and
-#'                     significance values not provided in the return object when
-#'                     \code{sig = FALSE} (default).
-#' @param alpha        a numeric value between 0 and 1 indicating the significance
-#'                     level at which correlation coefficients are printed
-#'                     boldface when \code{sig = TRUE}.
 #' @param print        a character string or character vector indicating which
 #'                     results to show on the console, i.e. \code{"all"} for all
-#'                     results, \code{"cor"} for correlation coefficients,
-#'                     \code{"se"} for standard errors, \code{"stat"} for z test
-#'                     statistics, and \code{"p"} for \emph{p}-values.
+#'                     results, \code{"summary"} for a summary of the specification
+#'                     of the estimation method and missing data handling in lavaan,
+#'                     \code{"cor"} (default) for correlation coefficients, \code{"se"}
+#'                     for standard errors, \code{"stat"} for z test statistics,
+#'                     and \code{"p"} for \emph{p}-values. By default, the function
+#'                     only prints the within-group and between-group correlation
+#'                     matrix.
 #' @param split        logical: if \code{TRUE}, output table is split in
 #'                     within-group and between-group correlation matrix.
 #' @param order        logical: if \code{TRUE}, variables in the output table are
@@ -68,6 +62,35 @@
 #'                     (default), within-group correlations are shown in the lower
 #'                     triangular and between-group correlation are shown in the
 #'                     upper triangular.
+#' @param missing      a character string indicating how to deal with missing
+#'                     data, i.e., \code{"listwise"} for listwise deletion or
+#'                     \code{"fiml"} (default) for full information maximum
+#'                     likelihood (FIML) method. Note that it takes longer to
+#'                     estimate models while using FIML and using FIML is
+#'                     prone to issues with model convergence, these issues might
+#'                     be resolved by switching to listwise deletion.
+#' @param alpha        a numeric value between 0 and 1 indicating the significance
+#'                     level at which correlation coefficients are printed
+#'                     boldface when specifying the argument \code{color}.
+#' @param color        a character string indicating the text color for highlighting
+#'                     statistically significant correlation coefficients, i.e.,
+#'                     \code{"default"} (default) for the default text color without
+#'                     color coding and various text colors for highlighting like
+#'                     \code{"red"}, \code{"b.red"}, \code{"green"}, \code{"b.green"},
+#'                     \code{"blue"}, or \code{"b.blue"}, see the help page of the
+#'                     \code{\link{chr.color}} function. Note that this option is
+#'                     not supported when using R Markdown and when writing the output
+#'                     into a text file (\code{.txt}).
+#' @param style        a character vector indicating the font style for
+#'                     statistically significant correlation coefficients, i.e.,
+#'                     \code{"regular"} (default) for regular text, \code{"bold"}
+#'                     for bold text, and \code{"italic"} for italic text. Note
+#'                     that the font style \code{"bold"} and \code{"italic"} can
+#'                     be combined, i.e., style = c("bold", "italic") provides a
+#'                     bold and italic text. Note that the argument \code{color}
+#'                     needs to be specified to change the style of the text, e.g.
+#'                     \code{color = "black"} and \code{style = "bold"} to for
+#'                     bold text.
 #' @param p.adj        a character string indicating an adjustment method for
 #'                     multiple testing based on \code{\link{p.adjust}}, i.e.,
 #'                     \code{none} (default), \code{bonferroni}, \code{holm},
@@ -105,27 +128,26 @@
 #' cluster level and modeled only at the between level. The former variables have
 #' no variance in the between part of the model (i.e., ICC(1) is 0 e.g. due to
 #' centering within clusters), while the latter variables do not have any variance
-#' within cluster.}
-#' \item{\strong{Estimation Method and Missing Data Handling}}{The default setting
-#' for the argument \code{estimator} is depending on the setting of the argument
-#' \code{sig}. If \code{sig = FALSE} (default), maximum likelihood estimation
-#' (\code{estimator = "ML"}) is used, while maximum likelihood with Huber-White
-#' robust standard errors (\code{estimator = "MLR"}) that are robust against
-#' non-normality is used when \code{sig = TRUE}. In the presence of missing data,
-#' full information maximum likelihood (FIML) method (\code{missing = "fiml"}) is
-#' used by default. Note that FIML method cannot deal with within-group variables
-#' that have no variance within some clusters. In this
-#' cases, the function will switch to listwise deletion. Using FIML method might
-#' result in issues with model convergence, which will be resolved by switching
-#' to listwise deletion (\code{missing = "listwise"}).}
+#' within clusters.}
+#' \item{\strong{Estimation Method}}{The default setting for the argument \code{estimator}
+#' is depending on the setting of the argument \code{color}. If \code{color = "default"}
+#' (default), maximum likelihood estimation (\code{estimator = "ML"}) is used,
+#' while maximum likelihood with Huber-White robust standard errors (\code{estimator = "MLR"})
+#' that are robust against non-normality is used when when specifying a color for
+#' the argument \code{color}.}
+#' \item{\strong{Missing Data}}{In the presence of missing data, full information
+#' maximum likelihood (FIML) method (\code{missing = "fiml"}) is used by default.
+#' Note that FIML method cannot deal with within-group variables that have no
+#' variance within some clusters. In this cases, the function will switch to
+#' listwise deletion. Using FIML method might result in issues with model convergence,
+#' which might be resolved by switching to listwise deletion (\code{missing = "listwise"}).}
 #' \item{\strong{Optimizer}}{The lavaan package uses a quasi-Newton optimization
 #' method (\code{"nlminb"}) by default. If the optimizer does not converge, model
 #' estimation switches to the Expectation Maximization (EM) algorithm (\code{"em"})
 #' if the argument \code{optim.switch} is specified as \code{TRUE} (default).}
 #' \item{\strong{Statistical Significance}}{Statistically significant correlation
-#' coefficients can be shown in boldface on the console by specifying \code{sig = TRUE}.
-#' However, this option is not supported when using R Markdown, i.e., the argument
-#' \code{sig} will switch to \code{FALSE}.}
+#' coefficients can be shown color coded on the console by specifying the argument
+#' \code{color}. However, this option is not supported when using R Markdown.}
 #' \item{\strong{Adjustment Method for Multiple Testing }}{Adjustment method for
 #' multiple testing when specifying the argument \code{p.adj} is applied to
 #' the within-group and between-group correlation matrix separately.}
@@ -187,47 +209,57 @@
 #' # Load data set "Demo.twolevel" in the lavaan package
 #' data("Demo.twolevel", package = "lavaan")
 #'
-#' #----------------------------------------------------------------------------
-#' # Cluster variable specification
+#' #————————————————————————————————————————————————————————————————————————————
+#' # Cluster Variable Specification
 #'
-#' # Example 1: Specification using the argument '...'
+#' # Example 1a: Specification using the argument '...'
 #' multilevel.cor(Demo.twolevel, y1, y2, y3, cluster = "cluster")
 #'
-#' # Alternative specification with cluster variable 'cluster' in 'data'
+#' # Example 1b: Alternative specification with cluster variable 'cluster' in 'data'
 #' multilevel.cor(Demo.twolevel[, c("y1", "y2", "y3", "cluster")], cluster = "cluster")
 #'
-#' # Alternative specification with cluster variable 'cluster' not in 'data'
+#' # Example 1c: Alternative specification with cluster variable 'cluster' not in 'data'
 #' multilevel.cor(Demo.twolevel[, c("y1", "y2", "y3")], cluster = Demo.twolevel$cluster)
 #'
-#' #----------------------------------------------------------------------------
-#' # Example 2: All variables modeled at both the within and between level
-#' # Highlight statistically significant result at alpha = 0.05
-#' multilevel.cor(Demo.twolevel, y1, y2, y3, sig = TRUE, cluster = "cluster")
+#' #————————————————————————————————————————————————————————————————————————————
+#' # Arguments 'color', 'style', 'split', 'print', and 'p.adj'
 #'
-#' # Example 3: Split output table in within-group and between-group correlation matrix.
-#' multilevel.cor(Demo.twolevel, y1, y2, y3, cluster = "cluster", split = TRUE)
+#' # Example 2a: Highlight statistically significant result in bright red
+#' multilevel.cor(Demo.twolevel, y1, y2, y3, cluster = "cluster", color = "b.red")
 #'
-#' # Example 4: Print correlation coefficients, standard errors, z test statistics,
-#' # and p-values
-#' multilevel.cor(Demo.twolevel, y1, y2, y3, cluster = "cluster", sig = TRUE, print = "all")
+#' # Example 2b: Highlight statistically significant result in boldface
+#' multilevel.cor(Demo.twolevel, y1, y2, y3, cluster = "cluster", color = "black",
+#'                style = "bold")
 #'
-#' # Example 5: Print correlation coefficients and p-values
-#' # significance values with Bonferroni correction
-#' multilevel.cor(Demo.twolevel, y1, y2, y3, cluster = "cluster", sig = TRUE,
-#'                print = c("cor", "p"), p.adj = "bonferroni")
+#' # Example 3: Split output table in within-group and between-group correlation matrix
+#' multilevel.cor(Demo.twolevel, y1, y2, y3, cluster = "cluster", split = TRUE,
+#'                color = "green", style = "bold")
 #'
-#' #----------------------------------------------------------------------------
-#' # Example 6: Variables "y1", "y2", and "y2" modeled at both the within and between level
-#' # Variables "w1" and "w2" modeled at the cluster level
+#' # Example 4a: Print summary of the lavaan specification and all results
+#' multilevel.cor(Demo.twolevel, y1, y2, y3, cluster = "cluster", print = "all")
+#'
+#' # Example 4b: Print summary of the lavaan specification and correlation coefficients
+#' multilevel.cor(Demo.twolevel, y1, y2, y3, cluster = "cluster", print = c("summary", "cor"))
+#'
+#' # Example 5: Significance values with Bonferroni correction
+#' multilevel.cor(Demo.twolevel, y1, y2, y3, cluster = "cluster", print = c("cor", "p"),
+#'                p.adj = "bonferroni")
+#'
+#' #————————————————————————————————————————————————————————————————————————————
+#' # Variables Measured at the Within and Cluster Level
+#'
+#' # Example 6a: Variables "y1", "y2", and "y2" modeled at both the within and between level
+#' #             Variables "w1" and "w2" modeled at the cluster level
 #' multilevel.cor(Demo.twolevel, y1, y2, y3, w1, w2, cluster = "cluster")
 #'
-#' # Example 7: Show variables specified in the argument 'between' first
+#' # Example 6b: Print cluster level variables first
 #' multilevel.cor(Demo.twolevel, y1, y2, y3, w1, w2, cluster = "cluster", order = TRUE)
 #'
-#' #----------------------------------------------------------------------------
-#' # Example 8: lavaan model and summary of the multilevel model used to compute the
-#' # within-group and between-group correlation matrix
+#' #————————————————————————————————————————————————————————————————————————————
+#' # lavaan Model and Summary of the Estimated Model
 #'
+#' # Example 7: lavaan model and summary of the multilevel model used to compute
+#' #             the within-group and between-group correlation matrix
 #' mod <- multilevel.cor(Demo.twolevel, y1, y2, y3, cluster = "cluster", output = FALSE)
 #'
 #' # lavaan model syntax
@@ -236,23 +268,24 @@
 #' # Fitted lavaan object
 #' lavaan::summary(mod$model.fit, standardized = TRUE)
 #'
-#' #----------------------------------------------------------------------------
+#' #————————————————————————————————————————————————————————————————————————————
 #' # Write Results
 #'
-#' # Example 9a: Write Results into a text file
+#' # Example 8a: Write Results into a text file
 #' multilevel.cor(Demo.twolevel, y1, y2, y3, cluster = "cluster",
 #'                write = "Multilevel_Correlation.txt")
 #'
-#' # Example 9b: Write Results into a Excel file
+#' # Example 8b: Write Results into a Excel file
 #' multilevel.cor(Demo.twolevel, y1, y2, y3, cluster = "cluster",
 #'                write = "Multilevel_Correlation.xlsx")
 #' }
-multilevel.cor <- function(data, ..., cluster, estimator = c("ML", "MLR"),
-                           constr.var = FALSE, optim.method = c("nlminb", "em"),
-                           optim.switch = TRUE, missing = c("listwise", "fiml"),
-                           sig = FALSE, alpha = 0.05, print = c("all", "cor", "se", "stat", "p"),
-                           split = FALSE, order = FALSE, tri = c("both", "lower", "upper"),
-                           tri.lower = TRUE, p.adj = c("none", "bonferroni", "holm", "hochberg", "hommel", "BH", "BY", "fdr"),
+multilevel.cor <- function(data, ..., cluster, estimator = c("ML", "MLR"), constr.var = FALSE,
+                           optim.method = c("nlminb", "em"), optim.switch = TRUE,
+                           print = c("all", "summary", "cor", "se", "stat", "p"), split = FALSE,
+                           order = FALSE, tri = c("both", "lower", "upper"), tri.lower = TRUE,
+                           missing = c("listwise", "fiml"), alpha = 0.05,
+                           color = "default", style = c("regular", "bold", "italic"),
+                           p.adj = c("none", "bonferroni", "holm", "hochberg", "hommel", "BH", "BY", "fdr"),
                            digits = 2, p.digits = 3, as.na = NULL, write = NULL,
                            append = TRUE, check = TRUE, output = TRUE) {
 
@@ -264,14 +297,14 @@ multilevel.cor <- function(data, ..., cluster, estimator = c("ML", "MLR"),
   if (isTRUE(missing(data) || is.null(data))) { stop("Please specify a data frame for the argument 'data'", call. = FALSE) }
 
   # Check input 'cluster'
-  if (isTRUE(missing(cluster) ||is.null(cluster))) { stop("Please specify a variable name or vector representing the grouping structure for the argument 'cluster'.", call. = FALSE) }
+  if (isTRUE(missing(cluster) || is.null(cluster))) { stop("Please specify a variable name or vector representing the grouping structure for the argument 'cluster'.", call. = FALSE) }
 
   #_____________________________________________________________________________
   #
   # Data -----------------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data using the argument '...' ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Using the Argument '...' ####
 
   if (isTRUE(!missing(...))) {
 
@@ -281,8 +314,8 @@ multilevel.cor <- function(data, ..., cluster, estimator = c("ML", "MLR"),
     # Extract cluster variable and convert tibble into data frame or vector
     cluster <- data[, cluster] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { unname(unlist(y)) } else { return(y) })()
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data without using the argument '...' ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Without Using the Argument '...' ####
 
   } else {
 
@@ -300,34 +333,22 @@ multilevel.cor <- function(data, ..., cluster, estimator = c("ML", "MLR"),
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Numeric Variables ####
 
-  x <- (!vapply(as.data.frame(x), is.numeric, FUN.VALUE = logical(1L))) |> (\(y) if (isTRUE(any(y))) {
+  x <- .exclude.non.numeric(x, func = "multilevel.cor")
 
-    warning(paste0("Non-numeric variables were excluded from the analysis: ", paste(names(which(y)), collapse = ", ")), call. = FALSE)
-
-    return(as.data.frame(x)[, -which(y), drop = FALSE])
-
-  } else {
-
-    return(x)
-
-  })()
-
-  if (isTRUE(ncol(x) == 0L)) { stop("No variables left for analysis after excluding non-numeric variables.", call. = FALSE) }
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Convert user-missing values into NA ####
 
   if (isTRUE(!is.null(as.na))) { x <- .as.na(x, na = as.na) }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Between Variables ####
 
   between <- names(which(vapply(x, function(y) all(tapply(y, cluster, var, na.rm = TRUE) < .Machine$double.eps^0.5), FUN.VALUE = logical(1L)))) |> (\(p) if (isTRUE(length(p) == 0)) { NULL } else { p })()
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Within Variables ####
 
   within <- names(which(suppressWarnings(misty::multilevel.icc(x[, setdiff(colnames(x), between)], cluster = unlist(cluster))) < .Machine$double.eps^0.5))
@@ -336,14 +357,17 @@ multilevel.cor <- function(data, ..., cluster, estimator = c("ML", "MLR"),
   #
   # Input Check ----------------------------------------------------------------
 
-  # Check inputs
-  .check.input(logical = c("optim.switch", "sig", "split", "order", "tri.lower", "append", "output"),
-               s.character = list(estimator = c("ML", "MLR"), optim.method = c("nlminb", "em"), missing = c("listwise", "fiml"), tri = c("both", "lower", "upper")),
-               m.character = list(print = c("all", "cor", "se", "stat", "p")),
-               args = c("alpha", "p.adj", "digits", "p.digits", "write2"),
+  .check.input(logical = c("optim.switch", "split", "order", "tri.lower", "append", "output"),
+               s.character = list(estimator = c("ML", "MLR"), optim.method = c("nlminb", "em"), missing = c("listwise", "fiml"), tri = c("both", "lower", "upper"), style = c("regular", "bold", "italic")),
+               m.character = list(print = c("all", "summary", "cor", "se", "stat", "p")),
+               args = c("color", "alpha", "p.adj", "digits", "p.digits", "write2"),
                package = "lavaan", envir = environment(), input.check = check)
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #_____________________________________________________________________________
+  #
+  # Data -----------------------------------------------------------------------
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Within-Group and Between Variables ####
 
   # Within Only and Within/Between Variables
@@ -358,14 +382,14 @@ multilevel.cor <- function(data, ..., cluster, estimator = c("ML", "MLR"),
   # At least one between variables
   if (isTRUE(length(var.betw) == 0L)) { stop("Please specify at least one between-group variable.", call. = FALSE) }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data frame with Cluster Variable ####
 
   x <- data.frame(x[, unique(c(var.with, var.betw))], .cluster = cluster)
 
   n.total <- nrow(x)
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Missing Data on the Cluster Variable ####
 
   if (isTRUE(any(is.na(cluster)))) {
@@ -380,76 +404,102 @@ multilevel.cor <- function(data, ..., cluster, estimator = c("ML", "MLR"),
   #
   # Arguments ------------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Estimator ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## 'print' Argument ####
 
-  # Default setting: "MLR" if sig = TRUE, "ML" if sig = FALSE
-  estimator <- if (isTRUE(sig)) { ifelse(all(c("ML", "MLR") %in% estimator), "MLR", estimator) } else { "ML" }
+  if (isTRUE(all(c("all", "summary", "cor", "se", "stat", "p") %in% print))) {
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Standard Errors ####
+    print <- "cor"
 
-  # Default setting: "robust.huber.white" if sig = TRUE, "none" if sig = FALSE
-  se <- if (isTRUE(sig)) { ifelse(estimator == "MLR", "robust.huber.white", "standard") } else { "none" }
+  } else if (isTRUE("all" %in% print)) {
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Optimizer ####
+    print <- c("summary", "cor", "se", "stat", "p")
 
-  if (isTRUE(all(c("nlminb", "em") %in% optim.method))) { optim.method <- "nlminb" }
+  }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Missing data ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## 'estimator' Argument ####
 
-  #...................
-  ### Missing values present ####
+  # Default setting: "MLR" when color highlighting, "ML" otherwise
+  estimator <- if (isTRUE(color != "none" || "stat" %in% print || "se" %in% print || "p" %in% print)) { ifelse(all(c("ML", "MLR") %in% estimator), "MLR", estimator) } else { "ML" }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## 'se' Argument  ####
+
+  # Default setting: "robust.huber.white" when color highlighting, "none" otherwise
+  se <- if (isTRUE(color != "none" || "stat" %in% print || "se" %in% print || "p" %in% print)) { ifelse(estimator == "MLR", "robust.huber.white", "standard") } else { "none" }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## 'missing' Argument  ####
+
+  #—————————————————————————————————————— #
+  ### Missing Data ####
+
   if (isTRUE(any(is.na(x)))) {
 
     complete <- FALSE
 
     if (isTRUE(all(c("listwise", "fiml") %in% missing))) { missing <- "fiml" }
 
-  #...................
-  ### No missing values ####
+    # Cases with missing on all variables
+    if (isTRUE(missing == "fiml")) {
+
+      x <- misty::na.prop(x[, -which(colnames(x) %in% c(".cluster", between)), drop = FALSE], append = FALSE) |>
+        (\(y) if (any(y == 1L)) {
+
+          warning(paste0("Data contains cases with missing values on all variables measured at the within level, number of cases removed from the analysis: ", sum(y == 1L)), call. = FALSE)
+
+          # Remove cases with missing on all variables
+          return(x[which(y < 1L), ])
+
+        } else {
+
+          return(x)
+
+        })()
+
+    }
+
+  #—————————————————————————————————————— #
+  ### Complete Data ####
+
   } else {
 
     complete <- TRUE
+
     missing <- "listwise"
 
   }
 
-  # Cases with missing on all variables
-  if (isTRUE(missing == "fiml")) {
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## 'optim.method' Argument  ####
 
-    x <- misty::na.prop(x[, -which(colnames(x) %in% c(".cluster", between)), drop = FALSE], append = FALSE) |>
-      (\(y) if (any(y == 1L)) {
+  if (isTRUE(all(c("nlminb", "em") %in% optim.method))) {
 
-        warning(paste0("Data contains cases with missing values on all variables measured at the within level, number of cases removed from the analysis: ", sum(y == 1L)), call. = FALSE)
+    if (isTRUE(missing == "listwise")) {
 
-        # Remove cases with missing on all variables
-        return(x[which(y < 1L), ])
+      optim.method <- "nlminb"
 
-      } else {
+    } else if (isTRUE(missing == "fiml")) {
 
-        return(x)
+      optim.method <- "em"
 
-      })()
+    }
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Print correlation, sample size or significance values ####
-
-  if (isTRUE(all(c("all", "cor", "se", "stat", "p") %in% print))) { print <- "cor" }
-
-  if (isTRUE(length(print) == 1L && "all" %in% print)) { print <- c("cor", "se", "stat", "p") }
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Print triangular ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## 'tri' Argument ####
 
   tri <- ifelse(all(c("both", "lower", "upper") %in% tri), "lower", tri)
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Adjustment method for multiple testing ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## 'style' Argument ####
+
+  if (isTRUE(all(c("regular", "bold", "italic") %in% style))) { style <- "regular" }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## 'p.adj' Argument ####
 
   p.adj <- ifelse(all(c("none", "bonferroni", "holm", "hochberg", "hommel", "BH", "BY", "fdr") %in% p.adj), "none", p.adj)
 
@@ -457,10 +507,12 @@ multilevel.cor <- function(data, ..., cluster, estimator = c("ML", "MLR"),
   #
   # Main Function --------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Model specification ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Model Specification ####
 
-  # At least two within- and two between-group variables
+  #—————————————————————————————————————— #
+  ### At Least Two Within- and Two Between-Group Variables ####
+
   if (isTRUE(length(var.with) >= 2L && length(var.betw) >= 2L)) {
 
     mod <- paste("  # Within model\n",
@@ -470,7 +522,9 @@ multilevel.cor <- function(data, ..., cluster, estimator = c("ML", "MLR"),
                  " level: 2\n  ",
                  paste(apply(combn(length(var.betw), 2L), 2L, function(y) paste(var.betw[y[1L]], var.betw[y[2L]], sep = " ~~ " )), collapse = "\n   "))
 
-  # At least two within-group variable, but only one between-group variable
+  #—————————————————————————————————————— #
+  ### At Least Two Within-Group Variables, but Only One Between-Group Variable ####
+
   } else if (isTRUE(length(var.with) >= 2L && length(var.betw) == 1L)){
 
     mod <- paste("  # Within model\n",
@@ -480,7 +534,9 @@ multilevel.cor <- function(data, ..., cluster, estimator = c("ML", "MLR"),
                  " level: 2\n  ",
                  paste(var.betw, var.betw, sep = " ~~ "), collapse = "\n   ")
 
-  # Only one within-group variable, but at least two between-group variables
+  #—————————————————————————————————————— #
+  ### Only One Within-Group Variable, but at Least Two Between-Group Variables ####
+
   } else if (isTRUE(length(var.with) == 1L && length(var.betw) >= 2L)) {
 
     mod <- paste("  # Within model\n",
@@ -493,7 +549,9 @@ multilevel.cor <- function(data, ..., cluster, estimator = c("ML", "MLR"),
 
   }
 
-  # Inequality constraints for the variances at Level 2
+  #—————————————————————————————————————— #
+  ### Inequality Constraints for the Variances at Level 2 ####
+
   if (isTRUE(constr.var)) {
 
     mod <- paste(mod, "\n  ",
@@ -502,14 +560,13 @@ multilevel.cor <- function(data, ..., cluster, estimator = c("ML", "MLR"),
                  "\n   # Inequality constraints\n  ",
                  paste(sapply(seq_along(var.betw), function(y) paste0("V", y, " > 0")), collapse = "\n   "), collapse = "\n")
 
-
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Model estimation ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Model Estimation ####
 
-  model.fit <- tryCatch(suppressWarnings(lavaan::sem(mod, data = x, cluster = ".cluster", estimator = estimator,
-                                                     missing = missing, optim.method = optim.method, se = se,
+  model.fit <- tryCatch(suppressWarnings(lavaan::sem(mod, data = x, cluster = ".cluster", estimator = estimator, missing = missing,
+                                                     optim.method = optim.method, se = se, test = "none", fit.by.level = FALSE,
                                                      check.gradient = FALSE, check.post = FALSE, check.vcov = FALSE)),
                         error = function(y) {
 
@@ -527,13 +584,13 @@ multilevel.cor <- function(data, ..., cluster, estimator = c("ML", "MLR"),
 
                           }})
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Convergence check ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Convergence Check ####
 
   if (isTRUE(!lavaan::lavInspect(model.fit, what = "converged"))) {
 
-    #...................
-    ### Quasi-Newton method optimizer ####
+    #—————————————————————————————————————— #
+    ### Quasi-Newton Optimizer ####
 
     if (isTRUE(optim.method == "nlminb")) {
 
@@ -543,7 +600,7 @@ multilevel.cor <- function(data, ..., cluster, estimator = c("ML", "MLR"),
 
         # Model estimation with EM algorithm
         model.fit <- suppressWarnings(lavaan::sem(mod, data = x, cluster = ".cluster", estimator = estimator,
-                                                  missing = missing, optim.method = "em",
+                                                  missing = missing, optim.method = "em", fit.by.level = FALSE,
                                                   se = ifelse(estimator == "MLR", "robust.huber.white", "standard"),
                                                   check.gradient = FALSE, check.post = FALSE, check.vcov = FALSE))
 
@@ -564,8 +621,8 @@ multilevel.cor <- function(data, ..., cluster, estimator = c("ML", "MLR"),
 
       }
 
-    #...................
-    ### Expectation Maximization (EM) algorithm ####
+    #—————————————————————————————————————— #
+    ### Expectation Maximization (EM) Algorithm ####
 
     } else if(isTRUE(optim.method == "em")) {
 
@@ -583,8 +640,8 @@ multilevel.cor <- function(data, ..., cluster, estimator = c("ML", "MLR"),
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Convergence and model identification checks ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Convergence and Model Identification Checks ####
 
   if (isTRUE(check)) {
 
@@ -592,13 +649,13 @@ multilevel.cor <- function(data, ..., cluster, estimator = c("ML", "MLR"),
 
     if (isTRUE(se != "none")) {
 
-      #...................
-      ### Standard error ####
+      #—————————————————————————————————————— #
+      ### Standard Error ####
 
       if (isTRUE(any(is.na(unlist(lavaan::lavInspect(model.fit, what = "se")))))) { stop("Standard errors could not be computed.", call. = FALSE) }
 
-      #...................
-      ### Variance-covariance matrix of the estimated parameters ####
+      #—————————————————————————————————————— #
+      ### Variance-Covariance Matrix of the Estimated Parameters ####
 
       if (isTRUE(min(eigen(lavaan::lavInspect(model.fit, what = "vcov"), symmetric = TRUE, only.values = TRUE)$values) < .Machine$double.eps^(3L/4L))) {
 
@@ -610,10 +667,12 @@ multilevel.cor <- function(data, ..., cluster, estimator = c("ML", "MLR"),
 
     }
 
-    #...................
-    ### Negative variance of observed variables ####
+    #—————————————————————————————————————— #
+    ### Negative Variance of Observed Variables ####
 
-    #### Within Level
+    #···················
+    #### Within Level ####
+
     if (isTRUE(any(diag(lavaan::lavInspect(model.fit, what = "theta")$within) < 0L))) {
 
       warning("Some estimated variances at the Within level are negative.", call. = FALSE)
@@ -622,13 +681,15 @@ multilevel.cor <- function(data, ..., cluster, estimator = c("ML", "MLR"),
 
     } else if (isTRUE(any(eigen(lavaan::lavTech(model.fit, what = "theta")$within, symmetric = TRUE, only.values = TRUE)$values < (-1L * .Machine$double.eps^(3/4))))) {
 
-      warning("The model-implied variance-covariance matrix of the residuals is not positive definite indicating an absolute residual correlations greater one.", call. = FALSE)
+      warning("The model-implied variance-covariance matrix of the residuals at the Within Level is not positive definite indicating an absolute correlations greater one.", call. = FALSE)
 
       check.theta.w <- FALSE
 
     }
 
-    #### Between Level
+    #···················
+    #### Between Level ####
+
     if (isTRUE(any(diag(lavaan::lavInspect(model.fit, what = "theta")$.cluster) < 0L))) {
 
       warning("Some estimated variances at the Between level are negative, specifying contr.var = TRUE will solve the problem.", call. = FALSE)
@@ -637,7 +698,7 @@ multilevel.cor <- function(data, ..., cluster, estimator = c("ML", "MLR"),
 
     } else if (isTRUE(any(eigen(lavaan::lavTech(model.fit, what = "theta")$.cluster, symmetric = TRUE, only.values = TRUE)$values < (-1L * .Machine$double.eps^(3/4))))) {
 
-      warning("The model-implied variance-covariance matrix of the residuals at the Between level is not positive definite indicating an absolute residual correlations greater one.", call. = FALSE)
+      warning("The model-implied variance-covariance matrix of the residuals at the Between level is not positive definite indicating an absolute correlations greater one.", call. = FALSE)
 
       check.theta.b <- FALSE
 
@@ -649,7 +710,7 @@ multilevel.cor <- function(data, ..., cluster, estimator = c("ML", "MLR"),
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Extract Results ####
 
   # Standardized solution
@@ -658,7 +719,7 @@ multilevel.cor <- function(data, ..., cluster, estimator = c("ML", "MLR"),
   # Visible binding for global variable
   mat <- level <- NULL
 
-  #...................
+  #—————————————————————————————————————— #
   ### Within-Group Results ####
 
   # Theta
@@ -667,7 +728,9 @@ multilevel.cor <- function(data, ..., cluster, estimator = c("ML", "MLR"),
   # Parameter estimate, z and significance value matrix
   with.p <- with.stat <- with.se <- with.cor <- matrix(NA, ncol = max(stand[, "col"]), nrow = max(stand[, "row"]))
 
-  # Model estimation with SE
+  #···················
+  #### Model Estimation with SE ####
+
   if (isTRUE(se != "none")) {
 
     for (i in seq_len(nrow(with.stand.theta))) {
@@ -679,7 +742,9 @@ multilevel.cor <- function(data, ..., cluster, estimator = c("ML", "MLR"),
 
     }
 
-  # Model estimation without SE
+  #···················
+  #### Model Estimation without SE ####
+
   } else {
 
     for (i in seq_len(nrow(with.stand.theta))) {
@@ -695,10 +760,9 @@ multilevel.cor <- function(data, ..., cluster, estimator = c("ML", "MLR"),
   with.stat[lower.tri(with.stat)] <- t(with.stat)[lower.tri(with.stat)]
   with.p[lower.tri(with.p)] <- t(with.p)[lower.tri(with.p)]
 
-  colnames(with.cor) <- colnames(with.se) <- colnames(with.stat) <- colnames(with.p) <-
-  rownames(with.cor) <- rownames(with.se) <- rownames(with.stat) <- rownames(with.p) <- sapply(seq_len(max(stand[, "row"])), function(y) unique(stand[which(y == stand$row), "lhs"]))
+  colnames(with.cor) <- colnames(with.se) <- colnames(with.stat) <- colnames(with.p) <- rownames(with.cor) <- rownames(with.se) <- rownames(with.stat) <- rownames(with.p) <- sapply(seq_len(max(stand[, "row"])), function(y) unique(stand[which(y == stand$row), "lhs"]))
 
-  #...................
+  #—————————————————————————————————————— #
   ### Between-Group Results ####
 
   # Standardized solution
@@ -707,7 +771,9 @@ multilevel.cor <- function(data, ..., cluster, estimator = c("ML", "MLR"),
   # Parameter estimate, z and significance value matrix
   betw.p <- betw.stat <- betw.se <- betw.cor <- matrix(NA, ncol = max(stand[, "col"]), nrow = max(stand[, "row"]))
 
-  # Model estimation with SE
+  #···················
+  #### Model Estimation with SE ####
+
   if (isTRUE(se != "none")) {
 
     for (i in seq_len(nrow(betw.stand.theta))) {
@@ -719,7 +785,9 @@ multilevel.cor <- function(data, ..., cluster, estimator = c("ML", "MLR"),
 
     }
 
-  # Model estimation without SE
+  #···················
+  #### Model Estimation without SE ####
+
   } else {
 
     for (i in seq_len(nrow(betw.stand.theta))) {
@@ -735,10 +803,9 @@ multilevel.cor <- function(data, ..., cluster, estimator = c("ML", "MLR"),
   betw.stat[lower.tri(betw.stat)] <- t(betw.stat)[lower.tri(betw.stat)]
   betw.p[lower.tri(betw.p)] <- t(betw.p)[lower.tri(betw.p)]
 
-  colnames(betw.cor) <- colnames(betw.se) <- colnames(betw.stat) <- colnames(betw.p) <-
-  rownames(betw.cor) <- rownames(betw.se) <- rownames(betw.stat) <- rownames(betw.p) <- sapply(seq_len(max(stand[, "row"])), function(y) unique(stand[which(y == stand$row), "lhs"]))
+  colnames(betw.cor) <- colnames(betw.se) <- colnames(betw.stat) <- colnames(betw.p) <- rownames(betw.cor) <- rownames(betw.se) <- rownames(betw.stat) <- rownames(betw.p) <- sapply(seq_len(max(stand[, "row"])), function(y) unique(stand[which(y == stand$row), "lhs"]))
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Order Between Variables ####
 
   if (isTRUE(order && !is.null(between))) {
@@ -758,11 +825,12 @@ multilevel.cor <- function(data, ..., cluster, estimator = c("ML", "MLR"),
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Combine Within-Group and Between-Group Results ####
 
-  #...................
-  ### Within-group correlations in the lower triangular ####
+  #—————————————————————————————————————— #
+  ### Within-Group Correlations in the Lower Triangular ####
+
   if (isTRUE(tri.lower)) {
 
     # Within-group results
@@ -777,8 +845,9 @@ multilevel.cor <- function(data, ..., cluster, estimator = c("ML", "MLR"),
     wb.stat[upper.tri(wb.stat)] <- betw.stat[upper.tri(wb.stat)]
     wb.p[upper.tri(wb.p)] <- betw.p[upper.tri(wb.p)]
 
-  #...................
-  ### Within-group correlations in the upper triangular ####
+  #—————————————————————————————————————— #
+  ### Within-Group Correlations in the Upper Triangular ####
+
   } else {
 
     # Within-group results
@@ -795,8 +864,9 @@ multilevel.cor <- function(data, ..., cluster, estimator = c("ML", "MLR"),
 
   }
 
-  #...................
-  ### Adjust p-values for multiple comparison ####
+  #—————————————————————————————————————— #
+  ### Adjust p-Values for Multiple Comparison ####
+
   if (isTRUE(p.adj != "none")) {
 
     wb.p[lower.tri(wb.p)] <- p.adjust(wb.p[lower.tri(wb.p)], method = p.adj)
@@ -804,10 +874,12 @@ multilevel.cor <- function(data, ..., cluster, estimator = c("ML", "MLR"),
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Split Within-Group and Between-Group Results ####
 
-  # Model estimation with SE
+  #···················
+  #### Model Estimation with SE ####
+
   if (isTRUE(se != "none")) {
 
     # Within-group results
@@ -822,7 +894,9 @@ multilevel.cor <- function(data, ..., cluster, estimator = c("ML", "MLR"),
     betw.stat <- betw.stat[which(apply(betw.stat, 1L, function(y) !all(is.na(y)))), which(apply(betw.stat, 2L, function(y) !all(is.na(y))))]
     betw.p <- betw.p[which(apply(betw.p, 1L, function(y) !all(is.na(y)))), which(apply(betw.p, 2L, function(y) !all(is.na(y))))]
 
-  # Model estimation without SE
+  #···················
+  #### Model Estimation without SE ####
+
   } else {
 
     # Within-group results
@@ -833,8 +907,8 @@ multilevel.cor <- function(data, ..., cluster, estimator = c("ML", "MLR"),
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Adjust p-values for multiple comparison ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Adjust p-Values for Multiple Comparison ####
 
   if (isTRUE(p.adj != "none")) {
 
@@ -848,16 +922,18 @@ multilevel.cor <- function(data, ..., cluster, estimator = c("ML", "MLR"),
 
   #_____________________________________________________________________________
   #
-  # Return object --------------------------------------------------------------
+  # Return Object --------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## lavaan summary ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## lavaan Summary ####
 
-  lavaan.summary <- data.frame(c(paste("lavaan", lavaan::lavInspect(model.fit, what = "version")), "", "Estimator", "Standard Errors", "Missing Data", "", "",
+  lavaan.summary <- data.frame(c(paste("lavaan", lavaan::lavInspect(model.fit, what = "version")), "", "Estimator", "Optimization Method", "", "Standard Errors", "Missing Data", "", "",
                                  "Number of Observations", "Number of Clusters"),
                                c("", "",
                                  # Estimator
                                  estimator,
+                                 # Optimization method
+                                 toupper(lavaan::lavTech(model.fit, what = "options")$optim.method), "",
                                  # Standard errors
                                  switch(lavaan::lavTech(model.fit, what = "options")$se,
                                         "none" = "None",
@@ -872,17 +948,16 @@ multilevel.cor <- function(data, ..., cluster, estimator = c("ML", "MLR"),
                                  lavaan::lavInspect(model.fit, what = "nobs"),
                                  # Number of clusters
                                  lavaan::lavInspect(model.fit, what = "nclusters")),
-                               c(rep("", times = 6L), "Total", n.total, ""),
+                               c(rep("", times = 8L), "Total", n.total, ""),
                                fix.empty.names = FALSE)
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Object ####
 
   object <- list(call = match.call(),
                  type = "multilevel.cor",
                  data = x,
-                 args = list(within = within, between = between, estimator = estimator, constr.var = constr.var, optim.method = optim.method, se = se, optim.switch = optim.switch, missing = missing, sig = sig, alpha = alpha, print = print,
-                             split = split, order = order, tri = tri, tri.lower = tri.lower, p.adj = p.adj, digits = digits, p.digits = p.digits, as.na = as.na, write = write, append = append, check = check, output = output),
+                 args = list(within = within, between = between, estimator = estimator, constr.var = constr.var, optim.method = optim.method, se = se, optim.switch = optim.switch, print = print, split = split, order = order, tri = tri, tri.lower = tri.lower ,missing = missing, alpha = alpha, color = color, style = style, p.adj = p.adj, digits = digits, p.digits = p.digits, as.na = as.na, write = write, append = append, check = check, output = output),
                  model = mod,
                  model.fit = model.fit,
                  check = list(vcov = check.vcov, theta.w = check.theta.w, theta.b = check.theta.b),

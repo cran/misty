@@ -8,9 +8,9 @@ item.omega(data, ..., rescov = NULL, type = c("omega", "hierarch", "categ"),
            exclude = NULL, std = FALSE,
            estimator = c("ML", "GLS", "WLS", "DWLS", "ULS", "PML"),
            missing = c("listwise", "pairwise", "fiml"),
-           print = c("all", "omega", "item"), digits = 2, conf.level = 0.95,
-           as.na = NULL, write = NULL, append = TRUE, check = TRUE,
-           output = TRUE)
+           print = c("all", "omega", "item"), digits = 2, r.digits = 3,
+           conf.level = 0.95, as.na = NULL, write = NULL, append = TRUE,
+           check = TRUE, output = TRUE)
 }
 \arguments{
 \item{data}{a data frame. Note that at least three items are needed for
@@ -58,7 +58,11 @@ pairwise deletion (\code{missing = "pairwise"}) is used to compute coefficient o
 the coefficient omega, and \code{"item"} for item statistics.}
 
 \item{digits}{an integer value indicating the number of decimal places to
-be used for displaying omega and standardized factor loadings.}
+be used for displaying mean, standard deviation, minimum,
+and maximum.}
+
+\item{r.digits}{an integer value indicating the number of decimal places to
+be used for displaying alpha and standardized factor loadings.}
 
 \item{conf.level}{a numeric value between 0 and 1 indicating the confidence
 level of the interval.}
@@ -98,7 +102,7 @@ entries:
 }
 \description{
 This function computes point estimate and confidence interval for the coefficient
-omega (McDonald, 1978), hierarchical coefficient omega (Kelley & Pornprasertmanit,
+omega (McDonald, 1999), hierarchical coefficient omega (Kelley & Pornprasertmanit,
 2016), and categorical coefficient omega (Green & Yang, 2009) along with
 standardized factor loadings and omega if item deleted. By default, the function
 computes coefficient omega based on maximum likelihood parameter (ML) estimates
@@ -106,15 +110,17 @@ using full information maximum likelihood (FIML) method in the presence of
 missing data.
 }
 \details{
-Coefficient omega is computed by conducting a confirmatory factor analysis based
-on the congeneric measurement model (Graham, 2006) using the \code{cfa()} function in the \pkg{lavaan}
-package by Yves Rosseel (2019).
-
-Approximate confidence intervals are computed using the procedure by Feldt,
-Woodruff and Salih (1987). Note that there are at least 10 other procedures
-for computing the confidence interval (see Kelley and Pornprasertmanit, 2016),
-which are implemented in the \code{ci.reliability()} function in the
-\pkg{MBESSS} package by Ken Kelley (2019).
+\describe{
+\item{\strong{Coefficient Omega}}{This function computes the coefficient omega
+by conducting a confirmatory factor analysis based on the congeneric measurement
+model (Graham, 2006) using the \code{cfa()} function in the \pkg{lavaan} package
+by Yves Rosseel (2019).}
+\item{\strong{Confidence Interval}}{The confidence interval for the (ordinal)
+coefficient alpha is computed using the procedure by Feldt et al. (1987).
+Note that there are at least 10 other procedures for computing the confidence
+interval (see Kelley and Pornprasertmanit, 2016), which are implemented in the
+\code{ci.reliability()} function in the \pkg{MBESSS} package by Ken Kelley (2019).}
+}
 }
 \note{
 Computation of the hierarchical and categorical omega is based on the
@@ -124,50 +130,49 @@ Computation of the hierarchical and categorical omega is based on the
 \examples{
 \dontrun{
 
-dat <- data.frame(item1 = c(3, NA, 3, 4, 1, 2, 4, 2), item2 = c(5, 3, 3, 2, 2, 1, 3, 1),
-                  item3 = c(4, 2, 4, 2, 1, 3, 4, 1), item4 = c(4, 1, 2, 2, 1, 3, 4, 3))
+# Load data set "HolzingerSwineford1939" in the lavaan package
+data("HolzingerSwineford1939", package = "lavaan")
 
-# Example 1a: Coefficient omega, full information maximum likelihood method
-item.omega(dat)
+#————————————————————————————————————————————————————————————————————————————
+# Continuous Data
 
-# Example 1b: Coefficient omega, listwise deletion
-item.omega(dat, missing = "listwise")
+# Example 1a: Coefficient omega
+item.omega(HolzingerSwineford1939, x1::x9)
 
-# Example 2: Coefficient omega and item statistics after excluding item3
-item.omega(dat, exclude = "item3", print = "all")
+# Example 1b: Coefficient omega and item statistics after excluding 'x3'
+item.omega(HolzingerSwineford1939, x1::x9, exclude = "x3", print = "all")
 
-# Example 3a: Coefficient omega with a residual covariance
-item.omega(dat, rescov = c("item1", "item2"))
+# Example 2: Hierarchical Omega
+item.omega(HolzingerSwineford1939, x1::x9, type = "hierarch")
 
-# Example 3b: Coefficient omega with residual covariances
-item.omega(dat, rescov = list(c("item1", "item2"), c("item1", "item3")))
+# Example 3a: Residual covariance between 'x1' and 'x2'
+item.omega(HolzingerSwineford1939, x1::x9, rescov = c("x1", "x2"))
 
-# Example 4: Ordinal coefficient omega and item statistics
-item.omega(dat, type = "categ", print = "all")
+# Example 3b: Residual covariances between 'x1' and 'x2', and 'x2' and 'x3'
+item.omega(HolzingerSwineford1939, x1::x9, rescov = list(c("x1", "x2"), c("x2", "x3")))
 
-# Example 6: Summary of the CFA model used to compute coefficient omega
-lavaan::summary(item.omega(dat, output = FALSE)$model.fit,
-                fit.measures = TRUE, standardized = TRUE)
+# Example 4: Summary of the CFA model used to compute coefficient omega
+lavaan::summary(item.omega(HolzingerSwineford1939, x1::x9, output = FALSE)$model.fit,
+                standardized = TRUE)
 
-# Example 7a: Write Results into a text file
-item.omega(dat, write = "Omega.txt")
+#————————————————————————————————————————————————————————————————————————————
+# Polytomous Data
 
-# Example 7b: Write Results into an Excel file
-item.omega(dat, write = "Omega.xlsx")
+# Example 5: Ordinal coefficient omega and item statistics
+item.omega(data.items, pitem1, pitem2r, pitem3r, pitem4::pitem6, type = "categ",
+           print = "all")
+
+#————————————————————————————————————————————————————————————————————————————
+# Write Results
+
+# Example 6a: Write Results into a text file
+item.omega(HolzingerSwineford1939, x1::x9, print = "all", write = "Omega.txt")
+
+# Example 6b: Write Results into an Excel file
+item.omega(HolzingerSwineford1939, x1::x9, print = "all", write = "Omega.xlsx")
 }
 }
 \references{
-Chalmers, R. P. (2018). On misconceptions and the limited usefulness of ordinal alpha.
-\emph{Educational and Psychological Measurement, 78}, 1056-1071.
-https://doi.org/10.1177/0013164417727036
-
-Cronbach, L.J. (1951). Coefficient alpha and the internal structure of tests.
-\emph{Psychometrika, 16}, 297-334. https://doi.org/10.1007/BF02310555
-
-Cronbach, L.J. (2004). My current thoughts on coefficient alpha and successor
-procedures. \emph{Educational and Psychological Measurement, 64}, 391-418.
-https://doi.org/10.1177/0013164404266386
-
 Feldt, L. S., Woodruff, D. J., & Salih, F. A. (1987). Statistical inference for
 coefficient alpha. \emph{Applied Psychological Measurement}, 11 93-103.
 https://doi.org/10.1177/014662168701100107
@@ -184,18 +189,8 @@ https://doi.org/10.1037/a0040086.
 Ken Kelley (2019). \emph{MBESS: The MBESS R Package}. R package version 4.6.0.
 https://CRAN.R-project.org/package=MBESS
 
-Revelle, W. (2025). \emph{psych: Procedures for psychological, psychometric,
-and personality research}.  Northwestern University, Evanston, Illinois.
-R package version 2.5.3,  https://CRAN.R-project.org/package=psych.
-
-Zumbo, B. D., & Kroc, E. (2019). A measurement is a choice and Stevens' scales
-of measurement do not help make it: A response to Chalmers. \emph{Educational
-and Psychological Measurement, 79}, 1184-1197.
-https://doi.org/10.1177/0013164419844305
-
-Zumbo, B. D., Gadermann, A. M., & Zeisser, C. (2007). Ordinal versions of coefficients
-alpha and theta for Likert rating scales. \emph{Journal of Modern Applied Statistical
-Methods, 6}, 21-29. https://doi.org/10.22237/jmasm/1177992180
+McDonald, R. P. (1999). \emph{Test theory: A unified treatment}. Lawrence
+Erlbaum Associates Publishers.
 }
 \seealso{
 \code{\link{item.omega}}, \code{\link{item.cfa}}, \code{\link{item.invar}},

@@ -359,6 +359,7 @@ misty::libraries(misty, lme4, nlme, ggplot2)
 data("Demo.twolevel", package = "lavaan")
 
 #————————————————————————————————————————————————————————————————————————————
+# Estimate Multilevel Models
 
 # Cluster mean centering, center() from the misty package
 Demo.twolevel <- center(Demo.twolevel, x2, type = "CWC", cluster = "cluster")
@@ -375,39 +376,48 @@ mod1b <- lme(y1 ~ x2.c + x2.b + w1, random = ~ 1 + x2.c | cluster, data = Demo.t
              method = "ML")
 
 #————————————————————————————————————————————————————————————————————————————
-# Example 1a: R-squared measures according to Rights and Sterba (2019)
+# R-Squared Measures According to Rights and Sterba (2019)
+
+# Example 1a: Multilevel model using the lmer() function
 multilevel.r2(mod1a)
 
-# Example 1b: R-squared measures according to Rights and Sterba (2019)
+# Example 1b: Multilevel model using the lme() function
 multilevel.r2(mod1b)
 
-# Example 1a: Write Results into a text file
+# Example 1c: Write Results into a text file
 multilevel.r2(mod1a, write = "ML-R2.txt")
 
 #————————————————————————————————————————————————————————————————————————————
-# Example 2: Bar chart showing the decomposition of scaled total, within-cluster,
+# Bar Chart Showing the Variance Decomposition
+
 # and between-cluster outcome variance
+
+# Example 2a: Default setting
 multilevel.r2(mod1a, plot = TRUE)
 
-# Bar chart in gray scale
+# Example 2b: Bar chart in gray scale
 multilevel.r2(mod1a, plot = TRUE, gray = TRUE)
 
-# Save bar chart
+# Example 2c: Save bar chart
 multilevel.r2(mod1a, plot = TRUE, filename = "Proportion_of_Variance.png",
               dpi = 600, width = 5.5, height = 5.5)
 
 #————————————————————————————————————————————————————————————————————————————
-# Example 3: Estimate multilevel model without random slopes
+# Argument 'print'
+
+# Estimate multilevel model without random slopes
 # Note. R-squared measures by Raudenbush and Bryk (2002), and  Snijders and
 # Bosker (2012) should be computed based on the random intercept model
 mod2 <- lmer(y1 ~ x2.c + x2.b + w1 + (1 | cluster), data = Demo.twolevel,
              REML = FALSE, control = lmerControl(optimizer = "bobyqa"))
 
-# Print all available R-squared measures
+# Example 3: Print all available R-squared measures
 multilevel.r2(mod2, print = "all")
 
 #————————————————————————————————————————————————————————————————————————————
-# Example 4: Draw bar chart manually
+# Draw Bar Chart Manually
+
+# Extract misty object
 mod1a.r2 <- multilevel.r2(mod1a, output = FALSE)
 
 # Prepare data frame for ggplot()
@@ -421,7 +431,7 @@ df <- data.frame(var = factor(rep(c("Total", "Within", "Between"), each = 5),
                            "Fixed Slopes (Within)")),
                  y = as.vector(mod1a.r2$result$rs$decomp))
 
-# Draw bar chart in line with the default setting of multilevel.r2()
+# Example 4: Draw bar chart in line with the default setting of multilevel.r2()
 ggplot(df, aes(x = var, y = y, fill = part)) +
   theme_bw() +
   geom_bar(stat = "identity") +

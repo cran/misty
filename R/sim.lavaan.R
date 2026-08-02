@@ -168,7 +168,7 @@ sim.lavaan <- function(model, n = 500, std = FALSE, skew = NULL, kurt = NULL,
 
     }
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— #
     ### Return Object ####
 
     object <- cbind(v[, c(model.char$v_names$v_observed, model.char$v_names$v_latent), drop = FALSE],

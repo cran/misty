@@ -158,7 +158,7 @@ na.pattern <- function(data, ..., order = FALSE, n.pattern = NULL, digits = 2,
   #
   # Data -----------------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data using the argument '...' ####
 
   if (isTRUE(!missing(...))) {
@@ -166,7 +166,7 @@ na.pattern <- function(data, ..., order = FALSE, n.pattern = NULL, digits = 2,
     # Extract data and convert tibble into data frame or vector
     x <- as.data.frame(data[, .var.names(data = data, ...), drop = FALSE])
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data without using the argument '...' ####
 
   } else {
@@ -176,7 +176,7 @@ na.pattern <- function(data, ..., order = FALSE, n.pattern = NULL, digits = 2,
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Convert user-missing values into NA ####
 
   if (isTRUE(!is.null(as.na))) { x <- .as.na(x, na = as.na) }
@@ -211,7 +211,7 @@ na.pattern <- function(data, ..., order = FALSE, n.pattern = NULL, digits = 2,
   #
   # Arguments ------------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## 'units' Argument ####
 
   # Default setting
@@ -230,7 +230,7 @@ na.pattern <- function(data, ..., order = FALSE, n.pattern = NULL, digits = 2,
   # Missing data pattern
   patt <- apply(x.na, 1L, function(y) paste(as.numeric(y), collapse = ""))
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Remove Patterns ####
 
   if (isTRUE(!is.null(n.pattern))) {
@@ -265,7 +265,7 @@ na.pattern <- function(data, ..., order = FALSE, n.pattern = NULL, digits = 2,
   # Remove duplicated rows
   x.na.order.dupl <- x.na.order[!duplicated(x.na.order), ]
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Result Table ####
 
   if (isTRUE(!is.null(dim(x.na.order.dupl)))) {
@@ -326,7 +326,7 @@ na.pattern <- function(data, ..., order = FALSE, n.pattern = NULL, digits = 2,
 
   if (isTRUE(!is.null(write))) { .write.result(object = object, write = write, append = append) }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Output ####
 
   if (isTRUE(output)) { print(object, check = FALSE) }

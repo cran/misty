@@ -120,7 +120,7 @@ dat.w <- data.frame(id = c(23, 55, 71),
                     aanx = c(5, 3, 6), banx = c(NA, 7, 2), canx = c(6, NA, 8))
 
 #————————————————————————————————————————————————————————————————————————————
-# Convert from 'wide' data format to the 'long' data format
+# Convert from 'wide' Data Format to the 'long' Data Format
 
 # Example 1: One set of time-varying variables combined into "dep"
 df.long(dat.w, var = c("adep", "bdep", "cdep"), var.name = "dep", idvar = "id")
@@ -155,7 +155,7 @@ df.long(dat.w, age, var = list(c("adep", "bdep", "cdep"), c("aanx", "banx", "can
 df.long(dat.w, age, gend, idvar = "id")
 
 #————————————————————————————————————————————————————————————————————————————
-# Convert from 'long' data format to the 'wide' data format
+# Convert from 'long' Data Format to the 'wide' Data Format
 
 dat.l <- df.long(dat.w,
                  var = list(c("adep", "bdep", "cdep"), c("aanx", "banx", "canx")),

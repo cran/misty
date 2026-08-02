@@ -5,7 +5,8 @@
 #' Kendall's Tau-b correlation coefficient, Kendall-Stuart's Tau-c correlation
 #' coefficient, tetrachoric correlation coefficient, or polychoric correlation
 #' coefficient and computes significance values (\emph{p}-values) for testing the
-#' hypothesis H0: \eqn{\rho} = 0 for all pairs of variables.
+#' two-sided hypothesis H0: \eqn{\rho} = 0 for all pairs of variables. Statistically
+#' significant correlations can be highlighted by specifying the argument \code{color}.
 #'
 #' @param data       a data frame with numeric variables, i.e., factors and character
 #'                   variables are excluded from \code{data} before conducting the
@@ -24,38 +25,60 @@
 #'                   coefficient, \code{"tetra"} for tetrachoric correlation
 #'                   coefficient, and \code{"poly"} for polychoric correlation
 #'                   coefficient.
-#' @param na.omit    logical: if \code{TRUE}, incomplete cases are removed before
-#'                   conducting the analysis (i.e., listwise deletion); if
-#'                   \code{FALSE} (default), pairwise deletion is used.
 #' @param group      either a character string indicating the variable name of
 #'                   the grouping variable in \code{data}, or a vector representing
 #'                   the grouping variable. Note that the grouping variable is
 #'                   limited to two groups.
-#' @param sig        logical: if \code{TRUE}, statistically significant correlation
-#'                   coefficients are shown in boldface on the console. Note that
-#'                   this function does not provide statistical significance
-#'                   testing for tetrachoric or polychoric correlation coefficients.
-#' @param alpha      a numeric value between 0 and 1 indicating the significance
-#'                   level at which correlation coefficients are printed boldface
-#'                   when \code{sig = TRUE}.
+#' @param continuity logical: if \code{TRUE} (default), continuity correction is
+#'                   used for testing Spearman's rank-order correlation coefficient
+#'                   and Kendall's Tau-b correlation.
+#' @param ml         logical: if \code{FALSE} (default), a two-step approximation
+#'                   is used to compute the tetrachoric and polychoric correlation
+#'                   coefficient, while the maximum-likelihood (ML) estimate is
+#'                   computed if \code{TRUE}. Note that ML estimation is computationally
+#'                   expensive, i.e., takes a lot of time.
+#' @param exact      logical: if \code{TRUE} (default), an exact p-value is computed
+#'                   for Spearman's rank-order correlation coefficient and Kendall's
+#'                   Kendall's Tau-b correlation coefficient. Note that the exact
+#'                   p-value is not available in the presence of ties.
 #' @param print      a character string or character vector indicating which results
 #'                   to show on the console, i.e. \code{"all"} for all results,
 #'                   \code{"cor"} for correlation coefficients, \code{"n"} for the
 #'                   sample sizes, \code{"stat"} for the test statistic, \code{"df"}
 #'                   for the degrees of freedom, and \code{"p"} for \emph{p}-values.
-#'                   Note that the function does not provide \emph{p}-values for
-#'                   tetrachoric or polychoric correlation coefficients.
 #' @param tri        a character string indicating which triangular of the matrix
 #'                   to show on the console, i.e., \code{both} for upper and lower
 #'                   triangular, \code{lower} (default) for the lower triangular,
 #'                   and \code{upper} for the upper triangular.
+#' @param alpha      a numeric value between 0 and 1 indicating the significance
+#'                   level at which correlation coefficients are highlighted when
+#'                   specifying the argument \code{color}.
+#' @param color      a character string indicating the text color for highlighting
+#'                   statistically significant correlation coefficients, i.e.,
+#'                   \code{"default"} (default) for the default text color without
+#'                   color coding and various text colors for highlighting like
+#'                   \code{"red"}, \code{"b.red"}, \code{"green"}, \code{"b.green"},
+#'                   \code{"blue"}, or \code{"b.blue"}, see the help page of the
+#'                   \code{\link{chr.color}} function. Note that this option is
+#'                   not supported when using R Markdown and when writing the output
+#'                   into a text file (\code{.txt}).
+#' @param style      a character vector indicating the font style for
+#'                   statistically significant correlation coefficients, i.e.,
+#'                   \code{"regular"} (default) for regular text, \code{"bold"}
+#'                   for bold text, and \code{"italic"} for italic text. Note
+#'                   that the font style \code{"bold"} and \code{"italic"} can
+#'                   be combined, i.e., style = c("bold", "italic") provides a
+#'                   bold and italic text. Note that the argument \code{color}
+#'                   needs to be specified to change the style of the text, e.g.
+#'                   \code{color = "black"} and \code{style = "bold"} to for
+#'                   bold text.
 #' @param p.adj      a character string indicating an adjustment method for multiple
 #'                   testing based on \code{\link{p.adjust}}, i.e., \code{none} ,
 #'                   \code{bonferroni}, \code{holm} (default), \code{hochberg},
 #'                   \code{hommel}, \code{BH}, \code{BY}, or \code{fdr}.
-#' @param continuity logical: if \code{TRUE} (default), continuity correction is
-#'                   used for testing Spearman's rank-order correlation coefficient
-#'                   and Kendall's Tau-b correlation.
+#' @param na.omit    logical: if \code{TRUE}, incomplete cases are removed before
+#'                   conducting the analysis (i.e., listwise deletion); if
+#'                   \code{FALSE} (default), pairwise deletion is used.
 #' @param digits     an integer value indicating the number of decimal places to be
 #'                   used for displaying correlation coefficients.
 #' @param p.digits   an integer value indicating the number of decimal places to be
@@ -77,24 +100,13 @@
 #'                   checked.
 #' @param output     logical: if \code{TRUE} (default), output is shown on the
 #'                   console.
-#'
-#' @details
-#' Note that unlike the \code{\link[stats:cor.test]{cor.test}} function, this
-#' function does not compute an exact \emph{p}-value for Spearman's rank-order
-#' correlation coefficient or Kendall's Tau-b correlation coefficient, but uses
-#' the asymptotic \emph{t} approximation.
-#'
-#' Statistically significant correlation coefficients can be shown in boldface
-#' on the console when specifying \code{sig = TRUE}. However, this option is not
-#' supported when using R Markdown, i.e., the argument \code{sig} will switch to
-#' \code{FALSE}.
-#'
+
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
 #'
 #' @seealso
-#' \code{\link{cohens.d}}, \code{\link{effsize}}, \code{\link{multilevel.icc}},
-#' \code{\link{na.auxiliary}}, \code{\link{size.cor}}, \code{\link{write.result}}
+#' \code{\link{cohens.d}}, \code{\link{effsize}}, \code{\link{multilevel.cor}},
+#' \code{\link{multilevel.icc}}, \code{\link{na.auxiliary}}, \code{\link{size.cor}}
 #'
 #' @references
 #' Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psychology
@@ -120,74 +132,82 @@
 #'                      (\emph{p}-values)}
 #'
 #' @note
-#' This function uses the \code{polychoric()} function in the \pkg{psych}
-#' package by William Revelle to estimate tetrachoric and polychoric correlation
-#' coefficients.
+#' This function uses a modified copy of the \code{polychor()} function in the
+#' \pkg{polycor} package by John Fox when requesting tetrachoric or polychoric
+#' correlation coefficients.
 #'
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' #————————————————————————————————————————————————————————————————————————————
 #' # Pearson Product-Moment Correlation Coefficient
 #'
 #' # Example 1a: Pearson product-moment correlation matrix using pairwise deletion
 #' cor.matrix(airquality, Ozone:Wind)
 #'
-#' # Alternative specification without using the '...' argument
+#' # Example 1b:  Alternative specification without using the '...' argument
 #' cor.matrix(airquality[, c("Ozone", "Solar.R", "Wind")])
 #'
-#' # Example 1b: Pearson product-moment correlation matrix
-#' # highlight statistically significant result at alpha = 0.05
-#' cor.matrix(airquality, Ozone, Solar.R, Wind, sig = TRUE)
+#' # Example 2a: Highlight statistically significant result in bright red
+#' cor.matrix(airquality, Ozone, Solar.R, Wind, color = "b.red")
 #'
-#' # Example 1c: Pearson product-moment correlation matrix
-#' # print sample size, degrees of freedom, and significance values
+#' # Example 2b: Highlight statistically significant result in boldface
+#' cor.matrix(airquality, Ozone, Solar.R, Wind, color = "black", style = "bold")
+#'
+#' # Example 3a: Print sample size, degrees of freedom, and significance values
 #' cor.matrix(airquality, Ozone, Solar.R, Wind, print = "all")
 #'
-#' # Example 1d: Pearson product-moment correlation matrix using listwise deletion
-#' # print sample size and significance values
-#' cor.matrix(airquality, Ozone, Solar.R, Wind, na.omit = TRUE, print = "all")
+#' # Example 3b: Listwise deletion
+#' cor.matrix(airquality, Ozone, Solar.R, Wind, na.omit = TRUE)
 #'
-#' # Example 1e: Pearson product-moment correlation matrix
-#' # print sample size and significance values with Bonferroni correction
-#' cor.matrix(airquality, Ozone, Solar.R, Wind, na.omit = TRUE, print = "all",
-#'            p.adj = "bonferroni")
+#' # Example 3c: Significance values with Bonferroni correction
+#' cor.matrix(airquality, Ozone, Solar.R, Wind, print = "all", p.adj = "bonferroni")
 #'
 #' #————————————————————————————————————————————————————————————————————————————
 #' # Spearman's Rank-Order Correlation Coefficient and Kendall's Tau
 #'
-#' # Example 2a: Spearman's rank-order correlation matrix
+#' # Example 4a: Spearman's rank-order correlation matrix
 #' cor.matrix(airquality, Ozone, Solar.R, Wind, method = "spearman")
 #'
-#' # Example 2b: Kendall's Tau-c
+#' # Example 4b: Kendall's Tau-c
 #' cor.matrix(airquality, Ozone, Solar.R, Wind, method = "kendall-c")
+#'
+#' #————————————————————————————————————————————————————————————————————————————
+#' # Tetrachoric and Polychoric Correlation Coefficient
+#'
+#' # Example 5a: Tetrachoric correlation matrix
+#' cor.matrix(data.items, +ditem, method = "tetra")
+#'
+#' # Example 5b: Polychoric correlation matrix
+#' cor.matrix(data.items, +pitem, method = "poly")
 #'
 #' #————————————————————————————————————————————————————————————————————————————
 #' # Grouping Variable
 #'
-#' # Example 3: Pearson product-moment correlation matrix for 'mpg', 'cyl', and 'disp'
-#' # results for group "0" and "1" separately
+#' # Example 6a: Results for group 'vs' = "0" and "1" separately
 #' cor.matrix(mtcars, mpg:disp, group = "vs")
 #'
-#' # Alternative specification without using the '...' argument
+#' # Example 6b: Alternative specification without using the '...' argument
 #' cor.matrix(mtcars[, c("mpg", "cyl", "disp")], group = mtcars$vs)
 #'
-#' \dontrun{
 #' #————————————————————————————————————————————————————————————————————————————
 #' # Write Results
 #'
-#' # Example 4a: Write Results into a text file
+#' # Example 7a: Write Results into a text file
 #' cor.matrix(airquality, Ozone, Solar.R, Wind, print = "all", write = "Correlation.txt")
 #'
-#' # Example 4b: Write Results into an Excel file
-#' cor.matrix(airquality, Ozone, Solar.R, Wind, print = "all", write = "Correlation.xlsx"
+#' # Example 7b: Write Results into an Excel file
+#' cor.matrix(airquality, Ozone, Solar.R, Wind, print = "all", write = "Correlation.xlsx")
 #' }
-cor.matrix <- function(data, ..., method = c("pearson", "spearman", "kendall-b", "kendall-c", "tetra", "poly"),
-                       na.omit = FALSE, group = NULL, sig = FALSE, alpha = 0.05,
+cor.matrix <- function(data, ...,
+                       method = c("pearson", "spearman", "kendall-b", "kendall-c", "tetra", "poly"),
+                       group = NULL, exact = FALSE, continuity = TRUE, ml = FALSE,
                        print = c("all", "cor", "n", "stat", "df", "p"),
-                       tri = c("both", "lower", "upper"),
+                       tri = c("both", "lower", "upper"), alpha = 0.05,
+                       color = "default", style = c("regular", "bold", "italic"),
                        p.adj = c("none", "bonferroni", "holm", "hochberg", "hommel", "BH", "BY", "fdr"),
-                       continuity = TRUE, digits = 2, p.digits = 3, as.na = NULL,
+                       na.omit = FALSE, digits = 2, p.digits = 3, as.na = NULL,
                        write = NULL, append = TRUE, check = TRUE, output = TRUE) {
 
   #_____________________________________________________________________________
@@ -201,8 +221,8 @@ cor.matrix <- function(data, ..., method = c("pearson", "spearman", "kendall-b",
   #
   # Data -----------------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data using the argument '...' ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Using the Argument '...' ####
 
   if (isTRUE(!missing(...))) {
 
@@ -212,8 +232,8 @@ cor.matrix <- function(data, ..., method = c("pearson", "spearman", "kendall-b",
     # Grouping variable
     if (isTRUE(!is.null(group))) { group <- data[, group] }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data without using the argument '...' ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Without Using the Argument '...' ####
 
   } else {
 
@@ -234,42 +254,29 @@ cor.matrix <- function(data, ..., method = c("pearson", "spearman", "kendall-b",
   # Convert 'group' as tibble into a vector
   if (!is.null(group) && isTRUE("tbl" %in% substr(class(group), 1L, 3L))) { group <- unname(unlist(group)) }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Numeric Variables ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Non-Numeric Variables ####
 
-  x <- x |>
-    (\(y) !vapply(y, is.numeric, FUN.VALUE = logical(1L)))() |>
-    (\(z) if (isTRUE(any(z))) {
-
-      warning(paste0("Non-numeric variables were excluded from the analysis: ", paste(names(which(z)), collapse = ", ")), call. = FALSE)
-
-      return(x[, -which(z), drop = FALSE])
-
-    } else {
-
-      return(x)
-
-    })()
-
-  if (isTRUE(ncol(x) == 0L)) { stop("No variables left for analysis after excluding non-numeric variables.", call. = FALSE) }
+  x <- .exclude.non.numeric(x, func = "cor.matrix")
 
   #_____________________________________________________________________________
   #
   # Input Check ----------------------------------------------------------------
 
   # Check inputs
-  .check.input(logical =  c("na.omit", "sig", "continuity", "append", "output"),
-               s.character = list(method = c("pearson", "spearman", "kendall-b", "kendall-c", "tetra", "poly"), tri = c("both", "lower", "upper")),
+  .check.input(logical = c("ml", "na.omit", "continuity", "append", "output"),
+               s.character = list(method = c("pearson", "spearman", "kendall-b", "kendall-c", "tetra", "poly"), tri = c("both", "lower", "upper"), style = c("regular", "bold", "italic")),
                m.character = list(print = c("all", "cor", "n", "stat", "df", "p")),
-               args = c("alpha", "p.adj", "digits", "p.digits"), envir = environment(), input.check = check)
+               args = c("color", "alpha", "p.adj", "digits", "p.digits"), envir = environment(), input.check = check)
 
-  # Additional checks
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Additional Checks ####
+
   if (isTRUE(check)) {
 
-    # Check input 'data'
-    if (isTRUE(any(vapply(x, function(y) !is.numeric(y), FUN.VALUE = logical(1L))))) { stop("Please specify a data frame with numeric vectors.", call. = FALSE) }
+    #—————————————————————————————————————— #
+    ### 'tetra' and 'poly' Argument ####
 
-    # Tetrachoric or polychoric corelation coefficient
     if (isTRUE((all(method == "tetra") || all(method == "poly")))) {
 
       if (isTRUE(any(x %% 1L != 0L))) { stop("Pleas specify a matrix or data frame with integer vectors when computing tetrachoric or polychoric correlation coefficients.", call. = FALSE) }
@@ -278,7 +285,9 @@ cor.matrix <- function(data, ..., method = c("pearson", "spearman", "kendall-b",
 
     }
 
-    # Check input 'group'
+    #—————————————————————————————————————— #
+    ### 'group' Argument ####
+
     if (isTRUE(!is.null(group))) {
 
       # Specified two groups only?
@@ -286,7 +295,6 @@ cor.matrix <- function(data, ..., method = c("pearson", "spearman", "kendall-b",
 
       # Zero variance in one of the groups
       vapply(split(x, f = group), function(y) apply(y, 2L, function(z) length(na.omit(unique(z))) == 1L), FUN.VALUE = logical(ncol(x))) |> (\(y) if (isTRUE(any(y))) { stop(paste("Following variables have zero variance in at least one of the groups specified in 'group': ", paste(names(which(apply(y, 1L, any))), collapse = ", ")), call. = FALSE) })()
-
 
     }
 
@@ -298,45 +306,81 @@ cor.matrix <- function(data, ..., method = c("pearson", "spearman", "kendall-b",
 
   #_____________________________________________________________________________
   #
-  # Data and Variables ---------------------------------------------------------
+  # Data  ----------------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Convert user-missing values into NA ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Convert User-missing Values into NA ####
 
   if (isTRUE(!is.null(as.na))) { x <- .as.na(x, na = as.na) }
 
-  # Missing data
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Missing Data ####
+
   attr(x, "missing") <- any(is.na(x))
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Listwise deletion ####
+  #_____________________________________________________________________________
+  #
+  # Arguments ------------------------------------------------------------------
 
-  if (isTRUE(na.omit)) {
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## 'na.omit' Argument ####
 
-    # Without grouping variable
-    if (isTRUE(is.null(group))) {
+  if (isTRUE(any(!complete.cases(x, group)))) {
 
-      x <- na.omit(x)
+    if (isTRUE(na.omit)) {
 
-    # With grouping variable
-    } else {
+      # Without grouping variable
+      if (isTRUE(is.null(group))) {
 
-      x.group <- na.omit(data.frame(x, group))
+        x <- na.omit(x)
 
-      x <- x.group[, colnames(x)]
-      group <- x.group[, "group"]
+      # With grouping variable
+      } else {
+
+        complete.cases(x, group) |>
+          (\(p) {
+
+            group <<- group[p]
+            x <<- x[p, ]
+
+          })()
+
+      }
 
     }
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Correlation coefficient ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## 'method' Argument ####
 
   method <- ifelse(all(c("pearson", "spearman", "kendall-b", "kendall-c", "tetra", "poly") %in% method), "pearson", method)
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Print correlation, sample size or significance values ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## 'exact' Argument ####
+
+  if (isTRUE(exact)) {
+
+    if (isTRUE(any(c("spearman", "kendall-b") %in% method))) {
+
+      if (isTRUE(any(sapply(x, function(y) misty::uniq.n(na.omit(y)) < length(na.omit(y)))))) {
+
+        warning("Exact test cannot be computed in the presence of ties, the argument 'exact' switchted to FALSE.", call. = FALSE)
+
+        exact <- FALSE
+
+      }
+
+    } else if (isTRUE(any(c("pearson", "kendall-c", "tetra", "poly") %in% method))) {
+
+      warning(paste0("Exact test is not available for method = ", method, "."), call. = FALSE)
+
+    }
+
+  }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## 'print' Argument ####
 
   # Print argument
   if (isTRUE(all(c("all", "cor", "n", "stat", "df", "p") %in% print))) { print <- "cor" }
@@ -346,47 +390,14 @@ cor.matrix <- function(data, ..., method = c("pearson", "spearman", "kendall-b",
 
     if (isTRUE(length(print) == 1L && "all" %in% print)) { print <- c("cor", "n", "stat", "df", "p") }
 
-  } else if (isTRUE(method %in% c("kendall-b", "kendall-c"))) {
+  } else if (isTRUE(method %in% c("kendall-b", "kendall-c", "tetra", "poly"))) {
 
     if (isTRUE(length(print) == 1L && "all" %in% print)) { print <- c("cor", "n", "stat", "p") }
 
-  } else if (isTRUE(method %in% c("tetra", "poly"))) {
-
-    if (isTRUE(length(print) == 1L && "all" %in% print)) { print <- c("cor", "n") }
-
   }
 
-  # Check input 'print'
-  if (isTRUE(print == "df" & method %in% c("kendall-b", "kendall-c"))) {
-
-    switch(method, "kendall-b" = {
-
-      stop("There is no degrees of freedom (df) for testing the Kendall's Tau-b correlation coefficient.", call. = FALSE)
-
-    }, "kendall-c" = {
-
-      stop("There is no degrees of freedom (df) for testing the Kendall-Stuart's Tau-c correlation coefficient.", call. = FALSE)
-
-    })
-
-  }
-
-  if (isTRUE(any(print %in% c("stat", "df", "p")) && method %in% c("tetra", "poly"))) {
-
-    switch(method, "tetra" = {
-
-      stop("There are no test statistics, degrees of freedom, or p-values for the tetrachoric correlation coefficient.", call. = FALSE)
-
-    }, "poly" = {
-
-      stop("There are no test statistics, degrees of freedom, or p-values for the polychoric correlation coefficient.", call. = FALSE)
-
-    })
-
-  }
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Print triangular ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## 'tri' Argument ####
 
   if (isTRUE(is.null(group))) {
 
@@ -398,114 +409,102 @@ cor.matrix <- function(data, ..., method = c("pearson", "spearman", "kendall-b",
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Adjustment method for multiple testing ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## 'style' Argument ####
+
+  if (isTRUE(all(c("regular", "bold", "italic") %in% style))) { style <- "regular" }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## 'p.adj' Argument ####
 
   p.adj <- ifelse(all(c("none", "bonferroni", "holm", "hochberg", "hommel", "BH", "BY", "fdr") %in% p.adj), "none", p.adj)
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Pairwise combination of columns ####
-
-  comb <- combn(seq_len(ncol(x)), m = 2L)
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Correlation, sample size, test statistic, df, and p-value matrix ####
-
-  p.mat <- df.mat <- stat.mat <- n.mat <- cor.mat <- matrix(NA, ncol = ncol(x), nrow = ncol(x), dimnames = list(colnames(x), colnames(x)))
 
   #_____________________________________________________________________________
   #
   # Main Function --------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## No grouping ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Pairwise Combination of Columns ####
+
+  comb <- combn(seq_len(ncol(x)), m = 2L)
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Result Objects ####
+
+  p.mat <- df.mat <- stat.mat <- n.mat <- cor.mat <- matrix(NA, ncol = ncol(x), nrow = ncol(x), dimnames = list(colnames(x), colnames(x)))
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## No Grouping ####
 
   if (isTRUE(is.null(group))) {
 
-    #...................
-    ### Correlation matrix ####
+    #—————————————————————————————————————— #
+    ### Correlation Matrix ####
 
-    # Product-moment or Spearman correlation coefficient
+    # Pearson product-moment correlation coefficient
     switch(method, "pearson" = {
 
-      cor.mat <- suppressWarnings(cor(x, use = "pairwise.complete.obs", method = "pearson"))
-      cor.test.res <- apply(comb, 2L, function(y) suppressWarnings(.internal.cor.test.pearson(x[, y[1L]], x[, y[2L]])))
+      cor.test.res <- apply(comb, 2L, function(y) suppressWarnings(.cor.test.pearson(x[, y[1L]], x[, y[2L]])))
 
+    # Spearman's rank-order correlation coefficient
     }, "spearman" = {
 
-      cor.mat <- suppressWarnings(cor(x, use = "pairwise.complete.obs", method = "spearman"))
-      cor.test.res <- apply(comb, 2L, function(y) suppressWarnings(.internal.cor.test.spearman(x[, y[1L]], x[, y[2L]], continuity = continuity)))
+      cor.test.res <- apply(comb, 2L, function(y) suppressWarnings(.cor.test.spearman(x[, y[1L]], x[, y[2L]], exact = exact, continuity = continuity)))
 
+    # Kendall's Tau-b correlation coefficient
     }, "kendall-b" = {
 
-      cor.mat <- suppressWarnings(cor(x, use = "pairwise.complete.obs", method = "kendall"))
-      cor.test.res <- apply(comb, 2L, function(y) suppressWarnings(.internal.cor.test.kendall.b(x[, y[1L]], x[, y[2L]], continuity = continuity)))
+      cor.test.res <- apply(comb, 2L, function(y) suppressWarnings(.cor.test.kendall.b(x[, y[1L]], x[, y[2L]], exact = exact, continuity = continuity)))
 
+    # Kendall-Stuart's Tau-c correlation coefficient
     }, "kendall-c" = {
 
-      cor.test.res <- apply(comb, 2L, function(y) suppressWarnings(.internal.tau.c(x[, y[1L]], x[, y[2L]])$result))
+      cor.test.res <- apply(comb, 2L, function(y) suppressWarnings(.cor.test.kendall.c(x[, y[1L]], x[, y[2L]])$result))
 
-      cor.mat[lower.tri(cor.mat)] <- sapply(cor.test.res, function(y) y$tau.c)
-      cor.mat[upper.tri(cor.mat)] <- t(cor.mat)[upper.tri(cor.mat)]
-      diag(cor.mat) <- 1L
-
+    # Tetrachoric correlation coefficient
     }, "tetra" = {
 
-      cor.mat <- .internal.polychoric(as.matrix(x))
-      colnames(cor.mat) <- rownames(cor.mat) <- colnames(x)
+      cor.test.res <- apply(comb, 2L, function(y) suppressWarnings(.cor.test.polychoric(x[, y[1L]], x[, y[2L]], ml = ml, se = ifelse(color != "default" || "stat" %in% print || "p" %in% print || ncol(comb) == 1L, TRUE, FALSE))$result))
 
+    # Polychoric correlation coefficient
     }, "poly" = {
 
-      cor.mat <- .internal.polychoric(as.matrix(x))
-      colnames(cor.mat) <- rownames(cor.mat) <- colnames(x)
+      cor.test.res <- apply(comb, 2L, function(y) suppressWarnings(.cor.test.polychoric(x[, y[1L]], x[, y[2L]], ml = ml, se = ifelse(color != "default" || "stat" %in% print || "p" %in% print || ncol(comb) == 1L, TRUE, FALSE))$result))
 
     })
 
-    #...................
-    ### Sample size ####
+    #—————————————————————————————————————— #
+    ### Correlation Coefficient ####
 
-    if (!isTRUE(na.omit)) {
+    cor.mat[lower.tri(cor.mat)] <- sapply(cor.test.res, function(y) y$cor)
+    cor.mat[upper.tri(cor.mat)] <- t(cor.mat)[upper.tri(cor.mat)]
 
-      n <- apply(comb, 2L, function(y) nrow(na.omit(cbind(x[, y[1L]], x[, y[2L]]))))
+    #—————————————————————————————————————— #
+    ### Sample Size ####
 
-    } else {
-
-      n <- nrow(na.omit(x))
-
-    }
-
-    n.mat[lower.tri(n.mat)] <- n
+    n.mat[lower.tri(n.mat)] <- if (isTRUE(any(is.na(x)) && !na.omit)) { apply(comb, 2L, function(y) nrow(na.omit(cbind(x[, y[1L]], x[, y[2L]])))) } else { nrow(x) }
     n.mat[upper.tri(n.mat)] <- t(n.mat)[upper.tri(n.mat)]
 
-    #...................
-    ### Test statistic, df and p-values ####
+    #—————————————————————————————————————— #
+    ### Test Statistic ####
 
-    if (isTRUE(!method %in% c("tetra", "poly"))) {
+    # Test statistic
+    stat.mat[lower.tri(stat.mat)] <- sapply(cor.test.res, function(y) y$stat)
+    stat.mat[upper.tri(stat.mat)] <- t(stat.mat)[upper.tri(stat.mat)]
 
-      # Test statistic
-      stat <- sapply(cor.test.res, function(y) y$stat)
+    #—————————————————————————————————————— #
+    ### Degrees of Freedom ####
 
-      # Degrees of freedom
-      df <- sapply(cor.test.res, function(y) y$df)
+    df.mat[lower.tri(df.mat)] <- sapply(cor.test.res, function(y) y$df)
+    df.mat[upper.tri(df.mat)] <- t(df.mat)[upper.tri(df.mat)]
 
-      # p-values
-      pval <- sapply(cor.test.res, function(y) y$pval)
+    #—————————————————————————————————————— #
+    ### p-Values ####
 
-      # Adjust p-values for multiple comparison
-      if (isTRUE(p.adj != "none")) { pval <- p.adjust(pval, method = p.adj) }
+    p.mat[lower.tri(p.mat)] <- if (isTRUE(p.adj == "none")) { sapply(cor.test.res, function(y) y$pval) } else { p.adjust(sapply(cor.test.res, function(y) y$pval), method = p.adj) }
+    p.mat[upper.tri(p.mat)] <- t(p.mat)[upper.tri(p.mat)]
 
-      stat.mat[lower.tri(stat.mat)] <- stat
-      stat.mat[upper.tri(stat.mat)] <- t(stat.mat)[upper.tri(stat.mat)]
-
-      df.mat[lower.tri(df.mat)] <- df
-      df.mat[upper.tri(df.mat)] <- t(df.mat)[upper.tri(df.mat)]
-
-      p.mat[lower.tri(p.mat)] <- pval
-      p.mat[upper.tri(p.mat)] <- t(p.mat)[upper.tri(p.mat)]
-
-    }
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Grouping ####
 
   } else {
@@ -516,19 +515,22 @@ cor.matrix <- function(data, ..., method = c("pearson", "spearman", "kendall-b",
     # Grouping
     x.group <- split(x, f = group)
 
-    object.g1 <- misty::cor.matrix(x.group[[1L]], method = method, na.omit = FALSE, group = NULL, continuity = continuity, p.adj = p.adj, check = FALSE, output = FALSE)
+    # Correlation matrix
+    object.g1 <- misty::cor.matrix(x.group[[1L]], method = method, group = NULL, exact = exact, continuity = continuity, ml = ml, na.omit = FALSE, p.adj = p.adj, check = FALSE, output = FALSE)
+    object.g2 <- misty::cor.matrix(x.group[[2L]], method = method, group = NULL, exact = exact, continuity = continuity, ml = ml, na.omit = FALSE, p.adj = p.adj, check = FALSE, output = FALSE)
 
-    object.g2 <- misty::cor.matrix(x.group[[2L]], method = method, na.omit = FALSE, group = NULL, continuity = continuity, p.adj = p.adj, check = FALSE, output = FALSE)
-
-    #...................
-    ### Data frame, correlation matrix, sample size, and p-values ####
+    #—————————————————————————————————————— #
+    ### Data Frame ####
 
     x <- data.frame(.group = group, x)
 
-    #...................
-    ### Missing data ####
+    #—————————————————————————————————————— #
+    ### Missing Data ####
 
     attr(x, "missing") <- any(is.na(x))
+
+    #—————————————————————————————————————— #
+    ### Result Objects ####
 
     cor.mat <- object.g1$result$cor
     n.mat <- object.g1$result$n
@@ -536,19 +538,14 @@ cor.matrix <- function(data, ..., method = c("pearson", "spearman", "kendall-b",
     df.mat <- object.g1$result$df
     p.mat <- object.g1$result$p
 
-    #...................
-    ### Lower triangular: Group 1; Upper triangular: Group 2 ####
+    #—————————————————————————————————————— #
+    ### Lower Triangular: Group 1; Upper Triangular: Group 2 ####
 
-    cor.mat[upper.tri(cor.mat)] <- object.g2$result$cor[upper.tri(object.g2$result$cor)]
-    n.mat[upper.tri(n.mat)] <- object.g2$result$n[upper.tri(object.g2$result$n)]
-
-    if (isTRUE(!method %in% c("tetra", "poly"))) {
-
-      stat.mat[upper.tri(stat.mat)] <- object.g2$result$stat[upper.tri(object.g2$result$stat)]
-      df.mat[upper.tri(df.mat)] <- object.g2$result$df[upper.tri(object.g2$result$df)]
-      p.mat[upper.tri(p.mat)] <- object.g2$result$p[upper.tri(object.g2$result$p)]
-
-    }
+    if (isTRUE(!is.null(cor.mat))) { cor.mat[upper.tri(cor.mat)] <- object.g2$result$cor[upper.tri(object.g2$result$cor)] }
+    if (isTRUE(!is.null(n.mat))) { n.mat[upper.tri(n.mat)] <- object.g2$result$n[upper.tri(object.g2$result$n)] }
+    if (isTRUE(!is.null(stat.mat))) { stat.mat[upper.tri(stat.mat)] <- object.g2$result$stat[upper.tri(object.g2$result$stat)] }
+    if (isTRUE(!is.null(df.mat))) { df.mat[upper.tri(df.mat)] <- object.g2$result$df[upper.tri(object.g2$result$df)] }
+    if (isTRUE(!is.null(p.mat))) { p.mat[upper.tri(p.mat)] <- object.g2$result$p[upper.tri(object.g2$result$p)] }
 
   }
 
@@ -559,16 +556,8 @@ cor.matrix <- function(data, ..., method = c("pearson", "spearman", "kendall-b",
   object <- list(call = match.call(),
                  type = "cor.matrix",
                  data = x,
-                 args = list(method = method, na.omit = na.omit, sig = sig, alpha = alpha, print = print, tri = tri, p.adj = p.adj, continuity = continuity, digits = digits, p.digits = p.digits, as.na = as.na, write = write, append = append, check = check,voutput = output),
-                 result = if (isTRUE(!method %in% c("tetra", "poly"))) {
-
-                             list(cor = cor.mat, n = n.mat, stat = stat.mat, df = df.mat,p = p.mat)
-
-                           } else {
-
-                             list(cor = cor.mat, n = n.mat)
-
-                           })
+                 args = list(method = method, exact = exact, continuity = continuity, ml = ml, print = print, tri = tri, alpha = alpha, color = color, style = style, p.adj = p.adj, na.omit = na.omit, digits = digits, p.digits = p.digits, as.na = as.na, write = write, append = append, check = check, output = output),
+                 result = list(cor = cor.mat, n = n.mat, stat = stat.mat, df = df.mat, p = p.mat) |> (\(p) p[sapply(p, function(y) any(!is.na(y)))])())
 
   class(object) <- "misty.object"
 

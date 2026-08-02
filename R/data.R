@@ -1,0 +1,48 @@
+#' Multiple-Choice, Dichotomous, and Polytomous Item Data
+#'
+#' An example data set with ten multiple-choice test items, scored dichotomous
+#' test items, and six polytomous item with four response options, i.e., 0 = "I
+#' strongly disagree", 1 = "I disagree", 2 = "I agree", and 3 = "I strongly agree".
+#' Note that the inverted items \code{pitem2} and \code{pitem3} need to be reverse
+#' coded before conducting the analysis. The example data is based on the \code{dichotomous}
+#' and \code{timms2011_usa} data objects provided in the package \pkg{itemanalysis}
+#' by Cengiz Zopluoglu.
+#'
+#' @format ## `data.items`
+#' A data frame with 1,000 rows and 27 columns:
+#' \describe{
+#'    \item{id}{Identifier, i.e., consecutive numbers from 1 to 1,000}
+#'    \item{group2}{arbitrary grouping variable with two groups}
+#'    \item{group4}{arbitrary grouping variable with fout groups}
+#'    \item{mitem1}{MC test items 1 with four response options A, B, and C, and D}
+#'    \item{mitem2}{MC test items 2 with four response options A, B, C, and D}
+#'    \item{mitem3}{MC test items 3 with three response options A, B, and C}
+#'    \item{mitem4}{MC test items 4 with three response options A, B, and C}
+#'    \item{mitem5}{MC test items 5 with four response options A, B, C, and D}
+#'    \item{mitem6}{MC test items 6 with three response options A, B, and C}
+#'    \item{mitem7}{MC test items 7 with four response options A, B, C, and D}
+#'    \item{mitem8}{MC test items 8 with four response options A, B, C, and D}
+#'    \item{mitem9}{MC test items 9 with three response options A, B, and C}
+#'    \item{mitem10}{MC test items 10 with three response options A, B, and C}
+#'    \item{ditem1}{Scored MC test item 1}
+#'    \item{ditem2}{Scored MC test item 2}
+#'    \item{ditem3}{Scored MC test item 3}
+#'    \item{ditem4}{Scored MC test item 4}
+#'    \item{ditem5}{Scored MC test item 5}
+#'    \item{ditem6}{Scored MC test item 6}
+#'    \item{ditem7}{Scored MC test item 7}
+#'    \item{ditem8}{Scored MC test item 8}
+#'    \item{ditem9}{Scored MC test item 9}
+#'    \item{ditem10}{Scored MC test item 10}
+#'    \item{pitem1}{I enjoy learning mathematics.}
+#'    \item{pitem2}{I wish have not to study Math. (inverted item)}
+#'    \item{pitem3}{Mathematics is boring.(inverted item)}
+#'    \item{pitem4}{I learn interesting things in mathematics class.}
+#'    \item{pitem5}{I like mathematics.}
+#'    \item{pitem6}{I think it's important to do well in mathematics.}
+#'    \item{pitem2r}{Reverse coded item 'pitem2'}
+#'    \item{pitem3r}{Reverse coded item 'pitem3'}
+#' }
+#' @source <https://cran.r-project.org/web/packages/itemanalysis/>
+
+"data.items"

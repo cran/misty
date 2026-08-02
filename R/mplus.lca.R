@@ -86,7 +86,7 @@
 #'                        \code{OUTPUT: CINTERVAL (BOOTSTRAP)}), and \code{"bc"}
 #'                        for the bias-corrected (BC) percentile bootstrap CI
 #'                        (i.e., Mplus command \code{OUTPUT: CINTERVAL (BCBOOTSTRAP)}).
-#' @param R               a numeric value indicating the number of bootstrap
+#' @param nrep            a numeric value indicating the number of bootstrap
 #'                        replicates (default is 1000).
 #' @param lrtbootstrap    an integer value for specifying the \code{LRTBOOTSTRAP}
 #'                        option in Mplus when requesting a parametric bootstrapped
@@ -247,7 +247,7 @@ mplus.lca <- function(x, ind = NULL,
                       write = c("all", "folder", "data", "input"),
                       useobservations = NULL, estimator = "MLR",
                       starts = c(100, 50), stiterations = 10, processors = c(8, 8),
-                      boot = c("none", "perc", "bc"), R = 1000,
+                      boot = c("none", "perc", "bc"), nrep = 1000,
                       lrtbootstrap = 1000, lrtstarts = c(0, 0, 100, 50),
                       output = c("all", "SVALUES", "CINTERVAL", "TECH7", "TECH8", "TECH11", "TECH14"),
                       replace.inp = FALSE, mplus.run = FALSE, Mplus = "Mplus",
@@ -269,7 +269,7 @@ mplus.lca <- function(x, ind = NULL,
                character = list(file = 1L, folder = 6L, estimator = 1L, Mplus = 1L),
                numeric = list(classes = 1L, starts = 2L, stiterations = 1L, lrtbootstrap = 1L, lrtstarts = 4L, processors = 2L),
                s.character = list(type = c("continuous", "count", "categorical", "nominal"), boot = c("none", "perc", "bc"), replace.out = c("always", "never", "modified")),
-               m.character = list(write = c("all", "folder", "data", "input"), output = c("all", "SVALUES", "CINTERVAL", "TECH7", "TECH8", "TECH11", "TECH14")), args = "R", envir = environment(), input.check = check)
+               m.character = list(write = c("all", "folder", "data", "input"), output = c("all", "SVALUES", "CINTERVAL", "TECH7", "TECH8", "TECH11", "TECH14")), args = "nrep", envir = environment(), input.check = check)
 
   # Additional checks
   if (isTRUE(check)) {
@@ -295,39 +295,39 @@ mplus.lca <- function(x, ind = NULL,
   #
   # Data and Arguments ---------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## 'type' ####
 
   if (isTRUE(all(c("continuous", "count", "categorical", "nominal") %in% type))) { type <- "continuous" }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## 'folder' ####
 
   if (isTRUE(type != "continuous")) { folder <- paste0("LCA_1-", classes, "_Classes") }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## 'write' ####
 
   if (isTRUE(all(c("all", "folder", "data", "input") %in% write))) { write <- c("folder", "data", "input") }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## 'boot' ####
 
   if (isTRUE(all(c("none", "perc", "bc") %in% boot))) { boot <- "none" }
 
   if (isTRUE(boot != "none")) { estimator <- "ML"}
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## 'output' ####
 
   if (isTRUE(all(c("all", "SVALUES", "CINTERVAL", "TECH7", "TECH8", "TECH11", "TECH14") %in% output))) { output <- c("SVALUES", "CINTERVAL", "TECH11") }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## 'replace.out' ####
 
   if (isTRUE(all(c("always", "never", "modified") %in% replace.out))) { replace.out <- "modified" }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Variable Names ####
 
   # Variable names with .
@@ -345,13 +345,13 @@ mplus.lca <- function(x, ind = NULL,
   # Split variables names in chucks of 8
   var.x <- split(colnames(x), ceiling(seq_along(colnames(x)) / 8L))
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Indicator Names ####
 
   # Number of characters
   if (nchar(paste(ind, collapse = " ")) <= 70L) { ind.x <- list(ind)} else { ind.x <- split(ind, ceiling(seq_along(ind) / 7L)) }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Indicator Covariances ####
 
   # Up to 8 indicator variables
@@ -371,12 +371,12 @@ mplus.lca <- function(x, ind = NULL,
   #
   # Main Function --------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Write Data ####
 
   if (isTRUE("data" %in% write)) { write.table(x, file = file, quote = FALSE, na = as.character(missing), row.names = FALSE, col.names = FALSE) }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data, Variable, Analysis, and Output ####
 
   # Data, Variable, and Analysis
@@ -393,7 +393,7 @@ mplus.lca <- function(x, ind = NULL,
                     "            CLASSES ARE c(_classes_);\n\n",
                     if (isTRUE(!is.null(cluster))) { "ANALYSIS:   TYPE IS MIXTURE COMPLEX;\n" } else { "ANALYSIS:   TYPE IS MIXTURE;\n" },
                     "            ESTIMATOR IS ", estimator, ";\n",
-                    if (isTRUE(boot != "none")) { paste0("            BOOTSTRAP IS ", R, ";\n") },
+                    if (isTRUE(boot != "none")) { paste0("            BOOTSTRAP IS ", nrep, ";\n") },
                     "            STARTS ARE ", paste0(starts, collapse = " "), ";\n",
                     "            STITERATIONS ARE ", stiterations, ";\n",
 
@@ -407,12 +407,12 @@ mplus.lca <- function(x, ind = NULL,
   # Output for k = 1 profile
   mod.out.1C <-  paste0(misty::chr.trim(strsplit(misty::chr.gsub(c("TECH11", "TECH14"), c("", ""), mod.out), ";")), ";")
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Bootstrapping ####
 
   if (isTRUE(boot != "none")) {
 
-    #...................
+    #—————————————————————————————————————— #
     ### CINTERVAL in OUTPUT ####
 
     if (isTRUE(grepl("CINTERVAL", mod.out))) {
@@ -431,7 +431,7 @@ mplus.lca <- function(x, ind = NULL,
 
       }
 
-    #...................
+    #—————————————————————————————————————— #
     ### CINTERVAL NOT in OUTPUT ####
 
     } else {
@@ -454,17 +454,17 @@ mplus.lca <- function(x, ind = NULL,
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Continuous Indicators ####
 
   if (isTRUE(type == "continuous")) {
 
-    #...................
+    #—————————————————————————————————————— #
     ### Create Folder ####
 
     if (isTRUE("folder" %in% write)) { suppressWarnings(invisible(lapply(folder, dir.create))) }
 
-    #...................
+    #—————————————————————————————————————— #
     ### Model A ####
 
     # Paste syntax
@@ -481,7 +481,7 @@ mplus.lca <- function(x, ind = NULL,
 
     }
 
-    #...................
+    #—————————————————————————————————————— #
     ### Model B ####
 
     mod.B <- list()
@@ -505,7 +505,7 @@ mplus.lca <- function(x, ind = NULL,
 
     }
 
-    #...................
+    #—————————————————————————————————————— #
     ### Model C ####
 
     mod.C <- list()
@@ -526,7 +526,7 @@ mplus.lca <- function(x, ind = NULL,
 
     }
 
-    #...................
+    #—————————————————————————————————————— #
     ### Model D ####
 
     mod.D <- list()
@@ -551,7 +551,7 @@ mplus.lca <- function(x, ind = NULL,
 
     }
 
-    #...................
+    #—————————————————————————————————————— #
     ### Model E ####
 
     mod.E <- list()
@@ -577,7 +577,7 @@ mplus.lca <- function(x, ind = NULL,
 
     }
 
-    #...................
+    #—————————————————————————————————————— #
     ### Model F ####
 
     mod.F <- list()
@@ -604,17 +604,19 @@ mplus.lca <- function(x, ind = NULL,
 
     }
 
-    #...................
+    #—————————————————————————————————————— #
     ### Result List ####
 
     mod <- list(mod.A, mod.B, mod.C, mod.D, mod.E, mod.F)
 
-    #...................
-    ### write Mplus syntax ####
+    #—————————————————————————————————————— #
+    ### Write Mplus Syntax ####
 
     if (isTRUE("input" %in% write)) {
 
-      #### Model A
+      #···················
+      #### Model A ####
+
       suppressWarnings(invisible(sapply(seq_len(classes), function(y) {
 
         # Replace existing input files
@@ -635,7 +637,9 @@ mplus.lca <- function(x, ind = NULL,
 
       })))
 
-      #### Model B
+      #···················
+      #### Model B ####
+
       suppressWarnings(invisible(sapply(seq_len(classes), function(y) {
 
         # Replace existing input files
@@ -656,7 +660,9 @@ mplus.lca <- function(x, ind = NULL,
 
       })))
 
-      #### Model C
+      #···················
+      #### Model C ####
+
       suppressWarnings(invisible(sapply(seq_len(classes), function(y) {
 
         # Replace existing input files
@@ -677,7 +683,9 @@ mplus.lca <- function(x, ind = NULL,
 
       })))
 
-      #### Model D
+      #···················
+      #### Model D ####
+
       suppressWarnings(invisible(sapply(seq_len(classes), function(y) {
 
         # Replace existing input files
@@ -698,7 +706,9 @@ mplus.lca <- function(x, ind = NULL,
 
       })))
 
-      #### Model E
+      #···················
+      #### Model E ####
+
       suppressWarnings(invisible(sapply(seq_len(classes), function(y) {
 
         # Replace existing input files
@@ -719,7 +729,9 @@ mplus.lca <- function(x, ind = NULL,
 
       })))
 
-      #### Model F
+      #···················
+      #### Model F ####
+
       suppressWarnings(invisible(sapply(seq_len(classes), function(y) {
 
         # Replace existing input files
@@ -742,22 +754,22 @@ mplus.lca <- function(x, ind = NULL,
 
     }
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Run Mplus ####
+    #—————————————————————————————————————— #
+    ### Run Mplus ####
 
     if (isTRUE(mplus.run)) { sapply(folder, function(y) misty::mplus.run(target = file.path(getwd(), y), recursive = FALSE, Mplus = Mplus, replace.out = replace.out)) }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Count, Categorical, and Nominal Indicators ####
 
   } else {
 
-    #...................
+    #—————————————————————————————————————— #
     ### Create Folder ####
 
     if (isTRUE("folder" %in% write)) { suppressWarnings(invisible(dir.create(paste0("LCA_1-", classes, "_Classes")))) }
 
-    #...................
+    #—————————————————————————————————————— #
     ### LCA Models ####
 
     # Paste syntax
@@ -773,8 +785,8 @@ mplus.lca <- function(x, ind = NULL,
 
     }
 
-    #...................
-    ### write Mplus syntax ####
+    #—————————————————————————————————————— #
+    ### Write Mplus Syntax ####
 
     if (isTRUE("input" %in% write)) {
 
@@ -782,8 +794,8 @@ mplus.lca <- function(x, ind = NULL,
 
     }
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Run Mplus ####
+    #—————————————————————————————————————— #
+    ### Run Mplus ####
 
     if (isTRUE(mplus.run)) { misty::mplus.run(target = file.path(getwd(), paste0("LCA_1-", classes, "_Classes")), recursive = FALSE, Mplus = Mplus, replace.out = replace.out) }
 
@@ -797,7 +809,7 @@ mplus.lca <- function(x, ind = NULL,
                  type = "mplus.lca",
                  x = x,
                  args = list(ind = ind, type = type, classes = classes, cluster = cluster, folder = folder, file = file, missing = missing, write = write, useobservations = useobservations,
-                             estimator = estimator, boot = boot, R = R, starts = starts, stiterations = stiterations, lrtbootstra = lrtbootstrap,
+                             estimator = estimator, boot = boot, nrep = nrep, starts = starts, stiterations = stiterations, lrtbootstra = lrtbootstrap,
                              lrtstarts = lrtstarts, processors = processors, output = output, replace.inp = replace.inp, mplus.run = mplus.run, Mplus = Mplus, replace.out = replace.out, check = check),
                  result = mod)
 

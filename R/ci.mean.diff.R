@@ -103,8 +103,8 @@
 #' @export
 #'
 #' @examples
-#' #----------------------------------------------------------------------------
-#' # One-sample design
+#' #————————————————————————————————————————————————————————————————————————————
+#' # One-Sample Design
 #'
 #' # Example 1a: Two-Sided 95% CI for 'mpg'
 #' # population mean = 20
@@ -114,8 +114,8 @@
 #' # population mean = 20
 #' ci.mean.diff(mtcars$mpg, mu = 20, alternative = "greater")
 #'
-#' #----------------------------------------------------------------------------
-#' # Two-sample design
+#' #————————————————————————————————————————————————————————————————————————————
+#' # Two-Sample Design
 #'
 #' # Example 2a: Two-Sided 95% CI for 'mpg' by 'vs'
 #' # unknown population variances, unequal variance assumption
@@ -154,8 +154,8 @@
 #'
 #' ci.mean.diff(group1, group2)
 #'
-#' #----------------------------------------------------------------------------
-#' # Paired-sample design
+#' #————————————————————————————————————————————————————————————————————————————
+#' # Paired-Sample Design
 #'
 #' dat.p <- data.frame(pre = c(1, 3, 2, 5, 7, 6), post = c(2, 2, 1, 6, 8, 9),
 #'                     group = c(1, 1, 1, 2, 2, 2))
@@ -206,7 +206,7 @@ ci.mean.diff.default <- function(x, y = NULL, mu = 0, sigma = NULL, sigma2 = NUL
   # Convert 'x' into a vector
   x <- unlist(x, use.names = FALSE)
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Check 'y' ####
 
   if (isTRUE(!is.null(y))) {
@@ -222,7 +222,7 @@ ci.mean.diff.default <- function(x, y = NULL, mu = 0, sigma = NULL, sigma2 = NUL
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Check 'paired' ####
 
   if (isTRUE(!is.logical(paired))) { stop("Please specify TRUE or FALSE for the argument 'paired'.", call. = FALSE) }
@@ -234,7 +234,7 @@ ci.mean.diff.default <- function(x, y = NULL, mu = 0, sigma = NULL, sigma2 = NUL
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Check 'group' ####
 
   if (isTRUE(!is.null(group))) {
@@ -258,7 +258,7 @@ ci.mean.diff.default <- function(x, y = NULL, mu = 0, sigma = NULL, sigma2 = NUL
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Check 'split' ####
 
   if (isTRUE(!is.null(split))) {
@@ -278,7 +278,7 @@ ci.mean.diff.default <- function(x, y = NULL, mu = 0, sigma = NULL, sigma2 = NUL
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## List or Dataframe ####
 
   # One sample
@@ -298,12 +298,12 @@ ci.mean.diff.default <- function(x, y = NULL, mu = 0, sigma = NULL, sigma2 = NUL
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Replace user-specified values with missing values ####
 
   if (isTRUE(!is.null(as.na))) {  xy <- .as.na(xy, na = as.na) }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Listwise deletion ####
 
   if (isTRUE(paired && nrow(na.omit(xy)) < 2L)) {
@@ -409,7 +409,7 @@ ci.mean.diff.default <- function(x, y = NULL, mu = 0, sigma = NULL, sigma2 = NUL
   #
   # Arguments ------------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Population standard deviation and variance ####
 
   if (isTRUE(is.null(sigma) && !is.null(sigma2))) { sigma <- sqrt(sigma2) }
@@ -424,7 +424,7 @@ ci.mean.diff.default <- function(x, y = NULL, mu = 0, sigma = NULL, sigma2 = NUL
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Alternative hypothesis ####
 
   if (isTRUE(all(c("two.sided", "less", "greater") %in% alternative))) { alternative <- "two.sided" }
@@ -433,13 +433,14 @@ ci.mean.diff.default <- function(x, y = NULL, mu = 0, sigma = NULL, sigma2 = NUL
   #
   # Main Function --------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## No Grouping, No Split ####
 
   if (isTRUE(is.null(group) && is.null(split))) {
 
-    #...................
-    ### One-sample ####
+    #—————————————————————————————————————— #
+    ### One-Sample ####
+
     if (isTRUE(is.null(y))) {
 
       result <- data.frame(variable = "y",
@@ -457,8 +458,9 @@ ci.mean.diff.default <- function(x, y = NULL, mu = 0, sigma = NULL, sigma2 = NUL
                            stringsAsFactors = FALSE, row.names = NULL)
 
 
-    #...................
-    ### Two-samples ####
+    #—————————————————————————————————————— #
+    ### Two-Samples ####
+
     } else if (isTRUE(!is.null(y) && !isTRUE(paired))) {
 
     result <- misty::df.rbind(data.frame(variable = "y",
@@ -483,8 +485,9 @@ ci.mean.diff.default <- function(x, y = NULL, mu = 0, sigma = NULL, sigma2 = NUL
                                                             paired = FALSE, conf.level = conf.level, side = "upp"),
                                          stringsAsFactors = FALSE, row.names = NULL))
 
-    #...................
-    ### Paired-samples ####
+    #—————————————————————————————————————— #
+    ### Paired-Samples ####
+
     } else if (isTRUE(!is.null(y) && isTRUE(paired))) {
 
       result <- data.frame(variable = "y",
@@ -504,8 +507,9 @@ ci.mean.diff.default <- function(x, y = NULL, mu = 0, sigma = NULL, sigma2 = NUL
 
     }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Grouping, No Split ####
+
   } else if (isTRUE(!is.null(group) && is.null(split))) {
 
     object.group <- lapply(split(xy, f = group),
@@ -520,8 +524,9 @@ ci.mean.diff.default <- function(x, y = NULL, mu = 0, sigma = NULL, sigma2 = NUL
                          eval(parse(text = paste0("rbind(", paste0("object.group[[", seq_len(length(object.group)), "]]",
                                                                    collapse = ", "), ")"))), stringsAsFactors = FALSE)
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ##  No Grouping, Split ####
+
   } else if (isTRUE(is.null(group) && !is.null(split))) {
 
     result <- lapply(split(data.frame(xy, stringsAsFactors = FALSE), f = split),
@@ -532,8 +537,9 @@ ci.mean.diff.default <- function(x, y = NULL, mu = 0, sigma = NULL, sigma2 = NUL
                                                       na.omit = na.omit, as.na = as.na, check = FALSE,
                                                       output = FALSE)$result)
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ##  Grouping, Split ####
+
   } else if (isTRUE(!is.null(group) && !is.null(split))) {
 
     result <- lapply(split(data.frame(xy, .group = group, stringsAsFactors = FALSE, row.names = NULL), f = split),
@@ -564,14 +570,14 @@ ci.mean.diff.default <- function(x, y = NULL, mu = 0, sigma = NULL, sigma2 = NUL
 
   #_____________________________________________________________________________
   #
-  # Write results --------------------------------------------------------------
+  # Write Results --------------------------------------------------------------
 
   if (isTRUE(!is.null(write))) {
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Text file ####
 
-    # Send R output to textfile
+    # Send R output to text file
     sink(file = write, append = ifelse(isTRUE(file.exists(write)), append, FALSE), type = "output", split = FALSE)
 
     if (append && isTRUE(file.exists(write))) { write("", file = write, append = TRUE) }
@@ -672,13 +678,13 @@ ci.mean.diff.formula <- function(formula, data, sigma = NULL, sigma2 = NULL, var
   # Check if input 'formula' has only one grouping variable
   if (isTRUE(length(group.var) != 1L)) { stop("Please specify a formula with only one grouping variable.", call. = FALSE) }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Convert user-missing values into NA ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Convert User-Missing values into NA ####
 
   if (isTRUE(!is.null(as.na))) {
 
-    #......
-    # Check input 'as.na'
+    #——————————————————————————————————————
+    ### Check Input 'as.na' ####
 
     # Factor or Vector
     if (isTRUE(is.atomic(data[, y.vars]) || is.factor(data[, y.vars]))) {
@@ -716,8 +722,8 @@ ci.mean.diff.formula <- function(formula, data, sigma = NULL, sigma2 = NULL, var
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Listwise deletion ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Listwise Deletion ####
 
   if (isTRUE(na.omit && any(is.na(data[, var.formula])))) {
 
@@ -789,8 +795,8 @@ ci.mean.diff.formula <- function(formula, data, sigma = NULL, sigma2 = NULL, var
   #
   # Arguments ------------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Population standard deviation and variance ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Population Standard Deviation and Variance ####
 
   if (isTRUE(is.null(sigma) && !is.null(sigma2))) { sigma <- sqrt(sigma2) }
 
@@ -800,8 +806,8 @@ ci.mean.diff.formula <- function(formula, data, sigma = NULL, sigma2 = NULL, var
 
   if (isTRUE(!is.null(sigma2) && length(sigma2) == 1L)) { sigma2 <- c(sigma2, sigma2) }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Alternative hypothesis ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Alternative Hypothesis ####
 
   if (isTRUE(all(c("two.sided", "less", "greater") %in% alternative))) { alternative <- "two.sided" }
 
@@ -809,8 +815,9 @@ ci.mean.diff.formula <- function(formula, data, sigma = NULL, sigma2 = NULL, var
   #
   # Main Function --------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## No Grouping, No Split ####
+
   if (isTRUE(is.null(group) && is.null(split))) {
 
     result <- data.frame(matrix(NA, ncol = 9L, nrow = length(y.vars)*2,
@@ -835,8 +842,9 @@ ci.mean.diff.formula <- function(formula, data, sigma = NULL, sigma2 = NULL, var
 
     }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Grouping, No Split ####
+
   } else if (isTRUE(!is.null(group) && is.null(split))) {
 
     object.group <- lapply(split(data[, var.formula], f = group),
@@ -859,8 +867,9 @@ ci.mean.diff.formula <- function(formula, data, sigma = NULL, sigma2 = NULL, var
                                                      group = NULL, split = NULL, sort.var = sort.var, na.omit = na.omit,
                                                      as.na = as.na, check = FALSE, output = FALSE)$result)
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Grouping, Split ####
+
   } else if (isTRUE(!is.null(group) && !is.null(split))) {
 
     result <- lapply(split(data.frame(data[, var.formula], .group = group, stringsAsFactors = FALSE), f = split),
@@ -889,14 +898,14 @@ ci.mean.diff.formula <- function(formula, data, sigma = NULL, sigma2 = NULL, var
 
   #_____________________________________________________________________________
   #
-  # Write results --------------------------------------------------------------
+  # Write Results --------------------------------------------------------------
 
   if (isTRUE(!is.null(write))) {
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Text file ####
 
-    # Send R output to textfile
+    # Send R output to text file
     sink(file = write, append = ifelse(isTRUE(file.exists(write)), append, FALSE), type = "output", split = FALSE)
 
     if (isTRUE(append && file.exists(write))) { write("", file = write, append = TRUE) }

@@ -47,7 +47,7 @@
 #'                          and \code{"bca"} for the bias-corrected and accelerated
 #'                          (BCa) bootstrap CI, see 'Details' in the
 #'                          \code{\link{ci.cor}} function.
-#' @param R                 a numeric value indicating the number of bootstrap
+#' @param nrep              a numeric value indicating the number of bootstrap
 #'                          replicates (default is 1000).
 #' @param seed              a numeric value specifying seeds of the pseudo-random
 #'                          numbers used in the bootstrap algorithm when conducting
@@ -214,7 +214,7 @@
 #'
 #' # Example 3b: Bias-corrected and accelerated (BCa) bootstrap CI,
 #' # 5000 bootstrap replications, set seed of the pseudo-random number generator
-#' ci.mean(mtcars, boot = "bca", R = 5000, seed = 42)
+#' ci.mean(mtcars, boot = "bca", nrep = 5000, seed = 42)
 #'
 #' #————————————————————————————————————————————————————————————————————————————
 #' # Grouping and Split Variable
@@ -286,7 +286,7 @@
 #' }
 ci.mean <- function(data, ..., sigma = NULL, sigma2 = NULL, adjust = FALSE,
                     boot = c("none", "norm", "basic", "stud", "perc", "bc", "bca"),
-                    R = 1000, seed = NULL, sample = TRUE,
+                    nrep = 1000, seed = NULL, sample = TRUE,
                     alternative = c("two.sided", "less", "greater"),
                     conf.level = 0.95, group = NULL, split = NULL, sort.var = FALSE,
                     na.omit = FALSE, digits = 2, as.na = NULL,
@@ -307,7 +307,7 @@ ci.mean <- function(data, ..., sigma = NULL, sigma2 = NULL, adjust = FALSE,
   # Data -----------------------------------------------------------------------
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data using the argument '...' ####
+  ## Using the argument '...' ####
 
   if (isTRUE(!missing(...))) {
 
@@ -321,7 +321,7 @@ ci.mean <- function(data, ..., sigma = NULL, sigma2 = NULL, adjust = FALSE,
     if (isTRUE(!is.null(split))) { split <- data[, split] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { unname(unlist(y)) } else { return(y) })() }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data without using the argument '...' ####
+  ## Without using the argument '...' ####
 
   } else {
 
@@ -413,7 +413,7 @@ ci.mean <- function(data, ..., sigma = NULL, sigma2 = NULL, adjust = FALSE,
   # Check inputs
   .check.input(logical = c("adjust", "sample", "sort.var", "na.omit", "point", "ci", "line", "append", "output"),
                numeric = list(seed = 1L, width = 1L, height = 1L, dpi = 1L), s.character = list(boot = c("none", "norm", "basic", "stud", "perc", "bc", "bca"), plot = c("none", "ci", "boot")),
-               args = c("R", "alternative", "conf.level", "digits", "write2"), envir = environment(), input.check = check)
+               args = c("alternative", "conf.level", "digits", "nrep", "write2"), envir = environment(), input.check = check)
 
   # Additional checks
   if (isTRUE(isTRUE(check))) {
@@ -503,7 +503,7 @@ ci.mean <- function(data, ..., sigma = NULL, sigma2 = NULL, adjust = FALSE,
 
   if (isTRUE(is.null(group) && is.null(split))) {
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— #
     ### No Bootstrapping ####
 
     if (isTRUE(boot == "none")) {
@@ -525,13 +525,13 @@ ci.mean <- function(data, ..., sigma = NULL, sigma2 = NULL, adjust = FALSE,
                            upp = vapply(x, .m.conf, sigma = sigma, adjust = adjust, alternative = alternative, conf.level = conf.level, side = "upp", FUN.VALUE = double(1L)),
                            row.names = NULL, check.names = FALSE)
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— #
     ### Bootstrapping ####
 
     } else {
 
       result.boot <- apply(matrix(seq_len(ncol(x)), nrow = 1L), 2L, function(y) x |>
-                             (\(z) suppressWarnings(.ci.boot(data = x[, y], statistic = .boot.func.mean, boot = boot, R = R, alternative = alternative, conf.level = conf.level, seed = seed)))() |>
+                             (\(z) suppressWarnings(.ci.boot(data = x[, y], statistic = .boot.func.mean, boot = boot, nrep = nrep, alternative = alternative, conf.level = conf.level, seed = seed)))() |>
                              (\(w) list(t = data.frame(variable = colnames(x)[y], m = w$t), result = data.frame(variable = colnames(x)[y], n = w$n, nNA = w$nNA, pNA = w$pNA, sd = w$sd, skew = w$skew, kurt = w$kurt, m = w$t0[1L], low = w$ci[1L], upp = w$ci[2L], row.names = NULL)))())
 
       boot.sample <- do.call("rbind", lapply(result.boot, function(y) y$t))
@@ -544,7 +544,7 @@ ci.mean <- function(data, ..., sigma = NULL, sigma2 = NULL, adjust = FALSE,
 
   } else if (isTRUE(!is.null(group) && is.null(split))) {
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— #
     ### No Bootstrapping ####
 
     if (isTRUE(boot == "none")) {
@@ -552,13 +552,13 @@ ci.mean <- function(data, ..., sigma = NULL, sigma2 = NULL, adjust = FALSE,
       result <- lapply(split(x, f = group), function(y) misty::ci.mean(y, group = NULL, split = NULL, adjust = adjust, sample = sample, alternative = alternative, conf.level = conf.level, sort.var = sort.var, check = FALSE, output = FALSE)$result) |>
         (\(y) data.frame(group = rep(names(y), each = ncol(x)), eval(parse(text = paste0("rbind(", paste0("y[[", seq_len(length(y)), "]]", collapse = ", "), ")")))) )()
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— #
     ### Bootstrapping ####
 
     } else {
 
-      result.boot <- lapply(split(x, f = group), function(y) misty::ci.mean(y, group = NULL, split = NULL, sample = sample, seed = seed, boot = boot, R = R, alternative = alternative, conf.level = conf.level, check = FALSE, output = FALSE)) |>
-        (\(z) list(boot.sample = data.frame(group = rep(names(z), each = R*unique(unlist(lapply(z, function(q) nrow(q$result))))), do.call("rbind", lapply(z, function(w) w$boot)), row.names = NULL),
+      result.boot <- lapply(split(x, f = group), function(y) misty::ci.mean(y, group = NULL, split = NULL, sample = sample, seed = seed, boot = boot, nrep = nrep, alternative = alternative, conf.level = conf.level, check = FALSE, output = FALSE)) |>
+        (\(z) list(boot.sample = data.frame(group = rep(names(z), each = nrep*unique(unlist(lapply(z, function(q) nrow(q$result))))), do.call("rbind", lapply(z, function(w) w$boot)), row.names = NULL),
                    result = data.frame(group = rep(names(z), each = unique(unlist(lapply(z, function(q) nrow(q$result))))), do.call("rbind", lapply(z, function(w) w$result)), row.names = NULL)))()
 
       boot.sample <- result.boot$boot.sample
@@ -571,20 +571,20 @@ ci.mean <- function(data, ..., sigma = NULL, sigma2 = NULL, adjust = FALSE,
 
   } else if (isTRUE(is.null(group) && !is.null(split))) {
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— #
     ### No Bootstrapping ####
 
     if (isTRUE(boot == "none")) {
 
       result <- lapply(split(data.frame(x), f = split), function(y) misty::ci.mean(y, group = NULL, split = NULL, adjust = adjust, sample = sample, alternative = alternative, conf.level = conf.level, sort.var = sort.var, check = FALSE, output = FALSE)$result)
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— #
     ### Bootstrapping ####
 
     } else {
 
-      result.boot <- lapply(split(x, f = split), function(y) misty::ci.mean(y, group = NULL, split = NULL, sample = sample, seed = seed, boot = boot, R = R, alternative = alternative, conf.level = conf.level, check = FALSE, output = FALSE)) |>
-        (\(z) list(boot.sample = data.frame(split = rep(names(z), each = R*unique(unlist(lapply(z, function(q) nrow(q$result))))), do.call("rbind", lapply(z, function(w) w$boot)), row.names = NULL), result = lapply(z, function(w) w$result)))()
+      result.boot <- lapply(split(x, f = split), function(y) misty::ci.mean(y, group = NULL, split = NULL, sample = sample, seed = seed, boot = boot, nrep = nrep, alternative = alternative, conf.level = conf.level, check = FALSE, output = FALSE)) |>
+        (\(z) list(boot.sample = data.frame(split = rep(names(z), each = nrep*unique(unlist(lapply(z, function(q) nrow(q$result))))), do.call("rbind", lapply(z, function(w) w$boot)), row.names = NULL), result = lapply(z, function(w) w$result)))()
 
       boot.sample <- result.boot$boot.sample
       result <- result.boot$result
@@ -596,20 +596,20 @@ ci.mean <- function(data, ..., sigma = NULL, sigma2 = NULL, adjust = FALSE,
 
   } else if (isTRUE(!is.null(group) && !is.null(split))) {
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— #
     ### No Bootstrapping ####
 
     if (isTRUE(boot == "none")) {
 
       result <- lapply(split(data.frame(x, group = group), f = split), function(y) misty::ci.mean(y[, -grep("group", names(y))], group = y$group, split = NULL, adjust = adjust, alternative = alternative, conf.level = conf.level, sort.var = sort.var, check = FALSE, output = FALSE)$result)
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— #
     ### Bootstrapping ####
 
     } else {
 
-      result.boot <- lapply(split(data.frame(x, group = group), f = split), function(y) misty::ci.mean(y[, -grep("group", names(y))], group = y$group, split = NULL, sample = sample, seed = seed, boot = boot, R = R, alternative = alternative, conf.level = conf.level, check = FALSE, output = FALSE)) |>
-        (\(z) list(boot.sample = data.frame(split = rep(names(z), each = R*unique(unlist(lapply(z, function(q) nrow(q$result))))), do.call("rbind", lapply(z, function(w) w$boot)), row.names = NULL), result = lapply(z, function(w) w$result)))()
+      result.boot <- lapply(split(data.frame(x, group = group), f = split), function(y) misty::ci.mean(y[, -grep("group", names(y))], group = y$group, split = NULL, sample = sample, seed = seed, boot = boot, nrep = nrep, alternative = alternative, conf.level = conf.level, check = FALSE, output = FALSE)) |>
+        (\(z) list(boot.sample = data.frame(split = rep(names(z), each = nrep*unique(unlist(lapply(z, function(q) nrow(q$result))))), do.call("rbind", lapply(z, function(w) w$boot)), row.names = NULL), result = lapply(z, function(w) w$result)))()
 
       boot.sample <- result.boot$boot.sample
       result <- result.boot$result
@@ -625,7 +625,7 @@ ci.mean <- function(data, ..., sigma = NULL, sigma2 = NULL, adjust = FALSE,
   object <- list(call = match.call(),
                  type = "ci.mean",
                  data = list(x = x, group = group, split = split),
-                 args = list(sigma = sigma, sigma2 = sigma2, adjust = adjust, boot = boot, R = R, seed = seed, sample = sample, alternative = alternative, conf.level = conf.level, sort.var = sort.var, na.omit = na.omit, digits = digits, as.na = as.na, plot = plot, hist = hist, density = density, point = point, ci = ci, line = line, filename = filename, width = width, height = height, dpi = dpi, write = write, append = append, check = check, output = output),
+                 args = list(sigma = sigma, sigma2 = sigma2, adjust = adjust, boot = boot, nrep = nrep, seed = seed, sample = sample, alternative = alternative, conf.level = conf.level, sort.var = sort.var, na.omit = na.omit, digits = digits, as.na = as.na, plot = plot, hist = hist, density = density, point = point, ci = ci, line = line, filename = filename, width = width, height = height, dpi = dpi, write = write, append = append, check = check, output = output),
                  boot = if (isTRUE(boot != "none")) { boot.sample } else { NULL },
                  plot = NULL, result = result)
 
@@ -658,7 +658,7 @@ ci.mean <- function(data, ..., sigma = NULL, sigma2 = NULL, adjust = FALSE,
 
 #' @rdname ci.median
 ci.median <- function(data, ..., boot = c("none", "norm", "basic", "stud", "perc", "bc", "bca"),
-                      R = 1000, seed = NULL, sample = TRUE,
+                      nrep = 1000, seed = NULL, sample = TRUE,
                       alternative = c("two.sided", "less", "greater"),
                       conf.level = 0.95, group = NULL, split = NULL, sort.var = FALSE,
                       na.omit = FALSE, digits = 2, as.na = NULL, plot = c("none", "ci", "boot"),
@@ -681,7 +681,7 @@ ci.median <- function(data, ..., boot = c("none", "norm", "basic", "stud", "perc
   # Data -----------------------------------------------------------------------
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data using the argument 'data' ####
+  ## Using the Argument 'data' ####
 
   if (isTRUE(!missing(...))) {
 
@@ -695,7 +695,7 @@ ci.median <- function(data, ..., boot = c("none", "norm", "basic", "stud", "perc
     if (isTRUE(!is.null(split))) { split <- data[, split] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { unname(unlist(y)) } else { return(y) })() }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data without using the argument 'data' ####
+  ## Without Using the Argument 'data' ####
 
   } else {
 
@@ -787,7 +787,7 @@ ci.median <- function(data, ..., boot = c("none", "norm", "basic", "stud", "perc
   # Check inputs
   .check.input(logical = c("sample", "sort.var", "na.omit", "point", "ci", "line", "append", "output"),
                numeric = list(seed = 1L, width = 1L, height = 1L, dpi = 1L), s.character = list(boot = c("none", "norm", "basic", "stud", "perc", "bc", "bca"), plot = c("none", "ci", "boot")),
-               args = c("R", "alternative", "conf.level", "digits", "write2"), envir = environment(), input.check = check)
+               args = c("alternative", "conf.level", "digits", "nrep", "write2"), envir = environment(), input.check = check)
 
   # Additional checks
   if (isTRUE(check)) {
@@ -819,7 +819,7 @@ ci.median <- function(data, ..., boot = c("none", "norm", "basic", "stud", "perc
 
   if (isTRUE(is.null(group) && is.null(split))) {
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— #
     ### No Bootstrapping ####
 
     if (isTRUE(boot == "none")) {
@@ -843,13 +843,13 @@ ci.median <- function(data, ..., boot = c("none", "norm", "basic", "stud", "perc
                            upp = vapply(x, .med.conf, alternative = alternative, conf.level = conf.level, side = "upp", FUN.VALUE = double(1L)),
                            row.names = NULL, check.names = FALSE)
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— #
     ### Bootstrapping ####
 
     } else {
 
       result.boot <- apply(matrix(seq_len(ncol(x)), nrow = 1L), 2L, function(y) x |>
-                             (\(z) suppressWarnings(.ci.boot(data = x[, y], statistic = .boot.func.median, boot = boot, R = R, alternative = alternative, conf.level = conf.level, seed = seed)))() |>
+                             (\(z) suppressWarnings(.ci.boot(data = x[, y], statistic = .boot.func.median, boot = boot, nrep = nrep, alternative = alternative, conf.level = conf.level, seed = seed)))() |>
                              (\(w) list(t = data.frame(variable = colnames(x)[y], med = w$t), result = data.frame(variable = colnames(x)[y], n = w$n, nNA = w$nNA, pNA = w$pNA, sd = w$sd, iqr = w$iqr, skew = w$skew, kurt = w$kurt, med = w$t0[1L], low = w$ci[1L], upp = w$ci[2L], row.names = NULL)))())
 
       boot.sample <- do.call("rbind", lapply(result.boot, function(y) y$t))
@@ -862,7 +862,7 @@ ci.median <- function(data, ..., boot = c("none", "norm", "basic", "stud", "perc
 
   } else if (isTRUE(!is.null(group) && is.null(split))) {
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— #
     ### No Bootstrapping ####
 
     if (isTRUE(boot == "none")) {
@@ -870,13 +870,13 @@ ci.median <- function(data, ..., boot = c("none", "norm", "basic", "stud", "perc
       result <- lapply(split(x, f = group), function(y) misty::ci.median(y, group = NULL, split = NULL, alternative = alternative, conf.level = conf.level, sort.var = sort.var, check = FALSE, output = FALSE)$result) |>
         (\(y) data.frame(group = rep(names(y), each = ncol(x)), eval(parse(text = paste0("rbind(", paste0("y[[", seq_len(length(y)), "]]", collapse = ", "), ")")))) )()
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— #
     ### Bootstrapping ####
 
     } else {
 
-      result.boot <- lapply(split(x, f = group), function(y) misty::ci.median(y, group = NULL, split = NULL, sample = sample, seed = seed, boot = boot, R = R, alternative = alternative, conf.level = conf.level, check = FALSE, output = FALSE)) |>
-        (\(z) list(boot.sample = data.frame(group = rep(names(z), each = R*unique(unlist(lapply(z, function(q) nrow(q$result))))), do.call("rbind", lapply(z, function(w) w$boot)), row.names = NULL), result = data.frame(group = rep(names(z), each = unique(unlist(lapply(z, function(q) nrow(q$result))))), do.call("rbind", lapply(z, function(w) w$result)), row.names = NULL)))()
+      result.boot <- lapply(split(x, f = group), function(y) misty::ci.median(y, group = NULL, split = NULL, sample = sample, seed = seed, boot = boot, nrep = nrep, alternative = alternative, conf.level = conf.level, check = FALSE, output = FALSE)) |>
+        (\(z) list(boot.sample = data.frame(group = rep(names(z), each = nrep*unique(unlist(lapply(z, function(q) nrow(q$result))))), do.call("rbind", lapply(z, function(w) w$boot)), row.names = NULL), result = data.frame(group = rep(names(z), each = unique(unlist(lapply(z, function(q) nrow(q$result))))), do.call("rbind", lapply(z, function(w) w$result)), row.names = NULL)))()
 
       boot.sample <- result.boot$boot.sample
       result <- result.boot$result
@@ -888,20 +888,20 @@ ci.median <- function(data, ..., boot = c("none", "norm", "basic", "stud", "perc
 
   } else if (isTRUE(is.null(group) && !is.null(split))) {
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— #
     ### No Bootstrapping ####
 
     if (isTRUE(boot == "none")) {
 
       result <- lapply(split(data.frame(x), f = split), function(y) misty::ci.median(y, group = NULL, split = NULL, alternative = alternative, conf.level = conf.level, sort.var = sort.var, check = FALSE, output = FALSE)$result)
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— #
     ### Bootstrapping ####
 
     } else {
 
-      result.boot <- lapply(split(x, f = split), function(y) misty::ci.median(y, group = NULL, split = NULL, sample = sample, seed = seed, boot = boot, R = R, alternative = alternative, conf.level = conf.level, check = FALSE, output = FALSE)) |>
-        (\(z) list(boot.sample = data.frame(split = rep(names(z), each = R*unique(unlist(lapply(z, function(q) nrow(q$result))))), do.call("rbind", lapply(z, function(w) w$boot)), row.names = NULL), result = lapply(z, function(w) w$result)))()
+      result.boot <- lapply(split(x, f = split), function(y) misty::ci.median(y, group = NULL, split = NULL, sample = sample, seed = seed, boot = boot, nrep = nrep, alternative = alternative, conf.level = conf.level, check = FALSE, output = FALSE)) |>
+        (\(z) list(boot.sample = data.frame(split = rep(names(z), each = nrep*unique(unlist(lapply(z, function(q) nrow(q$result))))), do.call("rbind", lapply(z, function(w) w$boot)), row.names = NULL), result = lapply(z, function(w) w$result)))()
 
       boot.sample <- result.boot$boot.sample
       result <- result.boot$result
@@ -913,20 +913,20 @@ ci.median <- function(data, ..., boot = c("none", "norm", "basic", "stud", "perc
 
   } else if (isTRUE(!is.null(group) && !is.null(split))) {
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— #
     ### No Bootstrapping ####
 
     if (isTRUE(boot == "none")) {
 
     result <- lapply(split(data.frame(x, group = group), f = split), function(y) misty::ci.median(y[, -grep("group", names(y))], group = y$group, split = NULL, alternative = alternative, conf.level = conf.level, sort.var = sort.var, check = FALSE, output = FALSE)$result)
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— #
     ### Bootstrapping ####
 
     } else {
 
-      result.boot <- lapply(split(data.frame(x, group = group), f = split), function(y) misty::ci.median(y[, -grep("group", names(y))], group = y$group, split = NULL, sample = sample, seed = seed, boot = boot, R = R, alternative = alternative, conf.level = conf.level, check = FALSE, output = FALSE)) |>
-        (\(z) list(boot.sample = data.frame(split = rep(names(z), each = R*unique(unlist(lapply(z, function(q) nrow(q$result))))), do.call("rbind", lapply(z, function(w) w$boot)), row.names = NULL), result = lapply(z, function(w) w$result)))()
+      result.boot <- lapply(split(data.frame(x, group = group), f = split), function(y) misty::ci.median(y[, -grep("group", names(y))], group = y$group, split = NULL, sample = sample, seed = seed, boot = boot, nrep = nrep, alternative = alternative, conf.level = conf.level, check = FALSE, output = FALSE)) |>
+        (\(z) list(boot.sample = data.frame(split = rep(names(z), each = nrep*unique(unlist(lapply(z, function(q) nrow(q$result))))), do.call("rbind", lapply(z, function(w) w$boot)), row.names = NULL), result = lapply(z, function(w) w$result)))()
 
       boot.sample <- result.boot$boot.sample
       result <- result.boot$result
@@ -942,7 +942,7 @@ ci.median <- function(data, ..., boot = c("none", "norm", "basic", "stud", "perc
   object <- list(call = match.call(),
                  type = "ci.median",
                  data = list(x = x, group = group, split = split),
-                 args = list(boot = boot, R = R, seed = seed, sample = sample, alternative = alternative, conf.level = conf.level, sort.var = sort.var, na.omit = na.omit, digits = digits, as.na = as.na, plot = plot, hist = hist, density = density, point = point, ci = ci, line = line, filename = filename, width = width, height = height, dpi = dpi, write = write, append = append, check = check, output = output),
+                 args = list(boot = boot, nrep = nrep, seed = seed, sample = sample, alternative = alternative, conf.level = conf.level, sort.var = sort.var, na.omit = na.omit, digits = digits, as.na = as.na, plot = plot, hist = hist, density = density, point = point, ci = ci, line = line, filename = filename, width = width, height = height, dpi = dpi, write = write, append = append, check = check, output = output),
                  boot = if (isTRUE(boot != "none")) { boot.sample } else { NULL },
                  plot = NULL, result = result)
 

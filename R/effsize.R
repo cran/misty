@@ -154,16 +154,16 @@ effsize <- function(data, ..., type = c("phi", "cramer", "tschuprow", "cont", "w
   #
   # Data -----------------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data using the argument '...' ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Using the Argument '...' ####
 
   if (isTRUE(!missing(...))) {
 
     # Extract data and convert tibble into data frame or vector
     x <- data[, .var.names(data = data, ...)] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(y)) == 1L)) { unname(unlist(y)) } else { as.data.frame(y) } } else { y })()
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data without using the argument '...' ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Without Using the Argument '...' ####
 
   } else {
 
@@ -172,7 +172,7 @@ effsize <- function(data, ..., type = c("phi", "cramer", "tschuprow", "cont", "w
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Convert user-missing values into NA ####
 
   if (isTRUE(!is.null(as.na))) { x <- .as.na(x, na = as.na) }
@@ -206,14 +206,14 @@ effsize <- function(data, ..., type = c("phi", "cramer", "tschuprow", "cont", "w
   #
   # Arguments ------------------------------------------------------------------
 
-  #...................
-  ### Type of analysis ####
+  #—————————————————————————————————————— #
+  ### Type of Analysis ####
 
   # Chi-Square Goodness-of-Fit Test in case of one variable
   if (isTRUE(is.null(dim(x)))) { indep <- FALSE }
 
-  #...................
-  ### Type of effect size ####
+  #—————————————————————————————————————— #
+  ### Type of Effect Size ####
 
   ##### Default Setting
   if (isTRUE(all(c("phi", "cramer", "tschuprow", "cont", "w", "fei") %in% type))) {
@@ -268,7 +268,7 @@ effsize <- function(data, ..., type = c("phi", "cramer", "tschuprow", "cont", "w
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Alternative hypothesis ####
 
   if (isTRUE(all(c("two.sided", "less", "greater") %in% alternative))) { alternative <- "two.sided" }
@@ -277,10 +277,10 @@ effsize <- function(data, ..., type = c("phi", "cramer", "tschuprow", "cont", "w
   #
   # Main Function --------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## One variable ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## One Variable ####
 
-  #...................
+  #—————————————————————————————————————— #
   ### Chi-Square Goodness-of-Fit Test ####
 
   if (isTRUE(!indep && is.null(dim(x)))) {
@@ -302,7 +302,10 @@ effsize <- function(data, ..., type = c("phi", "cramer", "tschuprow", "cont", "w
 
     })
 
-  #...................
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Two Variables ####
+
+  #—————————————————————————————————————— #
   ### Chi-Square Test of Independence ####
 
   } else if (isTRUE(indep && ncol(x) == 2L)) {
@@ -339,18 +342,19 @@ effsize <- function(data, ..., type = c("phi", "cramer", "tschuprow", "cont", "w
 
     })
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## More than Two Variables ####
+
   } else {
 
-    #...................
+    #—————————————————————————————————————— #
     ### Chi-Square Goodness-of-Fit Test ####
 
     if (isTRUE(!indep)) {
 
       result <- data.frame(var = colnames(x), do.call("rbind", lapply(x, function(y) misty::effsize(y, type = type, adjust = adjust, indep = indep, p = p, alternative = alternative, check = FALSE, output = FALSE)$result)), row.names = NULL)
 
-    #...................
+    #—————————————————————————————————————— #
     ### Chi-Square Test of Independence ####
 
     } else {

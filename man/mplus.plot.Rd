@@ -320,8 +320,8 @@ section is available in the Mplus GH5 file.
 #————————————————————————————————————————————————————————————————————————————
 # Mplus Example 3.18: Moderated Mediation with a Plot of the Indirect Effect
 
-#···················
-# Trace Plots
+#——————————————————————————————————————
+## Trace Plots
 
 # Example 1a: Default setting
 mplus.plot("ex3.18.gh5")
@@ -341,8 +341,8 @@ mplus.plot("ex3.18.gh5", ncol = 3)
 # Example 1f: Specify "Pastel 1" palette for the hcl.colors function
 mplus.plot("ex3.18.gh5", palette = "Pastel 1")
 
-#···················
-# Posterior Distribution Plots
+#——————————————————————————————————————
+## Posterior Distribution Plots
 
 # Example 2a: Default setting, i.e., posterior median and equal-tailed interval
 mplus.plot("ex3.18.gh5", plot = "post")
@@ -359,8 +359,8 @@ mplus.plot("ex3.18.gh5", plot = "post", point = "none", ci = "none")
 # Example 2d: Do not display histograms
 mplus.plot("ex3.18.gh5", plot = "post", hist = FALSE)
 
-#···················
-# Autocorrelation Plots
+#——————————————————————————————————————
+## Autocorrelation Plots
 
 # Example 3a: Default setting, i.e., first chain
 mplus.plot("ex3.18.gh5", plot = "auto")
@@ -372,8 +372,8 @@ mplus.plot("ex3.18.gh5", plot = "auto", chain = 2)
 mplus.plot("ex3.18.gh5", plot = "auto",
            ylim = c(-0.05, 0.05), ybreaks = seq(-0.1, 0.1, by = 0.025))
 
-#···················
-# Posterior Predictive Check Plots
+#——————————————————————————————————————
+## Posterior Predictive Check Plots
 
 # Example 4a: Default setting, i.e., 95\% Interval
 mplus.plot("ex3.18.gh5", plot = "ppc")
@@ -381,8 +381,8 @@ mplus.plot("ex3.18.gh5", plot = "ppc")
 # Example 4b: Default setting, i.e., 99\% Interval
 mplus.plot("ex3.18.gh5", plot = "ppc", conf.level = 0.99)
 
-#···················
-# Loop Plot
+#——————————————————————————————————————
+## Loop Plot
 
 # Example 5a: Default setting
 mplus.plot("ex3.18.gh5", plot = "loop")
@@ -390,8 +390,8 @@ mplus.plot("ex3.18.gh5", plot = "loop")
 # Example 5b: Do not fill area and draw vertical lines
 mplus.plot("ex3.18.gh5", plot = "loop", area = FALSE)
 
-#···················
-# Save Plots
+#——————————————————————————————————————
+## Save Plots
 
 # Example 6a: Save all plots in pdf format
 mplus.plot("ex3.18.gh5", saveplot = "all")
@@ -433,8 +433,8 @@ library(ggplot2)
 # Create misty object
 object <- mplus.plot("ex3.18.gh5", plot = "none")
 
-#···················
-# Example 7: Trace Plots
+#——————————————————————————————————————
+## Example 7: Trace Plots
 
 # Extract data in long format
 data.post <- object$data$post$long
@@ -461,8 +461,8 @@ ggplot(data.trace, aes(x = iter, y = value, color = chain)) +
         legend.box.margin = margin(c(-16, 6, 6, 6)),
         legend.background = element_rect(fill = "transparent"))
 
-#···················
-# Example 8: Posterior Distribution Plots
+#——————————————————————————————————————
+## Example 8: Posterior Distribution Plots
 
 # Extract data in long format
 data.post <- object$data$post$long
@@ -508,8 +508,8 @@ ggplot(data.post, aes(x = value)) +
         legend.box.margin = margin(c(-30, 6, 6, 6)),
         legend.background = element_rect(fill = "transparent"))
 
-#···················
-# Example 9: Autocorrelation Plots
+#——————————————————————————————————————
+## Example 9: Autocorrelation Plots
 
 # Extract data in long format
 data.auto <- object$data$auto$long
@@ -531,8 +531,8 @@ ggplot(data.auto, aes(x = lag, y = cor)) +
   theme_bw() +
   theme(plot.margin = margin(c(4, 15, 4, 4)))
 
-#···················
-# Example 10: Posterior Predictive Check (PPC) Plots
+#——————————————————————————————————————
+## Example 10: Posterior Predictive Check (PPC) Plots
 
 # Extract data
 data.ppc <- object$data$ppc
@@ -564,8 +564,8 @@ ppc.hist <- ggplot(data.ppc, aes(x = diff)) +
 # Combine plots using the patchwork package
 patchwork::wrap_plots(ppc.scatter, ppc.hist)
 
-#···················
-# Example 11: Loop Plot
+#——————————————————————————————————————
+## Example 11: Loop Plot
 
 # Extract data
 data.loop <- object$data$loop

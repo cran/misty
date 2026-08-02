@@ -74,12 +74,12 @@ dominance.manual(cor(mtcars[, c("mpg", "cyl", "disp", "hp")]),
                  write = "Dominance_Manual.txt")}
 
 #————————————————————————————————————————————————————————————————————————————
-# Example 2: Structural equation modeling
+# Structural equation modeling
 
 library(lavaan)
 
-#.............
-# Latent variables
+#——————————————————————————————————————
+# Example 2: Latent variables
 
 # Model specification
 model <- '# Measurement model
@@ -98,7 +98,7 @@ fit.cor <- lavInspect(fit, what = "cor.lv")
 # Dominance analysis
 dominance.manual(fit.cor)
 
-#.............
+#——————————————————————————————————————
 # Example 3: Latent and manifest variables
 
 # Model specification, convert manifest to latent variable

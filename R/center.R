@@ -294,7 +294,7 @@
 #' @export
 #'
 #' @examples
-#' #----------------------------------------------------------------------------
+#' #————————————————————————————————————————————————————————————————————————————
 #' # Single-Level Data
 #'
 #' # Example 1a: Center predictor 'disp' at the grand mean
@@ -315,14 +315,14 @@
 #' # Example 1d: Center predictors 'disp' and 'hp' and label with the suffix ".v"
 #' center(mtcars, disp, hp, name = ".v")
 #'
-#' #----------------------------------------------------------------------------
-#' # Two-Level Data
+#' #————————————————————————————————————————————————————————————————————————————
+#' ## Two-Level Data
 #'
 #' # Load data set "Demo.twolevel" in the lavaan package
 #' data("Demo.twolevel", package = "lavaan")
 #'
-#' #.........................................
-#' # Level-1 (L1) Predictor
+#' #——————————————————————————————————————
+#' ## Level-1 (L1) Predictor
 #'
 #' # Example 2a: Center L1 predictor 'y1' within L2 clusters
 #' center(Demo.twolevel, y1, cluster = "cluster", append = FALSE)
@@ -337,22 +337,22 @@
 #' # Alternative specification
 #' center(Demo.twolevel, y1)
 #'
-#' #.........................................
-#' # Level-2 (L2) Predictor
+#' #——————————————————————————————————————
+#' ## Level-2 (L2) Predictor
 #'
 #' # Example 2c: Center L2 predictor 'w2' at the average L2 cluster scores
 #' #             Note that cluster ID is needed
 #' center(Demo.twolevel, w1, cluster = "cluster")
 #'
-#' #.........................................
-#' # L1 and L2 Predictors
+#' #——————————————————————————————————————
+#' ## L1 and L2 Predictors
 #'
 #' # Example 2d: Center L1 predictor 'y1' within L2 clusters
 #' #             and L2 predictor 'w1' at the average L2 cluster scores
 #' center(Demo.twolevel, y1, w1, cluster = "cluster")
 #'
-#' #.........................................
-#' # Twp-Step Latent Mean Centering
+#' #——————————————————————————————————————
+#' ## Twp-Step Latent Mean Centering
 #'
 #' # Example 2e: Decompose L1 predictor 'y1' as within-between components
 #' center(Demo.twolevel, y1, cluster = "cluster", type = "latent")
@@ -362,7 +362,7 @@
 #' center(Demo.twolevel, y1, cluster = "cluster", type = "latent", name = c("l1.y1", "l2.y1"))
 #'
 #' \dontrun{
-#' #----------------------------------------------------------------------------
+#' #————————————————————————————————————————————————————————————————————————————
 #' # Three-Level Data
 #'
 #' # Load data set "Demo.twolevel" in the lavaan package
@@ -375,8 +375,8 @@
 #' # Compute L3 cluster scores for the L2 predictor 'w1'
 #' Demo.threelevel <- cluster.scores(Demo.threelevel, w1, cluster = "cluster3", name = "w1.l3")
 #'
-#' #.........................................
-#' # Level-1 (L1) Predictor
+#' #——————————————————————————————————————
+#' ## Level-1 (L1) Predictor
 #'
 #' # Example 3a: Center L1 predictor 'y1' within L2 clusters (CWC L2)
 #' #             Note that L3 cluster IDs are ignored when type = "CWC"
@@ -396,8 +396,8 @@
 #' # Alternative specification
 #' center(Demo.threelevel, y1)
 #'
-#' #.........................................
-#' # Level-2 (L2) Predictor
+#' #——————————————————————————————————————
+#' ## Level-2 (L2) Predictor
 #'
 #' # Example 3d: Center L2 predictor 'w1' within L3 cluster
 #' #             Note that both L3 and L2 cluster IDs are needed
@@ -407,8 +407,8 @@
 #' #             Note that both L3 and L2 cluster IDs are needed
 #' center(Demo.threelevel, y1, cluster = c("cluster3", "cluster2"), type = "CGM")
 #'
-#' #.........................................
-#' # Level-3 (L3) Predictor
+#' #——————————————————————————————————————
+#' ## Level-3 (L3) Predictor
 #'
 #' # Example 3f: Center L3 predictor 'w1.l3' at the average L3 cluster scores
 #' #             Note that L2 cluster ID is ignored
@@ -417,15 +417,15 @@
 #' # Alternative specification
 #' center(Demo.threelevel, w1.l3, cluster = "cluster3")
 #'
-#' #.........................................
-#' # L1, L2, and L3 Predictors
+#' #——————————————————————————————————————
+#' ## L1, L2, and L3 Predictors
 #'
 #' # Example 3g: Center L1 predictor 'y1' within L2 cluster, L2 predictor 'w1' within
 #' #            L3 clusters, and L3 predictor 'w1.l3' at the average L3 cluster scores
 #' center(Demo.threelevel, y1, w1, w1.l3, cluster = c("cluster3", "cluster2"))
 #'
-#' #.........................................
-#' # Two-Step Latent Mean Centering
+#' #——————————————————————————————————————
+#' ## Two-Step Latent Mean Centering
 #'
 #' # Load data set "Demo.twolevel" in the lavaan package
 #' data("Demo.twolevel", package = "lavaan")
@@ -537,7 +537,7 @@ center <- function(data, ..., cluster = NULL, type = c("CGM", "CWC", "latent"),
 
   if (isTRUE(check)) {
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— #
     ### Check Input 'type' ####
 
     if (isTRUE(all(type == "latent"))) {
@@ -553,7 +553,7 @@ center <- function(data, ..., cluster = NULL, type = c("CGM", "CWC", "latent"),
 
     }
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— #
     ### Check Input 'name' ####
 
     if (isTRUE(!is.character(name))) { stop("Please specify a character string or characster vector for the argument 'name'.", call. = FALSE) }
@@ -584,7 +584,7 @@ center <- function(data, ..., cluster = NULL, type = c("CGM", "CWC", "latent"),
 
     if (isTRUE(!is.null(cluster))) {
 
-      #——————————————————————————————————————
+      #—————————————————————————————————————— #
       ### One Cluster Variable ####
 
       if (isTRUE(no.clust == "one")) {
@@ -605,7 +605,7 @@ center <- function(data, ..., cluster = NULL, type = c("CGM", "CWC", "latent"),
 
         }
 
-      #——————————————————————————————————————
+      #—————————————————————————————————————— #
       ### Two Cluster Variables ####
 
       } else if (isTRUE(no.clust == "two")) {
@@ -643,14 +643,14 @@ center <- function(data, ..., cluster = NULL, type = c("CGM", "CWC", "latent"),
 
     if (isTRUE(all(c("CGM", "CWC", "latent") %in% type))) {
 
-      #——————————————————————————————————————
+      #—————————————————————————————————————— #
       ### Single-level Data ####
 
       if (isTRUE(is.null(cluster))) {
 
         type <- "CGM"
 
-      #——————————————————————————————————————
+      #—————————————————————————————————————— #
       ### Multilevel Data ####
 
       } else {
@@ -676,7 +676,7 @@ center <- function(data, ..., cluster = NULL, type = c("CGM", "CWC", "latent"),
 
     if (isTRUE(type != "latent")) {
 
-      #——————————————————————————————————————
+      #—————————————————————————————————————— #
       ### Single-Level Data: No Cluster Variable ####
 
       if (isTRUE(is.null(cluster))) {
@@ -695,7 +695,7 @@ center <- function(data, ..., cluster = NULL, type = c("CGM", "CWC", "latent"),
 
         }
 
-      #——————————————————————————————————————
+      #—————————————————————————————————————— #
       ### Two-Level Data: One Cluster Variable ####
 
       } else if (isTRUE(no.clust == "one")) {
@@ -739,7 +739,7 @@ center <- function(data, ..., cluster = NULL, type = c("CGM", "CWC", "latent"),
 
         }
 
-      #——————————————————————————————————————
+      #—————————————————————————————————————— #
       ### Three-Level Data: Two Cluster Variables ####
 
       } else if (isTRUE(no.clust == "two")) {
@@ -812,7 +812,7 @@ center <- function(data, ..., cluster = NULL, type = c("CGM", "CWC", "latent"),
 
       }
 
-      #——————————————————————————————————————
+      #—————————————————————————————————————— #
       ### Append ####
 
       if (isTRUE(!missing(...) && append)) {
@@ -838,7 +838,7 @@ center <- function(data, ..., cluster = NULL, type = c("CGM", "CWC", "latent"),
 
     } else {
 
-      #——————————————————————————————————————
+      #—————————————————————————————————————— #
       ### Two-Level Data: One Cluster Variable ####
 
       if (isTRUE(no.clust == "one")) {
@@ -855,7 +855,7 @@ center <- function(data, ..., cluster = NULL, type = c("CGM", "CWC", "latent"),
         # Return object
         object <- data.frame(x.l1, x.l2)
 
-      #——————————————————————————————————————
+      #—————————————————————————————————————— #
       ### Three-Level Data: Two Cluster Variables ####
 
       } else if (isTRUE(no.clust == "two")) {
@@ -910,7 +910,7 @@ center <- function(data, ..., cluster = NULL, type = c("CGM", "CWC", "latent"),
 
       }
 
-      #——————————————————————————————————————
+      #—————————————————————————————————————— #
       ### Append ####
 
       if (isTRUE(!missing(...) && append)) {

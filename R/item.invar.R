@@ -16,8 +16,8 @@
 #' model comparison (i.e., chi-square difference test, change in fit indices, and
 #' change in information criteria). Additionally, variance-covariance coverage of
 #' the data, descriptive statistics, parameter estimates, modification indices,
-#' and residual correlation matrix can be requested by specifying the argument
-#' \code{print}.
+#' residual correlation matrix, and relative Opdyke distribution percentile matrix
+#' can be requested by specifying the argument \code{print}.
 #'
 #' @param data             a data frame. If \code{model = NULL}, confirmatory
 #'                         factor analysis based on a measurement model with one
@@ -160,35 +160,39 @@
 #'                         vectors \code{load}, \code{inter}, and/or \code{resid}
 #'                         are needed when investigating partial between-group
 #'                         measurement invariance for continuous indicators based
-#'                         on two groups (see Example 11a) or longitudinal partial
-#'                         measurement invariance for continuous indicators based
-#'                         on two or more than two time points (see Example 12).
-#'                         However, a list of named lists \code{load}, \code{inter},
-#'                         and/or \code{resid} are needed when investigating partial
-#'                         between-group measurement invariance for continuous
-#'                         indicators based on more than two groups (see Example
-#'                         11b). A list including a list named \code{thres} of
-#'                         character vectors named after the indicators for which
-#'                         threshold parameters (e.g., \code{"e1"} for threshold
-#'                         1) are to be freed along with named character vectors
-#'                         \code{load}, \code{inter}, and/or \code{resid} are
-#'                         needed when investigating partial between-group
-#'                         measurement invariance for ordered categorical indicators
-#'                         based on two groups (see Example 13a) or longitudinal
-#'                         partial measurement invariance for ordered categorical
-#'                         indicators based on two or more than two time points
-#'                         (see Example 14). However, a list including a list named
-#'                         \code{thres} of lists named after the indicators for
-#'                         which threshold parameters are freed (e.g., \code{item1})
-#'                         of named character vectors specifying the threshold
-#'                         parameter along with lists named \code{load}, \code{inter},
-#'                         and/or \code{resid} are needed when investigating partial
-#'                         between-group measurement invariance for ordered categorical
-#'                         indicators based on more than two groups (see Example 13b).
-#'                         Note that at least two invariant indicators per latent
-#'                         variable are needed for a partial measurement invariance
-#'                         model. Otherwise there might be issues with model
-#'                         non-identification.
+#'                         on two groups (see Example 4a) or longitudinal partial
+#'                         measurement invariance for continuous indicators based on
+#'                         two time points (see Example 10) or more than two time
+#'                         points However, a list of named lists labled \code{load},
+#'                         \code{inter}, and/or \code{resid} are needed when
+#'                         investigating partial between-group measurement invariance
+#'                         for continuous indicators based  on more than two groups
+#'                         (see Example 4b). A list including a list named \code{thres}
+#'                         of character vectors named a after the indicators for
+#'                         which threshold parameters (e.g., \code{"t1"} for
+#'                         threshold \code{1}) are to be freed along with named
+#'                         character vectors \code{load}, \code{inter}, and/or
+#'                         \code{resid} are needed when investigating partial
+#'                         between-group measurement invariance  for ordered
+#'                         categorical indicators based on two groups (see Example
+#'                         12a) or longitudinal partial measurement invariance for
+#'                         ordered categorical indicators based on two time points
+#'                         (see Example 14) or more than two time points. However,
+#'                         a list including a list named \code{thres} of lists
+#'                         named after the indicators for which threshold parameters
+#'                         are freed (e.g., \code{item1}) of named character vectors
+#'                         specifying the threshold parameter along with lists named
+#'                         \code{load}, \code{inter}, and/or \code{resid} are needed
+#'                         when investigating partial between-group measurement
+#'                         invariance for ordered categorical indicators based on
+#'                         more than two groups (see Example 12b). Groups are
+#'                         denoted with \code{"g"} following the group number, e.g.
+#'                         \code{load = list(x4 = c("g1", "g3"))} for freeing
+#'                         factor loadings of indicator \code{x4} in group 1 and
+#'                         group 3. Note that at least two invariant indicators
+#'                         per latent variable are needed for a partial measurement
+#'                         invariance model. Otherwise there might be issues with
+#'                         model non-identification.
 #' @param ident            a character string indicating the method used for identifying
 #'                         and scaling latent variables, i.e., \code{"marker"} for
 #'                         the marker variable method fixing the first factor
@@ -208,8 +212,8 @@
 #'                         models with continuous indicators and \code{"WLSMV"}
 #'                         is used for CFA models with ordered categorical
 #'                         indicators. Note that the estimators
-#'                         \code{"ML", "MLM", "MLMV", "MLMVS", "MLF"} and
-#'                         \code{"MLR"} are not available when \code{ordered = TRUE}.
+#'                         \code{"ML", "MLM", "MLMV", "MLMVS", "MLF"} and \code{"MLR"}
+#'                         are not available when \code{ordered = TRUE}.
 #' @param missing          a character string indicating how to deal with missing data,
 #'                         i.e., \code{"listwise"} for listwise deletion, \code{"pairwise"}
 #'                         for pairwise deletion, \code{"fiml"} for full information
@@ -251,9 +255,12 @@
 #'                         and item frequencies for ordered categorical variable
 #'                         (\code{ordered = TRUE}), \code{"fit"} for model fit and
 #'                         model comparison, \code{"est"} for parameter estimates,
-#'                         \code{"modind"} for modification indices, and \code{"resid"}
+#'                         \code{"modind"} for modification indices, \code{"resid"}
 #'                         for the residual correlation matrix and standardized residual
-#'                         means. By default, a summary of the specification,
+#'                         means, and \code{"opdyke"} for the discrepancy between
+#'                         model-implied and observed correlation expressed in terms
+#'                         of the relative percentile of an Opdyke distribution
+#'                         (McNeish, 2025). By default, a summary of the specification,
 #'                         the partial measurement invariance specification, and model
 #'                         fit are printed. Note that parameter estimates, modification
 #'                         indices, and residual correlation matrix is only provided
@@ -287,6 +294,44 @@
 #'                         coefficients and standardized means equal or higher 0.1
 #'                         are highlighted. Note that highlighting can be disabled
 #'                         by setting the minimum value to 1.
+#' @param opdyke.prec      a numeric value indicating the precision of the probability
+#'                         density function calculations of the Opdyke distribution.
+#'                         The default is \code{1} which calculates the PDF
+#'                         for polar angles between \eqn{(0, pi)} in \eqn{0.01}
+#'                         increments. Specifying \code{10} calculates the PDF
+#'                         polar angles between \eqn{(0, pi)} in 0.001 increments,
+#'                         which takes considerably longer, especially if there
+#'                         are many correlation elements.
+#' @param opdyke.minmax    a numeric vector with two elements indicating the
+#'                         minimum and maximum percentile of the Opdyke distribution
+#'                         that is considered to be acceptably close to the
+#'                         observed correlation represented by the Opdyke distribution
+#'                         median. Predicted correlation outside the range will be
+#'                         color highlighted in line with to the argument \code{color}.
+#' @param color            a character string indicating the text color for
+#'                         highlighting absolute residual correlation coefficients
+#'                         and standardized means equal or higher \code{resid.minval}
+#'                         and predicted correlations outside the minimum and
+#'                         maximum percentile of the Opdyke distribution, i.e.,
+#'                         \code{"default"} for the default text color without
+#'                         color coding and various text colors for highlighting
+#'                         \code{"red"}, \code{"b.red"} (default), \code{"green"},
+#'                         \code{"b.green"}, \code{"blue"}, or \code{"b.blue"},
+#'                         see the help page of the \code{\link{chr.color}} function.
+#'                         Note that this option is not supported when using R
+#'                         Markdown and when writing the output into a text file
+#'                         (\code{.txt}).
+#' @param style            a character vector indicating the font style for
+#'                         highlighting absolute residual correlation coefficients
+#'                         and standardized means equal or higher \code{resid.minval},
+#'                         i.e., \code{"regular"} (default) for regular text, \code{"bold"}
+#'                         for bold text, and \code{"italic"} for italic text. Note
+#'                         that the font style \code{"bold"} and \code{"italic"} can
+#'                         be combined, i.e., style = c("bold", "italic") provides a
+#'                         bold and italic text. Note that the argument \code{color}
+#'                         needs to be specified to change the style of the text, e.g.
+#'                         \code{color = "black"} and \code{style = "bold"} to for
+#'                         bold text.
 #' @param lavaan.run       logical: if \code{TRUE} (default), all models for
 #'                         evaluating measurement invariance will be estimated by
 #'                         using the \code{cfa()} function from the R package
@@ -380,10 +425,13 @@
 #'                      the configural, metric, scalar, and strict invariance model,
 #'                      \code{score} for the list with result of the score tests
 #'                      for constrained parameters for the threshold, metric,
-#'                      scalar, and strict invariance model, and \code{resid} for
+#'                      scalar, and strict invariance model, \code{resid} for
 #'                      the list with residual correlation matrices and standardized
 #'                      residual means for the configural, threshold, metric, scalar,
-#'                      and strict invariance model}
+#'                      and strict invariance model, and \code{opdyke} for the
+#'                      list with relative Opdyke distribution percentile matrix
+#'                      for the configural, threshold, metric, scalar, and strict
+#'                      invariance model}
 #'
 #' @note
 #' The function uses the functions \code{cfa}, \code{fitmeasures} ,\code{lavInspect},
@@ -398,11 +446,11 @@
 #' # Load data set "HolzingerSwineford1939" in the lavaan package
 #' data("HolzingerSwineford1939", package = "lavaan")
 #'
-#' #----------------------------------------------------------------------------
+#' #————————————————————————————————————————————————————————————————————————————
 #' # Between-Group Measurement Invariance: Continuous Indicators
 #'
-#' #..................
-#' # Measurement model with one factor
+#' #——————————————————————————————————————
+#' # Measurement Model with One Factor
 #'
 #' # Example 1a: Model specification using the argument '...'
 #' item.invar(HolzingerSwineford1939, x1, x2, x3, x4, group = "school")
@@ -417,23 +465,23 @@
 #' # Example 1d: Alternative model specification using the argument 'model'
 #' item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"), group = "school")
 #'
-#' #..................
-#' # Measurement model with two factors
+#' #——————————————————————————————————————
+#' # Measurement Model with Two Factors
 #'
 #' # Example 2: Model specification using the argument 'model'
 #' item.invar(HolzingerSwineford1939,
 #'            model = list(c("x1", "x2", "x3", "x4"), c("x5", "x6", "x7", "x8")),
 #'            group = "school")
 #'
-#' #..................
-#' # Configural, metric, scalar, and strict measurement invariance
+#' #——————————————————————————————————————
+#' # Configural, Metric, Scalar, and Strict Measurement Invariance
 #'
 #' # Example 3: Evaluate configural, metric, scalar, and strict measurement invariance
 #' item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
 #'            group = "school", invar = "strict")
 #'
-#' #..................
-#' # Between-group partial measurement invariance
+#' #——————————————————————————————————————
+#' # Between-Group Partial Measurement Invariance
 #'
 #' # Example 4a: Two Groups
 #' #             Free factor loadings for 'x2' and 'x3'
@@ -456,8 +504,8 @@
 #'                           inter = list(x1 = "g3"),
 #'                           resid = list(x3 = c("g1", "g3"))))
 #'
-#' #..................
-#' # Residual covariances
+#' #——————————————————————————————————————
+#' # Residual Covariances
 #'
 #' # Example 5a: One residual covariance
 #' item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
@@ -467,52 +515,42 @@
 #' item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
 #'            rescov = list(c("x1", "x4"), c("x3", "x4")), group = "school")
 #'
-#' #..................
-#' # Scaled test statistic
+#' #——————————————————————————————————————
+#' # Default Null Model
 #'
-#' # Example 6a: Specify cluster variable using a variable name in 'data'
-#' item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
-#'            group = "school", cluster = "agemo")
-#'
-#' # Example 6b: Specify cluster variable as vector
-#' item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
-#'            group = "school", cluster = HolzingerSwineford1939$agemo)
-#'
-#' #..................
-#' # Default Null model
-#'
-#' # Example 7: Specify default null model for computing incremental fit indices
+#' # Example 6: Specify default null model for computing incremental fit indices
 #' item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
 #'            group = "school", null.model = FALSE)
 #'
-#' #..................
-#' # Print argument
+#' #——————————————————————————————————————
+#' # Arguments 'print', 'print.fit', 'mod.minval', 'resid.minval', and 'opdyke.minmax'
 #'
-#' # Example 8a: Request all results
+#' # Example 7a: Request all results
 #' item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
 #'            group = "school", print = "all")
 #'
-#' # Example 8b: Request fit indices with ad hoc non-normality correction
+#' # Example 7b: Request fit indices with ad hoc non-normality correction
 #' item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
 #'            group = "school", print.fit = "scaled")
 #'
-#' # Example 8c: Request modification indices with value equal or higher than 2
-#' # and highlight residual correlations equal or higher than 0.3
+#' # Example 7c: Request modification indices with value equal or higher than 2
+#' # highlight absolute residual correlations equal or higher than 0.05
+#' # highlight Opdyke distribution percentiles outside 0.45 and 0.55
 #' item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
-#'            group = "school", print = c("modind", "resid"),
-#'            mod.minval = 2, resid.minval = 0.3)
+#'            group = "school", print = c("modind", "resid", "opdyke"),
+#'            mod.minval = 2, resid.minval = 0.05, opdyke.minmax = c(0.45, 0.55))
 #'
-#' #..................
-#' # Model syntax and lavaan summary of the estimated model
+#' #——————————————————————————————————————
+#' # Model Syntax and lavaan Summary of the Estimated Model
 #'
-#' # Example 9a: Model specification using the argument '...'
+#' # Example 8a: Model specification using the argument '...'
 #' mod1 <- item.invar(HolzingerSwineford1939, x1, x2, x3, x4, group = "school",
 #'                    output = FALSE)
 #'
 #' # lavaan summary of the scalar invariance model
 #' lavaan::summary(mod1$model.fit$scalar, standardized = TRUE, fit.measures = TRUE)
 #'
-#' # Example 9b: Do not estimate any models
+#' # Example 8b: Do not estimate any models
 #' mod2 <- item.invar(HolzingerSwineford1939, x1, x2, x3, x4, group = "school",
 #'                    lavaan.run = FALSE)
 #'
@@ -522,17 +560,17 @@
 #' # lavaan model syntax scalar invariance model
 #' cat(mod2$model$scalar)
 #'
-#' #----------------------------------------------------------------------------
+#' #————————————————————————————————————————————————————————————————————————————
 #' # Longitudinal Measurement Invariance: Continuous Indicators
 #'
-#' # Example 10: Two time points with three indicators at each time point
+#' # Example 9: Two time points with three indicators at each time point
 #' item.invar(HolzingerSwineford1939,
 #'            model = list(c("x1", "x2", "x3"), c("x5", "x6", "x7")), long = TRUE)
 #'
-#' #..................
-#' # Longitudinal partial measurement invariance
+#' #——————————————————————————————————————
+#' # Longitudinal Partial Measurement Invariance
 #'
-#' # Example 11: Two Time Points with three indicators at each time point
+#' # Example 10: Two Time Points with three indicators at each time point
 #' #             Free factor loading for 'x2'
 #' #             Free intercepts for 'x1' and x2
 #' item.invar(HolzingerSwineford1939,
@@ -540,82 +578,77 @@
 #'            partial = list(load = "x2",
 #'                           inter = c("x1", "x2")))
 #'
-#' #----------------------------------------------------------------------------
+#' #————————————————————————————————————————————————————————————————————————————
 #' # Between-Group Measurement Invariance: Ordered Categorical Indicators
-#' #
-#' # Note that the example analysis for ordered categorical indicators cannot be
-#' # conduct since the data set 'data' is not available.
 #'
-#' # Example 12a: Delta parameterization (default)
-#' item.invar(data, item1, item2, item3, item4, group = "two.group", ordered = TRUE)
+#' # Example 11a: Delta parameterization (default)
+#' item.invar(data.items, pitem1, pitem2r, pitem3r, pitem4, group = "group2",
+#'            ordered = TRUE)
 #'
-#' # Example 12a: Theta parameterization
-#' item.invar(data, item1, item2, item3, item4, group = "two.group", ordered = TRUE,
+#' # Example 11b: Theta parameterization
+#' item.invar(data.items, pitem1, pitem2r, pitem3r, pitem4, group = "group2", ordered = TRUE,
 #'            parameterization = "theta")
 #'
-#' #----------------------------------------------------------------------------
-#' # Between-Group Partial Measurement Invariance: Ordered Categorical Indicators
+#' #——————————————————————————————————————
+#' # Between-Group Partial Measurement Invariance
 #'
-#' # Example 13a: Two Groups
-#' #              Free 2nd and 4th threshold of 'item1'
-#' #              Free 1st threshold of 'item3'
-#' #              Free factor loadings for 'item2' and 'item4'
-#' #              Free intercept for 'item1'
-#' #              Free residual variance for 'item3'
-#' item.invar(data, item1, item2, item3, item4, group = "two.group", ordered = TRUE,
-#'            partial = list(thres = list(item1 = c("t2", "t4"),
-#'                                        item3 = "t1"),
-#'                           load = c("item2", "item4"),
-#'                           inter = "item1",
-#'                           resid = "item3"))
+#' # Example 12a: Two Groups
+#' #              Free 2nd and 3rd threshold of 'pitem1'
+#' #              Free 1st threshold of 'pitem3r'
+#' #              Free factor loadings for 'pitem2r' and 'pitem4'
+#' #              Free intercept for 'pitem1'
+#' #              Free residual variance for 'pitem3r'
+#' item.invar(data.items, pitem1, pitem2r, pitem3r, pitem4, group = "group2",
+#'            ordered = TRUE,
+#'            partial = list(thres = list(pitem1 = c("t2", "t3"),
+#'                                        pitem3r = "t1"),
+#'                           load = c("pitem2r", "pitem4"),
+#'                           inter = "pitem1",
+#'                           resid = "pitem3r"))
 #'
-#' # Example 13b: More than Two Groups
-#' #              Free 1st threshold of 'item1' in group 1 and 2
-#' #              Free 3rd threshold of 'item3' in group 3
-#' #              Free factor loadings for 'item2' in group 1
-#' #              Free intercept for 'item2' in group 1
-#' #              Free intercept for 'item3' in group 2 and 4
-#' #              Free residual variance for 'item1' in group 1 and 3
-#' item.invar(data, item1, item2, item3, item4, group = "four.group", ordered = TRUE,
-#'            partial = list(thres = list(item1 = list(t1 = c("g1", "g2")),
-#'                                        item3 = list(t3 = "g3")),
-#'                           load  = list(item2 = "g1"),
-#'                           inter = list(item2 = "g1", item3 = c("g2", "g4")),
-#'                           resid = list(item1 = c("g1", "g3"))))
+#' # Example 12b: More than Two Groups
+#' #              Free 1st threshold of 'pitem1' in group 1 and 2
+#' #              Free 2nd threshold of 'pitem3r' in group 3
+#' #              Free factor loadings for 'pitem2r' in group 1
+#' #              Free intercept for 'pitem2r' in group 1
+#' #              Free intercept for 'item3r' in group 2 and 4
+#' #              Free residual variance for 'pitem1' in group 1 and 3
+#' item.invar(data.items, pitem1, pitem2r, pitem3r, pitem4, group = "group4", ordered = TRUE,
+#'            partial = list(thres = list(pitem1 = list(t1 = c("g1", "g2")),
+#'                                        pitem3r = list(t2 = "g3")),
+#'                           load  = list(pitem2r = "g1"),
+#'                           inter = list(pitem2r = "g1", pitem3r = c("g2", "g4")),
+#'                           resid = list(pitem1 = c("g1", "g3"))))
 #'
-#' #----------------------------------------------------------------------------
+#' #————————————————————————————————————————————————————————————————————————————
 #' # Longitudinal Measurement Invariance: Ordered Categorical Indicators
 #'
+#' # Example 13: Two Time Points
+#' item.invar(data.items, model = list(c("pitem1", "pitem2r", "pitem3r"),
+#'                                     c("pitem4", "pitem5", "pitem6")),
+#'            long = TRUE, ordered = TRUE, invar = "thres")
+#'
+#' #——————————————————————————————————————
+#' # Longitudinal Partial Measurement Invariance
+#'
 #' # Example 14: Two Time Points
-#' item.invar(data, model = list(c("aitem1", "aitem2", "aitem3"),
-#'                               c("bitem1", "bitem2", "bitem3")),
-#'            long = TRUE, ordered = TRUE)
+#' #             Free 2nd and 3rd threshold of 'pitem1'
+#' #             Free 1st threshold of 'pitem3r'
+#' #             Free factor loading of 'pitem1'
+#' item.invar(data.items, model = list(c("pitem1", "pitem2r", "pitem3r"),
+#'                                     c("pitem4", "pitem5", "pitem6")),
+#'            long = TRUE, ordered = TRUE, invar = "thres",
+#'            partial = list(thres = list(pitem1 = c("t2", "t3"), pitem3r = "t1"),
+#'                           load  = "pitem1"))
 #'
-#' #..................
-#' # Longitudinal partial measurement invariance: Ordered Categorical Indicators
-#'
-#' # Example 15: Two Time Points
-#' #             Free 2nd and 4th threshold of 'aitem1'
-#' #             Free 1st threshold of 'aitem4'
-#' #             Free factor loading for 'aitem2
-#' #             Free intercepts for 'aitem1' and 'bitem2'
-#' #             Free residual variance for 'aitem3'
-#' item.invar(data, model = list(c("aitem1", "aitem2", "aitem3"),
-#'                               c("bitem1", "bitem2", "bitem3")),
-#'            long = TRUE, ordered = TRUE, invar = "strict",
-#'            partial = list(thres = list(aitem1 = c("t2", "t4"), aitem3 = "t1"),
-#'                           load = "aitem2",
-#'                           inter = c("aitem1", "bitem2"),
-#'                           resid = "aitem3"))
-#'
-#' #------------------------------------------------
+#' #————————————————————————————————————————————————————————————————————————————
 #' # Write Results
 #'
-#' # Example 16a: Write Results into a text file
+#' # Example 15a: Write Results into a text file
 #' item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
 #'            group = "school", print = "all", write = "Invariance.txt", output = FALSE)
 #'
-#' # Example 16b: Write Results into an Excel file
+#' # Example 15b: Write Results into an Excel file
 #' item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
 #'            group = "school", print = "all", write = "Invariance.xlsx", output = FALSE)
 #' }
@@ -625,11 +658,12 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
                        invar = c("config", "thres", "metric", "scalar", "strict"),
                        partial = NULL, ident = c("marker", "var", "effect"),
                        estimator = c("ML", "MLM", "MLMV", "MLMVS", "MLF", "MLR",
-                                     "GLS", "WLS", "DWLS", "WLSM", "WLSMV",
-                                     "ULS", "ULSM", "ULSMV", "DLS", "PML"),
+                                     "GLS", "WLS", "DWLS", "WLSM", "WLSMV", "WLSMVS",
+                                     "ULS", "ULSM", "ULSMV", "ULSMVS", "DLS", "PML"),
                        missing = c("listwise", "pairwise", "fiml", "two.stage", "robust.two.stage", "doubly.robust"),
-                       null.model = TRUE, print = c("all", "summary", "partial", "coverage", "descript", "fit", "est", "modind", "resid"),
+                       null.model = TRUE, print = c("all", "summary", "partial", "coverage", "descript", "fit", "est", "modind", "resid", "opdyke"),
                        print.fit = c("all", "standard", "scaled", "robust"), mod.minval = 6.63, resid.minval = 0.1,
+                       opdyke.prec = 1, opdyke.minmax = c(0.40, 0.60), color = "b.red", style = c("regular", "bold", "italic"),
                        lavaan.run = TRUE, se = NULL, digits = 3, p.digits = 3, as.na = NULL, write = NULL, append = TRUE,
                        check = TRUE, output = TRUE) {
 
@@ -654,7 +688,7 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
   # Data -----------------------------------------------------------------------
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data using the argument '...' ####
+  ## Using the argument '...' ####
 
   if (isTRUE(!missing(...))) {
 
@@ -668,7 +702,7 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
     if (isTRUE(!is.null(cluster))) { cluster <- data[, cluster] }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data without using the argument '...' ####
+  ## Without using the argument '...' ####
 
   } else {
 
@@ -689,6 +723,10 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
 
   }
 
+  # Convert 'group' and 'cluster' as tibble into a vector
+  if (!is.null(group) && isTRUE("tbl" %in% substr(class(group), 1L, 3L))) { group <- unname(unlist(group)) }
+  if (!is.null(cluster) && isTRUE("tbl" %in% substr(class(cluster), 1L, 3L))) { cluster <- unname(unlist(cluster)) }
+
   #_____________________________________________________________________________
   #
   # Input Check ----------------------------------------------------------------
@@ -698,17 +736,22 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
 
   .check.input(logical = c("ordered", "long", "rescov.long", "null.model", "append", "output"),
                numeric = list(mod.minval = 1L, resid.minval = 1L),
-               s.character = list(parameterization = c("delta", "theta"), invar = c("config", "thres", "metric", "scalar", "strict"), ident = c("marker", "var", "effect"), estimator = c("ML", "MLM", "MLMV", "MLMVS", "MLF", "MLR", "GLS", "WLS", "DWLS", "WLSM", "WLSMV", "ULS", "ULSM", "ULSMV", "DLS", "PML"), missing = c("listwise", "pairwise", "fiml", "two.stage", "robust.two.stage", "doubly.robust")),
-               m.character = list(print = c("all", "summary", "partial", "coverage", "descript", "fit", "est", "modind", "resid"), print.fit = c("all", "standard", "scaled", "robust")),
-               args = c("digits", "p.digits", "write2"), package = "lavaan", envir = environment(), input.check = check)
+               s.character = list(parameterization = c("delta", "theta"), invar = c("config", "thres", "metric", "scalar", "strict"), ident = c("marker", "var", "effect"), estimator = c("ML", "MLM", "MLMV", "MLMVS", "MLF", "MLR", "GLS", "WLS", "DWLS", "WLSM", "WLSMV", "WLSMVS", "ULS", "ULSM", "ULSMV", "ULSMVS", "DLS", "PML"), style = c("regular", "bold", "italic")),
+               m.character = list(print = c("all", "summary", "partial", "coverage", "descript", "fit", "est", "modind", "resid", "opdyke"), print.fit = c("all", "standard", "scaled", "robust")),
+               args = c("color", "digits", "p.digits", "write2"), package = "lavaan", envir = environment(), input.check = check)
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Additional Checks ####
 
   if (isTRUE(check)) {
 
-    #--------------------------------------
-    ### Check input 'data' ####
+    #—————————————————————————————————————— #
+    ### Check lavaan Version ####
+
+    if (isTRUE(substr(packageDescription("lavaan")$Version, 3L, 3L) %in% seq_len(6L))) { stop("This function requires at least lavaan version 0.7-2 (published 2026-07-16), please update the package.", call. = FALSE) }
+
+    #—————————————————————————————————————— #
+    ### Check Input 'data' ####
 
     if (isTRUE(is.null(model))) {
 
@@ -724,8 +767,8 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
 
       }
 
-    #--------------------------------------
-    ### Check input 'model' ####
+    #—————————————————————————————————————— #
+    ### Check Input 'model' ####
 
     } else {
 
@@ -753,8 +796,8 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
 
     }
 
-    #--------------------------------------
-    ### Check input 'rescov' ####
+    #—————————————————————————————————————— #
+    ### Check Input 'rescov' ####
 
     if (isTRUE(!is.null(rescov))) {
 
@@ -784,8 +827,8 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
 
     }
 
-    #--------------------------------------
-    ### Check input 'group' ####
+    #—————————————————————————————————————— #
+    ### Check Input 'group' ####
 
     if (isTRUE(!is.null(group))) {
 
@@ -814,7 +857,7 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
     # Argument 'long' or 'group'
     if (isTRUE(long && !is.null(group))) { stop("Please specify the arguments for evaluating either between-group or longitudinal measurement invariance.", call. = FALSE) }
 
-    #--------------------------------------
+    #—————————————————————————————————————— #
     ### Check Input 'model' when long = TRUE ####
 
     if (isTRUE(long)) {
@@ -827,7 +870,7 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
 
     }
 
-    #--------------------------------------
+    #—————————————————————————————————————— #
     ### Check Input 'cluster' ####
 
     if (isTRUE(!is.null(cluster))) {
@@ -854,12 +897,12 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
 
     }
 
-    #--------------------------------------
+    #—————————————————————————————————————— #
     ### Check Input 'partial' ####
 
     if (isTRUE(!is.null(partial))) { if (isTRUE(!is.list(partial))) { stop("Please specify a list for the argument 'partial'.", call. = FALSE) } }
 
-    #--------------------------------------
+    #—————————————————————————————————————— #
     ### Check Input 'estimator' ####
 
     if (isTRUE(ordered)) {
@@ -884,7 +927,7 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Manifest Variables ####
 
-  #--------------------------------------
+  #—————————————————————————————————————— #
   ### Model Specification with 'data' or with 'model' ####
 
   if (isTRUE(is.null(model))) { var.mod <- colnames(x) } else { var.mod <- unique(unlist(model)) }
@@ -892,7 +935,7 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data Frame with Cluster and Grouping Variable ####
 
-  #--------------------------------------
+  #—————————————————————————————————————— #
   ### No Cluster Variable ####
 
   if (isTRUE(is.null(cluster))) {
@@ -900,7 +943,7 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
     # Grouping variable or no grouping variable
     if (isTRUE(!is.null(group))) { x <- data.frame(x[, var.mod], .group = group) |> (\(y) misty::df.sort(y, .group))() } else if (isTRUE(is.null(group))) { x <- data.frame(x[, var.mod]) }
 
-  #--------------------------------------
+  #—————————————————————————————————————— #
   ### Cluster variable ####
 
   } else {
@@ -926,7 +969,7 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
   if (isTRUE(!long)) { sapply(split(x, f = x$.group), function(y) apply(y[, var.mod], 2L, var, na.rm = TRUE)) |> (\(y) if (isTRUE(any(y == 0L | is.na(y)))) { stop(paste0("There is no variance in group ", paste(names(which(apply(y, 2L, function(y) any(y == 0L | is.na(y))))), collapse = ", "), " for following variable: ", paste(names(which(apply(y, 1L, function(y) any(y == 0L | is.na(y))))), collapse = ", ")), call. = FALSE) })() }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Model ####
+  ## 'model' Argument ####
 
   # Specification with the argument 'model'
   if (isTRUE(!is.null(model) && is.list(model))) {
@@ -958,17 +1001,17 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
   }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Parameterization ####
+  ## 'parameterization' Argument ####
 
   if (isTRUE(all(c("delta", "theta") %in% parameterization))) { parameterization <- "delta" }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Residual Covariance ####
+  ## 'rescov' Argument ####
 
   if (isTRUE(!is.null(rescov) && !is.list(rescov))) { rescov <- list(rescov) }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Level of Invariance ####
+  ## 'invar' Argument ####
 
   # Default setting: "scalar" for continuous indicators and "strict" for ordered categorical indicators
   if (isTRUE(ordered)) {
@@ -982,9 +1025,9 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
   }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Model Identification ####
+  ## 'ident' Argument ####
 
-  #--------------------------------------
+  #—————————————————————————————————————— #
   ### Argument 'ident' ####
 
   # Default setting: Fixed Factor Method
@@ -998,7 +1041,7 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
 
   }
 
-  #--------------------------------------
+  #—————————————————————————————————————— #
   ### Arguments 'std.lv' and 'effect.coding' ####
 
   # Marker variable method
@@ -1022,29 +1065,29 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
   }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Estimator ####
+  ## 'estimator' Argument ####
 
-  #--------------------------------------
+  #—————————————————————————————————————— #
   ### Default Setting ####
 
-  if (isTRUE(all(c("ML", "MLM", "MLMV", "MLMVS", "MLF", "MLR", "GLS", "WLS", "DWLS", "WLSM", "WLSMV", "ULS", "ULSM", "ULSMV", "DLS", "PML") %in% estimator))) {
+  if (isTRUE(all(c("ML", "MLM", "MLMV", "MLMVS", "MLF", "MLR", "GLS", "WLS", "DWLS", "WLSM", "WLSMV", "WLSMVS", "ULS", "ULSM", "ULSMV", "ULSMVS", "DLS", "PML") %in% estimator))) {
 
     # Continuous indicators: MLR
     if (isTRUE(!ordered)) {
 
-      if (isTRUE(all(c("ML", "MLM", "MLMV", "MLMVS", "MLF", "MLR", "GLS", "WLS", "DWLS", "WLSM", "WLSMV", "ULS", "ULSM", "ULSMV", "DLS", "PML") %in% estimator ))) { estimator  <- "MLR" }
+      if (isTRUE(all(c("ML", "MLM", "MLMV", "MLMVS", "MLF", "MLR", "GLS", "WLS", "DWLS", "WLSM", "WLSMV", "WLSMVS", "ULS", "ULSM", "ULSMV", "ULSMVS", "DLS", "PML") %in% estimator ))) { estimator  <- "MLR" }
 
     # Categorical indicators: WLSMV
     } else {
 
-      if (isTRUE(all(c("ML", "MLM", "MLMV", "MLMVS", "MLF", "MLR", "GLS", "WLS", "DWLS", "WLSM", "WLSMV", "ULS", "ULSM", "ULSMV", "DLS", "PML") %in% estimator))) { estimator  <- "WLSMV" }
+      if (isTRUE(all(c("ML", "MLM", "MLMV", "MLMVS", "MLF", "MLR", "GLS", "WLS", "DWLS", "WLSM", "WLSMV", "WLSMVS", "ULS", "ULSM", "ULSMV", "ULSMVS", "DLS", "PML") %in% estimator))) { estimator  <- "WLSMV" }
 
       # Cluster-robust standard errors
       if (isTRUE(!is.null(cluster))) { stop("Cluster-robust standard errors are not available with ordere categorical indicators.", call. = FALSE) }
 
     }
 
-  #--------------------------------------
+  #—————————————————————————————————————— #
   ### User-Specified Setting ####
 
   } else {
@@ -1067,7 +1110,7 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
       # Cluster-robust standard errors
       if (isTRUE(is.null(cluster))) {
 
-        if (isTRUE(!estimator %in% c("WLS", "DWLS", "WLSM", "WLSMV", "ULS", "ULSM", "ULSMV", "PML"))) {
+        if (isTRUE(!estimator %in% c("WLS", "DWLS", "WLSM", "WLSMV", "WLSMVS", "ULS", "ULSM", "ULSMV", "ULSMVS", "PML"))) {
 
           warning("Estimator switched to \"WLSMV\" to deal with ordered categorical indicators.", call. = FALSE)
 
@@ -1086,16 +1129,15 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
   }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Missing ####
+  ## 'missing' Argument ####
 
-  #--------------------------------------
-  ### Any Missing Values ####
-
+  # Any missing values
   if (isTRUE(any(is.na(x[, var.mod])))) {
 
     complete <- FALSE
 
-    #### Default Setting ####
+    #—————————————————————————————————————— #
+    ### Default Setting ####
 
     if (isTRUE(all(c("listwise", "pairwise", "fiml", "two.stage", "robust.two.stage", "doubly.robust") %in% missing))) {
 
@@ -1107,29 +1149,32 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
 
         missing <- "listwise"
 
-      } else if (isTRUE(estimator %in% c("DWLS", "WLSM", "WLSMV", "ULS", "ULSM", "ULSMV", "DLS", "PML")))  {
+      } else if (isTRUE(estimator %in% c("DWLS", "WLSM", "WLSMV", "WLSMVS", "ULS", "ULSM", "ULSMV", "ULSMVS", "DLS", "PML")))  {
 
         missing <- "pairwise"
 
       }
 
-    #### User-Specified Setting ####
+    #—————————————————————————————————————— #
+    ### User-Specified ####
 
     } else {
 
       # FIML
       if (isTRUE(missing == "fiml" && !estimator %in% c("ML", "MLF", "MLR"))) {
 
-        warning(paste0("FIML method is not available for estimator = \"", estimator, "\", argument 'missing' switched to ", ifelse(estimator %in% c("MLM", "MLMV", "MLMVS", "GLS", "WLS", "DLS"), "\"listwise\"", "\"pairwise\""), "."), call. = FALSE)
+        warning(paste0("FIML method is not available for estimator = \"", estimator, "\", argument 'missing' switched to ",
+                       ifelse(estimator %in% c("MLM", "MLMV", "MLMVS", "MLF", "DWLS", "GLS", "ULS", "ULSM", "ULSMV", "ULSMVS", "DLS"), "\"listwise\"", "\"pairwise\""), "."), call. = FALSE)
 
-        missing <- ifelse(estimator %in% c("MLM", "MLMV", "MLMVS", "GLS", "WLS", "DLS"), "listwise", "pairwise")
+        missing <- ifelse(estimator %in% c("MLM", "MLMV", "MLMVS", "MLF", "DWLS", "GLS", "ULS", "ULSM", "ULSMV", "ULSMVS", "DLS"), "listwise", "pairwise")
 
       }
 
       # Pairwise deletion
-      if (isTRUE(missing == "pairwise" && !estimator %in% c("ML", "WLS", "DWLS", "WLSM", "WLSMV", "ULS", "ULSM", "ULSMV", "PML"))) {
+      if (isTRUE(missing == "pairwise" && estimator %in% c("MLM", "MLMV", "MLMVS", "MLF", "DWLS", "GLS", "ULS", "ULSM", "ULSMV", "ULSMVS", "DLS"))) {
 
-        warning(paste0("Pairwise deletion is not available for estimator = \"", estimator, "\", argument 'missing' switched to ", ifelse(estimator %in% c("MLF", "MLR"), "\"fiml\"", "\"listwise\""), "."), call. = FALSE)
+        warning(paste0("Pairwise deletion is not available for estimator = \"", estimator, "\", argument 'missing' switched to ",
+                       ifelse(estimator %in% c("MLF", "MLR"), "\"fiml\"", "\"listwise\""), "."), call. = FALSE)
 
         missing <- ifelse(estimator %in% c("MLF", "MLR"), "fiml", "listwise")
 
@@ -1138,35 +1183,38 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
       # (Robust) Two-stage
       if (isTRUE(missing %in% c("two.stage", "robust.two.stage") && !estimator %in% c("ML", "MLF", "MLR"))) {
 
-        warning(paste0("Two-stage method is not available for estimator = \"", estimator, "\", argument 'missing' switched to ", ifelse(estimator %in% c("WLS", "DWLS", "WLSM", "WLSMV", "ULS", "ULSM", "PML"), "\"pairwise\"", "\"listwise\""), "."), call. = FALSE)
+        warning(paste0("Two-stage method is not available for estimator = \"", estimator, "\", argument 'missing' switched to ",
+                       ifelse(estimator %in% c("MLM", "MLMV", "MLMVS", "MLF", "DWLS", "GLS", "ULS", "ULSM", "ULSMV", "ULSMVS", "DLS"), "\"listwise\"", "\"pairwise\""), "."), call. = FALSE)
 
-        missing <- ifelse(estimator %in% c("WLS", "DWLS", "WLSM", "WLSMV", "ULS", "ULSM", "PML"), "pairwise", "listwise")
+        missing <- ifelse(estimator %in% c("MLM", "MLMV", "MLMVS", "MLF", "DWLS", "GLS", "ULS", "ULSM", "ULSMV", "ULSMVS", "DLS"), "listwise", "pairwise")
 
       }
 
       # Doubly-robust
       if (isTRUE(missing == "doubly.robust" && estimator != "PML")) {
 
-        warning(paste0("Doubly-robust method is not available for estimator = \"", estimator, "\", argument 'missing' switched to ", ifelse(estimator %in% c("ML", "MLF", "MLR"), "fiml\"", ifelse(estimator %in% c("MLM", "MLMV", "MLMVS", "GLS", "WLS"), "\"listwise\"", "\"pairwise\"")), "."), call. = FALSE)
+        warning(paste0("Doubly-robust method is not available for estimator = \"", estimator, "\", argument 'missing' switched to ",
+                       ifelse(estimator %in% c("ML", "MLF", "MLR"), "fiml\"", ifelse(estimator %in% c("MLM", "MLMV", "MLMVS", "GLS", "WLS"), "\"listwise\"", "\"pairwise\"")), "."), call. = FALSE)
 
-        missing <- ifelse(estimator %in% c("ML", "MLF", "MLR"), "fiml", ifelse(estimator %in% c("MLM", "MLMV", "MLMVS", "GLS", "WLS"), "listwise", "pairwise"))
+        missing <- ifelse(estimator %in% c("ML", "MLF", "MLR"), "fiml", ifelse(estimator %in% c("MLM", "MLMV", "MLMVS", "MLF", "DWLS", "WLSM", "WLSMV", "ULS", "ULSM", "ULSMV", "ULSMVS"), "listwise", "pairwise"))
 
       }
 
     }
 
-  #--------------------------------------
-  ### No Missing Values ####
-
   } else {
 
-    complete <- TRUE
     missing <- "listwise"
+    complete <- TRUE
 
   }
 
   # Cases with missing on all variables
-  if (isTRUE(missing %in% c("fiml", "two.stage", "robust.two.stage"))) { misty::na.prop(x[, var.mod], append = FALSE) |> (\(y) if (any(y == 1L)) { warning(paste("Data set contains", sum(y == 1L), "cases with missing on all variables which were removed from the analysis."), call. = FALSE) })() }
+  if (isTRUE(missing %in% c("fiml", "two.stage", "robust.two.stage"))) {
+
+    misty::na.prop(x[, var.mod], append = FALSE) |> (\(y) if (isTRUE(any(y == 1L))) { warning(paste("Data set contains", sum(y == 1L), "cases with missing on all variables which were not included in the analysis."), call. = FALSE) })()
+
+  }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Missing Data on the Cluster Variable ####
@@ -1180,27 +1228,27 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
   }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Proper Null Model ####
+  ## 'null.model' Argument ####
 
   if (isTRUE(ordered)) { null.model <- FALSE }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Print ####
+  ## 'print' Argument ####
 
   # Default Setting
-  if (isTRUE(all(c("all", "summary", "partial", "coverage", "descript", "fit", "est", "modind", "resid") %in% print))) {
+  if (isTRUE(all(c("all", "summary", "partial", "coverage", "descript", "fit", "est", "modind", "resid", "opdyke") %in% print))) {
 
     print  <- c("summary", "partial", "fit")
 
   # User-Specified Setting
   } else if (isTRUE(length(print) == 1L && "all" %in% print)) {
 
-    print <- c("all", "summary", "partial", "coverage", "descript", "fit", "est", "modind", "resid")
+    print <- c("summary", "partial", "coverage", "descript", "fit", "est", "modind", "resid", "opdyke")
 
   }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Print Fit ####
+  ## 'print.fit' Argument ####
 
   if (isTRUE(all(c("all", "standard", "scaled", "robust") %in% print.fit))) {
 
@@ -1216,7 +1264,12 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
   if (isTRUE(estimator %in% c("ML", "MLMVS", "MLF", "GLS", "WLS", "DWLS", "ULS", "PML"))) { print.fit <- "standard" }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Not Estimate Models ####
+  ## 'style' Argument ####
+
+  if (isTRUE(all(c("regular", "bold", "italic") %in% style))) { style <- "regular" }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## 'lavaan.run' Argument ####
 
   if (isTRUE(!lavaan.run)) { output <- FALSE; write <- NULL }
 
@@ -1252,8 +1305,8 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
 
   if (isTRUE("descript" %in% print)) {
 
-    #--------------------------------------
-    ### No grouping variable
+    #—————————————————————————————————————— #
+    ### No Grouping Variable
 
     if (isTRUE(is.null(group))) {
 
@@ -1263,8 +1316,8 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
       # Frequency table
       itemfreq <- suppressWarnings(misty::freq(x[, var.mod], val.col = TRUE, exclude = 9999, output = FALSE)$result$freq)
 
-    #--------------------------------------
-    ### Grouping variable
+    #—————————————————————————————————————— #
+    ### Grouping Variable
 
     } else {
 
@@ -1285,7 +1338,7 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
 
     mod.thres <- mod.config <- mod.metric <- mod.scalar <- mod.strict <- NULL
 
-    #--------------------------------------
+    #—————————————————————————————————————— #
     ### Between-Group Measurement Invariance ####
 
     if (isTRUE(!long)) {
@@ -1525,6 +1578,7 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
 
       #......................................
       #### Model Specification: Metric Measurement Invariance ####
+
       if (isTRUE(any(c("metric", "scalar", "strict") %in% invar))) {
 
         ##### Marker variable method
@@ -1653,7 +1707,7 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
 
       }
 
-    #--------------------------------------
+    #—————————————————————————————————————— #
     ### Longitudinal Measurement Invariance ####
 
     } else {
@@ -1840,7 +1894,7 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
 
     }
 
-    #--------------------------------------
+    #—————————————————————————————————————— #
     ### Proper Null Model ####
 
     if (isTRUE(null.model)) {
@@ -1880,7 +1934,7 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
 
     mod.thres <- mod.config <- mod.metric <- mod.scalar <- mod.strict <- NULL
 
-    #--------------------------------------
+    #—————————————————————————————————————— #
     ### Response Categories: Binary, Ternary, or Multiple ####
 
     #...................
@@ -1998,7 +2052,7 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
     # Number of response categories
     nresp.cat <- misty::uniq.n(x[, var.mod[1L]])
 
-    #--------------------------------------
+    #—————————————————————————————————————— #
     ### Between-Group Measurement Invariance ####
 
     if (isTRUE(!long)) {
@@ -2346,7 +2400,7 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
                            if (isTRUE(parameterization == "delta")) { mod.resid.delta.fixed } else { mod.resid.theta.fixed }, "\n",
                            mod.mean.free, "\n", mod.var.free)
 
-    #--------------------------------------
+    #—————————————————————————————————————— #
     ### Longitudinal Measurement Invariance ####
 
     } else {
@@ -2568,7 +2622,7 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
 
   }
 
-  #--------------------------------------
+  #—————————————————————————————————————— #
   ### Residual Covariances ####
 
   if (isTRUE(!is.null(rescov))) {
@@ -2594,7 +2648,7 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
 
   if (isTRUE(lavaan.run)) {
 
-    #--------------------------------------
+    #—————————————————————————————————————— #
     ### Configural Measurement Invariance
 
     if (isTRUE(!is.null(mod.config))) {
@@ -2602,18 +2656,28 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
       # Function not used in the item.nonequi() function
       if (isTRUE(is.null(se))) {
 
-        mod.config.fit <- suppressWarnings(lavaan::cfa(mod.config, data = x, group = if (isTRUE(long)) { NULL } else { ".group" },
-                                                       ordered = ordered, parameterization = parameterization, meanstructure = TRUE,
-                                                       cluster = if (isTRUE(is.null(cluster))) { NULL } else { ".cluster" },
-                                                       std.lv = std.lv, effect.coding = effect.coding, estimator = estimator, missing = missing))
+        mod.config.fit <- tryCatch(suppressWarnings(lavaan::cfa(mod.config, data = x, group = if (isTRUE(long)) { NULL } else { ".group" },
+                                                                ordered = ordered, parameterization = parameterization, meanstructure = TRUE,
+                                                                cluster = if (isTRUE(is.null(cluster))) { NULL } else { ".cluster" },
+                                                                std.lv = std.lv, effect.coding = effect.coding, estimator = estimator, missing = missing)),
+                                   error = function(y) {
+
+                                     stop("Estimation problem in lavaan, the configural measurement invariance model could not be estimated.", call. = FALSE)
+
+                                   })
 
       # Function used in the item.nonequi() function
       } else {
 
-        mod.config.fit <- suppressWarnings(lavaan::cfa(mod.config, data = x, group = if (isTRUE(long)) { NULL } else { ".group" },
-                                                       ordered = ordered, parameterization = "delta", meanstructure = TRUE,
-                                                       cluster = if (isTRUE(is.null(cluster))) { NULL } else { ".cluster" },
-                                                       se = "none", std.lv = std.lv, effect.coding = effect.coding, estimator = estimator, missing = missing))
+        mod.config.fit <- tryCatch(suppressWarnings(lavaan::cfa(mod.config, data = x, group = if (isTRUE(long)) { NULL } else { ".group" },
+                                                                ordered = ordered, parameterization = "delta", meanstructure = TRUE,
+                                                                cluster = if (isTRUE(is.null(cluster))) { NULL } else { ".cluster" },
+                                                                se = "none", std.lv = std.lv, effect.coding = effect.coding, estimator = estimator, missing = missing)),
+                                   error = function(y) {
+
+                                     stop("Estimation problem in lavaan, the configural measurement invariance model could not be estimated.", call. = FALSE)
+
+                                   })
 
       }
 
@@ -2622,78 +2686,103 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
 
     }
 
-    #--------------------------------------
+    #—————————————————————————————————————— #
     ### Threshold Measurement Invariance
 
     if (isTRUE(any(c("thres", "metric", "scalar", "strict") %in% invar) && !is.null(mod.thres))) {
 
       #### Model estimation ####
-      mod.thres.fit <- suppressWarnings(lavaan::cfa(mod.thres, data = x, group = if (isTRUE(long)) { NULL } else { ".group" },
+      mod.thres.fit <- tryCatch(suppressWarnings(lavaan::cfa(mod.thres, data = x, group = if (isTRUE(long)) { NULL } else { ".group" },
                                                     ordered = ordered, parameterization = parameterization, meanstructure = TRUE,
                                                     cluster = if (isTRUE(is.null(cluster))) { NULL } else { ".cluster" },
-                                                    std.lv = std.lv, effect.coding = effect.coding, estimator = estimator, missing = missing))
+                                                    std.lv = std.lv, effect.coding = effect.coding, estimator = estimator, missing = missing)),
+                                error = function(y) {
+
+                                  stop("Estimation problem in lavaan, the threshold measurement invariance model could not be estimated.", call. = FALSE)
+
+                                })
 
       #### Convergence and model identification checks ####
       if (isTRUE(check)) { mod.thres.fit.check <- .conv.ident(mod.thres.fit, invar = "thres", long = long) }
 
     }
 
-    #--------------------------------------
+    #—————————————————————————————————————— #
     ### Metric measurement invariance
     if (isTRUE(any(c("metric", "scalar", "strict") %in% invar) && !is.null(mod.metric))) {
 
       #### Model estimation ####
-      mod.metric.fit <- suppressWarnings(lavaan::cfa(mod.metric, data = x, group = if (isTRUE(long)) { NULL } else { ".group" },
-                                                     ordered = ordered, parameterization = parameterization, meanstructure = TRUE,
-                                                     cluster = if (isTRUE(is.null(cluster))) { NULL } else { ".cluster" },
-                                                     std.lv = std.lv, effect.coding = effect.coding, estimator = estimator, missing = missing))
+      mod.metric.fit <- tryCatch(suppressWarnings(lavaan::cfa(mod.metric, data = x, group = if (isTRUE(long)) { NULL } else { ".group" },
+                                                                   ordered = ordered, parameterization = parameterization, meanstructure = TRUE,
+                                                                   cluster = if (isTRUE(is.null(cluster))) { NULL } else { ".cluster" },
+                                                                   std.lv = std.lv, effect.coding = effect.coding, estimator = estimator, missing = missing)),
+                                 error = function(y) {
+
+                                   stop("Estimation problem in lavaan, the metric measurement invariance model could not be estimated.", call. = FALSE)
+
+                                 })
 
       #### Convergence and model identification checks ####
       if (isTRUE(check)) { mod.metric.fit.check <- .conv.ident(mod.metric.fit, invar = "metric", long = long) }
 
     }
 
-    #--------------------------------------
+    #—————————————————————————————————————— #
     ### Scalar Measurement Invariance
 
     if (isTRUE(any(c("scalar", "strict") %in% invar) && !is.null(mod.scalar))) {
 
       #### Model estimation ####
-      mod.scalar.fit <- suppressWarnings(lavaan::cfa(mod.scalar, data = x, group = if (isTRUE(long)) { NULL } else { ".group" },
+      mod.scalar.fit <- tryCatch(suppressWarnings(lavaan::cfa(mod.scalar, data = x, group = if (isTRUE(long)) { NULL } else { ".group" },
                                                      ordered = ordered, parameterization = parameterization, meanstructure = TRUE,
                                                      cluster = if (isTRUE(is.null(cluster))) { NULL } else { ".cluster" },
-                                                     std.lv = std.lv, effect.coding = effect.coding, estimator = estimator, missing = missing))
+                                                     std.lv = std.lv, effect.coding = effect.coding, estimator = estimator, missing = missing)),
+                                 error = function(y) {
+
+                                   stop("Estimation problem in lavaan, the scalar measurement invariance model could not be estimated.", call. = FALSE)
+
+                                 })
 
       #### Convergence and model identification checks ####
       if (isTRUE(check)) { mod.scalar.fit.check <- .conv.ident(mod.scalar.fit, invar = "scalar", long = long) }
 
     }
 
-    #--------------------------------------
+    #—————————————————————————————————————— #
     ### Strict Measurement Invariance
 
     if (isTRUE("strict" %in% invar && !is.null(mod.strict))) {
 
       #### Model estimation ####
-      mod.strict.fit <- suppressWarnings(lavaan::cfa(mod.strict, data = x, group = if (isTRUE(long)) { NULL } else { ".group" },
+      mod.strict.fit <- tryCatch(suppressWarnings(lavaan::cfa(mod.strict, data = x, group = if (isTRUE(long)) { NULL } else { ".group" },
                                                      ordered = ordered, parameterization = parameterization, meanstructure = TRUE,
                                                      cluster = if (isTRUE(is.null(cluster))) { NULL } else { ".cluster" },
-                                                     std.lv = std.lv, effect.coding = effect.coding, estimator = estimator, missing = missing))
+                                                     std.lv = std.lv, effect.coding = effect.coding, estimator = estimator, missing = missing)),
+                                 error = function(y) {
+
+                                   stop("Estimation problem in lavaan, the strict measurement invariance model could not be estimated.", call. = FALSE)
+
+                                 })
 
       #### Convergence and model identification checks ####
       if (isTRUE(check)) { mod.strict.fit.check <- .conv.ident(mod.strict.fit, invar = "strict", long = long) }
 
     }
 
-    #--------------------------------------
+    #—————————————————————————————————————— #
     ### Proper Null Model ####
 
     if (isTRUE(null.model)) {
 
-      mod.null.fit <- suppressWarnings(lavaan::cfa(mod.null, data = x, group = if (isTRUE(long)) { NULL } else { ".group" },
+      mod.null.fit <- tryCatch(suppressWarnings(lavaan::cfa(mod.null, data = x, group = if (isTRUE(long)) { NULL } else { ".group" },
                                                    ordered = FALSE, meanstructure = TRUE,
                                                    cluster = if (isTRUE(is.null(cluster))) { NULL } else { ".cluster" },
-                                                   std.lv = std.lv, effect.coding = effect.coding, estimator = estimator, missing = missing))
+                                                   std.lv = std.lv, effect.coding = effect.coding, estimator = estimator, missing = missing)),
+                               error = function(y) {
+
+                                 stop("Estimation problem in lavaan, the null model could not be estimated.", call. = FALSE)
+
+                               })
 
     }
 
@@ -2704,8 +2793,8 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
 
   chidiff.conf.met <- chidiff.met.sca <- chidiff.sca.str <- chidiff.conf.sca <- chidiff.conf.thr <- chidiff.thr.met <- NULL
 
-  #--------------------------------------
-  ###  Models with Continuous Indicators
+  #—————————————————————————————————————— #
+  ### Models with Continuous Indicators
 
   if (isTRUE(!ordered)) {
 
@@ -2742,8 +2831,8 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
 
     }
 
-  #--------------------------------------
-  ###  Models with Ordered Categorical Indicators
+  #—————————————————————————————————————— #
+  ### Models with Ordered Categorical Indicators
 
   } else {
 
@@ -2925,7 +3014,7 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
     # Strict invariance model
     if (isTRUE(!is.null(mod.strict.fit))) { mod.strict.score <- tryCatch(suppressWarnings(lavaan::lavTestScore(mod.strict.fit, epc = TRUE, warn = FALSE)), error = function(y) return(NULL)) }
 
-    #--------------------------------------
+    #—————————————————————————————————————— #
     ### Threshold Invariance Model ####
 
     if (isTRUE(!is.null(mod.thres.score))) {
@@ -2974,7 +3063,7 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
 
     }
 
-    #--------------------------------------
+    #—————————————————————————————————————— #
     ### Metric Invariance Model ####
 
     if (isTRUE(!is.null(mod.metric.score))) {
@@ -3026,7 +3115,7 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
 
     }
 
-    #--------------------------------------
+    #—————————————————————————————————————— #
     ### Scalar Invariance Model ####
 
     if (isTRUE(!is.null(mod.scalar.score))) {
@@ -3079,7 +3168,7 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
 
     }
 
-    #--------------------------------------
+    #—————————————————————————————————————— #
     ### Strict Invariance Model ####
 
     if (isTRUE(!is.null(mod.strict.score))) {
@@ -3140,7 +3229,7 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
 
   if (isTRUE("resid" %in% print)) {
 
-    #--------------------------------------
+    #—————————————————————————————————————— #
     ### Configural Invariance Model ####
 
     if (isTRUE(!is.null(mod.config.fit))) {
@@ -3163,12 +3252,12 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
 
     }
 
-    #--------------------------------------
+    #—————————————————————————————————————— #
     ### Threshold Invariance Model ####
 
     if (isTRUE(!is.null(mod.thres.fit))) {
 
-      mod.thres.resid <- tryCatch(suppressWarnings(lavaan::lavResiduals(mod.metric.fit, type = "cor.bollen")), error = function(y) return(NULL))
+      mod.thres.resid <- tryCatch(suppressWarnings(lavaan::lavResiduals(mod.thres.fit, type = "cor.bollen")), error = function(y) return(NULL))
 
       #### Continuous Indicators ####
       if (isTRUE(!ordered)) {
@@ -3186,7 +3275,7 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
 
     }
 
-    #--------------------------------------
+    #—————————————————————————————————————— #
     ### Metric Invariance Model ####
 
     if (isTRUE(!is.null(mod.metric.fit))) {
@@ -3209,7 +3298,7 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
 
     }
 
-    #--------------------------------------
+    #—————————————————————————————————————— #
     ### Scalar Invariance Model ####
 
     if (isTRUE(!is.null(mod.scalar.fit))) {
@@ -3232,7 +3321,7 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
 
     }
 
-    #--------------------------------------
+    #—————————————————————————————————————— #
     ### Strict Invariance Model ####
 
     if (isTRUE(!is.null(mod.strict.fit))) {
@@ -3257,26 +3346,249 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
 
   }
 
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Relative Opdyke Distribution Percentile Matrix ####
+
+  mod.config.opdyke <- mod.thres.opdyke <- mod.metric.opdyke <- mod.scalar.opdyke <- mod.strict.opdyke <- NULL
+
+  if (isTRUE("opdyke" %in% print)) {
+
+    #—————————————————————————————————————— #
+    ### Configural Invariance Model ####
+
+    if (isTRUE(!is.null(mod.config.fit))) {
+
+      #### Between-Group Measurement Invariance ####
+      mod.config.opdyke <- if (isTRUE(!long)) {
+
+        lavaan::lavInspect(mod.config.fit, what = "group.label") |>
+          (\(p) {
+
+            setNames(lapply(p, function(y) {
+
+              tryCatch(.opdyke.percentiles(lavaan::lavInspect(mod.config.fit, what = "sampstat.std")[[y]]$cov,
+                                           lavaan::lavInspect(mod.config.fit, what = "cor.ov")[[y]], prec = opdyke.prec),
+                       error = function(y) {
+
+                         warning("Opdyke percentile matrix for the configural invariance model could not be computed.", call. = FALSE)
+
+                         return(NULL)
+
+                       })
+
+            }), nm = p)
+
+          })()
+
+      #### Longitudinal Measurement Invariance ####
+      } else {
+
+        tryCatch(suppressWarnings(.opdyke.percentiles(lavaan::lavInspect(mod.config.fit, what = "sampstat.std")$cov, lavaan::lavInspect(mod.config.fit, what = "cor.ov"), prec = opdyke.prec)),
+                 error = function(y) {
+
+                   warning("Opdyke percentile matrix could not be computed.", call. = FALSE)
+
+                   return(NULL)
+
+                 })
+
+      }
+
+    }
+
+    #—————————————————————————————————————— #
+    ### Threshold Invariance Model ####
+
+    if (isTRUE(!is.null(mod.thres.fit))) {
+
+      #### Between-Group Measurement Invariance ####
+      mod.thres.opdyke <- if (isTRUE(!long)) {
+
+        lavaan::lavInspect(mod.config.fit, what = "group.label") |>
+          (\(p) {
+
+            setNames(lapply(p, function(y) {
+
+              tryCatch(.opdyke.percentiles(lavaan::lavInspect(mod.thres.fit, what = "sampstat.std")[[y]]$cov,
+                                           lavaan::lavInspect(mod.thres.fit, what = "cor.ov")[[y]], prec = opdyke.prec),
+                       error = function(y) {
+
+                         warning("Opdyke percentile matrix for the configural invariance model could not be computed.", call. = FALSE)
+
+                         return(NULL)
+
+                       })
+
+            }), nm = p)
+
+          })()
+
+      #### Longitudinal Measurement Invariance ####
+      } else {
+
+        tryCatch(suppressWarnings(.opdyke.percentiles(lavaan::lavInspect(mod.thres.fit, what = "sampstat.std")$cov, lavaan::lavInspect(mod.thres.fit, what = "cor.ov"), prec = opdyke.prec)),
+                 error = function(y) {
+
+                   warning("Opdyke percentile matrix could not be computed.", call. = FALSE)
+
+                   return(NULL)
+
+                 })
+
+      }
+
+    }
+
+    #—————————————————————————————————————— #
+    ### Metric Invariance Model ####
+
+    if (isTRUE(!is.null(mod.metric.fit))) {
+
+      #### Between-Group Measurement Invariance ####
+      mod.metric.opdyke <- if (isTRUE(!long)) {
+
+        lavaan::lavInspect(mod.config.fit, what = "group.label") |>
+          (\(p) {
+
+            setNames(lapply(p, function(y) {
+
+              tryCatch(.opdyke.percentiles(lavaan::lavInspect(mod.metric.fit, what = "sampstat.std")[[y]]$cov,
+                                           lavaan::lavInspect(mod.metric.fit, what = "cor.ov")[[y]], prec = opdyke.prec),
+                       error = function(y) {
+
+                         warning("Opdyke percentile matrix for the configural invariance model could not be computed.", call. = FALSE)
+
+                         return(NULL)
+
+                       })
+
+            }), nm = p)
+
+          })()
+
+      #### Longitudinal Measurement Invariance ####
+      } else {
+
+        tryCatch(suppressWarnings(.opdyke.percentiles(lavaan::lavInspect(mod.metric.fit, what = "sampstat.std")$cov, lavaan::lavInspect(mod.metric.fit, what = "cor.ov"), prec = opdyke.prec)),
+                 error = function(y) {
+
+                   warning("Opdyke percentile matrix could not be computed.", call. = FALSE)
+
+                   return(NULL)
+
+                 })
+
+      }
+
+    }
+
+    #—————————————————————————————————————— #
+    ### Scalar Invariance Model ####
+
+    if (isTRUE(!is.null(mod.scalar.fit))) {
+
+      #### Between-Group Measurement Invariance ####
+      mod.scalar.opdyke <- if (isTRUE(!long)) {
+
+        lavaan::lavInspect(mod.config.fit, what = "group.label") |>
+          (\(p) {
+
+            setNames(lapply(p, function(y) {
+
+              tryCatch(.opdyke.percentiles(lavaan::lavInspect(mod.scalar.fit, what = "sampstat.std")[[y]]$cov,
+                                           lavaan::lavInspect(mod.scalar.fit, what = "cor.ov")[[y]], prec = opdyke.prec),
+                       error = function(y) {
+
+                         warning("Opdyke percentile matrix for the configural invariance model could not be computed.", call. = FALSE)
+
+                         return(NULL)
+
+                       })
+
+            }), nm = p)
+
+          })()
+
+      #### Longitudinal Measurement Invariance ####
+      } else {
+
+        tryCatch(suppressWarnings(.opdyke.percentiles(lavaan::lavInspect(mod.scalar.fit, what = "sampstat.std")$cov, lavaan::lavInspect(mod.scalar.fit, what = "cor.ov"), prec = opdyke.prec)),
+                 error = function(y) {
+
+                   warning("Opdyke percentile matrix could not be computed.", call. = FALSE)
+
+                   return(NULL)
+
+                 })
+
+      }
+
+    }
+
+    #—————————————————————————————————————— #
+    ### Strict Invariance Model ####
+
+    if (isTRUE(!is.null(mod.strict.fit))) {
+
+      #### Between-Group Measurement Invariance ####
+      mod.strict.opdyke <- if (isTRUE(!long)) {
+
+        lavaan::lavInspect(mod.config.fit, what = "group.label") |>
+          (\(p) {
+
+            setNames(lapply(p, function(y) {
+
+              tryCatch(.opdyke.percentiles(lavaan::lavInspect(mod.strict.fit, what = "sampstat.std")[[y]]$cov,
+                                           lavaan::lavInspect(mod.strict.fit, what = "cor.ov")[[y]], prec = opdyke.prec),
+                       error = function(y) {
+
+                         warning("Opdyke percentile matrix for the configural invariance model could not be computed.", call. = FALSE)
+
+                         return(NULL)
+
+                       })
+
+            }), nm = p)
+
+          })()
+
+      #### Longitudinal Measurement Invariance ####
+      } else {
+
+        tryCatch(suppressWarnings(.opdyke.percentiles(lavaan::lavInspect(mod.strict.fit, what = "sampstat.std")$cov, lavaan::lavInspect(mod.strict.fit, what = "cor.ov"), prec = opdyke.prec)),
+                 error = function(y) {
+
+                   warning("Opdyke percentile matrix could not be computed.", call. = FALSE)
+
+                   return(NULL)
+
+                 })
+
+      }
+
+    }
+
+  }
+
   #_____________________________________________________________________________
   #
   # Return Object --------------------------------------------------------------
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## lavaan summary ####
+  ## lavaan Summary ####
+
+  #—————————————————————————————————————— #
+  ### Cluster ####
+
+  # Number of clusters
+  cluster.unique <- 1L
+  if (isTRUE(!is.null(cluster))) { if (isTRUE(!long)) { cluster.unique <- tapply(x$.cluster, x$.group, function(y) length(unique(na.omit(y)))) } else { cluster.unique <- length(unique(na.omit(x$.cluster))) } }
+
+  #—————————————————————————————————————— #
+  ### Summary ####
 
   lavaan.summary <- NULL
-
-  if (isTRUE(lavaan.run && "summary" %in% print)) {
-
-    #--------------------------------------
-    ### Cluster ####
-
-    # Number of clusters
-    cluster.unique <- 1L
-    if (isTRUE(!is.null(cluster))) { if (isTRUE(!long)) { cluster.unique <- tapply(x$.cluster, x$.group, function(y) length(unique(na.omit(y)))) } else { cluster.unique <- length(unique(na.omit(x$.cluster))) } }
-
-    #--------------------------------------
-    ### Summary ####
+  if (isTRUE(lavaan.run && is.null(se))) {
 
     lavaan.summary <- data.frame(### First column
                                  label = c(paste("lavaan", lavaan::lavInspect(mod.config.fit, what = "version")), "",
@@ -3494,7 +3806,7 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
 
                if (isTRUE(is.null(mod.metric.fit))) { lavaan.summary <- lavaan.summary[, setdiff(colnames(lavaan.summary), "metric")]  }
 
-               if (isTRUE(is.null(mod.metric.fit))) { lavaan.summary[14L:16L, "thresh"] <- "" ; colnames(lavaan.summary) <- sub("thresh", "", colnames(lavaan.summary)) }
+               if (isTRUE(is.null(mod.thres.fit))) { lavaan.summary[14L:16L, "thresh"] <- "" ; colnames(lavaan.summary) <- sub("thresh", "", colnames(lavaan.summary)) }
 
              })
 
@@ -3516,7 +3828,7 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
   partial.summary <- NULL
   if (isTRUE(!is.null(partial))) {
 
-    #--------------------------------------
+    #—————————————————————————————————————— #
     ### Continuous Indicators ####
 
     if (isTRUE(!ordered)) {
@@ -3546,7 +3858,7 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
 
       }
 
-    #--------------------------------------
+    #—————————————————————————————————————— #
     ### Ordered Categorical Indicators ####
 
     } else {
@@ -3636,7 +3948,7 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
 
   fit.stand <- fit.scaled <- fit.robust <- NULL
 
-  #--------------------------------------
+  #—————————————————————————————————————— #
   ### Configural Invariance Model ####
 
   if (isTRUE(!is.null(mod.config.fit) && !is.null(lav.fit.config))) {
@@ -3646,11 +3958,13 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
                             label = c("Chi-Square Test of Model Fit", "Test statistic", if (isTRUE(!is.null(group))) { lavaan::lavInspect(mod.config.fit, what = "group.label") }, "Degrees of freedom", "P-value", "",
                               "Incremental Fit Indices", "CFI", "TLI", "",
                               "Absolute Fit Indices", "RMSEA", "90 Percent CI - lower", "90 Percent CI - upper", "P-value RMSEA <= 0.05", "", "SRMR", "",
+                              "Coefficient of Determination", "GFI", "90 Percent CI - lower", "90 Percent CI - upper", "",
                               "Information Criteria", "Akaike (AIC)", "Bayesian (BIC)", "Sample-Size Adjusted BIC"),
                             ### Second column
                             config = c(NA, lav.fit.config["chisq"], if (isTRUE(!is.null(group))) { lavaan::lavInspect(mod.config.fit, what = "test")$standard$stat.group }, lav.fit.config[c("df", "pvalue")], NA,
                                        NA, lav.fit.config[c("cfi", "tli")], NA,
-                                       NA, lav.fit.config[c("rmsea", "rmsea.ci.lower", "rmsea.ci.upper", "rmsea.pvalue")], NA, lav.fit.config["srmr_bentler"], NA,
+                                       NA, lav.fit.config[c("rmsea", "rmsea.ci.lower", "rmsea.ci.upper", "rmsea.pvalue")],
+                                       NA, lav.fit.config["srmr_bentler"], NA, NA, lav.fit.config[c("gfi", "gfi.ci.lower", "gfi.ci.upper")], NA,
                                        NA, lav.fit.config[c("aic", "bic", "bic2")]), fix.empty.names = FALSE)
 
     #### Scaled fit indices
@@ -3658,6 +3972,7 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
                              label = c("Chi-Square Test of Model Fit", "Test statistic", if (isTRUE(!is.null(group))) { lavaan::lavInspect(mod.config.fit, what = "group.label") }, "Degrees of freedom", "P-value", "Scaling Correction Factor", "",
                                "Incremental Fit Indices", "CFI", "TLI", "",
                                "Absolute Fit Indices", "RMSEA", "90 Percent CI - lower", "90 Percent CI - upper", "P-value RMSEA <= 0.05", "", "SRMR", "",
+                               "Coefficient of Determination", "GFI", "90 Percent CI - lower", "90 Percent CI - upper", "",
                                "Information Criteria", "Akaike (AIC)", "Bayesian (BIC)", "Sample-Size Adjusted BIC"),
                              ### Second column
                              config = c(NA, lav.fit.config["chisq.scaled"], if (isTRUE(!is.null(group))) {
@@ -3688,14 +4003,16 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
 
                              }, lav.fit.config[c("df.scaled", "pvalue.scaled", "chisq.scaling.factor")], NA,
                              NA, lav.fit.config[c("cfi.scaled", "tli.scaled")], NA,
-                             NA, lav.fit.config[c("rmsea.scaled", "rmsea.ci.lower.scaled", "rmsea.ci.upper.scaled", "rmsea.pvalue.scaled")], NA, lav.fit.config["srmr_bentler"], NA,
+                             NA, lav.fit.config[c("rmsea.scaled", "rmsea.ci.lower.scaled", "rmsea.ci.upper.scaled", "rmsea.pvalue.scaled")],
+                             NA, lav.fit.config["srmr_bentler"], NA, NA, rep(NA, times = 4L),
                              NA, lav.fit.config[c("aic", "bic", "bic2")]), fix.empty.names = FALSE)
 
     #### Robust fit indices
     fit.robust <- data.frame(### Fist column
                             label = c("Chi-Square Test of Model Fit", "Test statistic", if (isTRUE(!is.null(group))) { lavaan::lavInspect(mod.config.fit, what = "group.label") }, "Degrees of freedom", "P-value", "Scaling Correction Factor", "",
                                       "Incremental Fit Indices", "CFI", "TLI", "",
-                                      "Absolute Fit Indices", "RMSEA", "90 Percent CI - lower", "90 Percent CI - upper", "P-value RMSEA <= 0.05", "", "SRMR", "",
+                                      "Absolute Fit Indices", "RMSEA", "90 Percent CI - lower", "90 Percent CI - upper", "P-value RMSEA <= 0.05", "",
+                                      "SRMR", "", "Coefficient of Determination", "GFI", "90 Percent CI - lower", "90 Percent CI - upper", "",
                                       "Information Criteria", "Akaike (AIC)", "Bayesian (BIC)", "Sample-Size Adjusted BIC"),
                              ### Second column
                              config = c(NA, lav.fit.config["chisq.scaled"], if (isTRUE(!is.null(group))) {
@@ -3726,10 +4043,11 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
 
                              }, lav.fit.config[c("df.scaled", "pvalue.scaled", "chisq.scaling.factor")], NA,
                              NA, lav.fit.config[c("cfi.robust", "tli.robust")], NA,
-                             NA, lav.fit.config[c("rmsea.robust", "rmsea.ci.lower.robust", "rmsea.ci.upper.robust", "rmsea.pvalue.robust")], NA, lav.fit.config["srmr_bentler"], NA,
+                             NA, lav.fit.config[c("rmsea.robust", "rmsea.ci.lower.robust", "rmsea.ci.upper.robust", "rmsea.pvalue.robust")],
+                             NA, lav.fit.config["srmr_bentler"], NA, NA, lav.fit.config[c("gfi.robust", "gfi.ci.lower.robust", "gfi.ci.upper.robust")], NA,
                              NA, lav.fit.config[c("aic", "bic", "bic2")]), fix.empty.names = FALSE)
 
-    #--------------------------------------
+    #—————————————————————————————————————— #
     ### Continuous Indicators ####
 
     if (isTRUE(!ordered)) {
@@ -3741,147 +4059,159 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
 
         #### Standard fit indices
         fit.stand <- data.frame(fit.stand,
-                                       ### Third column
-                                       metric = c(NA, lav.fit.metric["chisq"], if (isTRUE(!is.null(group))) { lavaan::lavInspect(mod.metric.fit, what = "test")$standard$stat.group }, lav.fit.metric[c("df", "pvalue")], NA,
-                                                  NA, lav.fit.metric[c("cfi", "tli")], NA,
-                                                  NA, lav.fit.metric[c("rmsea", "rmsea.ci.lower", "rmsea.ci.upper", "rmsea.pvalue")], NA, lav.fit.metric["srmr_bentler"], NA,
-                                                  NA, lav.fit.metric[c("aic", "bic", "bic2")]),
-                                       ### Fourth column
-                                       scalar = c(NA, lav.fit.scalar["chisq"], if (isTRUE(!is.null(group))) { lavaan::lavInspect(mod.scalar.fit, what = "test")$standard$stat.group }, lav.fit.scalar[c("df", "pvalue")], NA,
-                                                  NA, lav.fit.scalar[c("cfi", "tli")], NA,
-                                                  NA, lav.fit.scalar[c("rmsea", "rmsea.ci.lower", "rmsea.ci.upper", "rmsea.pvalue")], NA, lav.fit.scalar["srmr_bentler"], NA,
-                                                  NA, lav.fit.scalar[c("aic", "bic", "bic2")]),
-                                       ### Fifth column
-                                       strict = c(NA, lav.fit.strict["chisq"], if (isTRUE(!is.null(group))) { lavaan::lavInspect(mod.strict.fit, what = "test")$standard$stat.group }, lav.fit.strict[c("df", "pvalue")], NA,
-                                                  NA, lav.fit.strict[c("cfi", "tli")], NA,
-                                                  NA, lav.fit.strict[c("rmsea", "rmsea.ci.lower", "rmsea.ci.upper", "rmsea.pvalue")], NA, lav.fit.strict["srmr_bentler"], NA,
-                                                  NA, lav.fit.strict[c("aic", "bic", "bic2")]),
-                                       ### Sixth column
-                                       dmetric = c(NA, unlist(chidiff.conf.met[2L, "Chisq diff"]), if (isTRUE(!is.null(group))) { rep(NA, times = ngroups) }, unlist(chidiff.conf.met[2L, c("Df diff", "Pr(>Chisq)")]), NA,
-                                                   NA, lav.fit.metric[c("cfi", "tli")] - lav.fit.config[c("cfi", "tli")], NA,
-                                                   NA, lav.fit.metric["rmsea"] - lav.fit.config["rmsea"], NA, NA, NA, NA, lav.fit.metric["srmr_bentler"] - lav.fit.config["srmr_bentler"], NA,
-                                                   NA, lav.fit.metric[c("aic", "bic", "bic2")] - lav.fit.config[c("aic", "bic", "bic2")]),
-                                       ### Seventh column
-                                       dscalar = c(NA, unlist(chidiff.met.sca[2L, "Chisq diff"]), if (isTRUE(!is.null(group))) { rep(NA, times = ngroups) }, unlist(chidiff.met.sca[2L, c("Df diff", "Pr(>Chisq)")]), NA,
-                                                   NA, lav.fit.scalar[c("cfi", "tli")] - lav.fit.metric[c("cfi", "tli")], NA,
-                                                   NA, lav.fit.scalar["rmsea"] - lav.fit.metric["rmsea"], NA, NA, NA, NA, lav.fit.scalar["srmr_bentler"] - lav.fit.metric["srmr_bentler"], NA,
-                                                   NA, lav.fit.scalar[c("aic", "bic", "bic2")] - lav.fit.metric[c("aic", "bic", "bic2")]),
-                                       ### Eight column
-                                       dstrict = c(NA, unlist(chidiff.sca.str[2L, "Chisq diff"]), if (isTRUE(!is.null(group))) { rep(NA, times = ngroups) }, unlist(chidiff.sca.str[2L, c("Df diff", "Pr(>Chisq)")]), NA,
-                                                   NA, lav.fit.strict[c("cfi", "tli")] - lav.fit.scalar[c("cfi", "tli")], NA,
-                                                   NA, lav.fit.strict["rmsea"] - lav.fit.scalar["rmsea"], NA, NA, NA, NA, lav.fit.strict["srmr_bentler"] - lav.fit.scalar["srmr_bentler"], NA,
-                                                   NA, lav.fit.strict[c("aic", "bic", "bic2")] - lav.fit.scalar[c("aic", "bic", "bic2")]), fix.empty.names = FALSE)
+                                ### Third column
+                                metric = c(NA, lav.fit.metric["chisq"], if (isTRUE(!is.null(group))) { lavaan::lavInspect(mod.metric.fit, what = "test")$standard$stat.group }, lav.fit.metric[c("df", "pvalue")], NA,
+                                           NA, lav.fit.metric[c("cfi", "tli")], NA,
+                                           NA, lav.fit.metric[c("rmsea", "rmsea.ci.lower", "rmsea.ci.upper", "rmsea.pvalue")], NA, lav.fit.metric["srmr_bentler"], NA,
+                                           NA, lav.fit.metric[c("gfi", "gfi.ci.lower", "gfi.ci.upper")], NA,
+                                           NA, lav.fit.metric[c("aic", "bic", "bic2")]),
+                                ### Fourth column
+                                scalar = c(NA, lav.fit.scalar["chisq"], if (isTRUE(!is.null(group))) { lavaan::lavInspect(mod.scalar.fit, what = "test")$standard$stat.group }, lav.fit.scalar[c("df", "pvalue")], NA,
+                                           NA, lav.fit.scalar[c("cfi", "tli")], NA,
+                                           NA, lav.fit.scalar[c("rmsea", "rmsea.ci.lower", "rmsea.ci.upper", "rmsea.pvalue")], NA, lav.fit.scalar["srmr_bentler"], NA,
+                                           NA, lav.fit.scalar[c("gfi", "gfi.ci.lower", "gfi.ci.upper")], NA,
+                                           NA, lav.fit.scalar[c("aic", "bic", "bic2")]),
+                                ### Fifth column
+                                strict = c(NA, lav.fit.strict["chisq"], if (isTRUE(!is.null(group))) { lavaan::lavInspect(mod.strict.fit, what = "test")$standard$stat.group }, lav.fit.strict[c("df", "pvalue")], NA,
+                                           NA, lav.fit.strict[c("cfi", "tli")], NA,
+                                           NA, lav.fit.strict[c("rmsea", "rmsea.ci.lower", "rmsea.ci.upper", "rmsea.pvalue")], NA, lav.fit.strict["srmr_bentler"], NA,
+                                           NA, lav.fit.strict[c("gfi", "gfi.ci.lower", "gfi.ci.upper")], NA,
+                                           NA, lav.fit.strict[c("aic", "bic", "bic2")]),
+                                ### Sixth column
+                                dmetric = c(NA, unlist(chidiff.conf.met[2L, "Chisq diff"]), if (isTRUE(!is.null(group))) { rep(NA, times = ngroups) }, unlist(chidiff.conf.met[2L, c("Df diff", "Pr(>Chisq)")]), NA,
+                                            NA, lav.fit.metric[c("cfi", "tli")] - lav.fit.config[c("cfi", "tli")], NA,
+                                            NA, lav.fit.metric["rmsea"] - lav.fit.config["rmsea"], NA, NA, NA, NA, lav.fit.metric["srmr_bentler"] - lav.fit.config["srmr_bentler"], NA,
+                                            NA, lav.fit.metric["gfi"] - lav.fit.config["gfi"], NA, NA, NA,
+                                            NA, lav.fit.metric[c("aic", "bic", "bic2")] - lav.fit.config[c("aic", "bic", "bic2")]),
+                                ### Seventh column
+                                dscalar = c(NA, unlist(chidiff.met.sca[2L, "Chisq diff"]), if (isTRUE(!is.null(group))) { rep(NA, times = ngroups) }, unlist(chidiff.met.sca[2L, c("Df diff", "Pr(>Chisq)")]), NA,
+                                            NA, lav.fit.scalar[c("cfi", "tli")] - lav.fit.metric[c("cfi", "tli")], NA,
+                                            NA, lav.fit.scalar["rmsea"] - lav.fit.metric["rmsea"], NA, NA, NA, NA, lav.fit.scalar["srmr_bentler"] - lav.fit.metric["srmr_bentler"], NA,
+                                            NA, lav.fit.scalar["gfi"] - lav.fit.metric["gfi"], NA, NA, NA,
+                                            NA, lav.fit.scalar[c("aic", "bic", "bic2")] - lav.fit.metric[c("aic", "bic", "bic2")]),
+                                ### Eight column
+                                dstrict = c(NA, unlist(chidiff.sca.str[2L, "Chisq diff"]), if (isTRUE(!is.null(group))) { rep(NA, times = ngroups) }, unlist(chidiff.sca.str[2L, c("Df diff", "Pr(>Chisq)")]), NA,
+                                            NA, lav.fit.strict[c("cfi", "tli")] - lav.fit.scalar[c("cfi", "tli")], NA,
+                                            NA, lav.fit.strict["rmsea"] - lav.fit.scalar["rmsea"], NA, NA, NA, NA, lav.fit.strict["srmr_bentler"] - lav.fit.scalar["srmr_bentler"], NA,
+                                            NA, lav.fit.strict["gfi"] - lav.fit.scalar["gfi"], NA, NA, NA,
+                                            NA, lav.fit.strict[c("aic", "bic", "bic2")] - lav.fit.scalar[c("aic", "bic", "bic2")]), fix.empty.names = FALSE)
 
         #### Scaled fit indices
         fit.scaled <- data.frame(fit.scaled,
-                                        ### Third column
-                                        metric = c(NA, lav.fit.metric["chisq.scaled"], if (isTRUE(!is.null(group))) {
+                                 ### Third column
+                                 metric = c(NA, lav.fit.metric["chisq.scaled"], if (isTRUE(!is.null(group))) {
 
-                                          if (isTRUE(estimator %in% c("MLM", "WLSM", "DLS"))) {
+                                   if (isTRUE(estimator %in% c("MLM", "WLSM", "DLS"))) {
 
-                                            stat <- lavaan::lavInspect(mod.metric.fit, what = "test")$satorra.bentler$stat.group
+                                     stat <- lavaan::lavInspect(mod.metric.fit, what = "test")$satorra.bentler$stat.group
 
-                                          } else if(isTRUE(estimator %in% c("WLSMV", "ULSM", "MLMV", "ULSMV", "ULS"))) {
+                                   } else if(isTRUE(estimator %in% c("WLSMV", "ULSM", "MLMV", "ULSMV", "ULS"))) {
 
-                                            stat <- lavaan::lavInspect(mod.metric.fit, what = "test")$scaled.shifted$stat.group
+                                     stat <- lavaan::lavInspect(mod.metric.fit, what = "test")$scaled.shifted$stat.group
 
-                                          } else {
+                                   } else {
 
-                                            stat <- lavaan::lavInspect(mod.metric.fit, what = "test")$yuan.bentler.mplus$stat.group
+                                     stat <- lavaan::lavInspect(mod.metric.fit, what = "test")$yuan.bentler.mplus$stat.group
 
-                                          }
+                                   }
 
-                                          if (isTRUE(is.null(stat))) {
+                                   if (isTRUE(is.null(stat))) {
 
-                                            rep(NA, times = ngroups)
+                                     rep(NA, times = ngroups)
 
-                                          } else {
+                                   } else {
 
-                                            stat
+                                     stat
 
-                                          }
+                                   }
 
-                                        }, lav.fit.metric[c("df.scaled", "pvalue.scaled", "chisq.scaling.factor")], NA,
-                                        NA, lav.fit.metric[c("cfi.scaled", "tli.scaled")], NA,
-                                        NA, lav.fit.metric[c("rmsea.scaled", "rmsea.ci.lower.scaled", "rmsea.ci.upper.scaled", "rmsea.pvalue.scaled")], NA, lav.fit.metric["srmr_bentler"], NA,
-                                        NA, lav.fit.metric[c("aic", "bic", "bic2")]),
-                                        ### Fourth column
-                                        scalar = c(NA, lav.fit.scalar["chisq.scaled"], if (isTRUE(!is.null(group))) {
+                                 }, lav.fit.metric[c("df.scaled", "pvalue.scaled", "chisq.scaling.factor")], NA,
+                                 NA, lav.fit.metric[c("cfi.scaled", "tli.scaled")], NA,
+                                 NA, lav.fit.metric[c("rmsea.scaled", "rmsea.ci.lower.scaled", "rmsea.ci.upper.scaled", "rmsea.pvalue.scaled")], NA, lav.fit.metric["srmr_bentler"], NA,
+                                 NA, rep(NA, times = 4),
+                                 NA, lav.fit.metric[c("aic", "bic", "bic2")]),
+                                 ### Fourth column
+                                 scalar = c(NA, lav.fit.scalar["chisq.scaled"], if (isTRUE(!is.null(group))) {
 
-                                          if (isTRUE(estimator %in% c("MLM", "WLSM", "DLS"))) {
+                                   if (isTRUE(estimator %in% c("MLM", "WLSM", "DLS"))) {
 
-                                            stat <- lavaan::lavInspect(mod.scalar.fit, what = "test")$satorra.bentler$stat.group
+                                     stat <- lavaan::lavInspect(mod.scalar.fit, what = "test")$satorra.bentler$stat.group
 
-                                          } else if(isTRUE(estimator %in% c("WLSMV", "ULSM", "MLMV", "ULSMV", "ULS"))) {
+                                   } else if(isTRUE(estimator %in% c("WLSMV", "ULSM", "MLMV", "ULSMV", "ULS"))) {
 
-                                            stat <- lavaan::lavInspect(mod.scalar.fit, what = "test")$scaled.shifted$stat.group
+                                     stat <- lavaan::lavInspect(mod.scalar.fit, what = "test")$scaled.shifted$stat.group
 
-                                          } else {
+                                   } else {
 
-                                            stat <- lavaan::lavInspect(mod.scalar.fit, what = "test")$yuan.bentler.mplus$stat.group
+                                     stat <- lavaan::lavInspect(mod.scalar.fit, what = "test")$yuan.bentler.mplus$stat.group
 
-                                          }
+                                   }
 
-                                          if (isTRUE(is.null(stat))) {
+                                   if (isTRUE(is.null(stat))) {
 
-                                            rep(NA, times = ngroups)
+                                     rep(NA, times = ngroups)
 
-                                          } else {
+                                   } else {
 
-                                            stat
+                                     stat
 
-                                          }
+                                   }
 
-                                        }, lav.fit.scalar[c("df.scaled", "pvalue.scaled", "chisq.scaling.factor")], NA,
-                                        NA, lav.fit.scalar[c("cfi.scaled", "tli.scaled")], NA,
-                                        NA, lav.fit.scalar[c("rmsea.scaled", "rmsea.ci.lower.scaled", "rmsea.ci.upper.scaled", "rmsea.pvalue.scaled")], NA, lav.fit.scalar["srmr_bentler"], NA,
-                                        NA, lav.fit.scalar[c("aic", "bic", "bic2")]),
-                                        ### Fifth column
-                                        strict = c(NA, lav.fit.strict["chisq.scaled"], if (isTRUE(!is.null(group))) {
+                                 }, lav.fit.scalar[c("df.scaled", "pvalue.scaled", "chisq.scaling.factor")], NA,
+                                 NA, lav.fit.scalar[c("cfi.scaled", "tli.scaled")], NA,
+                                 NA, lav.fit.scalar[c("rmsea.scaled", "rmsea.ci.lower.scaled", "rmsea.ci.upper.scaled", "rmsea.pvalue.scaled")], NA, lav.fit.scalar["srmr_bentler"], NA,
+                                 NA, rep(NA, times = 4),
+                                 NA, lav.fit.scalar[c("aic", "bic", "bic2")]),
+                                 ### Fifth column
+                                 strict = c(NA, lav.fit.strict["chisq.scaled"], if (isTRUE(!is.null(group))) {
 
-                                          if (isTRUE(estimator %in% c("MLM", "WLSM", "DLS"))) {
+                                   if (isTRUE(estimator %in% c("MLM", "WLSM", "DLS"))) {
 
-                                            stat <- lavaan::lavInspect(mod.strict.fit, what = "test")$satorra.bentler$stat.group
+                                     stat <- lavaan::lavInspect(mod.strict.fit, what = "test")$satorra.bentler$stat.group
 
-                                          } else if(isTRUE(estimator %in% c("WLSMV", "ULSM", "MLMV", "ULSMV", "ULS"))) {
+                                   } else if(isTRUE(estimator %in% c("WLSMV", "ULSM", "MLMV", "ULSMV", "ULS"))) {
 
-                                            stat <- lavaan::lavInspect(mod.strict.fit, what = "test")$scaled.shifted$stat.group
+                                     stat <- lavaan::lavInspect(mod.strict.fit, what = "test")$scaled.shifted$stat.group
 
-                                          } else {
+                                   } else {
 
-                                            stat <- lavaan::lavInspect(mod.strict.fit, what = "test")$yuan.bentler.mplus$stat.group
+                                     stat <- lavaan::lavInspect(mod.strict.fit, what = "test")$yuan.bentler.mplus$stat.group
 
-                                          }
+                                   }
 
-                                          if (isTRUE(is.null(stat))) {
+                                   if (isTRUE(is.null(stat))) {
 
-                                            rep(NA, times = ngroups)
+                                     rep(NA, times = ngroups)
 
-                                          } else {
+                                   } else {
 
-                                            stat
+                                     stat
 
-                                          }
+                                   }
 
-                                        }, lav.fit.strict[c("df.scaled", "pvalue.scaled", "chisq.scaling.factor")], NA,
-                                        NA, lav.fit.strict[c("cfi.scaled", "tli.scaled")], NA,
-                                        NA, lav.fit.strict[c("rmsea.scaled", "rmsea.ci.lower.scaled", "rmsea.ci.upper.scaled", "rmsea.pvalue.scaled")], NA, lav.fit.strict["srmr_bentler"], NA,
-                                        NA, lav.fit.strict[c("aic", "bic", "bic2")]),
-                                        ### Sixth column
-                                        dmetric = c(NA, unlist(chidiff.conf.met[2L, "Chisq diff"]), if (isTRUE(!is.null(group))) { rep(NA, times = ngroups) }, unlist(chidiff.conf.met[2L, c("Df diff", "Pr(>Chisq)")]), NA, NA,
-                                                    NA, lav.fit.metric[c("cfi.scaled", "tli.scaled")] - lav.fit.config[c("cfi.scaled", "tli.scaled")], NA,
-                                                    NA, lav.fit.metric["rmsea.scaled"] - lav.fit.config["rmsea.scaled"], NA, NA, NA, NA, lav.fit.metric["srmr_bentler"] - lav.fit.config["srmr_bentler"], NA,
-                                                    NA, lav.fit.metric[c("aic", "bic", "bic2")] - lav.fit.config[c("aic", "bic", "bic2")]),
-                                        ### Seventh column
-                                        dscalar = c(NA, unlist(chidiff.met.sca[2L, "Chisq diff"]), if (isTRUE(!is.null(group))) { rep(NA, times = ngroups) }, unlist(chidiff.met.sca[2L, c("Df diff", "Pr(>Chisq)")]), NA, NA,
-                                                    NA, lav.fit.scalar[c("cfi.scaled", "tli.scaled")] - lav.fit.metric[c("cfi.scaled", "tli.scaled")], NA,
-                                                    NA, lav.fit.scalar["rmsea.scaled"] - lav.fit.metric["rmsea.scaled"], NA, NA, NA, NA, lav.fit.scalar["srmr_bentler"] - lav.fit.metric["srmr_bentler"], NA,
-                                                    NA, lav.fit.scalar[c("aic", "bic", "bic2")] - lav.fit.metric[c("aic", "bic", "bic2")]),
-                                        ### Eight column
-                                        dstrict = c(NA, unlist(chidiff.sca.str[2L, "Chisq diff"]), if (isTRUE(!is.null(group))) { rep(NA, times = ngroups) }, unlist(chidiff.sca.str[2L, c("Df diff", "Pr(>Chisq)")]), NA, NA,
-                                                    NA, lav.fit.strict[c("cfi.scaled", "tli.scaled")] - lav.fit.scalar[c("cfi.scaled", "tli.scaled")], NA,
-                                                    NA, lav.fit.strict["rmsea.scaled"] - lav.fit.scalar["rmsea.scaled"], NA, NA, NA, NA, lav.fit.strict["srmr_bentler"] - lav.fit.scalar["srmr_bentler"], NA,
-                                                    NA, lav.fit.strict[c("aic", "bic", "bic2")] - lav.fit.scalar[c("aic", "bic", "bic2")]), fix.empty.names = FALSE)
+                                 }, lav.fit.strict[c("df.scaled", "pvalue.scaled", "chisq.scaling.factor")], NA,
+                                 NA, lav.fit.strict[c("cfi.scaled", "tli.scaled")], NA,
+                                 NA, lav.fit.strict[c("rmsea.scaled", "rmsea.ci.lower.scaled", "rmsea.ci.upper.scaled", "rmsea.pvalue.scaled")], NA, lav.fit.strict["srmr_bentler"], NA,
+                                 NA, rep(NA, times = 4),
+                                 NA, lav.fit.strict[c("aic", "bic", "bic2")]),
+                                 ### Sixth column
+                                 dmetric = c(NA, unlist(chidiff.conf.met[2L, "Chisq diff"]), if (isTRUE(!is.null(group))) { rep(NA, times = ngroups) }, unlist(chidiff.conf.met[2L, c("Df diff", "Pr(>Chisq)")]), NA, NA,
+                                             NA, lav.fit.metric[c("cfi.scaled", "tli.scaled")] - lav.fit.config[c("cfi.scaled", "tli.scaled")], NA,
+                                             NA, lav.fit.metric["rmsea.scaled"] - lav.fit.config["rmsea.scaled"], NA, NA, NA, NA, lav.fit.metric["srmr_bentler"] - lav.fit.config["srmr_bentler"], NA,
+                                             NA, rep(NA, times = 4),
+                                             NA, lav.fit.metric[c("aic", "bic", "bic2")] - lav.fit.config[c("aic", "bic", "bic2")]),
+                                 ### Seventh column
+                                 dscalar = c(NA, unlist(chidiff.met.sca[2L, "Chisq diff"]), if (isTRUE(!is.null(group))) { rep(NA, times = ngroups) }, unlist(chidiff.met.sca[2L, c("Df diff", "Pr(>Chisq)")]), NA, NA,
+                                             NA, lav.fit.scalar[c("cfi.scaled", "tli.scaled")] - lav.fit.metric[c("cfi.scaled", "tli.scaled")], NA,
+                                             NA, lav.fit.scalar["rmsea.scaled"] - lav.fit.metric["rmsea.scaled"], NA, NA, NA, NA, lav.fit.scalar["srmr_bentler"] - lav.fit.metric["srmr_bentler"], NA,
+                                             NA, rep(NA, times = 4),
+                                             NA, lav.fit.scalar[c("aic", "bic", "bic2")] - lav.fit.metric[c("aic", "bic", "bic2")]),
+                                 ### Eight column
+                                 dstrict = c(NA, unlist(chidiff.sca.str[2L, "Chisq diff"]), if (isTRUE(!is.null(group))) { rep(NA, times = ngroups) }, unlist(chidiff.sca.str[2L, c("Df diff", "Pr(>Chisq)")]), NA, NA,
+                                             NA, lav.fit.strict[c("cfi.scaled", "tli.scaled")] - lav.fit.scalar[c("cfi.scaled", "tli.scaled")], NA,
+                                             NA, lav.fit.strict["rmsea.scaled"] - lav.fit.scalar["rmsea.scaled"], NA, NA, NA, NA, lav.fit.strict["srmr_bentler"] - lav.fit.scalar["srmr_bentler"], NA,
+                                             NA, rep(NA, times = 4),
+                                             NA, lav.fit.strict[c("aic", "bic", "bic2")] - lav.fit.scalar[c("aic", "bic", "bic2")]), fix.empty.names = FALSE)
 
         #### Robust fit indices
         fit.robust <- data.frame(fit.robust,
@@ -3915,6 +4245,7 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
                                  }, lav.fit.metric[c("df.scaled", "pvalue.scaled", "chisq.scaling.factor")], NA,
                                  NA, lav.fit.metric[c("cfi.robust", "tli.robust")], NA,
                                  NA, lav.fit.metric[c("rmsea.robust", "rmsea.ci.lower.robust", "rmsea.ci.upper.robust", "rmsea.pvalue.robust")], NA, lav.fit.metric["srmr_bentler"], NA,
+                                 NA, lav.fit.metric[c("gfi.robust", "gfi.ci.lower.robust", "gfi.ci.upper.robust")], NA,
                                  NA, lav.fit.metric[c("aic", "bic", "bic2")]),
                                  ### Fourth column
                                  scalar = c(NA, lav.fit.scalar["chisq.scaled"], if (isTRUE(!is.null(group))) {
@@ -3946,6 +4277,7 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
                                  }, lav.fit.scalar[c("df.scaled", "pvalue.scaled", "chisq.scaling.factor")], NA,
                                  NA, lav.fit.scalar[c("cfi.robust", "tli.robust")], NA,
                                  NA, lav.fit.scalar[c("rmsea.robust", "rmsea.ci.lower.robust", "rmsea.ci.upper.robust", "rmsea.pvalue.robust")], NA, lav.fit.scalar["srmr_bentler"], NA,
+                                 NA, lav.fit.scalar[c("gfi.robust", "gfi.ci.lower.robust", "gfi.ci.upper.robust")], NA,
                                  NA, lav.fit.scalar[c("aic", "bic", "bic2")]),
                                  ### Fifth column
                                  strict = c(NA, lav.fit.strict["chisq.scaled"], if (isTRUE(!is.null(group))) {
@@ -3977,21 +4309,25 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
                                  }, lav.fit.strict[c("df.scaled", "pvalue.scaled", "chisq.scaling.factor")], NA,
                                  NA, lav.fit.strict[c("cfi.robust", "tli.robust")], NA,
                                  NA, lav.fit.strict[c("rmsea.robust", "rmsea.ci.lower.robust", "rmsea.ci.upper.robust", "rmsea.pvalue.robust")], NA, lav.fit.strict["srmr_bentler"], NA,
+                                 NA, lav.fit.strict[c("gfi.robust", "gfi.ci.lower.robust", "gfi.ci.upper.robust")], NA,
                                  NA, lav.fit.strict[c("aic", "bic", "bic2")]),
                                  ### Sixth column
                                  dmetric = c(NA, unlist(chidiff.conf.met[2L, "Chisq diff"]), if (isTRUE(!is.null(group))) { rep(NA, times = ngroups) }, unlist(chidiff.conf.met[2L, c("Df diff", "Pr(>Chisq)")]), NA, NA,
                                              NA, lav.fit.metric[c("cfi.robust", "tli.robust")] - lav.fit.config[c("cfi.robust", "tli.robust")], NA,
                                              NA, lav.fit.metric["rmsea.robust"] - lav.fit.config["rmsea.robust"], NA, NA, NA, NA, lav.fit.metric["srmr_bentler"] - lav.fit.config["srmr_bentler"], NA,
+                                             NA, lav.fit.metric["gfi.robust"] - lav.fit.config["gfi.robust"], NA, NA, NA,
                                              NA, lav.fit.metric[c("aic", "bic", "bic2")] - lav.fit.config[c("aic", "bic", "bic2")]),
                                  ### Seventh column
                                  dscalar = c(NA, unlist(chidiff.met.sca[2L, "Chisq diff"]), if (isTRUE(!is.null(group))) { rep(NA, times = ngroups) }, unlist(chidiff.met.sca[2L, c("Df diff", "Pr(>Chisq)")]), NA, NA,
                                              NA, lav.fit.scalar[c("cfi.robust", "tli.robust")] - lav.fit.metric[c("cfi.robust", "tli.robust")], NA,
                                              NA, lav.fit.scalar["rmsea.robust"] - lav.fit.metric["rmsea.robust"], NA, NA, NA, NA, lav.fit.scalar["srmr_bentler"] - lav.fit.metric["srmr_bentler"], NA,
+                                             NA, lav.fit.scalar["gfi.robust"] - lav.fit.metric["gfi.robust"], NA, NA, NA,
                                              NA, lav.fit.scalar[c("aic", "bic", "bic2")] - lav.fit.metric[c("aic", "bic", "bic2")]),
                                  ### Eight column
                                  dstrict = c(NA, unlist(chidiff.sca.str[2L, "Chisq diff"]), if (isTRUE(!is.null(group))) { rep(NA, times = ngroups) }, unlist(chidiff.sca.str[2L, c("Df diff", "Pr(>Chisq)")]), NA, NA,
                                              NA, lav.fit.strict[c("cfi.robust", "tli.robust")] - lav.fit.scalar[c("cfi.robust", "tli.robust")], NA,
                                              NA, lav.fit.strict["rmsea.robust"] - lav.fit.scalar["rmsea.robust"], NA, NA, NA, NA, lav.fit.strict["srmr_bentler"] - lav.fit.scalar["srmr_bentler"], NA,
+                                             NA, lav.fit.strict["gfi.robust"] - lav.fit.scalar["gfi.robust"], NA, NA, NA,
                                              NA, lav.fit.strict[c("aic", "bic", "bic2")] - lav.fit.scalar[c("aic", "bic", "bic2")]), fix.empty.names = FALSE)
 
       #...................
@@ -4004,21 +4340,25 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
                                 metric = c(NA, lav.fit.metric["chisq"], if (isTRUE(!is.null(group))) { lavaan::lavInspect(mod.metric.fit, what = "test")$standard$stat.group }, lav.fit.metric[c("df", "pvalue")], NA,
                                            NA, lav.fit.metric[c("cfi", "tli")], NA,
                                            NA, lav.fit.metric[c("rmsea", "rmsea.ci.lower", "rmsea.ci.upper", "rmsea.pvalue")], NA, lav.fit.metric["srmr_bentler"], NA,
+                                           NA, lav.fit.metric[c("gfi", "gfi.ci.lower", "gfi.ci.upper")], NA,
                                            NA, lav.fit.metric[c("aic", "bic", "bic2")]),
                                 ### Fourth column
                                 scalar = c(NA, lav.fit.scalar["chisq"], if (isTRUE(!is.null(group))) { lavaan::lavInspect(mod.scalar.fit, what = "test")$standard$stat.group }, lav.fit.scalar[c("df", "pvalue")], NA,
                                            NA, lav.fit.scalar[c("cfi", "tli")], NA,
                                            NA, lav.fit.scalar[c("rmsea", "rmsea.ci.lower", "rmsea.ci.upper", "rmsea.pvalue")], NA, lav.fit.scalar["srmr_bentler"], NA,
+                                           NA, lav.fit.scalar[c("gfi", "gfi.ci.lower", "gfi.ci.upper")], NA,
                                            NA, lav.fit.scalar[c("aic", "bic", "bic2")]),
                                 ### Fifth column
                                 dmetric = c(NA, unlist(chidiff.conf.met[2L, "Chisq diff"]), if (isTRUE(!is.null(group))) { rep(NA, times = ngroups) }, unlist(chidiff.conf.met[2L, c("Df diff", "Pr(>Chisq)")]), NA,
                                             NA, lav.fit.metric[c("cfi", "tli")] - lav.fit.config[c("cfi", "tli")], NA,
                                             NA, lav.fit.metric["rmsea"] - lav.fit.config["rmsea"], NA, NA, NA, NA, lav.fit.metric["srmr_bentler"] - lav.fit.config["srmr_bentler"], NA,
+                                            NA, lav.fit.metric["gfi"] - lav.fit.config["gfi"], NA, NA, NA,
                                             NA, lav.fit.metric[c("aic", "bic", "bic2")] - lav.fit.config[c("aic", "bic", "bic2")]),
                                 ### Sixth column
                                 dscalar = c(NA, unlist(chidiff.met.sca[2L, "Chisq diff"]), if (isTRUE(!is.null(group))) { rep(NA, times = ngroups) }, unlist(chidiff.met.sca[2L, c("Df diff", "Pr(>Chisq)")]), NA,
                                             NA, lav.fit.scalar[c("cfi", "tli")] - lav.fit.metric[c("cfi", "tli")], NA,
                                             NA, lav.fit.scalar["rmsea"] - lav.fit.metric["rmsea"], NA, NA, NA, NA, lav.fit.scalar["srmr_bentler"] - lav.fit.metric["srmr_bentler"], NA,
+                                            NA, lav.fit.scalar["gfi"] - lav.fit.metric["gfi"], NA, NA, NA,
                                             NA, lav.fit.scalar[c("aic", "bic", "bic2")] - lav.fit.metric[c("aic", "bic", "bic2")]), fix.empty.names = FALSE)
 
         #### Scaled fit indices
@@ -4053,6 +4393,7 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
                                  }, lav.fit.metric[c("df.scaled", "pvalue.scaled", "chisq.scaling.factor")], NA,
                                  NA, lav.fit.metric[c("cfi.scaled", "tli.scaled")], NA,
                                  NA, lav.fit.metric[c("rmsea.scaled", "rmsea.ci.lower.scaled", "rmsea.ci.upper.scaled", "rmsea.pvalue.scaled")], NA, lav.fit.metric["srmr_bentler"], NA,
+                                 NA, rep(NA, times = 4),
                                  NA, lav.fit.metric[c("aic", "bic", "bic2")]),
                                  ### Fourth column
                                  scalar = c(NA, lav.fit.scalar["chisq.scaled"], if (isTRUE(!is.null(group))) {
@@ -4084,16 +4425,19 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
                                  }, lav.fit.scalar[c("df.scaled", "pvalue.scaled", "chisq.scaling.factor")], NA,
                                  NA, lav.fit.scalar[c("cfi.scaled", "tli.scaled")], NA,
                                  NA, lav.fit.scalar[c("rmsea.scaled", "rmsea.ci.lower.scaled", "rmsea.ci.upper.scaled", "rmsea.pvalue.scaled")], NA, lav.fit.scalar["srmr_bentler"], NA,
+                                 NA, rep(NA, times = 4),
                                  NA, lav.fit.scalar[c("aic", "bic", "bic2")]),
                                  ### Fifth column
                                  dmetric = c(NA, unlist(chidiff.conf.met[2L, "Chisq diff"]), if (isTRUE(!is.null(group))) { rep(NA, times = ngroups) }, unlist(chidiff.conf.met[2L, c("Df diff", "Pr(>Chisq)")]), NA, NA,
                                              NA, lav.fit.metric[c("cfi.scaled", "tli.scaled")] - lav.fit.config[c("cfi.scaled", "tli.scaled")], NA,
                                              NA, lav.fit.metric["rmsea.scaled"] - lav.fit.config["rmsea.scaled"], NA, NA, NA, NA, lav.fit.metric["srmr_bentler"] - lav.fit.config["srmr_bentler"], NA,
+                                             NA, rep(NA, times = 4),
                                              NA, lav.fit.metric[c("aic", "bic", "bic2")] - lav.fit.config[c("aic", "bic", "bic2")]),
                                  ### Sixth column
                                  dscalar = c(NA, unlist(chidiff.met.sca[2L, "Chisq diff"]), if (isTRUE(!is.null(group))) { rep(NA, times = ngroups) }, unlist(chidiff.met.sca[2L, c("Df diff", "Pr(>Chisq)")]), NA, NA,
                                              NA, lav.fit.scalar[c("cfi.scaled", "tli.scaled")] - lav.fit.metric[c("cfi.scaled", "tli.scaled")], NA,
                                              NA, lav.fit.scalar["rmsea.scaled"] - lav.fit.metric["rmsea.scaled"], NA, NA, NA, NA, lav.fit.scalar["srmr_bentler"] - lav.fit.metric["srmr_bentler"], NA,
+                                             NA, rep(NA, times = 4),
                                              NA, lav.fit.scalar[c("aic", "bic", "bic2")] - lav.fit.metric[c("aic", "bic", "bic2")]), fix.empty.names = FALSE)
 
         #### Robust fit indices
@@ -4128,6 +4472,7 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
                                  }, lav.fit.metric[c("df.scaled", "pvalue.scaled", "chisq.scaling.factor")], NA,
                                  NA, lav.fit.metric[c("cfi.robust", "tli.robust")], NA,
                                  NA, lav.fit.metric[c("rmsea.robust", "rmsea.ci.lower.robust", "rmsea.ci.upper.robust", "rmsea.pvalue.robust")], NA, lav.fit.metric["srmr_bentler"], NA,
+                                 NA, lav.fit.metric[c("gfi.robust", "gfi.ci.lower.robust", "gfi.ci.upper.robust")], NA,
                                  NA, lav.fit.metric[c("aic", "bic", "bic2")]),
                                  ### Fourth column
                                  scalar = c(NA, lav.fit.scalar["chisq.scaled"], if (isTRUE(!is.null(group))) {
@@ -4159,16 +4504,19 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
                                  }, lav.fit.scalar[c("df.scaled", "pvalue.scaled", "chisq.scaling.factor")], NA,
                                  NA, lav.fit.scalar[c("cfi.robust", "tli.robust")], NA,
                                  NA, lav.fit.scalar[c("rmsea.robust", "rmsea.ci.lower.robust", "rmsea.ci.upper.robust", "rmsea.pvalue.robust")], NA, lav.fit.scalar["srmr_bentler"], NA,
+                                 NA, lav.fit.scalar[c("gfi.robust", "gfi.ci.lower.robust", "gfi.ci.upper.robust")], NA,
                                  NA, lav.fit.scalar[c("aic", "bic", "bic2")]),
                                  ### Fifth column
                                  dmetric = c(NA, unlist(chidiff.conf.met[2L, "Chisq diff"]), if (isTRUE(!is.null(group))) { rep(NA, times = ngroups) }, unlist(chidiff.conf.met[2L, c("Df diff", "Pr(>Chisq)")]), NA, NA,
                                              NA, lav.fit.metric[c("cfi.robust", "tli.robust")] - lav.fit.config[c("cfi.robust", "tli.robust")], NA,
                                              NA, lav.fit.metric["rmsea.robust"] - lav.fit.config["rmsea.robust"], NA, NA, NA, NA, lav.fit.metric["srmr_bentler"] - lav.fit.config["srmr_bentler"], NA,
+                                             NA, lav.fit.metric["gfi.robust"] - lav.fit.config["gfi.robust"], NA, NA, NA,
                                              NA, lav.fit.metric[c("aic", "bic", "bic2")] - lav.fit.config[c("aic", "bic", "bic2")]),
                                  ### Sixth column
                                  dscalar = c(NA, unlist(chidiff.met.sca[2L, "Chisq diff"]), if (isTRUE(!is.null(group))) { rep(NA, times = ngroups) }, unlist(chidiff.met.sca[2L, c("Df diff", "Pr(>Chisq)")]), NA, NA,
                                              NA, lav.fit.scalar[c("cfi.robust", "tli.robust")] - lav.fit.metric[c("cfi.robust", "tli.robust")], NA,
                                              NA, lav.fit.scalar["rmsea.robust"] - lav.fit.metric["rmsea.robust"], NA, NA, NA, NA, lav.fit.scalar["srmr_bentler"] - lav.fit.metric["srmr_bentler"], NA,
+                                             NA, lav.fit.scalar["gfi.robust"] - lav.fit.metric["gfi.robust"], NA, NA, NA,
                                              NA, lav.fit.scalar[c("aic", "bic", "bic2")] - lav.fit.metric[c("aic", "bic", "bic2")]), fix.empty.names = FALSE)
 
       #...................
@@ -4182,11 +4530,13 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
                                 metric = c(NA, lav.fit.metric["chisq"], if (isTRUE(!is.null(group))) { lavaan::lavInspect(mod.metric.fit, what = "test")$standard$stat.group }, lav.fit.metric[c("df", "pvalue")], NA,
                                            NA, lav.fit.metric[c("cfi", "tli")], NA,
                                            NA, lav.fit.metric[c("rmsea", "rmsea.ci.lower", "rmsea.ci.upper", "rmsea.pvalue")], NA, lav.fit.metric["srmr_bentler"], NA,
+                                           NA, lav.fit.metric[c("gfi", "gfi.ci.lower", "gfi.ci.upper")], NA,
                                            NA, lav.fit.metric[c("aic", "bic", "bic2")]),
                                 ### Fourth column
                                 dmetric = c(NA, unlist(chidiff.conf.met[2L, "Chisq diff"]), if (isTRUE(!is.null(group))) { rep(NA, times = ngroups) }, unlist(chidiff.conf.met[2L, c("Df diff", "Pr(>Chisq)")]), NA,
                                             NA, lav.fit.metric[c("cfi", "tli")] - lav.fit.config[c("cfi", "tli")], NA,
                                             NA, lav.fit.metric["rmsea"] - lav.fit.config["rmsea"], NA, NA, NA, NA, lav.fit.metric["srmr_bentler"] - lav.fit.config["srmr_bentler"], NA,
+                                            NA, lav.fit.metric["gfi"] - lav.fit.config["gfi"], NA, NA, NA,
                                             NA, lav.fit.metric[c("aic", "bic", "bic2")] - lav.fit.config[c("aic", "bic", "bic2")]), fix.empty.names = FALSE)
 
         #### Scaled fit indices
@@ -4221,11 +4571,13 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
                                  }, lav.fit.metric[c("df.scaled", "pvalue.scaled", "chisq.scaling.factor")], NA,
                                  NA, lav.fit.metric[c("cfi.scaled", "tli.scaled")], NA,
                                  NA, lav.fit.metric[c("rmsea.scaled", "rmsea.ci.lower.scaled", "rmsea.ci.upper.scaled", "rmsea.pvalue.scaled")], NA, lav.fit.metric["srmr_bentler"], NA,
+                                 NA, rep(NA, times = 4),
                                  NA, lav.fit.metric[c("aic", "bic", "bic2")]),
                                  ### Fourth column
                                  dmetric = c(NA, unlist(chidiff.conf.met[2L, "Chisq diff"]), if (isTRUE(!is.null(group))) { rep(NA, times = ngroups) }, unlist(chidiff.conf.met[2L, c("Df diff", "Pr(>Chisq)")]), NA, NA,
                                              NA, lav.fit.metric[c("cfi.scaled", "tli.scaled")] - lav.fit.config[c("cfi.scaled", "tli.scaled")], NA,
                                              NA, lav.fit.metric["rmsea.scaled"] - lav.fit.config["rmsea.scaled"], NA, NA, NA, NA, lav.fit.metric["srmr_bentler"] - lav.fit.config["srmr_bentler"], NA,
+                                             NA, rep(NA, times = 4),
                                              NA, lav.fit.metric[c("aic", "bic", "bic2")] - lav.fit.config[c("aic", "bic", "bic2")]), fix.empty.names = FALSE)
 
         #### Robust fit indices
@@ -4260,16 +4612,18 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
                                  }, lav.fit.metric[c("df.scaled", "pvalue.scaled", "chisq.scaling.factor")], NA,
                                  NA, lav.fit.metric[c("cfi.robust", "tli.robust")], NA,
                                  NA, lav.fit.metric[c("rmsea.robust", "rmsea.ci.lower.robust", "rmsea.ci.upper.robust", "rmsea.pvalue.robust")], NA, lav.fit.metric["srmr_bentler"], NA,
+                                 NA, lav.fit.metric[c("gfi.robust", "gfi.ci.lower.robust", "gfi.ci.upper.robust")], NA,
                                  NA, lav.fit.metric[c("aic", "bic", "bic2")]),
                                  ### Fourth column
                                  dmetric = c(NA, unlist(chidiff.conf.met[2L, "Chisq diff"]), if (isTRUE(!is.null(group))) { rep(NA, times = ngroups) }, unlist(chidiff.conf.met[2L, c("Df diff", "Pr(>Chisq)")]), NA, NA,
                                              NA, lav.fit.metric[c("cfi.robust", "tli.robust")] - lav.fit.config[c("cfi.robust", "tli.robust")], NA,
                                              NA, lav.fit.metric["rmsea.robust"] - lav.fit.config["rmsea.robust"], NA, NA, NA, NA, lav.fit.metric["srmr_bentler"] - lav.fit.config["srmr_bentler"], NA,
+                                             NA, lav.fit.metric["gfi.robust"] - lav.fit.config["gfi.robust"], NA, NA, NA,
                                              NA, lav.fit.metric[c("aic", "bic", "bic2")] - lav.fit.config[c("aic", "bic", "bic2")]), fix.empty.names = FALSE)
 
       }
 
-    #--------------------------------------
+    #—————————————————————————————————————— #
     ### Ordered Categorical Indicators ####
 
     } else {
@@ -4286,22 +4640,26 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
                                   ### Third column
                                   scalar = c(NA, lav.fit.scalar["chisq"], if (isTRUE(!is.null(group))) { lavaan::lavInspect(mod.scalar.fit, what = "test")$standard$stat.group }, lav.fit.scalar[c("df", "pvalue")], NA,
                                              NA, lav.fit.scalar[c("cfi", "tli")], NA,
-                                             NA, lav.fit.scalar[c("rmsea", "rmsea.ci.lower", "rmsea.ci.upper", "rmsea.pvalue")], NA, lav.fit.scalar["srmr_bentler"], NA,
+                                             NA, lav.fit.scalar[c("rmsea", "rmsea.ci.lower", "rmsea.ci.upper", "rmsea.pvalue")], NA, lav.fit.scalar["srmr_bentler"],
+                                             NA, lav.fit.scalar[c("gfi", "gfi.ci.lower", "gfi.ci.upper")], NA,
                                              NA, lav.fit.scalar[c("aic", "bic", "bic2")]),
                                   ### Forth column
                                   strict = c(NA, lav.fit.strict["chisq"], if (isTRUE(!is.null(group))) { lavaan::lavInspect(mod.strict.fit, what = "test")$standard$stat.group }, lav.fit.strict[c("df", "pvalue")], NA,
                                              NA, lav.fit.strict[c("cfi", "tli")], NA,
                                              NA, lav.fit.strict[c("rmsea", "rmsea.ci.lower", "rmsea.ci.upper", "rmsea.pvalue")], NA, lav.fit.strict["srmr_bentler"], NA,
+                                             NA, lav.fit.strict[c("gfi", "gfi.ci.lower", "gfi.ci.upper")], NA,
                                              NA, lav.fit.strict[c("aic", "bic", "bic2")]),
                                   ### Fifth column
                                   dscalar = c(NA, unlist(chidiff.conf.sca[2L, "Chisq diff"]), if (isTRUE(!is.null(group))) { rep(NA, times = ngroups) }, unlist(chidiff.conf.sca[2L, c("Df diff", "Pr(>Chisq)")]), NA,
                                               NA, lav.fit.scalar[c("cfi", "tli")] - lav.fit.config[c("cfi", "tli")], NA,
                                               NA, lav.fit.scalar["rmsea"] - lav.fit.config["rmsea"], NA, NA, NA, NA, lav.fit.scalar["srmr_bentler"] - lav.fit.config["srmr_bentler"], NA,
+                                              NA, lav.fit.scalar["gfi"] - lav.fit.config["gfi"], NA, NA, NA,
                                               NA, lav.fit.scalar[c("aic", "bic", "bic2")] - lav.fit.config[c("aic", "bic", "bic2")]),
                                   ### Sixth column
                                   dstrict = c(NA, unlist(chidiff.sca.str[2L, "Chisq diff"]), if (isTRUE(!is.null(group))) { rep(NA, times = ngroups) }, unlist(chidiff.sca.str[2L, c("Df diff", "Pr(>Chisq)")]), NA,
                                               NA, lav.fit.strict[c("cfi", "tli")] - lav.fit.scalar[c("cfi", "tli")], NA,
                                               NA, lav.fit.strict["rmsea"] - lav.fit.scalar["rmsea"], NA, NA, NA, NA, lav.fit.strict["srmr_bentler"] - lav.fit.scalar["srmr_bentler"], NA,
+                                              NA, lav.fit.strict["gfi"] - lav.fit.scalar["gfi"], NA, NA, NA,
                                               NA, lav.fit.strict[c("aic", "bic", "bic2")] - lav.fit.scalar[c("aic", "bic", "bic2")]), fix.empty.names = FALSE)
 
           ###### Scaled fit indices
@@ -4336,6 +4694,7 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
                                    }, lav.fit.scalar[c("df.scaled", "pvalue.scaled", "chisq.scaling.factor")], NA,
                                    NA, lav.fit.scalar[c("cfi.scaled", "tli.scaled")], NA,
                                    NA, lav.fit.scalar[c("rmsea.scaled", "rmsea.ci.lower.scaled", "rmsea.ci.upper.scaled", "rmsea.pvalue.scaled")], NA, lav.fit.scalar["srmr_bentler"], NA,
+                                   NA, rep(NA, times = 4),
                                    NA, lav.fit.scalar[c("aic", "bic", "bic2")]),
                                    ### Fourth column
                                    strict = c(NA, lav.fit.strict["chisq.scaled"], if (isTRUE(!is.null(group))) {
@@ -4367,16 +4726,19 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
                                    }, lav.fit.strict[c("df.scaled", "pvalue.scaled", "chisq.scaling.factor")], NA,
                                    NA, lav.fit.strict[c("cfi.scaled", "tli.scaled")], NA,
                                    NA, lav.fit.strict[c("rmsea.scaled", "rmsea.ci.lower.scaled", "rmsea.ci.upper.scaled", "rmsea.pvalue.scaled")], NA, lav.fit.strict["srmr_bentler"], NA,
+                                   NA, rep(NA, times = 4),
                                    NA, lav.fit.strict[c("aic", "bic", "bic2")]),
                                    ### Fifth column
                                    dscalar = c(NA, unlist(chidiff.conf.sca[2L, "Chisq diff"]), if (isTRUE(!is.null(group))) { rep(NA, times = ngroups) }, unlist(chidiff.conf.sca[2L, c("Df diff", "Pr(>Chisq)")]), NA, NA,
                                                NA, lav.fit.scalar[c("cfi.scaled", "tli.scaled")] - lav.fit.config[c("cfi.scaled", "tli.scaled")], NA,
                                                NA, lav.fit.scalar["rmsea.scaled"] - lav.fit.config["rmsea.scaled"], NA, NA, NA, NA, lav.fit.scalar["srmr_bentler"] - lav.fit.config["srmr_bentler"], NA,
+                                               NA, rep(NA, times = 4),
                                                NA, lav.fit.scalar[c("aic", "bic", "bic2")] - lav.fit.config[c("aic", "bic", "bic2")]),
                                    ### Sixth column
                                    dstrict = c(NA, unlist(chidiff.sca.str[2L, "Chisq diff"]), if (isTRUE(!is.null(group))) { rep(NA, times = ngroups) }, unlist(chidiff.sca.str[2L, c("Df diff", "Pr(>Chisq)")]), NA, NA,
                                                NA, lav.fit.strict[c("cfi.scaled", "tli.scaled")] - lav.fit.scalar[c("cfi.scaled", "tli.scaled")], NA,
                                                NA, lav.fit.strict["rmsea.scaled"] - lav.fit.scalar["rmsea.scaled"], NA, NA, NA, NA, lav.fit.strict["srmr_bentler"] - lav.fit.scalar["srmr_bentler"], NA,
+                                               NA, rep(NA, times = 4),
                                                NA, lav.fit.strict[c("aic", "bic", "bic2")] - lav.fit.scalar[c("aic", "bic", "bic2")]), fix.empty.names = FALSE)
 
           ###### Robust fit indices
@@ -4411,6 +4773,7 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
                                    }, lav.fit.scalar[c("df.scaled", "pvalue.scaled", "chisq.scaling.factor")], NA,
                                    NA, lav.fit.scalar[c("cfi.robust", "tli.robust")], NA,
                                    NA, lav.fit.scalar[c("rmsea.robust", "rmsea.ci.lower.robust", "rmsea.ci.upper.robust", "rmsea.pvalue.robust")], NA, lav.fit.scalar["srmr_bentler"], NA,
+                                   NA, lav.fit.metric[c("gfi.robust", "gfi.ci.lower.robust", "gfi.ci.upper.robust")], NA,
                                    NA, lav.fit.scalar[c("aic", "bic", "bic2")]),
                                    ### Fourth column
                                    strict = c(NA, lav.fit.strict["chisq.scaled"], if (isTRUE(!is.null(group))) {
@@ -4442,16 +4805,19 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
                                    }, lav.fit.strict[c("df.scaled", "pvalue.scaled", "chisq.scaling.factor")], NA,
                                    NA, lav.fit.strict[c("cfi.robust", "tli.robust")], NA,
                                    NA, lav.fit.strict[c("rmsea.robust", "rmsea.ci.lower.robust", "rmsea.ci.upper.robust", "rmsea.pvalue.robust")], NA, lav.fit.strict["srmr_bentler"], NA,
+                                   NA, lav.fit.scalar[c("gfi.robust", "gfi.ci.lower.robust", "gfi.ci.upper.robust")], NA,
                                    NA, lav.fit.strict[c("aic", "bic", "bic2")]),
                                    ### Fifth column
                                    dscalar = c(NA, unlist(chidiff.conf.sca[2L, "Chisq diff"]), if (isTRUE(!is.null(group))) { rep(NA, times = ngroups) }, unlist(chidiff.conf.sca[2L, c("Df diff", "Pr(>Chisq)")]), NA, NA,
                                                NA, lav.fit.scalar[c("cfi.robust", "tli.robust")] - lav.fit.config[c("cfi.robust", "tli.robust")], NA,
                                                NA, lav.fit.scalar["rmsea.robust"] - lav.fit.config["rmsea.robust"], NA, NA, NA, NA, lav.fit.scalar["srmr_bentler"] - lav.fit.config["srmr_bentler"], NA,
+                                               NA, lav.fit.scalar["gfi.robust"] - lav.fit.config["gfi.robust"], NA, NA, NA,
                                                NA, lav.fit.scalar[c("aic", "bic", "bic2")] - lav.fit.config[c("aic", "bic", "bic2")]),
                                    ### Sixth column
                                    dstrict = c(NA, unlist(chidiff.sca.str[2L, "Chisq diff"]), if (isTRUE(!is.null(group))) { rep(NA, times = ngroups) }, unlist(chidiff.sca.str[2L, c("Df diff", "Pr(>Chisq)")]), NA, NA,
                                                NA, lav.fit.strict[c("cfi.robust", "tli.robust")] - lav.fit.scalar[c("cfi.robust", "tli.robust")], NA,
                                                NA, lav.fit.strict["rmsea.robust"] - lav.fit.scalar["rmsea.robust"], NA, NA, NA, NA, lav.fit.strict["srmr_bentler"] - lav.fit.scalar["srmr_bentler"], NA,
+                                               NA, lav.fit.strict["gfi.robust"] - lav.fit.scalar["gfi.robust"], NA, NA, NA,
                                                NA, lav.fit.strict[c("aic", "bic", "bic2")] - lav.fit.scalar[c("aic", "bic", "bic2")]), fix.empty.names = FALSE)
 
         ##### Configural and Scalar Invariance Model
@@ -4462,11 +4828,13 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
                                                scalar = c(NA, lav.fit.scalar["chisq"], if (isTRUE(!is.null(group))) { lavaan::lavInspect(mod.scalar.fit, what = "test")$standard$stat.group }, lav.fit.scalar[c("df", "pvalue")], NA,
                                                           NA, lav.fit.scalar[c("cfi", "tli")], NA,
                                                           NA, lav.fit.scalar[c("rmsea", "rmsea.ci.lower", "rmsea.ci.upper", "rmsea.pvalue")], NA, lav.fit.scalar["srmr_bentler"], NA,
+                                                          NA, lav.fit.scalar[c("gfi", "gfi.ci.lower", "gfi.ci.upper")], NA,
                                                           NA, lav.fit.scalar[c("aic", "bic", "bic2")]),
                                                ### Fourth column
                                                dscalar = c(NA, unlist(chidiff.conf.sca[2L, "Chisq diff"]), if (isTRUE(!is.null(group))) { rep(NA, times = ngroups) }, unlist(chidiff.conf.sca[2L, c("Df diff", "Pr(>Chisq)")]), NA,
                                                            NA, lav.fit.scalar[c("cfi", "tli")] - lav.fit.config[c("cfi", "tli")], NA,
                                                            NA, lav.fit.scalar["rmsea"] - lav.fit.config["rmsea"], NA, NA, NA, NA, lav.fit.scalar["srmr_bentler"] - lav.fit.config["srmr_bentler"], NA,
+                                                           NA, lav.fit.scalar["gfi"] - lav.fit.config["gfi"], NA, NA, NA,
                                                            NA, lav.fit.scalar[c("aic", "bic", "bic2")] - lav.fit.config[c("aic", "bic", "bic2")]), fix.empty.names = FALSE)
 
                 #### Scaled fit indices
@@ -4501,16 +4869,19 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
                                                 }, lav.fit.scalar[c("df.scaled", "pvalue.scaled", "chisq.scaling.factor")], NA,
                                                 NA, lav.fit.scalar[c("cfi.scaled", "tli.scaled")], NA,
                                                 NA, lav.fit.scalar[c("rmsea.scaled", "rmsea.ci.lower.scaled", "rmsea.ci.upper.scaled", "rmsea.pvalue.scaled")], NA, lav.fit.scalar["srmr_bentler"], NA,
+                                                NA, rep(NA, times = 4),
                                                 NA, lav.fit.scalar[c("aic", "bic", "bic2")]),
                                                 ### Fourth column
                                                 dmetric = c(NA, unlist(chidiff.conf.met[2L, "Chisq diff"]), if (isTRUE(!is.null(group))) { rep(NA, times = ngroups) }, unlist(chidiff.conf.met[2L, c("Df diff", "Pr(>Chisq)")]), NA, NA,
                                                             NA, lav.fit.metric[c("cfi.scaled", "tli.scaled")] - lav.fit.config[c("cfi.scaled", "tli.scaled")], NA,
                                                             NA, lav.fit.metric["rmsea.scaled"] - lav.fit.config["rmsea.scaled"], NA, NA, NA, NA, lav.fit.metric["srmr_bentler"] - lav.fit.config["srmr_bentler"], NA,
+                                                            NA, rep(NA, times = 4),
                                                             NA, lav.fit.metric[c("aic", "bic", "bic2")] - lav.fit.config[c("aic", "bic", "bic2")]),
                                                 ### Fifth column
                                                 dscalar = c(NA, unlist(chidiff.conf.sca[2L, "Chisq diff"]), if (isTRUE(!is.null(group))) { rep(NA, times = ngroups) }, unlist(chidiff.conf.sca[2L, c("Df diff", "Pr(>Chisq)")]), NA, NA,
                                                             NA, lav.fit.scalar[c("cfi.scaled", "tli.scaled")] - lav.fit.metric[c("cfi.scaled", "tli.scaled")], NA,
                                                             NA, lav.fit.scalar["rmsea.scaled"] - lav.fit.metric["rmsea.scaled"], NA, NA, NA, NA, lav.fit.scalar["srmr_bentler"] - lav.fit.metric["srmr_bentler"], NA,
+                                                            NA, rep(NA, times = 4),
                                                             NA, lav.fit.scalar[c("aic", "bic", "bic2")] - lav.fit.metric[c("aic", "bic", "bic2")]), fix.empty.names = FALSE)
 
                 #### Robust fit indices
@@ -4545,6 +4916,7 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
                                                 }, lav.fit.metric[c("df.scaled", "pvalue.scaled", "chisq.scaling.factor")], NA,
                                                 NA, lav.fit.metric[c("cfi.robust", "tli.robust")], NA,
                                                 NA, lav.fit.metric[c("rmsea.robust", "rmsea.ci.lower.robust", "rmsea.ci.upper.robust", "rmsea.pvalue.robust")], NA, lav.fit.metric["srmr_bentler"], NA,
+                                                NA, lav.fit.metric[c("gfi.robust", "gfi.ci.lower.robust", "gfi.ci.upper.robust")], NA,
                                                 NA, lav.fit.metric[c("aic", "bic", "bic2")]),
                                                 ### Fourth column
                                                 scalar = c(NA, lav.fit.scalar["chisq.scaled"], if (isTRUE(!is.null(group))) {
@@ -4576,16 +4948,19 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
                                                 }, lav.fit.scalar[c("df.scaled", "pvalue.scaled", "chisq.scaling.factor")], NA,
                                                 NA, lav.fit.scalar[c("cfi.robust", "tli.robust")], NA,
                                                 NA, lav.fit.scalar[c("rmsea.robust", "rmsea.ci.lower.robust", "rmsea.ci.upper.robust", "rmsea.pvalue.robust")], NA, lav.fit.scalar["srmr_bentler"], NA,
+                                                NA, lav.fit.scalar[c("gfi.robust", "gfi.ci.lower.robust", "gfi.ci.upper.robust")], NA,
                                                 NA, lav.fit.scalar[c("aic", "bic", "bic2")]),
                                                 ### Fifth column
                                                 dmetric = c(NA, unlist(chidiff.conf.met[2L, "Chisq diff"]), if (isTRUE(!is.null(group))) { rep(NA, times = ngroups) }, unlist(chidiff.conf.met[2L, c("Df diff", "Pr(>Chisq)")]), NA, NA,
                                                             NA, lav.fit.metric[c("cfi.robust", "tli.robust")] - lav.fit.config[c("cfi.robust", "tli.robust")], NA,
                                                             NA, lav.fit.metric["rmsea.robust"] - lav.fit.config["rmsea.robust"], NA, NA, NA, NA, lav.fit.metric["srmr_bentler"] - lav.fit.config["srmr_bentler"], NA,
+                                                            NA, lav.fit.metric["gfi.robust"] - lav.fit.config["gfi.robust"], NA, NA, NA,
                                                             NA, lav.fit.metric[c("aic", "bic", "bic2")] - lav.fit.config[c("aic", "bic", "bic2")]),
                                                 ### Sixth column
                                                 dscalar = c(NA, unlist(chidiff.conf.sca[2L, "Chisq diff"]), if (isTRUE(!is.null(group))) { rep(NA, times = ngroups) }, unlist(chidiff.conf.sca[2L, c("Df diff", "Pr(>Chisq)")]), NA, NA,
                                                             NA, lav.fit.scalar[c("cfi.robust", "tli.robust")] - lav.fit.metric[c("cfi.robust", "tli.robust")], NA,
                                                             NA, lav.fit.scalar["rmsea.robust"] - lav.fit.metric["rmsea.robust"], NA, NA, NA, NA, lav.fit.scalar["srmr_bentler"] - lav.fit.metric["srmr_bentler"], NA,
+                                                            NA, lav.fit.scalar["gfi.robust"] - lav.fit.metric["gfi.robust"], NA, NA, NA,
                                                             NA, lav.fit.scalar[c("aic", "bic", "bic2")] - lav.fit.metric[c("aic", "bic", "bic2")]), fix.empty.names = FALSE)
 
               }
@@ -4603,31 +4978,37 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
                                          metric = c(NA, lav.fit.metric["chisq"], if (isTRUE(!is.null(group))) { lavaan::lavInspect(mod.metric.fit, what = "test")$standard$stat.group }, lav.fit.metric[c("df", "pvalue")], NA,
                                                     NA, lav.fit.metric[c("cfi", "tli")], NA,
                                                     NA, lav.fit.metric[c("rmsea", "rmsea.ci.lower", "rmsea.ci.upper", "rmsea.pvalue")], NA, lav.fit.metric["srmr_bentler"], NA,
+                                                    NA, lav.fit.metric[c("gfi", "gfi.ci.lower", "gfi.ci.upper")], NA,
                                                     NA, lav.fit.metric[c("aic", "bic", "bic2")]),
                                          ### Fourth column
                                          scalar = c(NA, lav.fit.scalar["chisq"], if (isTRUE(!is.null(group))) { lavaan::lavInspect(mod.scalar.fit, what = "test")$standard$stat.group }, lav.fit.scalar[c("df", "pvalue")], NA,
                                                     NA, lav.fit.scalar[c("cfi", "tli")], NA,
                                                     NA, lav.fit.scalar[c("rmsea", "rmsea.ci.lower", "rmsea.ci.upper", "rmsea.pvalue")], NA, lav.fit.scalar["srmr_bentler"], NA,
+                                                    NA, lav.fit.scalar[c("gfi", "gfi.ci.lower", "gfi.ci.upper")], NA,
                                                     NA, lav.fit.scalar[c("aic", "bic", "bic2")]),
                                          ### Fifth column
                                          strict = c(NA, lav.fit.strict["chisq"], if (isTRUE(!is.null(group))) { lavaan::lavInspect(mod.strict.fit, what = "test")$standard$stat.group }, lav.fit.strict[c("df", "pvalue")], NA,
                                                     NA, lav.fit.strict[c("cfi", "tli")], NA,
                                                     NA, lav.fit.strict[c("rmsea", "rmsea.ci.lower", "rmsea.ci.upper", "rmsea.pvalue")], NA, lav.fit.strict["srmr_bentler"], NA,
+                                                    NA, lav.fit.strict[c("gfi", "gfi.ci.lower", "gfi.ci.upper")], NA,
                                                     NA, lav.fit.strict[c("aic", "bic", "bic2")]),
                                          ### Sixth column
                                          dmetric = c(NA, unlist(chidiff.conf.met[2L, "Chisq diff"]), if (isTRUE(!is.null(group))) { rep(NA, times = ngroups) }, unlist(chidiff.conf.met[2L, c("Df diff", "Pr(>Chisq)")]), NA,
                                                      NA, lav.fit.metric[c("cfi", "tli")] - lav.fit.config[c("cfi", "tli")], NA,
                                                      NA, lav.fit.metric["rmsea"] - lav.fit.config["rmsea"], NA, NA, NA, NA, lav.fit.metric["srmr_bentler"] - lav.fit.config["srmr_bentler"], NA,
+                                                     NA, lav.fit.metric["gfi"] - lav.fit.config["gfi"], NA, NA, NA,
                                                      NA, lav.fit.metric[c("aic", "bic", "bic2")] - lav.fit.config[c("aic", "bic", "bic2")]),
                                          ### Seventh column
                                          dscalar = c(NA, unlist(chidiff.met.sca[2L, "Chisq diff"]), if (isTRUE(!is.null(group))) { rep(NA, times = ngroups) }, unlist(chidiff.met.sca[2L, c("Df diff", "Pr(>Chisq)")]), NA,
                                                      NA, lav.fit.scalar[c("cfi", "tli")] - lav.fit.metric[c("cfi", "tli")], NA,
                                                      NA, lav.fit.scalar["rmsea"] - lav.fit.metric["rmsea"], NA, NA, NA, NA, lav.fit.scalar["srmr_bentler"] - lav.fit.metric["srmr_bentler"], NA,
+                                                     NA, lav.fit.scalar["gfi"] - lav.fit.metric["gfi"], NA, NA, NA,
                                                      NA, lav.fit.scalar[c("aic", "bic", "bic2")] - lav.fit.metric[c("aic", "bic", "bic2")]),
                                          ### Eight column
                                          dstrict = c(NA, unlist(chidiff.sca.str[2L, "Chisq diff"]), if (isTRUE(!is.null(group))) { rep(NA, times = ngroups) }, unlist(chidiff.sca.str[2L, c("Df diff", "Pr(>Chisq)")]), NA,
                                                      NA, lav.fit.strict[c("cfi", "tli")] - lav.fit.scalar[c("cfi", "tli")], NA,
                                                      NA, lav.fit.strict["rmsea"] - lav.fit.scalar["rmsea"], NA, NA, NA, NA, lav.fit.strict["srmr_bentler"] - lav.fit.scalar["srmr_bentler"], NA,
+                                                     NA, lav.fit.strict["gfi"] - lav.fit.scalar["gfi"], NA, NA, NA,
                                                      NA, lav.fit.strict[c("aic", "bic", "bic2")] - lav.fit.scalar[c("aic", "bic", "bic2")]), fix.empty.names = FALSE)
 
                  ###### Scaled fit indices
@@ -4662,6 +5043,7 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
                                           }, lav.fit.metric[c("df.scaled", "pvalue.scaled", "chisq.scaling.factor")], NA,
                                           NA, lav.fit.metric[c("cfi.scaled", "tli.scaled")], NA,
                                           NA, lav.fit.metric[c("rmsea.scaled", "rmsea.ci.lower.scaled", "rmsea.ci.upper.scaled", "rmsea.pvalue.scaled")], NA, lav.fit.metric["srmr_bentler"], NA,
+                                          NA, rep(NA, times = 4),
                                           NA, lav.fit.metric[c("aic", "bic", "bic2")]),
                                           ### Fourth column
                                           scalar = c(NA, lav.fit.scalar["chisq.scaled"], if (isTRUE(!is.null(group))) {
@@ -4693,6 +5075,7 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
                                           }, lav.fit.scalar[c("df.scaled", "pvalue.scaled", "chisq.scaling.factor")], NA,
                                           NA, lav.fit.scalar[c("cfi.scaled", "tli.scaled")], NA,
                                           NA, lav.fit.scalar[c("rmsea.scaled", "rmsea.ci.lower.scaled", "rmsea.ci.upper.scaled", "rmsea.pvalue.scaled")], NA, lav.fit.scalar["srmr_bentler"], NA,
+                                          NA, rep(NA, times = 4),
                                           NA, lav.fit.scalar[c("aic", "bic", "bic2")]),
                                           ### Fifth column
                                           strict = c(NA, lav.fit.strict["chisq.scaled"], if (isTRUE(!is.null(group))) {
@@ -4724,21 +5107,25 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
                                           }, lav.fit.strict[c("df.scaled", "pvalue.scaled", "chisq.scaling.factor")], NA,
                                           NA, lav.fit.strict[c("cfi.scaled", "tli.scaled")], NA,
                                           NA, lav.fit.strict[c("rmsea.scaled", "rmsea.ci.lower.scaled", "rmsea.ci.upper.scaled", "rmsea.pvalue.scaled")], NA, lav.fit.strict["srmr_bentler"], NA,
+                                          NA, rep(NA, times = 4),
                                           NA, lav.fit.strict[c("aic", "bic", "bic2")]),
                                           ### Sixth column
                                           dmetric = c(NA, unlist(chidiff.conf.met[2L, "Chisq diff"]), if (isTRUE(!is.null(group))) { rep(NA, times = ngroups) }, unlist(chidiff.conf.met[2L, c("Df diff", "Pr(>Chisq)")]), NA, NA,
                                                       NA, lav.fit.metric[c("cfi.scaled", "tli.scaled")] - lav.fit.config[c("cfi.scaled", "tli.scaled")], NA,
                                                       NA, lav.fit.metric["rmsea.scaled"] - lav.fit.config["rmsea.scaled"], NA, NA, NA, NA, lav.fit.metric["srmr_bentler"] - lav.fit.config["srmr_bentler"], NA,
+                                                      NA, rep(NA, times = 4),
                                                       NA, lav.fit.metric[c("aic", "bic", "bic2")] - lav.fit.config[c("aic", "bic", "bic2")]),
                                           ### Seventh column
                                           dscalar = c(NA, unlist(chidiff.met.sca[2L, "Chisq diff"]), if (isTRUE(!is.null(group))) { rep(NA, times = ngroups) }, unlist(chidiff.met.sca[2L, c("Df diff", "Pr(>Chisq)")]), NA, NA,
                                                       NA, lav.fit.scalar[c("cfi.scaled", "tli.scaled")] - lav.fit.metric[c("cfi.scaled", "tli.scaled")], NA,
                                                       NA, lav.fit.scalar["rmsea.scaled"] - lav.fit.metric["rmsea.scaled"], NA, NA, NA, NA, lav.fit.scalar["srmr_bentler"] - lav.fit.metric["srmr_bentler"], NA,
+                                                      NA, rep(NA, times = 4),
                                                       NA, lav.fit.scalar[c("aic", "bic", "bic2")] - lav.fit.metric[c("aic", "bic", "bic2")]),
                                           ### Eight column
                                           dstrict = c(NA, unlist(chidiff.sca.str[2L, "Chisq diff"]), if (isTRUE(!is.null(group))) { rep(NA, times = ngroups) }, unlist(chidiff.sca.str[2L, c("Df diff", "Pr(>Chisq)")]), NA, NA,
                                                       NA, lav.fit.strict[c("cfi.scaled", "tli.scaled")] - lav.fit.scalar[c("cfi.scaled", "tli.scaled")], NA,
                                                       NA, lav.fit.strict["rmsea.scaled"] - lav.fit.scalar["rmsea.scaled"], NA, NA, NA, NA, lav.fit.strict["srmr_bentler"] - lav.fit.scalar["srmr_bentler"], NA,
+                                                      NA, rep(NA, times = 4),
                                                       NA, lav.fit.strict[c("aic", "bic", "bic2")] - lav.fit.scalar[c("aic", "bic", "bic2")]), fix.empty.names = FALSE)
 
                  ###### Robust fit indices
@@ -4773,6 +5160,7 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
                                           }, lav.fit.metric[c("df.scaled", "pvalue.scaled", "chisq.scaling.factor")], NA,
                                           NA, lav.fit.metric[c("cfi.robust", "tli.robust")], NA,
                                           NA, lav.fit.metric[c("rmsea.robust", "rmsea.ci.lower.robust", "rmsea.ci.upper.robust", "rmsea.pvalue.robust")], NA, lav.fit.metric["srmr_bentler"], NA,
+                                          NA, lav.fit.metric[c("gfi.robust", "gfi.ci.lower.robust", "gfi.ci.upper.robust")], NA,
                                           NA, lav.fit.metric[c("aic", "bic", "bic2")]),
                                           ### Fourth column
                                           scalar = c(NA, lav.fit.scalar["chisq.scaled"], if (isTRUE(!is.null(group))) {
@@ -4804,6 +5192,7 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
                                           }, lav.fit.scalar[c("df.scaled", "pvalue.scaled", "chisq.scaling.factor")], NA,
                                           NA, lav.fit.scalar[c("cfi.robust", "tli.robust")], NA,
                                           NA, lav.fit.scalar[c("rmsea.robust", "rmsea.ci.lower.robust", "rmsea.ci.upper.robust", "rmsea.pvalue.robust")], NA, lav.fit.scalar["srmr_bentler"], NA,
+                                          NA, lav.fit.scalar[c("gfi.robust", "gfi.ci.lower.robust", "gfi.ci.upper.robust")], NA,
                                           NA, lav.fit.scalar[c("aic", "bic", "bic2")]),
                                           ### Fifth column
                                           strict = c(NA, lav.fit.strict["chisq.scaled"], if (isTRUE(!is.null(group))) {
@@ -4835,21 +5224,25 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
                                           }, lav.fit.strict[c("df.scaled", "pvalue.scaled", "chisq.scaling.factor")], NA,
                                           NA, lav.fit.strict[c("cfi.robust", "tli.robust")], NA,
                                           NA, lav.fit.strict[c("rmsea.robust", "rmsea.ci.lower.robust", "rmsea.ci.upper.robust", "rmsea.pvalue.robust")], NA, lav.fit.strict["srmr_bentler"], NA,
+                                          NA, lav.fit.strict[c("gfi.robust", "gfi.ci.lower.robust", "gfi.ci.upper.robust")], NA,
                                           NA, lav.fit.strict[c("aic", "bic", "bic2")]),
                                           ### Sixth column
                                           dmetric = c(NA, unlist(chidiff.conf.met[2L, "Chisq diff"]), if (isTRUE(!is.null(group))) { rep(NA, times = ngroups) }, unlist(chidiff.conf.met[2L, c("Df diff", "Pr(>Chisq)")]), NA, NA,
                                                       NA, lav.fit.metric[c("cfi.robust", "tli.robust")] - lav.fit.config[c("cfi.robust", "tli.robust")], NA,
                                                       NA, lav.fit.metric["rmsea.robust"] - lav.fit.config["rmsea.robust"], NA, NA, NA, NA, lav.fit.metric["srmr_bentler"] - lav.fit.config["srmr_bentler"], NA,
+                                                      NA, lav.fit.metric["gfi.robust"] - lav.fit.config["gfi.robust"], NA, NA, NA,
                                                       NA, lav.fit.metric[c("aic", "bic", "bic2")] - lav.fit.config[c("aic", "bic", "bic2")]),
                                           ### Seventh column
                                           dscalar = c(NA, unlist(chidiff.met.sca[2L, "Chisq diff"]), if (isTRUE(!is.null(group))) { rep(NA, times = ngroups) }, unlist(chidiff.met.sca[2L, c("Df diff", "Pr(>Chisq)")]), NA, NA,
                                                       NA, lav.fit.scalar[c("cfi.robust", "tli.robust")] - lav.fit.metric[c("cfi.robust", "tli.robust")], NA,
                                                       NA, lav.fit.scalar["rmsea.robust"] - lav.fit.metric["rmsea.robust"], NA, NA, NA, NA, lav.fit.scalar["srmr_bentler"] - lav.fit.metric["srmr_bentler"], NA,
+                                                      NA, lav.fit.scalar["gfi.robust"] - lav.fit.metric["gfi.robust"], NA, NA, NA,
                                                       NA, lav.fit.scalar[c("aic", "bic", "bic2")] - lav.fit.metric[c("aic", "bic", "bic2")]),
                                           ### Eight column
                                           dstrict = c(NA, unlist(chidiff.sca.str[2L, "Chisq diff"]), if (isTRUE(!is.null(group))) { rep(NA, times = ngroups) }, unlist(chidiff.sca.str[2L, c("Df diff", "Pr(>Chisq)")]), NA, NA,
                                                       NA, lav.fit.strict[c("cfi.robust", "tli.robust")] - lav.fit.scalar[c("cfi.robust", "tli.robust")], NA,
                                                       NA, lav.fit.strict["rmsea.robust"] - lav.fit.scalar["rmsea.robust"], NA, NA, NA, NA, lav.fit.strict["srmr_bentler"] - lav.fit.scalar["srmr_bentler"], NA,
+                                                      NA, lav.fit.strict["gfi.robust"] - lav.fit.scalar["gfi.robust"], NA, NA, NA,
                                                       NA, lav.fit.strict[c("aic", "bic", "bic2")] - lav.fit.scalar[c("aic", "bic", "bic2")]), fix.empty.names = FALSE)
 
                ##### Configural, Metric, and Scalar Invariance Model
@@ -4861,21 +5254,25 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
                                          metric = c(NA, lav.fit.metric["chisq"], if (isTRUE(!is.null(group))) { lavaan::lavInspect(mod.metric.fit, what = "test")$standard$stat.group }, lav.fit.metric[c("df", "pvalue")], NA,
                                                     NA, lav.fit.metric[c("cfi", "tli")], NA,
                                                     NA, lav.fit.metric[c("rmsea", "rmsea.ci.lower", "rmsea.ci.upper", "rmsea.pvalue")], NA, lav.fit.metric["srmr_bentler"], NA,
+                                                    NA, lav.fit.metric[c("gfi", "gfi.ci.lower", "gfi.ci.upper")], NA,
                                                     NA, lav.fit.metric[c("aic", "bic", "bic2")]),
                                          ### Fourth column
                                          scalar = c(NA, lav.fit.scalar["chisq"], if (isTRUE(!is.null(group))) { lavaan::lavInspect(mod.scalar.fit, what = "test")$standard$stat.group }, lav.fit.scalar[c("df", "pvalue")], NA,
                                                     NA, lav.fit.scalar[c("cfi", "tli")], NA,
                                                     NA, lav.fit.scalar[c("rmsea", "rmsea.ci.lower", "rmsea.ci.upper", "rmsea.pvalue")], NA, lav.fit.scalar["srmr_bentler"], NA,
+                                                    NA, lav.fit.scalar[c("gfi", "gfi.ci.lower", "gfi.ci.upper")], NA,
                                                     NA, lav.fit.scalar[c("aic", "bic", "bic2")]),
                                          ### Fifth column
                                          dmetric = c(NA, unlist(chidiff.conf.met[2L, "Chisq diff"]), if (isTRUE(!is.null(group))) { rep(NA, times = ngroups) }, unlist(chidiff.conf.met[2L, c("Df diff", "Pr(>Chisq)")]), NA,
                                                      NA, lav.fit.metric[c("cfi", "tli")] - lav.fit.config[c("cfi", "tli")], NA,
                                                      NA, lav.fit.metric["rmsea"] - lav.fit.config["rmsea"], NA, NA, NA, NA, lav.fit.metric["srmr_bentler"] - lav.fit.config["srmr_bentler"], NA,
+                                                     NA, lav.fit.metric["gfi"] - lav.fit.config["gfi"], NA, NA, NA,
                                                      NA, lav.fit.metric[c("aic", "bic", "bic2")] - lav.fit.config[c("aic", "bic", "bic2")]),
                                          ### Sixth column
                                          dscalar = c(NA, unlist(chidiff.met.sca[2L, "Chisq diff"]), if (isTRUE(!is.null(group))) { rep(NA, times = ngroups) }, unlist(chidiff.met.sca[2L, c("Df diff", "Pr(>Chisq)")]), NA,
                                                      NA, lav.fit.scalar[c("cfi", "tli")] - lav.fit.metric[c("cfi", "tli")], NA,
                                                      NA, lav.fit.scalar["rmsea"] - lav.fit.metric["rmsea"], NA, NA, NA, NA, lav.fit.scalar["srmr_bentler"] - lav.fit.metric["srmr_bentler"], NA,
+                                                     NA, lav.fit.scalar["gfi"] - lav.fit.metric["gfi"], NA, NA, NA,
                                                      NA, lav.fit.scalar[c("aic", "bic", "bic2")] - lav.fit.metric[c("aic", "bic", "bic2")]), fix.empty.names = FALSE)
 
                  ###### Scaled fit indices
@@ -4910,6 +5307,7 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
                                           }, lav.fit.metric[c("df.scaled", "pvalue.scaled", "chisq.scaling.factor")], NA,
                                           NA, lav.fit.metric[c("cfi.scaled", "tli.scaled")], NA,
                                           NA, lav.fit.metric[c("rmsea.scaled", "rmsea.ci.lower.scaled", "rmsea.ci.upper.scaled", "rmsea.pvalue.scaled")], NA, lav.fit.metric["srmr_bentler"], NA,
+                                          NA, rep(NA, times = 4),
                                           NA, lav.fit.metric[c("aic", "bic", "bic2")]),
                                           ### Fourth column
                                           scalar = c(NA, lav.fit.scalar["chisq.scaled"], if (isTRUE(!is.null(group))) {
@@ -4941,16 +5339,19 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
                                           }, lav.fit.scalar[c("df.scaled", "pvalue.scaled", "chisq.scaling.factor")], NA,
                                           NA, lav.fit.scalar[c("cfi.scaled", "tli.scaled")], NA,
                                           NA, lav.fit.scalar[c("rmsea.scaled", "rmsea.ci.lower.scaled", "rmsea.ci.upper.scaled", "rmsea.pvalue.scaled")], NA, lav.fit.scalar["srmr_bentler"], NA,
+                                          NA, rep(NA, times = 4),
                                           NA, lav.fit.scalar[c("aic", "bic", "bic2")]),
                                           ### Fifth column
                                           dmetric = c(NA, unlist(chidiff.conf.met[2L, "Chisq diff"]), if (isTRUE(!is.null(group))) { rep(NA, times = ngroups) }, unlist(chidiff.conf.met[2L, c("Df diff", "Pr(>Chisq)")]), NA, NA,
                                                       NA, lav.fit.metric[c("cfi.scaled", "tli.scaled")] - lav.fit.config[c("cfi.scaled", "tli.scaled")], NA,
                                                       NA, lav.fit.metric["rmsea.scaled"] - lav.fit.config["rmsea.scaled"], NA, NA, NA, NA, lav.fit.metric["srmr_bentler"] - lav.fit.config["srmr_bentler"], NA,
+                                                      NA, rep(NA, times = 4),
                                                       NA, lav.fit.metric[c("aic", "bic", "bic2")] - lav.fit.config[c("aic", "bic", "bic2")]),
                                           ### Sixth column
                                           dscalar = c(NA, unlist(chidiff.met.sca[2L, "Chisq diff"]), if (isTRUE(!is.null(group))) { rep(NA, times = ngroups) }, unlist(chidiff.met.sca[2L, c("Df diff", "Pr(>Chisq)")]), NA, NA,
                                                       NA, lav.fit.scalar[c("cfi.scaled", "tli.scaled")] - lav.fit.metric[c("cfi.scaled", "tli.scaled")], NA,
                                                       NA, lav.fit.scalar["rmsea.scaled"] - lav.fit.metric["rmsea.scaled"], NA, NA, NA, NA, lav.fit.scalar["srmr_bentler"] - lav.fit.metric["srmr_bentler"], NA,
+                                                      NA, rep(NA, times = 4),
                                                       NA, lav.fit.scalar[c("aic", "bic", "bic2")] - lav.fit.metric[c("aic", "bic", "bic2")]), fix.empty.names = FALSE)
 
                  ###### Robust fit indices
@@ -4985,6 +5386,7 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
                                           }, lav.fit.metric[c("df.scaled", "pvalue.scaled", "chisq.scaling.factor")], NA,
                                           NA, lav.fit.metric[c("cfi.robust", "tli.robust")], NA,
                                           NA, lav.fit.metric[c("rmsea.robust", "rmsea.ci.lower.robust", "rmsea.ci.upper.robust", "rmsea.pvalue.robust")], NA, lav.fit.metric["srmr_bentler"], NA,
+                                          NA, lav.fit.metric[c("gfi.robust", "gfi.ci.lower.robust", "gfi.ci.upper.robust")], NA,
                                           NA, lav.fit.metric[c("aic", "bic", "bic2")]),
                                           ### Fourth column
                                           scalar = c(NA, lav.fit.scalar["chisq.scaled"], if (isTRUE(!is.null(group))) {
@@ -5016,16 +5418,19 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
                                           }, lav.fit.scalar[c("df.scaled", "pvalue.scaled", "chisq.scaling.factor")], NA,
                                           NA, lav.fit.scalar[c("cfi.robust", "tli.robust")], NA,
                                           NA, lav.fit.scalar[c("rmsea.robust", "rmsea.ci.lower.robust", "rmsea.ci.upper.robust", "rmsea.pvalue.robust")], NA, lav.fit.scalar["srmr_bentler"], NA,
+                                          NA, lav.fit.scalar[c("gfi.robust", "gfi.ci.lower.robust", "gfi.ci.upper.robust")], NA,
                                           NA, lav.fit.scalar[c("aic", "bic", "bic2")]),
                                           ### Fifth column
                                           dmetric = c(NA, unlist(chidiff.conf.met[2L, "Chisq diff"]), if (isTRUE(!is.null(group))) { rep(NA, times = ngroups) }, unlist(chidiff.conf.met[2L, c("Df diff", "Pr(>Chisq)")]), NA, NA,
                                                       NA, lav.fit.metric[c("cfi.robust", "tli.robust")] - lav.fit.config[c("cfi.robust", "tli.robust")], NA,
                                                       NA, lav.fit.metric["rmsea.robust"] - lav.fit.config["rmsea.robust"], NA, NA, NA, NA, lav.fit.metric["srmr_bentler"] - lav.fit.config["srmr_bentler"], NA,
+                                                      NA, lav.fit.metric["gfi.robust"] - lav.fit.config["gfi.robust"], NA, NA, NA,
                                                       NA, lav.fit.metric[c("aic", "bic", "bic2")] - lav.fit.config[c("aic", "bic", "bic2")]),
                                           ### Sixth column
                                           dscalar = c(NA, unlist(chidiff.met.sca[2L, "Chisq diff"]), if (isTRUE(!is.null(group))) { rep(NA, times = ngroups) }, unlist(chidiff.met.sca[2L, c("Df diff", "Pr(>Chisq)")]), NA, NA,
                                                       NA, lav.fit.scalar[c("cfi.robust", "tli.robust")] - lav.fit.metric[c("cfi.robust", "tli.robust")], NA,
                                                       NA, lav.fit.scalar["rmsea.robust"] - lav.fit.metric["rmsea.robust"], NA, NA, NA, NA, lav.fit.scalar["srmr_bentler"] - lav.fit.metric["srmr_bentler"], NA,
+                                                      NA, lav.fit.scalar["gfi.robust"] - lav.fit.metric["gfi.robust"], NA, NA, NA,
                                                       NA, lav.fit.scalar[c("aic", "bic", "bic2")] - lav.fit.metric[c("aic", "bic", "bic2")]), fix.empty.names = FALSE)
 
                ##### Configural and Metric Invariance Model
@@ -5037,11 +5442,13 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
                                          metric = c(NA, lav.fit.metric["chisq"], if (isTRUE(!is.null(group))) { lavaan::lavInspect(mod.metric.fit, what = "test")$standard$stat.group }, lav.fit.metric[c("df", "pvalue")], NA,
                                                     NA, lav.fit.metric[c("cfi", "tli")], NA,
                                                     NA, lav.fit.metric[c("rmsea", "rmsea.ci.lower", "rmsea.ci.upper", "rmsea.pvalue")], NA, lav.fit.metric["srmr_bentler"], NA,
+                                                    NA, lav.fit.metric[c("gfi", "gfi.ci.lower", "gfi.ci.upper")], NA,
                                                     NA, lav.fit.metric[c("aic", "bic", "bic2")]),
                                          ### Fourth column
                                          dmetric = c(NA, unlist(chidiff.conf.met[2L, "Chisq diff"]), if (isTRUE(!is.null(group))) { rep(NA, times = ngroups) }, unlist(chidiff.conf.met[2L, c("Df diff", "Pr(>Chisq)")]), NA,
                                                      NA, lav.fit.metric[c("cfi", "tli")] - lav.fit.config[c("cfi", "tli")], NA,
                                                      NA, lav.fit.metric["rmsea"] - lav.fit.config["rmsea"], NA, NA, NA, NA, lav.fit.metric["srmr_bentler"] - lav.fit.config["srmr_bentler"], NA,
+                                                     NA, lav.fit.metric["gfi"] - lav.fit.config["gfi"], NA, NA, NA,
                                                      NA, lav.fit.metric[c("aic", "bic", "bic2")] - lav.fit.config[c("aic", "bic", "bic2")]), fix.empty.names = FALSE)
 
                  ###### Scaled fit indices
@@ -5076,11 +5483,13 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
                                           }, lav.fit.metric[c("df.scaled", "pvalue.scaled", "chisq.scaling.factor")], NA,
                                           NA, lav.fit.metric[c("cfi.scaled", "tli.scaled")], NA,
                                           NA, lav.fit.metric[c("rmsea.scaled", "rmsea.ci.lower.scaled", "rmsea.ci.upper.scaled", "rmsea.pvalue.scaled")], NA, lav.fit.metric["srmr_bentler"], NA,
+                                          NA, rep(NA, times = 4),
                                           NA, lav.fit.metric[c("aic", "bic", "bic2")]),
                                           ### Fourth column
                                           dmetric = c(NA, unlist(chidiff.conf.met[2L, "Chisq diff"]), if (isTRUE(!is.null(group))) { rep(NA, times = ngroups) }, unlist(chidiff.conf.met[2L, c("Df diff", "Pr(>Chisq)")]), NA, NA,
                                                       NA, lav.fit.metric[c("cfi.scaled", "tli.scaled")] - lav.fit.config[c("cfi.scaled", "tli.scaled")], NA,
                                                       NA, lav.fit.metric["rmsea.scaled"] - lav.fit.config["rmsea.scaled"], NA, NA, NA, NA, lav.fit.metric["srmr_bentler"] - lav.fit.config["srmr_bentler"], NA,
+                                                      NA, rep(NA, times = 4),
                                                       NA, lav.fit.metric[c("aic", "bic", "bic2")] - lav.fit.config[c("aic", "bic", "bic2")]), fix.empty.names = FALSE)
 
                  ###### Robust fit indices
@@ -5115,11 +5524,13 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
                                           }, lav.fit.metric[c("df.scaled", "pvalue.scaled", "chisq.scaling.factor")], NA,
                                           NA, lav.fit.metric[c("cfi.robust", "tli.robust")], NA,
                                           NA, lav.fit.metric[c("rmsea.robust", "rmsea.ci.lower.robust", "rmsea.ci.upper.robust", "rmsea.pvalue.robust")], NA, lav.fit.metric["srmr_bentler"], NA,
+                                          NA, lav.fit.metric[c("gfi.robust", "gfi.ci.lower.robust", "gfi.ci.upper.robust")], NA,
                                           NA, lav.fit.metric[c("aic", "bic", "bic2")]),
                                           ### Fourth column
                                           dmetric = c(NA, unlist(chidiff.conf.met[2L, "Chisq diff"]), if (isTRUE(!is.null(group))) { rep(NA, times = ngroups) }, unlist(chidiff.conf.met[2L, c("Df diff", "Pr(>Chisq)")]), NA, NA,
                                                       NA, lav.fit.metric[c("cfi.robust", "tli.robust")] - lav.fit.config[c("cfi.robust", "tli.robust")], NA,
                                                       NA, lav.fit.metric["rmsea.robust"] - lav.fit.config["rmsea.robust"], NA, NA, NA, NA, lav.fit.metric["srmr_bentler"] - lav.fit.config["srmr_bentler"], NA,
+                                                      NA, lav.fit.metric["gfi.robust"] - lav.fit.config["gfi.robust"], NA, NA, NA,
                                                       NA, lav.fit.metric[c("aic", "bic", "bic2")] - lav.fit.config[c("aic", "bic", "bic2")]), fix.empty.names = FALSE)
 
                }
@@ -5137,41 +5548,49 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
                                          thres = c(NA, lav.fit.thres["chisq"], if (isTRUE(!is.null(group))) { lavaan::lavInspect(mod.thres.fit, what = "test")$standard$stat.group }, lav.fit.thres[c("df", "pvalue")], NA,
                                                    NA, lav.fit.thres[c("cfi", "tli")], NA,
                                                    NA, lav.fit.thres[c("rmsea", "rmsea.ci.lower", "rmsea.ci.upper", "rmsea.pvalue")], NA, lav.fit.thres["srmr_bentler"], NA,
+                                                   NA, lav.fit.thres[c("gfi", "gfi.ci.lower", "gfi.ci.upper")], NA,
                                                    NA, lav.fit.thres[c("aic", "bic", "bic2")]),
                                          ### Fourth column
                                          metric = c(NA, lav.fit.metric["chisq"], if (isTRUE(!is.null(group))) { lavaan::lavInspect(mod.metric.fit, what = "test")$standard$stat.group }, lav.fit.metric[c("df", "pvalue")], NA,
                                                     NA, lav.fit.metric[c("cfi", "tli")], NA,
                                                     NA, lav.fit.metric[c("rmsea", "rmsea.ci.lower", "rmsea.ci.upper", "rmsea.pvalue")], NA, lav.fit.metric["srmr_bentler"], NA,
+                                                    NA, lav.fit.metric[c("gfi", "gfi.ci.lower", "gfi.ci.upper")], NA,
                                                     NA, lav.fit.metric[c("aic", "bic", "bic2")]),
                                          ### Fifth column
                                          scalar = c(NA, lav.fit.scalar["chisq"], if (isTRUE(!is.null(group))) { lavaan::lavInspect(mod.scalar.fit, what = "test")$standard$stat.group }, lav.fit.scalar[c("df", "pvalue")], NA,
                                                     NA, lav.fit.scalar[c("cfi", "tli")], NA,
                                                     NA, lav.fit.scalar[c("rmsea", "rmsea.ci.lower", "rmsea.ci.upper", "rmsea.pvalue")], NA, lav.fit.scalar["srmr_bentler"], NA,
+                                                    NA, lav.fit.scalar[c("gfi", "gfi.ci.lower", "gfi.ci.upper")], NA,
                                                     NA, lav.fit.scalar[c("aic", "bic", "bic2")]),
                                          ### Sixth column
                                          strict = c(NA, lav.fit.strict["chisq"], if (isTRUE(!is.null(group))) { lavaan::lavInspect(mod.strict.fit, what = "test")$standard$stat.group }, lav.fit.strict[c("df", "pvalue")], NA,
                                                     NA, lav.fit.strict[c("cfi", "tli")], NA,
                                                     NA, lav.fit.strict[c("rmsea", "rmsea.ci.lower", "rmsea.ci.upper", "rmsea.pvalue")], NA, lav.fit.strict["srmr_bentler"], NA,
+                                                    NA, lav.fit.strict[c("gfi", "gfi.ci.lower", "gfi.ci.upper")], NA,
                                                     NA, lav.fit.strict[c("aic", "bic", "bic2")]),
                                          ### Seventh column
                                          dthres = c(NA, unlist(chidiff.conf.thr[2L, "Chisq diff"]), if (isTRUE(!is.null(group))) { rep(NA, times = ngroups) }, unlist(chidiff.conf.thr[2L, c("Df diff", "Pr(>Chisq)")]), NA,
                                                     NA, lav.fit.thres[c("cfi", "tli")] - lav.fit.config[c("cfi", "tli")], NA,
                                                     NA, lav.fit.thres["rmsea"] - lav.fit.config["rmsea"], NA, NA, NA, NA, lav.fit.thres["srmr_bentler"] - lav.fit.config["srmr_bentler"], NA,
+                                                    NA, lav.fit.thres["gfi"] - lav.fit.config["gfi"], NA, NA, NA,
                                                     NA, lav.fit.thres[c("aic", "bic", "bic2")] - lav.fit.config[c("aic", "bic", "bic2")]),
                                          ### Eight column
                                          dmetric = c(NA, unlist(chidiff.thr.met[2L, "Chisq diff"]), if (isTRUE(!is.null(group))) { rep(NA, times = ngroups) }, unlist(chidiff.thr.met[2L, c("Df diff", "Pr(>Chisq)")]), NA,
                                                      NA, lav.fit.metric[c("cfi", "tli")] - lav.fit.thres[c("cfi", "tli")], NA,
                                                      NA, lav.fit.metric["rmsea"] - lav.fit.thres["rmsea"], NA, NA, NA, NA, lav.fit.metric["srmr_bentler"] - lav.fit.thres["srmr_bentler"], NA,
+                                                     NA, lav.fit.metric["gfi"] - lav.fit.thres["gfi"], NA, NA, NA,
                                                      NA, lav.fit.metric[c("aic", "bic", "bic2")] - lav.fit.thres[c("aic", "bic", "bic2")]),
                                          ### Ninth column
                                          dscalar = c(NA, unlist(chidiff.met.sca[2L, "Chisq diff"]), if (isTRUE(!is.null(group))) { rep(NA, times = ngroups) }, unlist(chidiff.met.sca[2L, c("Df diff", "Pr(>Chisq)")]), NA,
                                                      NA, lav.fit.scalar[c("cfi", "tli")] - lav.fit.metric[c("cfi", "tli")], NA,
                                                      NA, lav.fit.scalar["rmsea"] - lav.fit.metric["rmsea"], NA, NA, NA, NA, lav.fit.scalar["srmr_bentler"] - lav.fit.metric["srmr_bentler"], NA,
+                                                     NA, lav.fit.scalar["gfi"] - lav.fit.metric["gfi"], NA, NA, NA,
                                                      NA, lav.fit.scalar[c("aic", "bic", "bic2")] - lav.fit.metric[c("aic", "bic", "bic2")]),
                                          ### Tenth column
                                          dstrict = c(NA, unlist(chidiff.sca.str[2L, "Chisq diff"]), if (isTRUE(!is.null(group))) { rep(NA, times = ngroups) }, unlist(chidiff.sca.str[2L, c("Df diff", "Pr(>Chisq)")]), NA,
                                                      NA, lav.fit.strict[c("cfi", "tli")] - lav.fit.scalar[c("cfi", "tli")], NA,
                                                      NA, lav.fit.strict["rmsea"] - lav.fit.scalar["rmsea"], NA, NA, NA, NA, lav.fit.strict["srmr_bentler"] - lav.fit.scalar["srmr_bentler"], NA,
+                                                     NA, lav.fit.strict["gfi"] - lav.fit.scalar["gfi"], NA, NA, NA,
                                                      NA, lav.fit.strict[c("aic", "bic", "bic2")] - lav.fit.scalar[c("aic", "bic", "bic2")]), fix.empty.names = FALSE)
 
                  ###### Scaled fit indices
@@ -5206,6 +5625,7 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
                                           }, lav.fit.thres[c("df.scaled", "pvalue.scaled", "chisq.scaling.factor")], NA,
                                           NA, lav.fit.thres[c("cfi.scaled", "tli.scaled")], NA,
                                           NA, lav.fit.thres[c("rmsea.scaled", "rmsea.ci.lower.scaled", "rmsea.ci.upper.scaled", "rmsea.pvalue.scaled")], NA, lav.fit.thres["srmr_bentler"], NA,
+                                          NA, rep(NA, times = 4),
                                           NA, lav.fit.thres[c("aic", "bic", "bic2")]),
                                           ### Fourth column
                                           metric = c(NA, lav.fit.metric["chisq.scaled"], if (isTRUE(!is.null(group))) {
@@ -5237,6 +5657,7 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
                                           }, lav.fit.metric[c("df.scaled", "pvalue.scaled", "chisq.scaling.factor")], NA,
                                           NA, lav.fit.metric[c("cfi.scaled", "tli.scaled")], NA,
                                           NA, lav.fit.metric[c("rmsea.scaled", "rmsea.ci.lower.scaled", "rmsea.ci.upper.scaled", "rmsea.pvalue.scaled")], NA, lav.fit.metric["srmr_bentler"], NA,
+                                          NA, rep(NA, times = 4),
                                           NA, lav.fit.metric[c("aic", "bic", "bic2")]),
                                           ### Fifth column
                                           scalar = c(NA, lav.fit.scalar["chisq.scaled"], if (isTRUE(!is.null(group))) {
@@ -5268,6 +5689,7 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
                                           }, lav.fit.scalar[c("df.scaled", "pvalue.scaled", "chisq.scaling.factor")], NA,
                                           NA, lav.fit.scalar[c("cfi.scaled", "tli.scaled")], NA,
                                           NA, lav.fit.scalar[c("rmsea.scaled", "rmsea.ci.lower.scaled", "rmsea.ci.upper.scaled", "rmsea.pvalue.scaled")], NA, lav.fit.scalar["srmr_bentler"], NA,
+                                          NA, rep(NA, times = 4),
                                           NA, lav.fit.scalar[c("aic", "bic", "bic2")]),
                                           ### Sixth column
                                           strict = c(NA, lav.fit.strict["chisq.scaled"], if (isTRUE(!is.null(group))) {
@@ -5299,26 +5721,31 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
                                           }, lav.fit.strict[c("df.scaled", "pvalue.scaled", "chisq.scaling.factor")], NA,
                                           NA, lav.fit.strict[c("cfi.scaled", "tli.scaled")], NA,
                                           NA, lav.fit.strict[c("rmsea.scaled", "rmsea.ci.lower.scaled", "rmsea.ci.upper.scaled", "rmsea.pvalue.scaled")], NA, lav.fit.strict["srmr_bentler"], NA,
+                                          NA, rep(NA, times = 4),
                                           NA, lav.fit.strict[c("aic", "bic", "bic2")]),
                                           ### Seventh column
                                           dthres = c(NA, unlist(chidiff.conf.thr[2L, "Chisq diff"]), if (isTRUE(!is.null(group))) { rep(NA, times = ngroups) }, unlist(chidiff.conf.thr[2L, c("Df diff", "Pr(>Chisq)")]), NA, NA,
                                                      NA, lav.fit.thres[c("cfi.scaled", "tli.scaled")] - lav.fit.config[c("cfi.scaled", "tli.scaled")], NA,
                                                      NA, lav.fit.thres["rmsea.scaled"] - lav.fit.config["rmsea.scaled"], NA, NA, NA, NA, lav.fit.thres["srmr_bentler"] - lav.fit.config["srmr_bentler"], NA,
+                                                     NA, rep(NA, times = 4),
                                                      NA, lav.fit.thres[c("aic", "bic", "bic2")] - lav.fit.config[c("aic", "bic", "bic2")]),
                                           ### Eight column
                                           dmetric = c(NA, unlist(chidiff.thr.met[2L, "Chisq diff"]), if (isTRUE(!is.null(group))) { rep(NA, times = ngroups) }, unlist(chidiff.thr.met[2L, c("Df diff", "Pr(>Chisq)")]), NA, NA,
                                                       NA, lav.fit.metric[c("cfi.scaled", "tli.scaled")] - lav.fit.thres[c("cfi.scaled", "tli.scaled")], NA,
                                                       NA, lav.fit.metric["rmsea.scaled"] - lav.fit.thres["rmsea.scaled"], NA, NA, NA, NA, lav.fit.metric["srmr_bentler"] - lav.fit.thres["srmr_bentler"], NA,
+                                                      NA, rep(NA, times = 4),
                                                       NA, lav.fit.metric[c("aic", "bic", "bic2")] - lav.fit.thres[c("aic", "bic", "bic2")]),
                                           ### Ninth column
                                           dscalar = c(NA, unlist(chidiff.met.sca[2L, "Chisq diff"]), if (isTRUE(!is.null(group))) { rep(NA, times = ngroups) }, unlist(chidiff.met.sca[2L, c("Df diff", "Pr(>Chisq)")]), NA, NA,
                                                       NA, lav.fit.scalar[c("cfi.scaled", "tli.scaled")] - lav.fit.metric[c("cfi.scaled", "tli.scaled")], NA,
                                                       NA, lav.fit.scalar["rmsea.scaled"] - lav.fit.metric["rmsea.scaled"], NA, NA, NA, NA, lav.fit.scalar["srmr_bentler"] - lav.fit.metric["srmr_bentler"], NA,
+                                                      NA, rep(NA, times = 4),
                                                       NA, lav.fit.scalar[c("aic", "bic", "bic2")] - lav.fit.metric[c("aic", "bic", "bic2")]),
                                           ### Tenth column
                                           dstrict = c(NA, unlist(chidiff.sca.str[2L, "Chisq diff"]), if (isTRUE(!is.null(group))) { rep(NA, times = ngroups) }, unlist(chidiff.sca.str[2L, c("Df diff", "Pr(>Chisq)")]), NA, NA,
                                                       NA, lav.fit.strict[c("cfi.scaled", "tli.scaled")] - lav.fit.scalar[c("cfi.scaled", "tli.scaled")], NA,
                                                       NA, lav.fit.strict["rmsea.scaled"] - lav.fit.scalar["rmsea.scaled"], NA, NA, NA, NA, lav.fit.strict["srmr_bentler"] - lav.fit.scalar["srmr_bentler"], NA,
+                                                      NA, rep(NA, times = 4),
                                                       NA, lav.fit.strict[c("aic", "bic", "bic2")] - lav.fit.scalar[c("aic", "bic", "bic2")]), fix.empty.names = FALSE)
 
                  ###### Robust fit indices
@@ -5353,6 +5780,7 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
                                           }, lav.fit.thres[c("df.scaled", "pvalue.scaled", "chisq.scaling.factor")], NA,
                                           NA, lav.fit.thres[c("cfi.robust", "tli.robust")], NA,
                                           NA, lav.fit.thres[c("rmsea.robust", "rmsea.ci.lower.robust", "rmsea.ci.upper.robust", "rmsea.pvalue.robust")], NA, lav.fit.thres["srmr_bentler"], NA,
+                                          NA, lav.fit.thres[c("gfi.robust", "gfi.ci.lower.robust", "gfi.ci.upper.robust")], NA,
                                           NA, lav.fit.thres[c("aic", "bic", "bic2")]),
                                           ### Fourth column
                                           metric = c(NA, lav.fit.metric["chisq.scaled"], if (isTRUE(!is.null(group))) {
@@ -5384,6 +5812,7 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
                                           }, lav.fit.metric[c("df.scaled", "pvalue.scaled", "chisq.scaling.factor")], NA,
                                           NA, lav.fit.metric[c("cfi.robust", "tli.robust")], NA,
                                           NA, lav.fit.metric[c("rmsea.robust", "rmsea.ci.lower.robust", "rmsea.ci.upper.robust", "rmsea.pvalue.robust")], NA, lav.fit.metric["srmr_bentler"], NA,
+                                          NA, lav.fit.metric[c("gfi.robust", "gfi.ci.lower.robust", "gfi.ci.upper.robust")], NA,
                                           NA, lav.fit.metric[c("aic", "bic", "bic2")]),
                                           ### Fifth column
                                           scalar = c(NA, lav.fit.scalar["chisq.scaled"], if (isTRUE(!is.null(group))) {
@@ -5415,6 +5844,7 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
                                           }, lav.fit.scalar[c("df.scaled", "pvalue.scaled", "chisq.scaling.factor")], NA,
                                           NA, lav.fit.scalar[c("cfi.robust", "tli.robust")], NA,
                                           NA, lav.fit.scalar[c("rmsea.robust", "rmsea.ci.lower.robust", "rmsea.ci.upper.robust", "rmsea.pvalue.robust")], NA, lav.fit.scalar["srmr_bentler"], NA,
+                                          NA, lav.fit.scalar[c("gfi.robust", "gfi.ci.lower.robust", "gfi.ci.upper.robust")], NA,
                                           NA, lav.fit.scalar[c("aic", "bic", "bic2")]),
                                           ### Sixth column
                                           strict = c(NA, lav.fit.strict["chisq.scaled"], if (isTRUE(!is.null(group))) {
@@ -5446,26 +5876,31 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
                                           }, lav.fit.strict[c("df.scaled", "pvalue.scaled", "chisq.scaling.factor")], NA,
                                           NA, lav.fit.strict[c("cfi.robust", "tli.robust")], NA,
                                           NA, lav.fit.strict[c("rmsea.robust", "rmsea.ci.lower.robust", "rmsea.ci.upper.robust", "rmsea.pvalue.robust")], NA, lav.fit.strict["srmr_bentler"], NA,
+                                          NA, lav.fit.strict[c("gfi.robust", "gfi.ci.lower.robust", "gfi.ci.upper.robust")], NA,
                                           NA, lav.fit.strict[c("aic", "bic", "bic2")]),
                                           ### Seventh column
                                           dthres = c(NA, unlist(chidiff.conf.thr[2L, "Chisq diff"]), if (isTRUE(!is.null(group))) { rep(NA, times = ngroups) }, unlist(chidiff.conf.thr[2L, c("Df diff", "Pr(>Chisq)")]), NA, NA,
                                                       NA, lav.fit.thres[c("cfi.robust", "tli.robust")] - lav.fit.config[c("cfi.robust", "tli.robust")], NA,
                                                       NA, lav.fit.thres["rmsea.robust"] - lav.fit.config["rmsea.robust"], NA, NA, NA, NA, lav.fit.thres["srmr_bentler"] - lav.fit.config["srmr_bentler"], NA,
+                                                      NA, lav.fit.thres["gfi.robust"] - lav.fit.config["gfi.robust"], NA, NA, NA,
                                                       NA, lav.fit.thres[c("aic", "bic", "bic2")] - lav.fit.config[c("aic", "bic", "bic2")]),
                                           ### Eight column
                                           dmetric = c(NA, unlist(chidiff.thr.met[2L, "Chisq diff"]), if (isTRUE(!is.null(group))) { rep(NA, times = ngroups) }, unlist(chidiff.thr.met[2L, c("Df diff", "Pr(>Chisq)")]), NA, NA,
                                                       NA, lav.fit.metric[c("cfi.robust", "tli.robust")] - lav.fit.thres[c("cfi.robust", "tli.robust")], NA,
                                                       NA, lav.fit.metric["rmsea.robust"] - lav.fit.thres["rmsea.robust"], NA, NA, NA, NA, lav.fit.metric["srmr_bentler"] - lav.fit.thres["srmr_bentler"], NA,
+                                                      NA, lav.fit.metric["gfi.robust"] - lav.fit.thres["gfi.robust"], NA, NA, NA,
                                                       NA, lav.fit.metric[c("aic", "bic", "bic2")] - lav.fit.thres[c("aic", "bic", "bic2")]),
                                           ### Ninth column
                                           dscalar = c(NA, unlist(chidiff.met.sca[2L, "Chisq diff"]), if (isTRUE(!is.null(group))) { rep(NA, times = ngroups) }, unlist(chidiff.met.sca[2L, c("Df diff", "Pr(>Chisq)")]), NA, NA,
                                                       NA, lav.fit.scalar[c("cfi.robust", "tli.robust")] - lav.fit.metric[c("cfi.robust", "tli.robust")], NA,
                                                       NA, lav.fit.scalar["rmsea.robust"] - lav.fit.metric["rmsea.robust"], NA, NA, NA, NA, lav.fit.scalar["srmr_bentler"] - lav.fit.metric["srmr_bentler"], NA,
+                                                      NA, lav.fit.scalar["gfi.robust"] - lav.fit.metric["gfi.robust"], NA, NA, NA,
                                                       NA, lav.fit.scalar[c("aic", "bic", "bic2")] - lav.fit.metric[c("aic", "bic", "bic2")]),
                                           ### Tenth column
                                           dstrict = c(NA, unlist(chidiff.sca.str[2L, "Chisq diff"]), if (isTRUE(!is.null(group))) { rep(NA, times = ngroups) }, unlist(chidiff.sca.str[2L, c("Df diff", "Pr(>Chisq)")]), NA, NA,
                                                       NA, lav.fit.strict[c("cfi.robust", "tli.robust")] - lav.fit.scalar[c("cfi.robust", "tli.robust")], NA,
                                                       NA, lav.fit.strict["rmsea.robust"] - lav.fit.scalar["rmsea.robust"], NA, NA, NA, NA, lav.fit.strict["srmr_bentler"] - lav.fit.scalar["srmr_bentler"], NA,
+                                                      NA, lav.fit.strict["gfi.robust"] - lav.fit.scalar["gfi.robust"], NA, NA, NA,
                                                       NA, lav.fit.strict[c("aic", "bic", "bic2")] - lav.fit.scalar[c("aic", "bic", "bic2")]), fix.empty.names = FALSE)
 
                ##### Configural, Threshold, Metric, and Scalar Invariance Model
@@ -5477,31 +5912,37 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
                                          thres = c(NA, lav.fit.thres["chisq"], if (isTRUE(!is.null(group))) { lavaan::lavInspect(mod.thres.fit, what = "test")$standard$stat.group }, lav.fit.thres[c("df", "pvalue")], NA,
                                                    NA, lav.fit.thres[c("cfi", "tli")], NA,
                                                    NA, lav.fit.thres[c("rmsea", "rmsea.ci.lower", "rmsea.ci.upper", "rmsea.pvalue")], NA, lav.fit.thres["srmr_bentler"], NA,
+                                                   NA, lav.fit.thres[c("gfi", "gfi.ci.lower", "gfi.ci.upper")], NA,
                                                    NA, lav.fit.thres[c("aic", "bic", "bic2")]),
                                          ### Fourth column
                                          metric = c(NA, lav.fit.metric["chisq"], if (isTRUE(!is.null(group))) { lavaan::lavInspect(mod.metric.fit, what = "test")$standard$stat.group }, lav.fit.metric[c("df", "pvalue")], NA,
                                                     NA, lav.fit.metric[c("cfi", "tli")], NA,
                                                     NA, lav.fit.metric[c("rmsea", "rmsea.ci.lower", "rmsea.ci.upper", "rmsea.pvalue")], NA, lav.fit.metric["srmr_bentler"], NA,
+                                                    NA, lav.fit.metric[c("gfi", "gfi.ci.lower", "gfi.ci.upper")], NA,
                                                     NA, lav.fit.metric[c("aic", "bic", "bic2")]),
                                          ### Fifth column
                                          scalar = c(NA, lav.fit.scalar["chisq"], if (isTRUE(!is.null(group))) { lavaan::lavInspect(mod.scalar.fit, what = "test")$standard$stat.group }, lav.fit.scalar[c("df", "pvalue")], NA,
                                                     NA, lav.fit.scalar[c("cfi", "tli")], NA,
                                                     NA, lav.fit.scalar[c("rmsea", "rmsea.ci.lower", "rmsea.ci.upper", "rmsea.pvalue")], NA, lav.fit.scalar["srmr_bentler"], NA,
+                                                    NA, lav.fit.scalar[c("gfi", "gfi.ci.lower", "gfi.ci.upper")], NA,
                                                     NA, lav.fit.scalar[c("aic", "bic", "bic2")]),
                                          ### Sixth column
                                          dthres = c(NA, unlist(chidiff.conf.thr[2L, "Chisq diff"]), if (isTRUE(!is.null(group))) { rep(NA, times = ngroups) }, unlist(chidiff.conf.thr[2L, c("Df diff", "Pr(>Chisq)")]), NA,
                                                     NA, lav.fit.thres[c("cfi", "tli")] - lav.fit.config[c("cfi", "tli")], NA,
                                                     NA, lav.fit.thres["rmsea"] - lav.fit.config["rmsea"], NA, NA, NA, NA, lav.fit.thres["srmr_bentler"] - lav.fit.config["srmr_bentler"], NA,
+                                                    NA, lav.fit.thres["gfi"] - lav.fit.config["gfi"], NA, NA, NA,
                                                     NA, lav.fit.thres[c("aic", "bic", "bic2")] - lav.fit.config[c("aic", "bic", "bic2")]),
                                          ### Seventh column
                                          dmetric = c(NA, unlist(chidiff.thr.met[2L, "Chisq diff"]), if (isTRUE(!is.null(group))) { rep(NA, times = ngroups) }, unlist(chidiff.thr.met[2L, c("Df diff", "Pr(>Chisq)")]), NA,
                                                      NA, lav.fit.metric[c("cfi", "tli")] - lav.fit.thres[c("cfi", "tli")], NA,
                                                      NA, lav.fit.metric["rmsea"] - lav.fit.thres["rmsea"], NA, NA, NA, NA, lav.fit.metric["srmr_bentler"] - lav.fit.thres["srmr_bentler"], NA,
+                                                     NA, lav.fit.metric["gfi"] - lav.fit.thres["gfi"], NA, NA, NA,
                                                      NA, lav.fit.metric[c("aic", "bic", "bic2")] - lav.fit.thres[c("aic", "bic", "bic2")]),
                                          ### Eight column
                                          dscalar = c(NA, unlist(chidiff.met.sca[2L, "Chisq diff"]), if (isTRUE(!is.null(group))) { rep(NA, times = ngroups) }, unlist(chidiff.met.sca[2L, c("Df diff", "Pr(>Chisq)")]), NA,
                                                      NA, lav.fit.scalar[c("cfi", "tli")] - lav.fit.metric[c("cfi", "tli")], NA,
                                                      NA, lav.fit.scalar["rmsea"] - lav.fit.metric["rmsea"], NA, NA, NA, NA, lav.fit.scalar["srmr_bentler"] - lav.fit.metric["srmr_bentler"], NA,
+                                                     NA, lav.fit.scalar["gfi"] - lav.fit.metric["gfi"], NA, NA, NA,
                                                      NA, lav.fit.scalar[c("aic", "bic", "bic2")] - lav.fit.metric[c("aic", "bic", "bic2")]), fix.empty.names = FALSE)
 
                  ###### Scaled fit indices
@@ -5536,6 +5977,7 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
                                           }, lav.fit.thres[c("df.scaled", "pvalue.scaled", "chisq.scaling.factor")], NA,
                                           NA, lav.fit.thres[c("cfi.scaled", "tli.scaled")], NA,
                                           NA, lav.fit.thres[c("rmsea.scaled", "rmsea.ci.lower.scaled", "rmsea.ci.upper.scaled", "rmsea.pvalue.scaled")], NA, lav.fit.thres["srmr_bentler"], NA,
+                                          NA, rep(NA, times = 4),
                                           NA, lav.fit.thres[c("aic", "bic", "bic2")]),
                                           ### Fourth column
                                           metric = c(NA, lav.fit.metric["chisq.scaled"], if (isTRUE(!is.null(group))) {
@@ -5567,6 +6009,7 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
                                           }, lav.fit.metric[c("df.scaled", "pvalue.scaled", "chisq.scaling.factor")], NA,
                                           NA, lav.fit.metric[c("cfi.scaled", "tli.scaled")], NA,
                                           NA, lav.fit.metric[c("rmsea.scaled", "rmsea.ci.lower.scaled", "rmsea.ci.upper.scaled", "rmsea.pvalue.scaled")], NA, lav.fit.metric["srmr_bentler"], NA,
+                                          NA, rep(NA, times = 4),
                                           NA, lav.fit.metric[c("aic", "bic", "bic2")]),
                                           ### Fifth column
                                           scalar = c(NA, lav.fit.scalar["chisq.scaled"], if (isTRUE(!is.null(group))) {
@@ -5598,21 +6041,25 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
                                           }, lav.fit.scalar[c("df.scaled", "pvalue.scaled", "chisq.scaling.factor")], NA,
                                           NA, lav.fit.scalar[c("cfi.scaled", "tli.scaled")], NA,
                                           NA, lav.fit.scalar[c("rmsea.scaled", "rmsea.ci.lower.scaled", "rmsea.ci.upper.scaled", "rmsea.pvalue.scaled")], NA, lav.fit.scalar["srmr_bentler"], NA,
+                                          NA, rep(NA, times = 4),
                                           NA, lav.fit.scalar[c("aic", "bic", "bic2")]),
                                           ### Sixth column
                                           dthres = c(NA, unlist(chidiff.conf.thr[2L, "Chisq diff"]), if (isTRUE(!is.null(group))) { rep(NA, times = ngroups) }, unlist(chidiff.conf.thr[2L, c("Df diff", "Pr(>Chisq)")]), NA, NA,
                                                      NA, lav.fit.thres[c("cfi.scaled", "tli.scaled")] - lav.fit.config[c("cfi.scaled", "tli.scaled")], NA,
                                                      NA, lav.fit.thres["rmsea.scaled"] - lav.fit.config["rmsea.scaled"], NA, NA, NA, NA, lav.fit.thres["srmr_bentler"] - lav.fit.config["srmr_bentler"], NA,
+                                                     NA, rep(NA, times = 4),
                                                      NA, lav.fit.thres[c("aic", "bic", "bic2")] - lav.fit.config[c("aic", "bic", "bic2")]),
                                           ### Seventh column
                                           dmetric = c(NA, unlist(chidiff.thr.met[2L, "Chisq diff"]), if (isTRUE(!is.null(group))) { rep(NA, times = ngroups) }, unlist(chidiff.thr.met[2L, c("Df diff", "Pr(>Chisq)")]), NA, NA,
                                                       NA, lav.fit.metric[c("cfi.scaled", "tli.scaled")] - lav.fit.thres[c("cfi.scaled", "tli.scaled")], NA,
                                                       NA, lav.fit.metric["rmsea.scaled"] - lav.fit.thres["rmsea.scaled"], NA, NA, NA, NA, lav.fit.metric["srmr_bentler"] - lav.fit.thres["srmr_bentler"], NA,
+                                                      NA, rep(NA, times = 4),
                                                       NA, lav.fit.metric[c("aic", "bic", "bic2")] - lav.fit.thres[c("aic", "bic", "bic2")]),
                                           ### Eight column
                                           dscalar = c(NA, unlist(chidiff.met.sca[2L, "Chisq diff"]), if (isTRUE(!is.null(group))) { rep(NA, times = ngroups) }, unlist(chidiff.met.sca[2L, c("Df diff", "Pr(>Chisq)")]), NA, NA,
                                                       NA, lav.fit.scalar[c("cfi.scaled", "tli.scaled")] - lav.fit.metric[c("cfi.scaled", "tli.scaled")], NA,
                                                       NA, lav.fit.scalar["rmsea.scaled"] - lav.fit.metric["rmsea.scaled"], NA, NA, NA, NA, lav.fit.scalar["srmr_bentler"] - lav.fit.metric["srmr_bentler"], NA,
+                                                      NA, rep(NA, times = 4),
                                                       NA, lav.fit.scalar[c("aic", "bic", "bic2")] - lav.fit.metric[c("aic", "bic", "bic2")]), fix.empty.names = FALSE)
 
                  ###### Robust fit indices
@@ -5647,6 +6094,7 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
                                           }, lav.fit.thres[c("df.scaled", "pvalue.scaled", "chisq.scaling.factor")], NA,
                                           NA, lav.fit.thres[c("cfi.robust", "tli.robust")], NA,
                                           NA, lav.fit.thres[c("rmsea.robust", "rmsea.ci.lower.robust", "rmsea.ci.upper.robust", "rmsea.pvalue.robust")], NA, lav.fit.thres["srmr_bentler"], NA,
+                                          NA, lav.fit.thres[c("gfi.robust", "gfi.ci.lower.robust", "gfi.ci.upper.robust")], NA,
                                           NA, lav.fit.thres[c("aic", "bic", "bic2")]),
                                           ### Fourth column
                                           metric = c(NA, lav.fit.metric["chisq.scaled"], if (isTRUE(!is.null(group))) {
@@ -5678,6 +6126,7 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
                                           }, lav.fit.metric[c("df.scaled", "pvalue.scaled", "chisq.scaling.factor")], NA,
                                           NA, lav.fit.metric[c("cfi.robust", "tli.robust")], NA,
                                           NA, lav.fit.metric[c("rmsea.robust", "rmsea.ci.lower.robust", "rmsea.ci.upper.robust", "rmsea.pvalue.robust")], NA, lav.fit.metric["srmr_bentler"], NA,
+                                          NA, lav.fit.metric[c("gfi.robust", "gfi.ci.lower.robust", "gfi.ci.upper.robust")], NA,
                                           NA, lav.fit.metric[c("aic", "bic", "bic2")]),
                                           ### Fifth column
                                           scalar = c(NA, lav.fit.scalar["chisq.scaled"], if (isTRUE(!is.null(group))) {
@@ -5709,21 +6158,25 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
                                           }, lav.fit.scalar[c("df.scaled", "pvalue.scaled", "chisq.scaling.factor")], NA,
                                           NA, lav.fit.scalar[c("cfi.robust", "tli.robust")], NA,
                                           NA, lav.fit.scalar[c("rmsea.robust", "rmsea.ci.lower.robust", "rmsea.ci.upper.robust", "rmsea.pvalue.robust")], NA, lav.fit.scalar["srmr_bentler"], NA,
+                                          NA, lav.fit.scalar[c("gfi.robust", "gfi.ci.lower.robust", "gfi.ci.upper.robust")], NA,
                                           NA, lav.fit.scalar[c("aic", "bic", "bic2")]),
                                           ### Sixth column
                                           dthres = c(NA, unlist(chidiff.conf.thr[2L, "Chisq diff"]), if (isTRUE(!is.null(group))) { rep(NA, times = ngroups) }, unlist(chidiff.conf.thr[2L, c("Df diff", "Pr(>Chisq)")]), NA, NA,
                                                      NA, lav.fit.thres[c("cfi.robust", "tli.robust")] - lav.fit.config[c("cfi.robust", "tli.robust")], NA,
                                                      NA, lav.fit.thres["rmsea.robust"] - lav.fit.config["rmsea.robust"], NA, NA, NA, NA, lav.fit.thres["srmr_bentler"] - lav.fit.config["srmr_bentler"], NA,
+                                                     NA, lav.fit.thres["gfi.robust"] - lav.fit.config["gfi.robust"], NA, NA, NA,
                                                      NA, lav.fit.thres[c("aic", "bic", "bic2")] - lav.fit.config[c("aic", "bic", "bic2")]),
                                           ### Seventh column
                                           dmetric = c(NA, unlist(chidiff.thr.met[2L, "Chisq diff"]), if (isTRUE(!is.null(group))) { rep(NA, times = ngroups) }, unlist(chidiff.thr.met[2L, c("Df diff", "Pr(>Chisq)")]), NA, NA,
                                                       NA, lav.fit.metric[c("cfi.robust", "tli.robust")] - lav.fit.thres[c("cfi.robust", "tli.robust")], NA,
                                                       NA, lav.fit.metric["rmsea.robust"] - lav.fit.thres["rmsea.robust"], NA, NA, NA, NA, lav.fit.metric["srmr_bentler"] - lav.fit.thres["srmr_bentler"], NA,
+                                                      NA, lav.fit.metric["gfi.robust"] - lav.fit.thres["gfi.robust"], NA, NA, NA,
                                                       NA, lav.fit.metric[c("aic", "bic", "bic2")] - lav.fit.thres[c("aic", "bic", "bic2")]),
                                           ### Eight column
                                           dscalar = c(NA, unlist(chidiff.met.sca[2L, "Chisq diff"]), if (isTRUE(!is.null(group))) { rep(NA, times = ngroups) }, unlist(chidiff.met.sca[2L, c("Df diff", "Pr(>Chisq)")]), NA, NA,
                                                       NA, lav.fit.scalar[c("cfi.robust", "tli.robust")] - lav.fit.metric[c("cfi.robust", "tli.robust")], NA,
                                                       NA, lav.fit.scalar["rmsea.robust"] - lav.fit.metric["rmsea.robust"], NA, NA, NA, NA, lav.fit.scalar["srmr_bentler"] - lav.fit.metric["srmr_bentler"], NA,
+                                                      NA, lav.fit.scalar["gfi.robust"] - lav.fit.metric["gfi.robust"], NA, NA, NA,
                                                       NA, lav.fit.scalar[c("aic", "bic", "bic2")] - lav.fit.metric[c("aic", "bic", "bic2")]), fix.empty.names = FALSE)
 
                ##### Configural, Threshold, and Metric Invariance Model
@@ -5735,21 +6188,25 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
                                          thres = c(NA, lav.fit.thres["chisq"], if (isTRUE(!is.null(group))) { lavaan::lavInspect(mod.thres.fit, what = "test")$standard$stat.group }, lav.fit.thres[c("df", "pvalue")], NA,
                                                    NA, lav.fit.thres[c("cfi", "tli")], NA,
                                                    NA, lav.fit.thres[c("rmsea", "rmsea.ci.lower", "rmsea.ci.upper", "rmsea.pvalue")], NA, lav.fit.thres["srmr_bentler"], NA,
+                                                   NA, lav.fit.thres[c("gfi", "gfi.ci.lower", "gfi.ci.upper")], NA,
                                                    NA, lav.fit.thres[c("aic", "bic", "bic2")]),
                                          ### Fourth column
                                          metric = c(NA, lav.fit.metric["chisq"], if (isTRUE(!is.null(group))) { lavaan::lavInspect(mod.metric.fit, what = "test")$standard$stat.group }, lav.fit.metric[c("df", "pvalue")], NA,
                                                     NA, lav.fit.metric[c("cfi", "tli")], NA,
                                                     NA, lav.fit.metric[c("rmsea", "rmsea.ci.lower", "rmsea.ci.upper", "rmsea.pvalue")], NA, lav.fit.metric["srmr_bentler"], NA,
+                                                    NA, lav.fit.metric[c("gfi", "gfi.ci.lower", "gfi.ci.upper")], NA,
                                                     NA, lav.fit.metric[c("aic", "bic", "bic2")]),
                                          ### Fifth column
                                          dthres = c(NA, unlist(chidiff.conf.thr[2L, "Chisq diff"]), if (isTRUE(!is.null(group))) { rep(NA, times = ngroups) }, unlist(chidiff.conf.thr[2L, c("Df diff", "Pr(>Chisq)")]), NA,
                                                     NA, lav.fit.thres[c("cfi", "tli")] - lav.fit.config[c("cfi", "tli")], NA,
                                                     NA, lav.fit.thres["rmsea"] - lav.fit.config["rmsea"], NA, NA, NA, NA, lav.fit.thres["srmr_bentler"] - lav.fit.config["srmr_bentler"], NA,
+                                                    NA, lav.fit.thres["gfi"] - lav.fit.config["gfi"], NA, NA, NA,
                                                     NA, lav.fit.thres[c("aic", "bic", "bic2")] - lav.fit.config[c("aic", "bic", "bic2")]),
                                          ### Sixth column
                                          dmetric = c(NA, unlist(chidiff.thr.met[2L, "Chisq diff"]), if (isTRUE(!is.null(group))) { rep(NA, times = ngroups) }, unlist(chidiff.thr.met[2L, c("Df diff", "Pr(>Chisq)")]), NA,
                                                      NA, lav.fit.metric[c("cfi", "tli")] - lav.fit.thres[c("cfi", "tli")], NA,
                                                      NA, lav.fit.metric["rmsea"] - lav.fit.thres["rmsea"], NA, NA, NA, NA, lav.fit.metric["srmr_bentler"] - lav.fit.thres["srmr_bentler"], NA,
+                                                     NA, lav.fit.metric["gfi"] - lav.fit.thres["gfi"], NA, NA, NA,
                                                      NA, lav.fit.metric[c("aic", "bic", "bic2")] - lav.fit.thres[c("aic", "bic", "bic2")]), fix.empty.names = FALSE)
 
                  ###### Scaled fit indices
@@ -5784,6 +6241,7 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
                                           }, lav.fit.thres[c("df.scaled", "pvalue.scaled", "chisq.scaling.factor")], NA,
                                           NA, lav.fit.thres[c("cfi.scaled", "tli.scaled")], NA,
                                           NA, lav.fit.thres[c("rmsea.scaled", "rmsea.ci.lower.scaled", "rmsea.ci.upper.scaled", "rmsea.pvalue.scaled")], NA, lav.fit.thres["srmr_bentler"], NA,
+                                          NA, rep(NA, times = 4),
                                           NA, lav.fit.thres[c("aic", "bic", "bic2")]),
                                           ### Fourth column
                                           metric = c(NA, lav.fit.metric["chisq.scaled"], if (isTRUE(!is.null(group))) {
@@ -5815,16 +6273,19 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
                                           }, lav.fit.metric[c("df.scaled", "pvalue.scaled", "chisq.scaling.factor")], NA,
                                           NA, lav.fit.metric[c("cfi.scaled", "tli.scaled")], NA,
                                           NA, lav.fit.metric[c("rmsea.scaled", "rmsea.ci.lower.scaled", "rmsea.ci.upper.scaled", "rmsea.pvalue.scaled")], NA, lav.fit.metric["srmr_bentler"], NA,
+                                          NA, rep(NA, times = 4),
                                           NA, lav.fit.metric[c("aic", "bic", "bic2")]),
                                           ### Fifth column
                                           dthres = c(NA, unlist(chidiff.conf.thr[2L, "Chisq diff"]), if (isTRUE(!is.null(group))) { rep(NA, times = ngroups) }, unlist(chidiff.conf.thr[2L, c("Df diff", "Pr(>Chisq)")]), NA, NA,
                                                      NA, lav.fit.thres[c("cfi.scaled", "tli.scaled")] - lav.fit.config[c("cfi.scaled", "tli.scaled")], NA,
                                                      NA, lav.fit.thres["rmsea.scaled"] - lav.fit.config["rmsea.scaled"], NA, NA, NA, NA, lav.fit.thres["srmr_bentler"] - lav.fit.config["srmr_bentler"], NA,
+                                                     NA, rep(NA, times = 4),
                                                      NA, lav.fit.thres[c("aic", "bic", "bic2")] - lav.fit.config[c("aic", "bic", "bic2")]),
                                           ### Sixth column
                                           dmetric = c(NA, unlist(chidiff.thr.met[2L, "Chisq diff"]), if (isTRUE(!is.null(group))) { rep(NA, times = ngroups) }, unlist(chidiff.thr.met[2L, c("Df diff", "Pr(>Chisq)")]), NA, NA,
                                                       NA, lav.fit.metric[c("cfi.scaled", "tli.scaled")] - lav.fit.thres[c("cfi.scaled", "tli.scaled")], NA,
                                                       NA, lav.fit.metric["rmsea.scaled"] - lav.fit.thres["rmsea.scaled"], NA, NA, NA, NA, lav.fit.metric["srmr_bentler"] - lav.fit.thres["srmr_bentler"], NA,
+                                                      NA, rep(NA, times = 4),
                                                       NA, lav.fit.metric[c("aic", "bic", "bic2")] - lav.fit.thres[c("aic", "bic", "bic2")]), fix.empty.names = FALSE)
 
                  ###### Robust fit indices
@@ -5859,6 +6320,7 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
                                           }, lav.fit.thres[c("df.scaled", "pvalue.scaled", "chisq.scaling.factor")], NA,
                                           NA, lav.fit.thres[c("cfi.robust", "tli.robust")], NA,
                                           NA, lav.fit.thres[c("rmsea.robust", "rmsea.ci.lower.robust", "rmsea.ci.upper.robust", "rmsea.pvalue.robust")], NA, lav.fit.thres["srmr_bentler"], NA,
+                                          NA, lav.fit.thres[c("gfi.robust", "gfi.ci.lower.robust", "gfi.ci.upper.robust")], NA,
                                           NA, lav.fit.thres[c("aic", "bic", "bic2")]),
                                           ### Fourth column
                                           metric = c(NA, lav.fit.metric["chisq.scaled"], if (isTRUE(!is.null(group))) {
@@ -5890,16 +6352,19 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
                                           },  lav.fit.metric[c("df.scaled", "pvalue.scaled", "chisq.scaling.factor")], NA,
                                           NA, lav.fit.metric[c("cfi.robust", "tli.robust")], NA,
                                           NA, lav.fit.metric[c("rmsea.robust", "rmsea.ci.lower.robust", "rmsea.ci.upper.robust", "rmsea.pvalue.robust")], NA, lav.fit.metric["srmr_bentler"], NA,
+                                          NA, lav.fit.metric[c("gfi.robust", "gfi.ci.lower.robust", "gfi.ci.upper.robust")], NA,
                                           NA, lav.fit.metric[c("aic", "bic", "bic2")]),
                                           ### Fifth column
                                           dthres = c(NA, unlist(chidiff.conf.thr[2L, "Chisq diff"]), if (isTRUE(!is.null(group))) { rep(NA, times = ngroups) }, unlist(chidiff.conf.thr[2L, c("Df diff", "Pr(>Chisq)")]), NA, NA,
                                                      NA, lav.fit.thres[c("cfi.robust", "tli.robust")] - lav.fit.config[c("cfi.robust", "tli.robust")], NA,
                                                      NA, lav.fit.thres["rmsea.robust"] - lav.fit.config["rmsea.robust"], NA, NA, NA, NA, lav.fit.thres["srmr_bentler"] - lav.fit.config["srmr_bentler"], NA,
+                                                     NA, lav.fit.thres["gfi.robust"] - lav.fit.config["gfi.robust"], NA, NA, NA,
                                                      NA, lav.fit.thres[c("aic", "bic", "bic2")] - lav.fit.config[c("aic", "bic", "bic2")]),
                                           ### Sixth column
                                           dmetric = c(NA, unlist(chidiff.thr.met[2L, "Chisq diff"]), if (isTRUE(!is.null(group))) { rep(NA, times = ngroups) }, unlist(chidiff.thr.met[2L, c("Df diff", "Pr(>Chisq)")]), NA, NA,
                                                       NA, lav.fit.metric[c("cfi.robust", "tli.robust")] - lav.fit.thres[c("cfi.robust", "tli.robust")], NA,
                                                       NA, lav.fit.metric["rmsea.robust"] - lav.fit.thres["rmsea.robust"], NA, NA, NA, NA, lav.fit.metric["srmr_bentler"] - lav.fit.thres["srmr_bentler"], NA,
+                                                      NA, lav.fit.metric["gfi.robust"] - lav.fit.thres["gfi.robust"], NA, NA, NA,
                                                       NA, lav.fit.metric[c("aic", "bic", "bic2")] - lav.fit.thres[c("aic", "bic", "bic2")]), fix.empty.names = FALSE)
 
                ##### Configural and Threshold
@@ -5911,11 +6376,13 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
                                          thres = c(NA, lav.fit.thres["chisq"], if (isTRUE(!is.null(group))) { lavaan::lavInspect(mod.thres.fit, what = "test")$standard$stat.group }, lav.fit.thres[c("df", "pvalue")], NA,
                                                    NA, lav.fit.thres[c("cfi", "tli")], NA,
                                                    NA, lav.fit.thres[c("rmsea", "rmsea.ci.lower", "rmsea.ci.upper", "rmsea.pvalue")], NA, lav.fit.thres["srmr_bentler"], NA,
+                                                   NA, lav.fit.thres[c("gfi.robust", "gfi.ci.lower.robust", "gfi.ci.upper.robust")], NA,
                                                    NA, lav.fit.thres[c("aic", "bic", "bic2")]),
                                          ### Fourth column
                                          dthres = c(NA, unlist(chidiff.conf.thr[2L, "Chisq diff"]), if (isTRUE(!is.null(group))) { rep(NA, times = ngroups) }, unlist(chidiff.conf.thr[2L, c("Df diff", "Pr(>Chisq)")]), NA,
                                                     NA, lav.fit.thres[c("cfi", "tli")] - lav.fit.config[c("cfi", "tli")], NA,
                                                     NA, lav.fit.thres["rmsea"] - lav.fit.config["rmsea"], NA, NA, NA, NA, lav.fit.thres["srmr_bentler"] - lav.fit.config["srmr_bentler"], NA,
+                                                    NA, lav.fit.thres["gfi.robust"] - lav.fit.config["gfi.robust"], NA, NA, NA,
                                                     NA, lav.fit.thres[c("aic", "bic", "bic2")] - lav.fit.config[c("aic", "bic", "bic2")]), fix.empty.names = FALSE)
 
                  ###### Scaled fit indices
@@ -5950,11 +6417,13 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
                                           }, lav.fit.thres[c("df.scaled", "pvalue.scaled", "chisq.scaling.factor")], NA,
                                           NA, lav.fit.thres[c("cfi.scaled", "tli.scaled")], NA,
                                           NA, lav.fit.thres[c("rmsea.scaled", "rmsea.ci.lower.scaled", "rmsea.ci.upper.scaled", "rmsea.pvalue.scaled")], NA, lav.fit.thres["srmr_bentler"], NA,
+                                          NA, rep(NA, times = 4),
                                           NA, lav.fit.thres[c("aic", "bic", "bic2")]),
                                           ### Fourth column
                                           dthres = c(NA, unlist(chidiff.conf.thr[2L, "Chisq diff"]), if (isTRUE(!is.null(group))) { rep(NA, times = ngroups) }, unlist(chidiff.conf.thr[2L, c("Df diff", "Pr(>Chisq)")]), NA, NA,
                                                      NA, lav.fit.thres[c("cfi.scaled", "tli.scaled")] - lav.fit.config[c("cfi.scaled", "tli.scaled")], NA,
                                                      NA, lav.fit.thres["rmsea.scaled"] - lav.fit.config["rmsea.scaled"], NA, NA, NA, NA, lav.fit.thres["srmr_bentler"] - lav.fit.config["srmr_bentler"], NA,
+                                                     NA, rep(NA, times = 4),
                                                      NA, lav.fit.thres[c("aic", "bic", "bic2")] - lav.fit.config[c("aic", "bic", "bic2")]), fix.empty.names = FALSE)
 
                  ###### Robust fit indices
@@ -5989,11 +6458,13 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
                                           }, lav.fit.thres[c("df.scaled", "pvalue.scaled", "chisq.scaling.factor")], NA,
                                           NA, lav.fit.thres[c("cfi.robust", "tli.robust")], NA,
                                           NA, lav.fit.thres[c("rmsea.robust", "rmsea.ci.lower.robust", "rmsea.ci.upper.robust", "rmsea.pvalue.robust")], NA, lav.fit.thres["srmr_bentler"], NA,
+                                          NA, lav.fit.thres[c("gfi.robust", "gfi.ci.lower.robust", "gfi.ci.upper.robust")], NA,
                                           NA, lav.fit.thres[c("aic", "bic", "bic2")]),
                                           ### Fourth column
                                           dthres = c(NA, unlist(chidiff.conf.thr[2L, "Chisq diff"]), if (isTRUE(!is.null(group))) { rep(NA, times = ngroups) }, unlist(chidiff.conf.thr[2L, c("Df diff", "Pr(>Chisq)")]), NA, NA,
                                                      NA, lav.fit.thres[c("cfi.robust", "tli.robust")] - lav.fit.config[c("cfi.robust", "tli.robust")], NA,
                                                      NA, lav.fit.thres["rmsea.robust"] - lav.fit.config["rmsea.robust"], NA, NA, NA, NA, lav.fit.thres["srmr_bentler"] - lav.fit.config["srmr_bentler"], NA,
+                                                     NA, lav.fit.thres["gfi.robust"] - lav.fit.config["gfi.robust"], NA, NA, NA,
                                                      NA, lav.fit.thres[c("aic", "bic", "bic2")] - lav.fit.config[c("aic", "bic", "bic2")]), fix.empty.names = FALSE)
 
                }
@@ -6003,8 +6474,13 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
 
     }
 
-    #--------------------------------------
-    ### Remove information criteria ####
+    #—————————————————————————————————————— #
+    ### Remove GFI ####
+
+    fit.scaled <- which(fit.scaled$label == "Coefficient of Determination") |> (\(p) fit.scaled[-c(p:(p + 4L)), ])()
+
+    #—————————————————————————————————————— #
+    ### Remove Information Criteria ####
 
     if (isTRUE(!estimator %in% c("ML", "MLM", "MLMV", "MLMVS", "MLF", "MLR"))) {
 
@@ -6014,7 +6490,7 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
 
     }
 
-    #--------------------------------------
+    #—————————————————————————————————————— #
     ### Remove Scaled and Robust Model Fit Indices ####
 
     # Remove scaled / robust fit indices and information criteria
@@ -6029,28 +6505,28 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
 
   if (isTRUE("est" %in% print)) {
 
-    #--------------------------------------
-    ### Configural invariance model
+    #—————————————————————————————————————— #
+    ### Configural Invariance Model ####
 
     if (isTRUE(!is.null(mod.config.fit))) { param.config <- .model.fit.param(mod.config.param, long = long) }
 
-    #--------------------------------------
-    ### Threshold invariance model
+    #—————————————————————————————————————— #
+    ### Threshold Invariance Model ####
 
     if (isTRUE(!is.null(mod.thres.fit)))  { param.thres <- .model.fit.param(mod.thres.param, long = long)  }
 
-    #--------------------------------------
-    ### Metric invariance model
+    #—————————————————————————————————————— #
+    ### Metric Invariance Model ####
 
     if (isTRUE(!is.null(mod.metric.fit))) { param.metric <- .model.fit.param(mod.metric.param, long = long) }
 
-    #--------------------------------------
-    ### Scalar invariance model
+    #—————————————————————————————————————— #
+    ### Scalar Invariance Model ####
 
     if (isTRUE(!is.null(mod.scalar.fit))) { param.scalar <- .model.fit.param(mod.scalar.param, long = long) }
 
-    #--------------------------------------
-    ### Strict invariance model
+    #—————————————————————————————————————— #
+    ### Strict Invariance Model ####
 
     if (isTRUE(!is.null(mod.strict.fit))) { param.strict <- .model.fit.param(mod.strict.param, long = long) }
 
@@ -6062,9 +6538,8 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
   object <- list(call = match.call(),
                  type = "item.invar",
                  data = x,
-                 args = list(model = model, group = group, cluster = cluster, long = long, ordered = ordered, parameterization = parameterization, rescov = rescov, rescov.long = rescov.long, invar = invar,
-                             partial = partial, ident = ident, estimator = estimator, missing = missing, null.model = null.model, print = print, print.fit = print.fit, mod.minval = mod.minval, resid.minval = resid.minval,
-                             lavaan.run = lavaan.run, digits = digits, p.digits = p.digits, as.na = as.na, write = write, append = append, check = check, output = output),
+                 args = list(model = model, group = group, cluster = cluster, long = long, ordered = ordered, parameterization = parameterization, rescov = rescov, rescov.long = rescov.long, invar = invar, partial = partial, ident = ident, estimator = estimator, missing = missing, null.model = null.model,
+                             print = print, print.fit = print.fit, mod.minval = mod.minval, resid.minval = resid.minval, opdyke.prec = opdyke.prec, opdyke.minmax = opdyke.minmax, color = color, style = style, lavaan.run = lavaan.run, digits = digits, p.digits = p.digits, as.na = as.na, write = write, append = append, check = check, output = output),
                  model = list(config = mod.config, thres = mod.thres, metric = mod.metric, scalar = mod.scalar, strict = mod.strict),
                  model.fit = list(config = mod.config.fit, thres = mod.thres.fit, metric = mod.metric.fit, scalar = mod.scalar.fit, strict = mod.strict.fit),
                  check = list(config = list(vcov = mod.config.fit.check["check.vcov"], theta = mod.config.fit.check["check.theta"], cov.lv = mod.config.fit.check["check.cov.lv"]),
@@ -6077,7 +6552,8 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
                                param = list(config = param.config, thres = param.thres, metric = param.metric, scalar = param.scalar, strict = param.strict),
                                modind = list(config = mod.config.modind, thres = mod.thres.modind, metric = mod.metric.modind, scalar = mod.scalar.modind, strict = mod.strict.modind),
                                score = list(thres = mod.thres.score, metric = mod.metric.score, scalar = mod.scalar.score, strict = mod.strict.score),
-                               resid = list(config = mod.config.resid, thres = mod.thres.resid, metric = mod.metric.resid, scalar = mod.scalar.resid, strict = mod.strict.resid)))
+                               resid = list(config = mod.config.resid, thres = mod.thres.resid, metric = mod.metric.resid, scalar = mod.scalar.resid, strict = mod.strict.resid),
+                               opdyke = list(config = mod.config.opdyke, thres = mod.thres.opdyke, metric = mod.metric.opdyke, scalar = mod.scalar.opdyke, strict = mod.strict.opdyke)))
 
   class(object) <- "misty.object"
 

@@ -92,12 +92,12 @@ df.check <- function(data, print = c("dim", "names", "head", "tail"),
   #
   # Main Function --------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Dimensions ####
 
   data.dim <- format(data.frame(x = c("  No. of rows:    ", "  No. of columns: "), y = c(nrow(data), ncol(data))), justify = "right")
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Variable Names ####
 
   for (i in seq_along(names(data))) {
@@ -128,7 +128,7 @@ df.check <- function(data, print = c("dim", "names", "head", "tail"),
   # Format
   data.names.print[, 1L] <- paste("  ", data.names.print[, 1L])
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## First and Last Rows ####
 
   # First and last rows
@@ -148,13 +148,13 @@ df.check <- function(data, print = c("dim", "names", "head", "tail"),
 
   cat(" Data Check\n\n")
 
-  #...................
+  #—————————————————————————————————————— #
   ### Dimensions ####
 
   if (isTRUE("dim" %in% print)) { write.table(data.dim, quote = FALSE, col.names = FALSE, row.names = FALSE) }
 
-  #...................
-  ### Variable names ####
+  #—————————————————————————————————————— #
+  ### Variable Names ####
 
   if (isTRUE("names" %in% print)) {
 
@@ -168,7 +168,7 @@ df.check <- function(data, print = c("dim", "names", "head", "tail"),
 
   # Number of rows to be printed smaller than the number of rows of the data frame
   if (isTRUE(n < nrow(data))) {
-    #...................
+    #—————————————————————————————————————— #
     ### First Rows ####
 
     if (isTRUE("head" %in% print)) {
@@ -197,7 +197,7 @@ df.check <- function(data, print = c("dim", "names", "head", "tail"),
 
     }
 
-    #...................
+    #—————————————————————————————————————— #
     ### Last Rows ####
 
     if (isTRUE("tail" %in% print)) {

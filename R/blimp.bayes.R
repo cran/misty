@@ -282,7 +282,7 @@ blimp.bayes <- function(x, param = NULL,
   # Check if input 'x' is missing or NULL
   if (isTRUE(missing(x) || is.null(x))) { stop("Please specify a character string indicating the name of folder or name of the posterior data file for the argument 'x'", call. = FALSE) }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Character string ####
 
   # Character string
@@ -326,7 +326,7 @@ blimp.bayes <- function(x, param = NULL,
   #
   # Arguments ------------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## 'print' Argument ####
 
   print.all <- c("m", "med", "map", "sd", "mad", "skew", "kurt", "eti", "hdi", "rhat", "b.ess", "t.ess", "b.mcse", "t.mcse")
@@ -353,7 +353,7 @@ blimp.bayes <- function(x, param = NULL,
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## 'alternative' Argument ####
 
   if (isTRUE(all(c("two.sided", "less", "greater") %in% alternative))) { alternative  <- "two.sided" }
@@ -362,7 +362,7 @@ blimp.bayes <- function(x, param = NULL,
   #
   # Main Function --------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Read Blimp Posterior File ####
 
   . <- posterior <- NULL
@@ -401,10 +401,10 @@ blimp.bayes <- function(x, param = NULL,
 
     error = function(y) { stop("Reading posterior file specified in the argument 'x' failed.", call. = FALSE) })
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data Preparation ####
 
-  #...................
+  #—————————————————————————————————————— #
   ### Number of Iterations and Number of Chains ####
 
   # Number of iterations
@@ -414,17 +414,17 @@ blimp.bayes <- function(x, param = NULL,
   # Number of chains
   n.chains <- max(postdat$chain)
 
-  #...................
+  #—————————————————————————————————————— #
   ### Select Parameters ####
 
   if (isTRUE(!is.null(param))) { postdat <- postdat[which(postdat$param %in% param), ] }
 
-  #...................
+  #—————————————————————————————————————— #
   ### Discard burn-in iterations ####
 
   postdat <- postdat[which(postdat$postburn != 0L), ]
 
-  #...................
+  #—————————————————————————————————————— #
   ### Shorten Labels ####
 
   # Shorten labels
@@ -434,7 +434,7 @@ blimp.bayes <- function(x, param = NULL,
 
   })
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Summary Measures, Convergence and Efficiency Diagnostics ####
 
   post.summary <- sapply(sort(unique(postdat$param)), function(y) {
@@ -447,8 +447,8 @@ blimp.bayes <- function(x, param = NULL,
 
     if (isTRUE(var(x.comb) != 0L)) {
 
-      #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-      ## Point Estimates ####
+      #—————————————————————————————————————— #
+      ### Point Estimates ####
 
       # Mean
       x.mean <- mean(x.comb)
@@ -459,8 +459,8 @@ blimp.bayes <- function(x, param = NULL,
       # Maximum A Posteriori
       x.map <- .map(x.comb)
 
-      #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-      ## Measures of Dispersion ####
+      #—————————————————————————————————————— #
+      ### Measures of Dispersion ####
 
       # Standard Deviation
       x.sd <- sd(x.comb)
@@ -468,7 +468,7 @@ blimp.bayes <- function(x, param = NULL,
       # Mean Absolute Deviation
       x.mad <- stats::mad(x.comb)
 
-      #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      #—————————————————————————————————————— #
       ## Measures of Shape ####
 
       # Skewness
@@ -477,8 +477,8 @@ blimp.bayes <- function(x, param = NULL,
       # Kurtosis
       x.kurt <- misty::kurtosis(x.comb, check = FALSE)
 
-      #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-      ## Credible Interval ####
+      #—————————————————————————————————————— #
+      ### Credible Interval ####
 
       # Equal-Tailed Interval
       x.eti <- switch(alternative,
@@ -489,8 +489,8 @@ blimp.bayes <- function(x, param = NULL,
       # Highest Density Interval
       x.hdi <- .hdi(x.comb, conf.level = conf.level)
 
-      #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-      ## Convergence and Efficiency Diagnostics ####
+      #—————————————————————————————————————— #
+      ### Convergence and Efficiency Diagnostics ####
 
       # R-hat Convergence Diagnostic
       if (isTRUE(fold)) {
@@ -525,13 +525,13 @@ blimp.bayes <- function(x, param = NULL,
       x.t.mcse <- max(.mcse(x, quant = TRUE, prob = mcse.tail[1L], split = split, rank = FALSE),
                       .mcse(x, quant = TRUE, prob = mcse.tail[2L], split = split, rank = FALSE))
 
-      #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-      ## Probability of Direction ####
+      #—————————————————————————————————————— #
+      ### Probability of Direction ####
 
       x.pd <- max(sum(x.comb < null) / length(x.comb), sum(x.comb > null) / length(x.comb))
 
-      #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-      ## Probability of being in the ROPE ####
+      #—————————————————————————————————————— #
+      ### Probability of being in the ROPE ####
 
       if (isTRUE(!is.null(rope))) {
 
@@ -546,8 +546,8 @@ blimp.bayes <- function(x, param = NULL,
 
       }
 
-      #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-      ## Result Table ####
+      #—————————————————————————————————————— #
+      ### Result Table ####
 
       result.table <- data.frame(param = y, m = x.mean, med = x.med, map = x.map, sd = x.sd, mad = x.mad,
                                  skew = x.skew, kurt = x.kurt,

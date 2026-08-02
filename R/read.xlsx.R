@@ -138,7 +138,7 @@ read.xlsx <- function(file, sheet = NULL, header = TRUE, range = NULL,
   #
   # Data and Arguments ---------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Argument 'coltypes' ####
 
   if (isTRUE(all(c("skip", "guess", "logical", "numeric", "date", "text", "list") %in% coltypes))) {
@@ -151,7 +151,7 @@ read.xlsx <- function(file, sheet = NULL, header = TRUE, range = NULL,
   #
   # Main Function --------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data frame ####
 
   if (isTRUE(as.data.frame)) {
@@ -161,7 +161,7 @@ read.xlsx <- function(file, sheet = NULL, header = TRUE, range = NULL,
                                               n_max = nmax, guess_max = guessmax, progress = progress,
                                              .name_repair = name.repair), stringsAsFactors = FALSE)
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Tibble ####
 
   } else {

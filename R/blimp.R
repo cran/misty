@@ -131,7 +131,7 @@
 #'
 #' @examples
 #' \dontrun{
-#' #----------------------------------------------------------------------------
+#' #—————————————————————————————————————— #——————————————————————————————————————
 #' # Example 1: Write data, specify input without VARIABLES section, and run input
 #'
 #' # Write Data File
@@ -154,7 +154,7 @@
 #' # Run Blimp input
 #' blimp(input1, file = "Ex4.3.imp")
 #'
-#' #----------------------------------------------------------------------------
+#' #—————————————————————————————————————— #——————————————————————————————————————
 #' # Example 2: Write data, specify input with VARIABLES section, and run input
 #'
 #' # Write Data File
@@ -177,7 +177,7 @@
 #' # Run Blimp input
 #' blimp(input2, file = "Ex4.3.imp")
 #'
-#' #----------------------------------------------------------------------------
+#' #—————————————————————————————————————— #——————————————————————————————————————
 #' # Example 3: Alternative specification using the data argument
 #'
 #' # Write Data File
@@ -275,7 +275,7 @@ blimp <- function(x, file = "Blimp_Input.imp", data = NULL, comment = FALSE,
   #
   # Arguments ------------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## file Argument ####
 
   # File extension .inp
@@ -284,7 +284,7 @@ blimp <- function(x, file = "Blimp_Input.imp", data = NULL, comment = FALSE,
   # .out object
   file.out <- sub("\\.imp", ".blimp-out", file)
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## replace.out Argument ####
 
   if (isTRUE(all(c("always", "never", "modified") %in% replace.out))) {
@@ -297,7 +297,7 @@ blimp <- function(x, file = "Blimp_Input.imp", data = NULL, comment = FALSE,
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## format ####
 
   if (isTRUE(all(c("csv", "csv2", "excel", "rds", "workspace") %in% format))) {
@@ -314,7 +314,7 @@ blimp <- function(x, file = "Blimp_Input.imp", data = NULL, comment = FALSE,
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## 'result' Argument ####
 
   # Default setting
@@ -343,7 +343,7 @@ blimp <- function(x, file = "Blimp_Input.imp", data = NULL, comment = FALSE,
   #
   # Main Function --------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Remove Comments ####
 
   if (isTRUE(!comment)) {
@@ -370,12 +370,12 @@ blimp <- function(x, file = "Blimp_Input.imp", data = NULL, comment = FALSE,
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Upper Case Characters ####
 
   x.upp <- toupper(x)
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Extract Position of Input Command Sections ####
 
   section.pos <- c(if (isTRUE(any(grepl("DATA:", x.upp)))) { as.numeric(gregexec("DATA:", toupper(x))[[1L]]) } else { NULL },
@@ -433,157 +433,157 @@ blimp <- function(x, file = "Blimp_Input.imp", data = NULL, comment = FALSE,
                     },
                    if (isTRUE(any(grepl("SAVE:", x.upp)))) { as.numeric(gregexec("SAVE:", x.upp)[[1L]]) } else { NULL })
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Extract Input Command Sections ####
 
   bdata <- variables <- ordinal <- nominal <- count <- clusterid <- weight <- missing <- latent <- randomeffect <- transform <- bygroup <- fixed <- center <- model <- simple <- parameters <- test <- fcs <- simulate <- seed <- burn <- iterations <- chains <- nimps <- thin <- options <- boutput <- save <- NULL
 
-  #...................
+  #—————————————————————————————————————— #
   ### DATA ####
 
   if (isTRUE(any(grepl("DATA:", x.upp)))) { bdata <- .extract.section("DATA:", x, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### VARIABLES ####
 
   if (isTRUE(any(grepl("VARIABLES:", x.upp)))) { variables <- .extract.section("VARIABLES:", x, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### ORDINAL ####
 
   if (isTRUE(any(grepl("ORDINAL:", x.upp)))) { ordinal <- .extract.section("ORDINAL:", x, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### NOMINAL ####
 
   if (isTRUE(any(grepl("NOMINAL:", x.upp)))) { nominal <- .extract.section("NOMINAL:", x, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### COUNT ####
 
   if (isTRUE(any(grepl("COUNT:", x.upp)))) { count <- .extract.section("COUNT:", x, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### CLUSTERID ####
 
   if (isTRUE(any(grepl("CLUSTERID:", x.upp)))) { clusterid <- .extract.section("CLUSTERID:", x, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### WEIGHT ####
 
   if (isTRUE(any(grepl("WEIGHT:", x.upp)))) { weight <- .extract.section("WEIGHT:", x, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### MISSING ####
 
   if (isTRUE(any(grepl("MISSING:", x.upp)))) { missing <- .extract.section("MISSING:", x, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### LATENT ####
 
   if (isTRUE(any(grepl("LATENT:", x.upp)))) { latent <- .extract.section("LATENT:", x, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### RANDOMEFFECT ####
 
   if (isTRUE(any(grepl("RANDOMEFFECT:", x.upp)))) { randomeffect <- .extract.section("RANDOMEFFECT:", x, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### TRANSFORM ####
 
   if (isTRUE(any(grepl("TRANSFORM:", x.upp)))) { transform <- .extract.section("TRANSFORM:", x, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### BYGROUP ####
 
   if (isTRUE(any(grepl("BYGROUP:", x.upp)))) { bygroup <- .extract.section("BYGROUP:", x, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### FIXED ####
 
   if (isTRUE(any(grepl("FIXED:", x.upp)))) { fixed <- .extract.section("FIXED:", x, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### CENTER ####
 
   if (isTRUE(any(grepl("CENTER:", x.upp)))) { center <- .extract.section("CENTER:", x, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### MODEL ####
 
   if (isTRUE(any(grepl("MODEL:", x.upp)))) { model <- .extract.section("MODEL:", x, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### SIMPLE ####
 
   if (isTRUE(any(grepl("SIMPLE:", x.upp)))) { simple <- .extract.section("SIMPLE:", x, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### PARAMETERS ####
 
   if (isTRUE(any(grepl("PARAMETERS:", x.upp)))) { parameters <- .extract.section("PARAMETERS:", x, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### TEST ####
 
   if (isTRUE(any(grepl("TEST:", x.upp)))) { test <- .extract.section("TEST:", x, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### FCS ####
 
   if (isTRUE(any(grepl("FCS:", x.upp)))) { fcs <- .extract.section("FCS:", x, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### SIMULATE ####
 
   if (isTRUE(any(grepl("SIMULATE:", x.upp)))) { simulate <- .extract.section("SIMULATE:", x, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### SEED ####
 
   if (isTRUE(any(grepl("SEED:", x.upp)))) { seed <- .extract.section("SEED:", x, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### BURN ####
 
   if (isTRUE(any(grepl("BURN:", x.upp)))) { burn <- .extract.section("BURN:", x, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### ITERATIONS ####
 
   if (isTRUE(any(grepl("ITERATIONS:", x.upp)))) { iterations <- .extract.section("ITERATIONS:", x, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### CHAINS ####
 
   if (isTRUE(any(grepl("CHAINS:", x.upp)))) { chains <- .extract.section("CHAINS:", x, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### NIMPS ####
 
   if (isTRUE(any(grepl("NIMPS:", x.upp)))) { nimps <- .extract.section("NIMPS:", x, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### THIN ####
 
   if (isTRUE(any(grepl("THIN:", x.upp)))) { thin <- .extract.section("THIN:", x, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### OPTIONS ####
 
   if (isTRUE(any(grepl("OPTIONS:", x.upp)))) { options <- .extract.section("OPTIONS:", x, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### OUTPUT ####
 
   if (isTRUE(any(grepl("OUTPUT:", x.upp)))) { boutput <- .extract.section("OUTPUT:", x, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### SAVE ####
 
   if (isTRUE(any(grepl("SAVE:", x.upp)))) { save <- .extract.section("SAVE:", x, section.pos) }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Variable Names ####
 
   if (isTRUE(!is.null(data))) {
@@ -633,7 +633,7 @@ blimp <- function(x, file = "Blimp_Input.imp", data = NULL, comment = FALSE,
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Input Object ####
 
   input.object <- list(data = bdata, variables = variables, clusterid = clusterid,  ordinal = ordinal, nominal = nominal, count = count,
@@ -642,12 +642,12 @@ blimp <- function(x, file = "Blimp_Input.imp", data = NULL, comment = FALSE,
                        test = test, fcs = fcs, simulate = simulate, seed = seed, burn = burn, iterations = iterations,
                        chains = chains, nimps = nimps, thin = thin, options = options, output = boutput, save = save)
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Write Object ####
 
   write.object <- paste(unlist(Filter(Negate(is.null), input.object)), collapse = "\n")
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Write Input ####
 
   # Input file already exists
@@ -672,7 +672,7 @@ blimp <- function(x, file = "Blimp_Input.imp", data = NULL, comment = FALSE,
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Run Blimp ####
 
   if (isTRUE(blimp.run)) {
@@ -699,7 +699,7 @@ blimp <- function(x, file = "Blimp_Input.imp", data = NULL, comment = FALSE,
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Blimp Output ####
 
   if (isTRUE(output)) {

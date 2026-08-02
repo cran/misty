@@ -15,15 +15,15 @@ chr.color(x, color = c("black", "red", "green", "yellow", "blue", "violet",
 \arguments{
 \item{x}{a character vector.}
 
-\item{color}{a character string indicating the text color, e.g., \code{red}
-for red and \code{b.red} for bright red text.}
+\item{color}{a character string indicating the text color, e.g., \code{"red"}
+for red and \code{b."red"} for bright red text.}
 
 \item{bg}{a character string indicating the background color of the text,
-e.g., \code{red} for red background.}
+e.g., \code{"red"} for red background.}
 
-\item{style}{a character vector indicating the font style, i.e., \code{regular},
-(default) for regular text, \code{bold} for bold text, \code{italic},
-for italic text, and \code{underline} for underline text. Note
+\item{style}{a character vector indicating the font style, i.e., \code{"regular"}
+(default) for regular text, \code{"bold"} for bold text, \code{"italic"},
+for italic text, and \code{"underline"} for underline text. Note
 that font styles can be combined, e.g., \code{style = c("bold", "italic")}
 provides a bold and italic text.}
 

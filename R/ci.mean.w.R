@@ -143,16 +143,16 @@ ci.mean.w <- function(data, ..., adjust = TRUE,
   # Global variable
   data.id <- var.formula <- variable <- NULL
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data using the argument '...' ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Using the Argument '...' ####
 
   if (isTRUE(!missing(...))) {
 
     # Extract data and convert tibble into data frame or vector
     x <- data[, .var.names(data = data, ...), drop = FALSE] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(y)) == 1L)) { unname(unlist(y)) } else { as.data.frame(y) } } else { y })()
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data without using the argument '...' ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Without Using the Argument '...' ####
 
   } else {
 
@@ -161,13 +161,13 @@ ci.mean.w <- function(data, ..., adjust = TRUE,
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Convert user-missing values into NA ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Convert User-Missing Values into NA ####
 
   if (isTRUE(!is.null(as.na))) { x[, var.formula] <- .as.na(x[, var.formula], na = as.na) }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Listwise deletion ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Listwise Deletion ####
 
   if (isTRUE(any(is.na(x)))) {
 
@@ -209,7 +209,7 @@ ci.mean.w <- function(data, ..., adjust = TRUE,
   #
   # Arguments ------------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Alternative hypothesis ####
 
   if (isTRUE(all(c("two.sided", "less", "greater") %in% alternative))) { alternative <- "two.sided" }
@@ -224,8 +224,8 @@ ci.mean.w <- function(data, ..., adjust = TRUE,
   # Number of cases
   n <- nrow(x)
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Correction and adjustment factor ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Correction and Adjustment Factor ####
 
   # Correction factor
   c.factor <- sqrt(k / (k - 1L))
@@ -233,8 +233,8 @@ ci.mean.w <- function(data, ..., adjust = TRUE,
   # Difference-adjustment factor
   adjust.factor <- ifelse(isTRUE(adjust), sqrt(2L) / 2L, 1L)
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Normalizing data ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Normalizing Data ####
 
   # Participant mean
   p.means <- rowMeans(x, na.rm = TRUE)
@@ -249,8 +249,8 @@ ci.mean.w <- function(data, ..., adjust = TRUE,
   norm.m <- sapply(norm.x, function(y) mean(y, na.rm = TRUE))
   norm.sd <- sapply(norm.x, function(y) sd(y, na.rm = TRUE))
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Confidence intervals ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Confidence Intervals ####
 
   # t quantile
   crit <- qt(switch(alternative,
@@ -267,7 +267,7 @@ ci.mean.w <- function(data, ..., adjust = TRUE,
                greater = data.frame(low = norm.m - adjust.factor * (crit * c.factor * norm.se$se.m),
                                     upp = Inf))
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Result object ####
 
   result <- data.frame(variable = names(x), norm.se[, c("n", "nNA", "pNA")],
@@ -297,10 +297,10 @@ ci.mean.w <- function(data, ..., adjust = TRUE,
 
   if (isTRUE(!is.null(write))) {
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Text file ####
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Text File ####
 
-    # Send R output to textfile
+    # Send R output to text file
     sink(file = write, append = ifelse(isTRUE(file.exists(write)), append, FALSE), type = "output", split = FALSE)
 
     if (isTRUE(append && file.exists(write))) { write("", file = write, append = TRUE) }

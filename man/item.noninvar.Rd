@@ -9,8 +9,8 @@ item.noninvar(data = NULL, ..., object = NULL, model = NULL, group = NULL,
               long = FALSE, ordered = FALSE, rescov = NULL, rescov.long = TRUE,
               ident = c("marker", "var", "effect"),
               estimator = c("ML", "MLM", "MLMV", "MLMVS", "MLF", "MLR",
-                            "GLS", "WLS", "DWLS", "WLSM", "WLSMV",
-                            "ULS", "ULSM", "ULSMV", "DLS", "PML"),
+                            "GLS", "WLS", "DWLS", "WLSM", "WLSMV", "WLSMVS",
+                            "ULS", "ULSM", "ULSMV", "ULSMVS", "DLS", "PML"),
               missing = c("listwise", "pairwise", "fiml", "two.stage",
                           "robust.two.stage", "doubly.robust"),
               print = c("all", "summary", "dmacs", "bias"),
@@ -388,14 +388,15 @@ David Dueber.
 }
 \examples{
 \dontrun{
+
 # Load data set "HolzingerSwineford1939" in the lavaan package
 data("HolzingerSwineford1939", package = "lavaan")
 
 #————————————————————————————————————————————————————————————————————————————
 # Between-Group Measurement Non-Invariance: Continuous Indicators
 
-#···················
-# Measurement model with one factor
+#——————————————————————————————————————
+## Measurement Model with One Factor
 
 # Example 1a: Model specification using the argument '...'
 item.noninvar(HolzingerSwineford1939, x1, x2, x3, x4, group = "school")
@@ -411,13 +412,11 @@ item.noninvar(HolzingerSwineford1939[, c("x1", "x2", "x3", "x4", "school")], gro
 item.noninvar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"), group = "school")
 
 # Example 1e: Estimate model and specify the 'object' argument
-model <- 'f =~ x1 + x2 + x3 + x4'
-
-fit <- cfa(model, data = HolzingerSwineford1939, group = "school", std.lv = TRUE)
+fit <- cfa('f =~ x1 + x2 + x3 + x4', data = HolzingerSwineford1939, group = "school", std.lv = TRUE)
 item.noninvar(object = fit)
 
-#···················
-# Measurement model with two factors
+#——————————————————————————————————————
+## Measurement Model with Two Factors
 
 # Example 2a: Model specification using the argument 'model'
 item.noninvar(HolzingerSwineford1939,
@@ -428,8 +427,11 @@ item.noninvar(HolzingerSwineford1939,
 model <- 'f1 =~ x1 + x2 + x3 + x4
           f2 =~ x5 + x6 + x7 + x8'
 
-#···················
-# Signed dMACS and reference group
+fit <- cfa(model, data = HolzingerSwineford1939, group = "school", std.lv = TRUE)
+item.noninvar(object = fit)
+
+#——————————————————————————————————————
+## Signed dMACS and Reference Group
 
 # Example 3a: Signed dMACS
 item.noninvar(HolzingerSwineford1939, x1, x2, x3, x4, group = "school", signed = TRUE)
@@ -438,8 +440,8 @@ item.noninvar(HolzingerSwineford1939, x1, x2, x3, x4, group = "school", signed =
 item.noninvar(HolzingerSwineford1939, x1, x2, x3, x4, group = "school",
               ref = "Pasteur", pooled = FALSE)
 
-#..................
-# Residual covariances
+#——————————————————————————————————————
+## Residual Covariances
 
 # Example 4a: One residual covariance
 item.noninvar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
@@ -449,8 +451,8 @@ item.noninvar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
 item.noninvar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
               rescov = list(c("x1", "x4"), c("x3", "x4")), group = "school")
 
-#..................
-# Print argument
+#——————————————————————————————————————
+# Print Argument
 
 # Example 5: Request all results
 item.noninvar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
@@ -465,19 +467,17 @@ item.noninvar(HolzingerSwineford1939,
 
 #————————————————————————————————————————————————————————————————————————————
 # Between-Group Measurement Non-Invariance: Ordered Categorical Indicators
-#
-# Note that the example analysis for ordered categorical indicators cannot be
-# conduct as the data set 'data' is not available.
 
 # Example 7: Two groups
-item.noninvar(data, item1, item2, item3, item4, group = "two.group", ordered = TRUE)
+item.noninvar(data.items, pitem1, pitem2r, pitem3r, pitem4, group = "group2",
+              ordered = TRUE)
 
 #————————————————————————————————————————————————————————————————————————————
 # Longitudinal Measurement Non-Invariance: Ordered Categorical Indicators
 
 # Example 8: Two Time Points
-item.noninvar(data, model = list(c("aitem1", "aitem2", "aitem3"),
-                                 c("bitem1", "bitem2", "bitem3")),
+item.noninvar(data.items, model = list(c("pitem1", "pitem5", "pitem3r"),
+                                       c("pitem4", "pitem2r", "pitem6")),
               long = TRUE, ordered = TRUE)
 
 #————————————————————————————————————————————————————————————————————————————

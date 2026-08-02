@@ -290,12 +290,12 @@ aov.b <- function(formula, data, hypo = FALSE, descript = FALSE, effsize = FALSE
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Effect Size Measures ####
 
-  #——————————————————————————————————————
+  #—————————————————————————————————————— #
   ### Eta Squared ####
 
   eta.sq <- ss.m / ss.t
 
-  #——————————————————————————————————————
+  #—————————————————————————————————————— #
   ### Omega Squared ####
 
   omega.sq <- ((ss.m - df.m*ms.r) / (ss.t + ms.r)) |> (\(y) ifelse(y < 0L, 0L, y))()
@@ -315,7 +315,7 @@ aov.b <- function(formula, data, hypo = FALSE, descript = FALSE, effsize = FALSE
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Post Hoc Test ####
 
-  #——————————————————————————————————————
+  #—————————————————————————————————————— #
   ### Compute Tukey HSD Tests ####
 
   result.ph <- stats::TukeyHSD(aov.res, ordered = FALSE)[[1L]]
@@ -323,12 +323,12 @@ aov.b <- function(formula, data, hypo = FALSE, descript = FALSE, effsize = FALSE
   # Extract groups
   labels <- t(combn(unlist(aov.res$xlevels), 2L))
 
-  #——————————————————————————————————————
+  #—————————————————————————————————————— #
   ### Result Table ####
 
   result.ph <- data.frame(group1 = labels[, 1L], group2 = labels[, 2L], m.diff = result.ph[, "diff"], m.low = result.ph[, "lwr"], m.upp = result.ph[, "upr"], pval = result.ph[, "p adj"], row.names = NULL)
 
-  #——————————————————————————————————————
+  #—————————————————————————————————————— #
   ### Cohen's d ####
 
   cohen <- t(sapply(seq_len(nrow(result.ph)), function(x) {
@@ -342,12 +342,12 @@ aov.b <- function(formula, data, hypo = FALSE, descript = FALSE, effsize = FALSE
 
   }))
 
-  #——————————————————————————————————————
+  #—————————————————————————————————————— #
   ### Result Table ####
 
   result.ph <- data.frame(result.ph, d = unlist(cohen[, "d"]), d.low = unlist(cohen[, "low"]), d.upp = unlist(cohen[, "upp"]))
 
-  #——————————————————————————————————————
+  #—————————————————————————————————————— #
   ### Sort Groups ####
 
   # Reverse ordered factor levels

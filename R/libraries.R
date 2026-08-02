@@ -61,7 +61,7 @@ libraries <- function(..., install = FALSE, quiet = TRUE, check = TRUE,
   #
   # Data and Arguments ---------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Extract package names from the argument ... ####
 
   pkg <- match.call(expand.dots = FALSE)[[2L]] |>
@@ -81,26 +81,26 @@ libraries <- function(..., install = FALSE, quiet = TRUE, check = TRUE,
   #
   # Main Function --------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Installed, version, dependencies, imports, suggests, and loaded ####
 
-  #...................
-  ### Installed packages ####
+  #—————————————————————————————————————— #
+  ### Installed Packages ####
 
   pkg.installed <- installed.packages()
 
-  #...................
-  ### Check if packages are installed ####
+  #—————————————————————————————————————— #
+  ### Check if Packages are Installed ####
 
   installed <- setNames(pkg %in% row.names(pkg.installed), pkg)
 
-  #...................
-  ### Check package version ####
+  #—————————————————————————————————————— #
+  ### Check Package Version ####
 
   version <- sapply(pkg, function(y) ifelse(y %in% row.names(pkg.installed), pkg.installed[row.names(pkg.installed) == y, "Version"],""))
 
-  #...................
-  ### Check dependencies ####
+  #—————————————————————————————————————— #
+  ### Check Dependencies ####
 
   depends <- setNames(vector(mode = "list", length = length(pkg)), pkg)
   for (i in seq_along(installed)) {
@@ -117,8 +117,8 @@ libraries <- function(..., install = FALSE, quiet = TRUE, check = TRUE,
 
   depends.check <- unlist(sapply(depends, function(y) if (isTRUE(is.null(y))) { NA } else { all(y) }))
 
-  #...................
-  ### Check imports ####
+  #—————————————————————————————————————— #
+  ### Check Imports ####
 
   imports <- setNames(vector(mode = "list", length = length(pkg)), pkg)
   for (i in seq_along(installed)) {
@@ -135,8 +135,8 @@ libraries <- function(..., install = FALSE, quiet = TRUE, check = TRUE,
 
   imports.check <- unlist(sapply(imports, function(y) if (isTRUE(is.null(y))) { NA } else { all(y) }))
 
-  #...................
-  ### Check suggests ####
+  #—————————————————————————————————————— #
+  ### Check Suggests ####
 
   suggests <- setNames(vector(mode = "list", length = length(pkg)), pkg)
   for (i in seq_along(installed)) {
@@ -153,18 +153,18 @@ libraries <- function(..., install = FALSE, quiet = TRUE, check = TRUE,
 
   suggests.check <- unlist(sapply(suggests, function(y) if (isTRUE(is.null(y))) { NA } else { all(y) }))
 
-  #...................
+  #—————————————————————————————————————— #
   ### Loaded ####
 
   loaded <- installed & misty::na.as(depends.check[match(pkg, names(depends.check))], na = TRUE, check = FALSE) & misty::na.as(imports.check[match(pkg, names(imports.check))], na = TRUE, check = FALSE)
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Install packages and dependencies ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Install Packages and Dependencies ####
 
     if (isTRUE(any(!c(installed, depends.check, imports.check)) && install)) {
 
-      #...................
-      ### Install packages ####
+      #—————————————————————————————————————— #
+      ### Install Packages ####
 
         # Check if available on CRAN
         if (isTRUE(any(!installed))) {
@@ -189,8 +189,8 @@ libraries <- function(..., install = FALSE, quiet = TRUE, check = TRUE,
 
         }
 
-      #...................
-      ### Install depends ####
+      #—————————————————————————————————————— #
+      ### Install 'depends' ####
 
       if (isTRUE(any(!depends.check))) {
 
@@ -198,8 +198,8 @@ libraries <- function(..., install = FALSE, quiet = TRUE, check = TRUE,
 
       }
 
-      #...................
-      ### Install imports ####
+      #—————————————————————————————————————— #
+      ### Install 'imports' ####
 
       if (isTRUE(any(!imports.check))) {
 
@@ -207,23 +207,23 @@ libraries <- function(..., install = FALSE, quiet = TRUE, check = TRUE,
 
       }
 
-      #...................
-      ### Installed packages ####
+      #—————————————————————————————————————— #
+      ### Installed Packages ####
 
       pkg.installed <- installed.packages()
 
-      #...................
-      ### Check if packages are installed ####
+      #—————————————————————————————————————— #
+      ### Check if Packages are Installed ####
 
       installed <- setNames(pkg %in% row.names(pkg.installed), pkg)
 
-      #...................
-      ### Check package version ####
+      #—————————————————————————————————————— #
+      ### Check Package Version ####
 
       version <- ifelse(installed, pkg.installed[which(row.names(pkg.installed) %in% pkg), "Version"], "")
 
-      #...................
-      ### Check dependencies ####
+      #—————————————————————————————————————— #
+      ### Check Dependencies ####
 
       depends <- setNames(vector(mode = "list", length = length(pkg)), pkg)
       for (i in seq_along(installed)) {
@@ -240,8 +240,8 @@ libraries <- function(..., install = FALSE, quiet = TRUE, check = TRUE,
 
       depends.check <- unlist(sapply(depends, function(y) if (isTRUE(is.null(y))) { NA } else { all(y) }))
 
-      #...................
-      ### Check imports ####
+      #—————————————————————————————————————— #
+      ### Check Imports ####
 
       imports <- setNames(vector(mode = "list", length = length(pkg)), pkg)
       for (i in seq_along(installed)) {
@@ -259,8 +259,8 @@ libraries <- function(..., install = FALSE, quiet = TRUE, check = TRUE,
 
       imports.check <- unlist(sapply(imports, function(y) if (isTRUE(is.null(y))) { NA } else { all(y) }))
 
-      #...................
-      ### Check suggests ####
+      #—————————————————————————————————————— #
+      ### Check 'suggests' ####
 
       suggests <- setNames(vector(mode = "list", length = length(pkg)), pkg)
       for (i in seq_along(installed)) {
@@ -278,15 +278,15 @@ libraries <- function(..., install = FALSE, quiet = TRUE, check = TRUE,
 
       suggests.check <- unlist(sapply(suggests, function(y) if (isTRUE(is.null(y))) { NA } else { all(y) }))
 
-      #...................
+      #—————————————————————————————————————— #
       ### Loaded ####
 
       loaded <- installed & misty::na.as(depends.check[match(pkg, names(depends.check))], na = TRUE, check = FALSE) & misty::na.as(imports.check[match(pkg, names(imports.check))], na = TRUE, check = FALSE)
 
   }
 
-  #...................
-  ### Output table ####
+  #—————————————————————————————————————— #
+  ### Output Table ####
 
   restab <- data.frame(package = pkg,
                        installed = unname(installed),
@@ -314,8 +314,8 @@ libraries <- function(..., install = FALSE, quiet = TRUE, check = TRUE,
   #
   # Output ---------------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Load packages ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Load Packages ####
 
   if (isTRUE(quiet)) {
 
@@ -353,8 +353,8 @@ libraries <- function(..., install = FALSE, quiet = TRUE, check = TRUE,
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Return object ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Return Object ####
 
   return(invisible(object))
 

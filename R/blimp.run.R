@@ -102,11 +102,11 @@ blimp.run <- function(target = getwd(), recursive = FALSE,
   #
   # Arguments ------------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## target ####
 
-  #...................
-  ### One or multiple target files ####
+  #—————————————————————————————————————— #
+  ### One or Multiple Target Files ####
 
   if (isTRUE(any(grepl("\\.imp", target)))) {
 
@@ -135,7 +135,7 @@ blimp.run <- function(target = getwd(), recursive = FALSE,
 
     }
 
-  #...................
+  #—————————————————————————————————————— #
   ### Files within (sub-)directories ####
 
   } else {
@@ -146,7 +146,7 @@ blimp.run <- function(target = getwd(), recursive = FALSE,
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## replace.out ####
 
   # Argument replace.out
@@ -182,7 +182,7 @@ blimp.run <- function(target = getwd(), recursive = FALSE,
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## format ####
 
   if (isTRUE(all(c("csv", "csv2", "xlsx", "rds", "RData") %in% format))) {

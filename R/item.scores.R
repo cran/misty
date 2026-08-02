@@ -3,21 +3,6 @@
 #' This function computes (prorated) scale scores by averaging the (available)
 #' items that measure a single construct by default.
 #'
-#' Prorated mean scale scores are computed by averaging the available items, e.g.,
-#' if a participant answers 4 out of 8 items, the prorated scale score is the
-#' average of the 4 responses. Averaging the available items is equivalent to
-#' substituting the mean of a participant's own observed items for each of the
-#' participant's missing items, i.e., \emph{person mean imputation} (Mazza, Enders
-#' & Ruehlman, 2015) or \emph{ipsative mean imputation} (Schafer & Graham, 2002).
-#'
-#' Proration may be reasonable when (1) a relatively high proportion of the items
-#' (e.g., 0.8) and never fewer than half are used to form the scale score, (2)
-#' means of the items comprising a scale are similar and (3) the item-total
-#' correlations are similar (Enders, 2010; Graham, 2009; Graham, 2012). Results
-#' of simulation studies indicate that proration is prone to substantial bias
-#' when either the item means or the inter-item correlation vary (Lee, Bartholow,
-#' McCarthy, Pederson & Sher, 2014; Mazza et al., 2015).
-#'
 #' @param data     a data frame with numeric vectors.
 #' @param ...      an expression indicating the variable names in \code{data},
 #'                 e.g., \code{item.scores(dat, x1, x2, x3)}. Note that the
@@ -54,6 +39,22 @@
 #'                 i.e. these values are converted to \code{NA} before conducting
 #'                 the analysis.
 #' @param check    logical: if \code{TRUE} (default), argument specification is checked.
+#'
+#' @details
+#' #' Prorated mean scale scores are computed by averaging the available items, e.g.,
+#' if a participant answers 4 out of 8 items, the prorated scale score is the
+#' average of the 4 responses. Averaging the available items is equivalent to
+#' substituting the mean of a participant's own observed items for each of the
+#' participant's missing items, i.e., \emph{person mean imputation} (Mazza, Enders
+#' & Ruehlman, 2015) or \emph{ipsative mean imputation} (Schafer & Graham, 2002).
+#'
+#' Proration may be reasonable when (1) a relatively high proportion of the items
+#' (e.g., 0.8) and never fewer than half are used to form the scale score, (2)
+#' means of the items comprising a scale are similar and (3) the item-total
+#' correlations are similar (Enders, 2010; Graham, 2009; Graham, 2012). Results
+#' of simulation studies indicate that proration is prone to substantial bias
+#' when either the item means or the inter-item correlation vary (Lee, Bartholow,
+#' McCarthy, Pederson & Sher, 2014; Mazza et al., 2015).
 #'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
@@ -92,28 +93,26 @@
 #' @export
 #'
 #' @examples
-#' dat <- data.frame(item1 = c(3,  2,  4, 1,  5, 1,  3, NA),
-#'                   item2 = c(2,  2, NA, 2,  4, 2, NA,  1),
-#'                   item3 = c(1,  1,  2, 2,  4, 3, NA, NA),
-#'                   item4 = c(4,  2,  4, 4, NA, 2, NA, NA),
-#'                   item5 = c(3, NA, NA, 2,  4, 3, NA,  3))
+#' # Reverse code inverted item
+#' data.items <- item.reverse(data.items, pitem2, pitem3, min = 0, max = 3)
 #'
 #' # Example 1: Prorated mean scale scores
-#' item.scores(dat)
+#' item.scores(data.items, pitem1, pitem2.r, pitem3.r, pitem4::pitem6)
 #'
 #' # Example 2: Prorated standard deviation scale scores
-#' item.scores(dat, fun = "sd")
+#' item.scores(data.items, pitem1, pitem2.r, pitem3.r, pitem4::pitem6, fun = "sd")
 #'
 #' # Example 3: Sum scale scores without proration
-#' item.scores(dat, fun = "sum", prorated = FALSE)
+#' item.scores(data.items, pitem1, pitem2.r, pitem3.r, pitem4::pitem6, fun = "sum",
+#'             prorated = FALSE)
 #'
 #' # Example 4: Prorated mean scale scores,
 #' # minimum proportion of available item responses = 0.8
-#' item.scores(dat, p.avail = 0.8)
+#' item.scores(data.items, pitem1, pitem2.r, pitem3.r, pitem4::pitem6, p.avail = 0.8)
 #'
 #' # Example 5: Prorated mean scale scores,
 #' # minimum number of available item responses = 3
-#' item.scores(dat, n.avail = 3)
+#' item.scores(data.items, pitem1, pitem2.r, pitem3.r, pitem4::pitem6, n.avail = 3)
 item.scores <- function(data, ..., fun = c("mean", "sum", "median", "var", "sd", "min", "max"),
                         prorated = TRUE, p.avail = NULL, n.avail = NULL,
                         append = TRUE, name = "scores", as.na = NULL, check = TRUE) {
@@ -129,16 +128,16 @@ item.scores <- function(data, ..., fun = c("mean", "sum", "median", "var", "sd",
   #
   # Data -----------------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data using the argument '...' ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Using the Argument '...' ####
 
   if (isTRUE(!missing(...))) {
 
     # Extract data and convert tibble into data frame or vector
     x <- as.data.frame(data[, .var.names(data = data, ...)])
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data without using the argument '...' ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Without Using the Argument '...' ####
 
   } else {
 
@@ -146,6 +145,16 @@ item.scores <- function(data, ..., fun = c("mean", "sum", "median", "var", "sd",
     x <- as.data.frame(data)
 
   }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Convert User-Missing Values into NA ####
+
+  if (isTRUE(!is.null(as.na))) { x <- .as.na(x, na = as.na) }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Number of Item Responses ####
+
+  x.miss <- apply(x, 1L, function(y) sum(!is.na(y)))
 
   #_____________________________________________________________________________
   #
@@ -158,9 +167,6 @@ item.scores <- function(data, ..., fun = c("mean", "sum", "median", "var", "sd",
 
   # Additional checks
   if (isTRUE(check)) {
-
-    # Check input 'data'
-    if (isTRUE(!is.matrix(x) && !is.data.frame(x))) { stop("Please specify a data frame for the argument 'data'.", call. = FALSE) }
 
     # Check input 'data'
     if (isTRUE(any(apply(x, 2L, function(y) !is.numeric(y))))) { stop("Please specify a data frame with numeric vectors for the argument 'data'.", call. = FALSE) }
@@ -177,17 +183,12 @@ item.scores <- function(data, ..., fun = c("mean", "sum", "median", "var", "sd",
   #
   # Arguments ------------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Function used to compute scale scores ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Function Used to Compute Scale Scores ####
 
   fun <- ifelse(all(c("mean", "sum", "median", "var", "sd", "min", "max") %in% fun), "mean", fun)
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Number of item responses ####
-
-  x.miss <- apply(x, 1L, function(y) sum(!is.na(y)))
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Proration ####
 
   if (isTRUE(prorated)) {
@@ -195,7 +196,7 @@ item.scores <- function(data, ..., fun = c("mean", "sum", "median", "var", "sd",
     # avail = NULL, n.avail = NULL
     if (isTRUE(is.null(p.avail) && is.null(n.avail))) {
 
-      # Thresdhold for proraton = p.avail
+      # Threshold for proration = p.avail
       n.items <- 1L
 
     }
@@ -203,7 +204,7 @@ item.scores <- function(data, ..., fun = c("mean", "sum", "median", "var", "sd",
 
     if (isTRUE(!is.null(p.avail) && is.null(n.avail))) {
 
-      # Thresdhold for proraton = p.avail
+      # Threshold for proration = p.avail
       n.items <- ceiling(p.avail * ncol(x))
 
     }
@@ -211,79 +212,79 @@ item.scores <- function(data, ..., fun = c("mean", "sum", "median", "var", "sd",
 
     if (isTRUE(is.null(p.avail) && !is.null(n.avail))) {
 
-      # Thresdhold for proraton = n.avail
+      # Threshold for proration = n.avail
       n.items <- n.avail
 
     }
 
   } else {
 
-    # Thresdhold for proration = 1
+    # Threshold for proration = 1
     n.items <- ncol(x)
 
   }
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Convert user-missing values into NA ####
-
-  if (isTRUE(!is.null(as.na))) { x <- .as.na(x, na = as.na) }
 
   #_____________________________________________________________________________
   #
   # Main Function --------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Mean ####
+
   switch(fun, mean = {
 
     object <- misty::as.na(rowMeans(x, na.rm = TRUE), na = "NaN", check = FALSE)
-    object[which(x.miss < n.items)] <- NA
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Sum ####
+
   }, sum = {
 
     object <- misty::as.na(rowMeans(x, na.rm = TRUE)*ncol(x), na = "NaN", check = FALSE)
-    object[which(x.miss < n.items)] <- NA
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Median ####
+
   }, median = {
 
     object <- apply(x, 1L, function(y) ifelse(length(na.omit(y)) > 0L, median(y, na.rm = TRUE), NA))
-    object[which(x.miss < n.items)] <- NA
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Variance ####
+
   }, var = {
 
     object <- apply(x, 1L, function(y) ifelse(length(na.omit(y)) > 0L, var(y, na.rm = TRUE), NA))
-    object[which(x.miss < n.items)] <- NA
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Standard deviation ####
+
   }, sd = {
 
     object <- apply(x, 1L, function(y) ifelse(length(na.omit(y)) > 0L, sd(y, na.rm = TRUE), NA))
-    object[which(x.miss < n.items)] <- NA
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Minimum ####
+
   }, min = {
 
     object <- apply(x, 1L, function(y) ifelse(length(na.omit(y)) > 0L, min(y, na.rm = TRUE), NA))
-    object[which(x.miss < n.items)] <- NA
 
-  #-----------------------------------------
-  # Maximum
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Maximum ####
+
   }, max = {
 
     object <- apply(x, 1L, function(y) ifelse(length(na.omit(y)) > 0L, max(y, na.rm = TRUE), NA))
-    object[which(x.miss < n.items)] <- NA
 
   })
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Missing ####
+
+  if (isTRUE(any(x.miss < n.items))) { object[which(x.miss < n.items)] <- NA }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Append ####
 
   if (isTRUE(!missing(...) && append)) { object <- data.frame(data,  setNames(as.data.frame(object), nm = name)) }

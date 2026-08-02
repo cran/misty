@@ -282,12 +282,12 @@ check.resid <- function(model, type = c("linear", "homo", "normal"),
   #
   # Data and Arguments ---------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Type ####
 
   if (isTRUE(all(c("linear", "homo", "normal") %in% type))) { type <- "homo" }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Residual ####
 
   if (isTRUE(all(c("unstand", "stand", "student") %in% resid))) { if (isTRUE(type != "normal")) { resid <- "student" } else { resid <- "unstand" } }
@@ -309,23 +309,26 @@ check.resid <- function(model, type = c("linear", "homo", "normal"),
     # Check if model has at least one predictor
     if (isTRUE(if (isTRUE(class(model) == "lm")) { length(attr(model$terms, "term.labels")) == 0L } else { length(lme4::fixef(model) |> (\(y) y[names(y) != "(Intercept)"])()) == 0L})) { stop("There are no predictors in the model specified in the argument 'model'.", call. = FALSE) }
 
-    #...................
+    #—————————————————————————————————————— #
     ### Linear Model ####
 
     if (isTRUE(class(model) == "lm")) {
 
-      ##### Predictor variables ####
+      #···················
+      #### Predictor Variables ####
 
       pred.names <- attr(model$terms, "term.labels")
 
-      ##### Data frame ####
+      #···················
+      #### Data Frame ####
 
       plotdat <- data.frame(var = factor(rep(pred.names, each = nrow(model$model)), levels = pred.names),
                             pred = unlist(model$model[, pred.names]),
                             resid = as.vector(residuals(model, type = "partial")),
                             row.names = NULL)
 
-      ##### Plot data ####
+      #···················
+      #### Plot Data ####
 
       p <- ggplot2::ggplot(plotdat, ggplot2::aes(pred, resid)) +
             ggplot2::geom_point(size = point.size, shape = point.shape, fill = point.fill) +
@@ -341,12 +344,13 @@ check.resid <- function(model, type = c("linear", "homo", "normal"),
 
       if (isTRUE(line2)) { p <- p + ggplot2::geom_smooth(method = "loess", se = FALSE, formula = "y ~ x", linetype = linetype2, linewidth = linewidth2, color = line.col2) }
 
-    #...................
+    #—————————————————————————————————————— #
     ### Multilevel and Linear Mixed-Effects Model, lmer() ####
 
     } else if (isTRUE(class(model) %in% c("lmerMod", "lmerModLmerTest"))) {
 
-      ##### Data frame ####
+      #···················
+      #### Data Frame ####
 
       # Model Data
       model.data <- model.frame(model)
@@ -360,7 +364,8 @@ check.resid <- function(model, type = c("linear", "homo", "normal"),
                              resid = as.vector(sapply(pred.names, function(y) .resid.partial(model, fix = if (length(pred.names) != 1L) { misty::chr.omit(pred.names, omit = y) } else { NULL }, ran = "all"))),
                              row.names = NULL)
 
-      ##### Plot data ####
+      #···················
+      #### Plot Data ####
 
       p <- ggplot2::ggplot(plotdat, ggplot2::aes(pred, resid)) +
         ggplot2::geom_point(size = point.size, shape = point.shape, fill = point.fill) +
@@ -383,12 +388,13 @@ check.resid <- function(model, type = c("linear", "homo", "normal"),
 
   }, homo = {
 
-    #...................
+    #—————————————————————————————————————— #
     ### Linear Model ####
 
     if (isTRUE(class(model) == "lm")) {
 
-      ##### Residual ####
+      #···················
+      #### Residual ####
 
       # Unstandardized residuals
       switch(resid, unstand = {
@@ -407,11 +413,13 @@ check.resid <- function(model, type = c("linear", "homo", "normal"),
 
       })
 
-      ##### Limits and of the x and y-axis ####
+      #···················
+      #### Limits and of the x and y-axis ####
 
       if (isTRUE(is.null(ylim))) { ylim <- c(-ceiling(max(abs(plotdat$resid))), ceiling(max(abs(plotdat$resid)))) }
 
-      ##### Plot data ####
+      #···················
+      #### Plot Data ####
 
       p <- ggplot2::ggplot(plotdat, ggplot2::aes(pred, resid)) +
             ggplot2::geom_point(size = point.size, shape = point.shape, fill = point.fill) +
@@ -429,12 +437,13 @@ check.resid <- function(model, type = c("linear", "homo", "normal"),
                                       ggplot2::geom_smooth(data = subset(plotdat, resid > 0L), method = loess, formula = "y ~ x", se = FALSE, linetype = linetype2, linewidth = linewidth2, color = line.col2) +
                                       ggplot2::geom_smooth(data = subset(plotdat, resid < 0L), method = loess, formula = "y ~ x", se = FALSE, linetype = linetype2, linewidth = linewidth2, color = line.col2) }
 
-    #...................
+    #—————————————————————————————————————— #
     ### Multilevel and Linear Mixed-Effects Model, lmer() ####
 
     } else if (isTRUE(class(model) %in% c("lmerMod", "lmerModLmerTest"))) {
 
-      ##### Residuals ####
+      #···················
+      #### Residuals ####
 
       # Unstandardized residuals
       switch(resid, unstand = {
@@ -453,11 +462,13 @@ check.resid <- function(model, type = c("linear", "homo", "normal"),
 
       })
 
-      ##### Limits and of the x and y-axis ####
+      #···················
+      #### Limits and of the x and y-axis ####
 
       if (isTRUE(is.null(ylim))) { ylim <- c(-ceiling(max(abs(plotdat$resid))), ceiling(max(abs(plotdat$resid)))) }
 
-      ##### Plot data ####
+      #···················
+      #### Plot Data ####
 
       p <- ggplot2::ggplot(plotdat, ggplot2::aes(pred, resid)) +
         ggplot2::geom_point(size = point.size, shape = point.shape, fill = point.fill) +
@@ -482,12 +493,13 @@ check.resid <- function(model, type = c("linear", "homo", "normal"),
 
   }, normal =  {
 
-    #...................
+    #—————————————————————————————————————— #
     ### Linear Model ####
 
     if (isTRUE(class(model) == "lm")) {
 
-      ##### Residuals ####
+      #···················
+      #### Residuals ####
 
       # Unstandardized residuals
       switch(resid, unstand = {
@@ -506,6 +518,7 @@ check.resid <- function(model, type = c("linear", "homo", "normal"),
 
       })
 
+      #···················
       #### Q-Q Plot ####
 
       p1 <- ggplot2::ggplot(plotdat, ggplot2::aes(sample = resid)) +
@@ -530,6 +543,7 @@ check.resid <- function(model, type = c("linear", "homo", "normal"),
 
       }
 
+      #···················
       #### Histogram ####
 
       # Limits of the x-axis
@@ -553,16 +567,18 @@ check.resid <- function(model, type = c("linear", "homo", "normal"),
 
       if (isTRUE(line2)) { p2 <- p2 + ggplot2::geom_density(color = line.col2, linetype = linetype2, linewidth = linewidth2) }
 
-      #### Arrange plots ####
+      #···················
+      #### Arrange Plots ####
 
       p <- patchwork::wrap_plots(p1, p2, ncol = 2L)
 
-    #...................
+    #—————————————————————————————————————— #
     ### Multilevel and Linear Mixed-Effects Model, lmer() ####
 
     } else if (isTRUE(class(model) %in% c("lmerMod", "lmerModLmerTest"))) {
 
-      ##### Level-1 Residuals ####
+      #···················
+      #### Level-1 Residuals ####
 
       if (isTRUE(resid == "student")) { stop("Studentized residuals are not available for multilevel and linear mixed-effects model.", call. = FALSE) }
 
@@ -578,7 +594,8 @@ check.resid <- function(model, type = c("linear", "homo", "normal"),
 
       })
 
-      ##### Level-2 Residuals ####
+      #···················
+      #### Level-2 Residuals ####
 
       # Unstandardized or standardized residuals
       plotdat2 <- as.data.frame(lme4::ranef(model)) |>
@@ -588,6 +605,7 @@ check.resid <- function(model, type = c("linear", "homo", "normal"),
       # Level-1 and Level-2 Residuals
       plotdat <- list(plotdat1, plotdat2)
 
+      #···················
       #### Level-1 Q-Q Plot ####
 
       p11 <- ggplot2::ggplot(plotdat1, ggplot2::aes(sample = resid)) +
@@ -603,6 +621,7 @@ check.resid <- function(model, type = c("linear", "homo", "normal"),
                        plot.margin = ggplot2::margin(5.5, 5.5, 20, 5.5, "pt")) +
         ggplot2::ggtitle("Level-1 Residuals")
 
+      #···················
       #### Level-2 Q-Q Plot ####
 
       p21 <- ggplot2::ggplot(plotdat2, ggplot2::aes(sample = condval)) +
@@ -618,6 +637,7 @@ check.resid <- function(model, type = c("linear", "homo", "normal"),
                        axis.text = ggplot2::element_text(size = axis.text.size)) +
         ggplot2::ggtitle("Level-2 Residuals")
 
+      #···················
       #### Level-1 Histogram ####
 
       # Limits of the x-axis
@@ -640,6 +660,7 @@ check.resid <- function(model, type = c("linear", "homo", "normal"),
 
       if (isTRUE(line2)) { p12 <- p12 + ggplot2::geom_density(color = line.col2, linetype = linetype2, linewidth = linewidth2) }
 
+      #···················
       #### Level-2 Histogram ####
 
       # Limits of the x-axis

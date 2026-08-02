@@ -159,16 +159,16 @@ coding <- function(data, ...,
   #
   # Data -----------------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data using the argument '...' ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Using the Argument '...' ####
 
   if (isTRUE(!missing(...))) {
 
     # Extract data and convert tibble into data frame or vector
     x <- data[, .var.names(data = data, ...)] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { unname(unlist(y)) } else { y })()
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data without using the argument '...' ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Without Using the Argument '...' ####
 
   } else {
 
@@ -177,8 +177,8 @@ coding <- function(data, ...,
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Convert user-missing values into NA ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Convert User-Missing Values into NA ####
 
   if (isTRUE(!is.null(as.na))) { x <- .as.na(x, na = as.na) }
 
@@ -217,7 +217,7 @@ coding <- function(data, ...,
   #
   # Arguments ------------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Type of Coding ####
 
   if (isTRUE(all(c("dummy", "simple", "effect", "weffect", "repeat", "fhelm", "rhelm", "poly") %in% type))) { type <- "dummy" }
@@ -226,7 +226,7 @@ coding <- function(data, ...,
   #
   # Main Function --------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Vector of Factor Levels or Unique Values ####
 
   # Factor
@@ -241,7 +241,7 @@ coding <- function(data, ...,
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Baseline Group ####
 
   # User-defined group
@@ -256,7 +256,7 @@ coding <- function(data, ...,
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Contrast Matrix ####
 
   switch(type,
@@ -294,23 +294,23 @@ coding <- function(data, ...,
 
          })
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Match with Data ####
 
   object <- data.frame(cont.mat[match(x, n), ], row.names = NULL)
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Variable names ####
 
-  #...................
+  #—————————————————————————————————————— #
   ### Default names ####
 
   if (isTRUE(all(c("dum.", "sim.", "eff.", "weff.", "rep.", "fhelm.", "rhelm.", "poly.") %in% name))) {
 
     prefix <- switch(type, "dummy" = "dum.", "simple" = "sim.", "effect" = "eff.", "weffect" = "weff.", "repeat" = "rep.", "fhelm" = "fhelm.", "rhelm" = "rhelm.", "poly" = "poly")
 
-  #...................
-  ### User-defined prefix ####
+  #—————————————————————————————————————— #
+  ### User-defined Prefix ####
 
   } else if (isTRUE(length(name) == 1L)) {
 
@@ -322,22 +322,26 @@ coding <- function(data, ...,
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Assign names ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Assign Names ####
 
-  ##### Names with prefix
+  #—————————————————————————————————————— #
+  ### Names with Prefix ####
+
   if (isTRUE(!is.null(prefix))) {
 
     colnames(object) <- paste0(prefix, colnames(cont.mat))
 
-  ##### User-defined vector of names
+  #—————————————————————————————————————— #
+  ### User-Defined Vector of Names ####
+
   } else {
 
     colnames(object) <- name
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Append ####
 
   if (isTRUE(!is.null(data) && append)) { object <- data.frame(data, object) }

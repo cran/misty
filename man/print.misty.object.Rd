@@ -4,59 +4,16 @@
 \alias{print.misty.object}
 \title{Print misty.object object}
 \usage{
-\method{print}{misty.object}(x,
-      print = x$args$print, tri = x$args$tri, freq = x$args$freq,
-      hypo = x$args$hypo, descript = x$args$descript, epsilon = x$args$epsilon,
-      effsize = x$args$effsize, posthoc = x$args$posthoc, split = x$args$split,
-      table = x$args$table, digits = x$args$digits, p.digits = x$args$p.digits,
+\method{print}{misty.object}(x, sort.var = x$args$sort.var,
+      digits = x$args$digits, p.digits = x$args$p.digits,
       icc.digits = x$args$icc.digits, r.digits = x$args$r.digits,
       ess.digits = x$args$ess.digits, mcse.digits = x$args$mcse.digits,
-      sort.var = x$args$sort.var, order = x$args$order, horiz = TRUE,
       check = TRUE, ...)
 }
 \arguments{
 \item{x}{\code{misty.object} object.}
 
-\item{print}{a character string or character vector indicating which
-results to to be printed on the console.}
-
-\item{tri}{a character string or character vector indicating which
-triangular of the matrix to show on the console, i.e.,
-\code{both} for upper and lower triangular, \code{lower}
-for the lower triangular, and \code{upper} for the upper
-triangular.}
-
-\item{freq}{logical: if \code{TRUE}, absolute frequencies will be included
-in the cross tabulation (\code{crosstab()} function).}
-
-\item{hypo}{logical: if \code{TRUE}, null and alternative hypothesis are
-shown on the console (\code{\link{test.t}},
-\code{\link{test.welch}}, \code{\link{test.z}} function).}
-
-\item{descript}{logical: if \code{TRUE}, descriptive statistics are shown on
-the console (\code{\link{test.t}}, \code{\link{test.welch}},
-\code{\link{test.z}} function).}
-
-\item{epsilon}{logical: if \code{TRUE}, box indices of sphericity (epsilon)
-are shown on the console (\code{\link{aov.w}}).}
-
-\item{effsize}{logical: if \code{TRUE}, effect size measure(s) is shown on
-the console (\code{\link{test.t}}, \code{\link{test.welch}},
-\code{\link{test.z}} function).
-\code{\link{test.z}} function).}
-
-\item{posthoc}{logical: if \code{TRUE},post hoc test for multiple comparison
-is shown on the console (\code{\link{test.welch}}).}
-
-\item{split}{logical: if \code{TRUE}, output table is split by variables
-when specifying more than one variable in \code{x}
-(\code{\link{freq}}).}
-
-\item{table}{logical: if \code{TRUE}, a frequency table with number of
-observed values (\code{"nOb"}), percent of observed values
-(\code{"pOb"}), number of missing values (\code{"nNA"}),
-and percent of missing values (\code{"pNA"}) is printed for
-each variable on the console (\code{na.descript()} function).}
+\item{sort.var}{logical: if \code{TRUE}, output is sorted by variables.}
 
 \item{digits}{an integer value indicating the number of decimal places
 to be used for displaying results.}
@@ -70,22 +27,15 @@ for displaying intraclass correlation coefficients
 function).}
 
 \item{r.digits}{an integer value indicating the number of decimal places
-to be used for displaying R-hat values.}
+to be used for displaying R-hat values, item-total correlation
+standardized factor loadings, coefficient alpha, and
+coefficient omega.}
 
 \item{ess.digits}{an integer value indicating the number of decimal places
 to be used for displaying effective sample sizes.}
 
 \item{mcse.digits}{an integer value indicating the number of decimal places
-to be used for displaying monte carlo standard errors.}
-
-\item{sort.var}{logical: if \code{TRUE}, output is sorted by variables.}
-
-\item{order}{logical: if \code{TRUE}, variables are ordered from left to
-right in increasing order
-of missing values (\code{na.descript()} function).}
-
-\item{horiz}{logical: if \code{TRUE}, a horizontal line under the table
-header is drawn.}
+to be used for displaying Monte Carlo standard errors.}
 
 \item{check}{logical: if \code{TRUE}, argument specification is checked.}
 
@@ -93,6 +43,28 @@ header is drawn.}
 }
 \description{
 This function prints an \code{misty.object} object.
+}
+\examples{
+\dontrun{
+#————————————————————————————————————————————————————————————————————————————
+# Example 1: item.cfa() function
+
+# Load data set "HolzingerSwineford1939" in the lavaan package
+data("HolzingerSwineford1939", package = "lavaan")
+
+result <- item.cfa(HolzingerSwineford1939[, c("x1", "x2", "x3")], output = FALSE)
+print(result)
+
+#————————————————————————————————————————————————————————————————————————————
+# Example 2: multilevel.descript() function
+
+# Load data set "Demo.twolevel" in the lavaan package
+data("Demo.twolevel", package = "lavaan")
+
+result <- multilevel.descript(y1:y3, data = Demo.twolevel, cluster = "cluster",
+                              output = FALSE)
+print(result)
+}
 }
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}

@@ -99,7 +99,7 @@
 #' # Load data set "Demo.twolevel" in the lavaan package
 #' data("Demo.twolevel", package = "lavaan")
 #'
-#' #----------------------------------------------------------------------------
+#' #—————————————————————————————————————————————————————————————————————————————
 #' # Multilevel and Linear Mixed-Effects Model
 #'
 #' # Cluster-mean centering, center() from the misty package
@@ -118,7 +118,7 @@
 #' mod.lmer2r$result$weight$iresid
 #' mod.lmer2r$result$weight$iranef
 #'
-#' #----------------------------------------------------------------------------
+#' #—————————————————————————————————————————————————————————————————————————————
 #' # Write Results
 #'
 #' # Example 2a: Write results into a text file
@@ -153,12 +153,12 @@ robust.lmer <- function(model, method = c("DAStau", "DASvar"), setting = c("RSEn
   #
   # Arguments ------------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Argument 'method' ####
 
   method <- ifelse(all(c("DAStau", "DASvar") %in% method), "DAStau", method)
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Argument 'setting' ####
 
   setting <- ifelse(all(c("RSEn", "RSEa") %in% setting), "RSEn", setting)
@@ -167,17 +167,17 @@ robust.lmer <- function(model, method = c("DAStau", "DASvar"), setting = c("RSEn
   #
   # Main Function --------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Call ####
 
   call <- as.character(stats::getCall(model)) |> (\(y) list(formula = y[2L], data = y[3L]))()
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Robust Estimation ####
 
   model.r <-  eval(parse(text = paste0("suppressWarnings(suppressMessages(robustlmm::rlmer(", call$formula, ", data = model.frame(model)", ", method = \"", method, "\", setting = \"", setting, "\")))")))
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Random Effects ####
 
   randeff <- data.frame(groups = c(unlist(sapply(names(VarCorr(model.r)), function(y) c(y, rep(NA, times = nrow(VarCorr(model.r)[[y]]) - 1L)))), "Residual"),
@@ -188,8 +188,11 @@ robust.lmer <- function(model, method = c("DAStau", "DASvar"), setting = c("RSEn
                                   (\(z) lapply(names(VarCorr(model.r)), function(w) attr(VarCorr(model.r)[[w]], which = "correlation") |> (\(q) if (isTRUE(!setequal(colnames(q), z))) { misty::df.rename(setNames(data.frame(q, matrix(NA, ncol = length(setdiff(z, colnames(q))), nrow = nrow(q))), nm = c(colnames(q), setdiff(z, colnames(q)))), from = "(Intercept)", to = "cor") } else { misty::df.rename(q, from = "(Intercept)", to = "cor") })()))()) |>
                           (\(p) rbind(p, setNames(rep(NA, times = ncol(p)), nm = colnames(p))))(), check.names = FALSE, row.names = NULL)
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Unstandardized Coefficients ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Unstandardized Coefficients and Degrees of Freedom ####
+
+  #—————————————————————————————————————— #
+  ### Coefficients ####
 
   # Coefficients of regular estimation
   modcoef <- as.data.frame(coef(summary(model)))
@@ -197,12 +200,12 @@ robust.lmer <- function(model, method = c("DAStau", "DASvar"), setting = c("RSEn
   # Coefficients of robust estimation
   modcoef.r <- setNames(as.data.frame(coef(summary(model.r))), nm = c("Estimate", "SE", "t"))
 
-  #...................
+  #—————————————————————————————————————— #
   ### Degrees of Freedom ####
 
   if (isTRUE("df" %in% colnames(modcoef))) { modcoef.r <- misty::df.move(cbind(modcoef.r, df = modcoef$df, p = pt(abs(modcoef.r$t), modcoef$df, lower.tail = FALSE)*2L), df, after = "SE") }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Robustness Weights ####
 
   # Two-Level Model
@@ -225,7 +228,7 @@ robust.lmer <- function(model, method = c("DAStau", "DASvar"), setting = c("RSEn
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Model Not Converged or Singular ####
 
   # -1 = not converged, 0 = singular, 1 = model converged

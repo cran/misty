@@ -393,7 +393,8 @@
 #' # Load data set "Demo.twolevel" in the lavaan package
 #' data("Demo.twolevel", package = "lavaan")
 #'
-#' #----------------------------------------------------------------------------
+#' #————————————————————————————————————————————————————————————————————————————
+#' # Estimate Multilevel Models
 #'
 #' # Cluster mean centering, center() from the misty package
 #' Demo.twolevel <- center(Demo.twolevel, x2, type = "CWC", cluster = "cluster")
@@ -409,40 +410,49 @@
 #' mod1b <- lme(y1 ~ x2.c + x2.b + w1, random = ~ 1 + x2.c | cluster, data = Demo.twolevel,
 #'              method = "ML")
 #'
-#' #----------------------------------------------------------------------------
-#' # Example 1a: R-squared measures according to Rights and Sterba (2019)
+#' #————————————————————————————————————————————————————————————————————————————
+#' # R-Squared Measures According to Rights and Sterba (2019)
+#'
+#' # Example 1a: Multilevel model using the lmer() function
 #' multilevel.r2(mod1a)
 #'
-#' # Example 1b: R-squared measures according to Rights and Sterba (2019)
+#' # Example 1b: Multilevel model using the lme() function
 #' multilevel.r2(mod1b)
 #'
-#' # Example 1a: Write Results into a text file
+#' # Example 1c: Write Results into a text file
 #' multilevel.r2(mod1a, write = "ML-R2.txt")
 #'
-#' #----------------------------------------------------------------------------
-#' # Example 2: Bar chart showing the decomposition of scaled total, within-cluster,
+#' #————————————————————————————————————————————————————————————————————————————
+#' # Bar Chart Showing the Variance Decomposition
+#'
 #' # and between-cluster outcome variance
+#'
+#' # Example 2a: Default setting
 #' multilevel.r2(mod1a, plot = TRUE)
 #'
-#' # Bar chart in gray scale
+#' # Example 2b: Bar chart in gray scale
 #' multilevel.r2(mod1a, plot = TRUE, gray = TRUE)
 #'
-#' # Save bar chart
+#'# Example 2c: Save bar chart
 #' multilevel.r2(mod1a, plot = TRUE, filename = "Proportion_of_Variance.png",
 #'               dpi = 600, width = 5.5, height = 5.5)
 #'
-#' #----------------------------------------------------------------------------
-#' # Example 3: Estimate multilevel model without random slopes
+#' #————————————————————————————————————————————————————————————————————————————
+#' # Argument 'print'
+#'
+#' # Estimate multilevel model without random slopes
 #' # Note. R-squared measures by Raudenbush and Bryk (2002), and  Snijders and
 #' # Bosker (2012) should be computed based on the random intercept model
 #' mod2 <- lmer(y1 ~ x2.c + x2.b + w1 + (1 | cluster), data = Demo.twolevel,
 #'              REML = FALSE, control = lmerControl(optimizer = "bobyqa"))
 #'
-#' # Print all available R-squared measures
+#' # Example 3: Print all available R-squared measures
 #' multilevel.r2(mod2, print = "all")
 #'
-#' #----------------------------------------------------------------------------
-#' # Example 4: Draw bar chart manually
+#' #————————————————————————————————————————————————————————————————————————————
+#' # Draw Bar Chart Manually
+#'
+#' # Extract misty object
 #' mod1a.r2 <- multilevel.r2(mod1a, output = FALSE)
 #'
 #' # Prepare data frame for ggplot()
@@ -456,7 +466,7 @@
 #'                            "Fixed Slopes (Within)")),
 #'                  y = as.vector(mod1a.r2$result$rs$decomp))
 #'
-#' # Draw bar chart in line with the default setting of multilevel.r2()
+#' # Example 4: Draw bar chart in line with the default setting of multilevel.r2()
 #' ggplot(df, aes(x = var, y = y, fill = part)) +
 #'   theme_bw() +
 #'   geom_bar(stat = "identity") +
@@ -513,7 +523,7 @@ multilevel.r2 <- function(model, print = c("all", "RB", "SB", "NS", "RS"), digit
   #
   # Arguments ------------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## 'print' Argument ####
 
   if (isTRUE(all(c("all", "RB", "SB", "NS", "RS") %in% print))) { print <- "RS" }
@@ -522,7 +532,7 @@ multilevel.r2 <- function(model, print = c("all", "RB", "SB", "NS", "RS"), digit
 
   if (isTRUE(plot) & isTRUE(!"RS" %in% print)) { warning("Bar char is only available when \"RS\" is specified for the argument 'print'.", call. = FALSE) }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## 'units' Argument ####
 
   # Default setting
@@ -532,7 +542,7 @@ multilevel.r2 <- function(model, print = c("all", "RB", "SB", "NS", "RS"), digit
   #
   # Main Function --------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## RB, SB, or NS R-squared measures ####
 
   if (isTRUE(any(c("RB", "SB", "NS") %in% print))) {
@@ -540,8 +550,9 @@ multilevel.r2 <- function(model, print = c("all", "RB", "SB", "NS", "RS"), digit
     # Check if refit is necessary
     refit <- any(c("RB", "SB") %in% print)
 
-    #...................
+    #—————————————————————————————————————— #
     ### lme4 ####
+
     switch(method, lme4 = {
 
       # Model terms
@@ -596,8 +607,9 @@ multilevel.r2 <- function(model, print = c("all", "RB", "SB", "NS", "RS"), digit
 
       }
 
-    #...................
+    #—————————————————————————————————————— #
     ### nlme ####
+
     }, nlme = {
 
       # Model terms
@@ -652,8 +664,8 @@ multilevel.r2 <- function(model, print = c("all", "RB", "SB", "NS", "RS"), digit
 
     })
 
-    #...................
-    ### Random slope model ####
+    #——————————————————————————————————————
+    ### Random Slope Model ####
 
     if (isTRUE(random)) {
 
@@ -675,8 +687,8 @@ multilevel.r2 <- function(model, print = c("all", "RB", "SB", "NS", "RS"), digit
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Raudenbush and Bryk (2002) R-squared measures ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Raudenbush and Bryk (2002) R-Squared Measures ####
 
   if (isTRUE("RB" %in% print)) {
 
@@ -692,8 +704,8 @@ multilevel.r2 <- function(model, print = c("all", "RB", "SB", "NS", "RS"), digit
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Snijders and Bosker (1994) R-squared measures ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Snijders and Bosker (1994) R-Squared Measures ####
 
   if (isTRUE("SB" %in% print)) {
 
@@ -709,8 +721,8 @@ multilevel.r2 <- function(model, print = c("all", "RB", "SB", "NS", "RS"), digit
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Nakagawa and Schielzeth (2013); Johnson (2014) R-squared measures ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Nakagawa and Schielzeth (2013); Johnson (2014) R-Squared Measures ####
 
   if (isTRUE("NS" %in% print)) {
 
@@ -762,13 +774,13 @@ multilevel.r2 <- function(model, print = c("all", "RB", "SB", "NS", "RS"), digit
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Rights and Sterba (2019) R-squared measures ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Rights and Sterba (2019) R-Squared Measures ####
 
   if (isTRUE("RS" %in% print)) {
 
-    #...................
-    ### R-squared measures ####
+    #—————————————————————————————————————— #
+    ### R-Squared Measures ####
 
     r2mlm.out <- .r2mlm(model)
 
@@ -821,7 +833,7 @@ multilevel.r2 <- function(model, print = c("all", "RB", "SB", "NS", "RS"), digit
 
   if (isTRUE(!is.null(write))) {
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Text file ####
 
     # Send R output to textfile

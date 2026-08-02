@@ -281,7 +281,7 @@ na.test <- function(data, ..., print = c("all", "little", "jamjal"),
   #
   # Data -----------------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data using the argument '...' ####
 
   if (isTRUE(!missing(...))) {
@@ -289,7 +289,7 @@ na.test <- function(data, ..., print = c("all", "little", "jamjal"),
     # Extract data and convert tibble into data frame or vector
     x <- as.data.frame(data[, .var.names(data = data, ...), drop = FALSE])
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data without using the argument '...' ####
 
   } else {
@@ -299,12 +299,12 @@ na.test <- function(data, ..., print = c("all", "little", "jamjal"),
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Convert user-missing values into NA ####
 
   if (isTRUE(!is.null(as.na))) { x <- .as.na(x, na = as.na) }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## All Missing ####
 
   x <- misty::na.prop(x, append = FALSE) |>
@@ -320,7 +320,7 @@ na.test <- function(data, ..., print = c("all", "little", "jamjal"),
 
     })()
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## As data matrix ####
 
   # Coerce to a data matrix
@@ -382,7 +382,7 @@ na.test <- function(data, ..., print = c("all", "little", "jamjal"),
   #
   # Arguments ------------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## 'print' Argument ####
 
   if (isTRUE(all(c("all", "little", "jamjal") %in% print))) {
@@ -395,12 +395,12 @@ na.test <- function(data, ..., print = c("all", "little", "jamjal"),
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## 'print' Argument ####
 
   if (isTRUE(all(c("npar", "normal") %in% method))) { method <- "npar" }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## 'pool' Argument ####
 
   if (isTRUE(all(c("med", "min", "max", "random") %in% pool))) { pool <- "med" }
@@ -411,18 +411,18 @@ na.test <- function(data, ..., print = c("all", "little", "jamjal"),
 
   if (isTRUE("little" %in% print)) {
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Check ####
 
     # More than 50 variables
     if (isTRUE(ncol(x.matrix) > 50L)) { stop("The mlest function from the mvnmle package used to perform Little's MCAR test cannot handle more than 50 variables.", call. = FALSE) }
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Little's MCAR Test ####
 
     restab.LittleMCAR <- .LittleMCAR(x.matrix)
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Result table ####
 
     restab.little <- data.frame(no.cases = nrow(x), no.incomplete = misty::na.descript(x, output = FALSE)$result$L1$no.incomplete.l1, no.pattern = restab.LittleMCAR$missing.patterns,
@@ -442,7 +442,7 @@ na.test <- function(data, ..., print = c("all", "little", "jamjal"),
 
     restab.TestMCARNormality <- .TestMCARNormality(data = x, delete = delete, m = m, method = method, nrep = nrep, n.min = n.min, seed = seed, pool = pool, impdat = impdat)
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Result table ####
 
     restab.hawkins <- data.frame(no.cases = nrow(restab.TestMCARNormality$dat.analysis), no.incomplete = misty::na.descript(restab.TestMCARNormality$dat.analysis, output = FALSE)$result$L1$no.incomplete.l1, no.pattern = restab.TestMCARNormality$g,
@@ -475,8 +475,8 @@ na.test <- function(data, ..., print = c("all", "little", "jamjal"),
 
   if (isTRUE(!is.null(write))) {
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Text file ####
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Text File ####
 
     # Send R output to text file
     sink(file = write, append = ifelse(isTRUE(file.exists(write)), append, FALSE), type = "output", split = FALSE)

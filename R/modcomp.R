@@ -349,19 +349,22 @@
 #' fit1 <- cfa(HS.model, data = HolzingerSwineford1939)
 #' fit2 <- cfa(HS.model, data = HolzingerSwineford1939, orthogonal = TRUE)
 #'
-#' # Example 1a: Model comparison, default setting
+#' # Example 1a: Model fit for model 'fit1', default setting
+#' modcomp(fit1)
+#'
+#' # Example 1b: Model comparison, default setting
 #' modcomp(fit1, fit2)
 #'
-#' # Example 1b: Model comparison, request likelihood ratio test
+#' # Example 1c: Model comparison, request likelihood ratio test
 #' modcomp(fit1, fit2, difftest = TRUE)
 #'
-#' # Example 1c: Model comparison, request default information criteria and AICc
+#' # Example 1d: Model comparison, request default information criteria and AICc
 #' modcomp(fit1, fit2, print.ic = c("default", "aicc"))
 #'
-#' # Example 1d: Model comparison, request all information criteria
+#' # Example 1e: Model comparison, request all information criteria
 #' modcomp(fit1, fit2, print.ic = "all")
 #'
-#' # Example 1e: Model fit indices, request all information criteria
+#' # Example 1f: Model fit indices, request all information criteria
 #' modcomp(fit1, print.ic = "all")
 #'
 #' #————————————————————————————————————————————————————————————————————————————
@@ -537,7 +540,7 @@ modcomp <- function(..., difftest = FALSE, print.fit = c("none", "deviance", "ch
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Model Fit and Information Criteria ####
 
-  #--------------------------------------
+  #—————————————————————————————————————— #
   ### Latent Variable Models, lavaan package ####
 
   if (isTRUE(all(mod.class == "lavaan"))) {
@@ -555,12 +558,12 @@ modcomp <- function(..., difftest = FALSE, print.fit = c("none", "deviance", "ch
                                           # Single-level analysis
                                           (\(p) if (isTRUE(!lavaan::inspect(mod[[y]], what = "options")$.multilevel)) {
 
-                                            c(deviance = unname(-2L*p["logl"]), p[c("npar", "chisq", "df", switch(fit.robust, standard = c("cfi", "tli", "rmsea"), scaled = c("cfi.scaled", "tli.scaled", "rmsea.scaled"), robust =  c("cfi.robust", "tli.robust", "rmsea.robust")), "srmr")])
+                                            c(deviance = unname(-2L*p["logl"]), p[c("npar", "chisq", "df", switch(fit.robust, standard = c("cfi", "tli", "rmsea"), scaled = c("cfi.scaled", "tli.scaled", "rmsea.scaled"), robust = c("cfi.robust", "tli.robust", "rmsea.robust")), "srmr", switch(fit.robust, standard = "gfi", scaled = "gfi.robust", robust = "gfi.robust"))])
 
                                           # Multi-level analysis
                                           } else {
 
-                                            c(deviance = unname(-2L*p["logl"]), p[c("npar", "chisq", "df", switch(fit.robust, standard = c("cfi", "tli", "rmsea"), scaled = c("cfi.scaled", "tli.scaled", "rmsea.scaled"), robust =  c("cfi.robust", "tli.robust", "rmsea.robust")), "srmr_within", "srmr_between")])
+                                            c(deviance = unname(-2L*p["logl"]), p[c("npar", "chisq", "df", switch(fit.robust, standard = c("cfi", "tli", "rmsea"), scaled = c("cfi.scaled", "tli.scaled", "rmsea.scaled"), robust = c("cfi.robust", "tli.robust", "rmsea.robust")), "srmr_within", "srmr_between", switch(fit.robust, standard = "gfi", scaled = "gfi.robust", robust = "gfi.robust"))])
 
                                           })() |> (\(q) setNames(q, nm = misty::chr.gsub(pattern = c(".scaled", ".robust", "srmr_within", "srmr_between"), c("", "", "srmrw", "srmrb"), names(q), check = FALSE)))())))
 
@@ -600,7 +603,7 @@ modcomp <- function(..., difftest = FALSE, print.fit = c("none", "deviance", "ch
     ##### Bozdogan Information Complexity ####
     if (isTRUE("icomp" %in% print.ic)) { restab <- data.frame(restab, icomp = sapply(mod, .icomp)) }
 
-  #--------------------------------------
+  #—————————————————————————————————————— #
   ### All other Models ####
   #
   # Linear, Generalized, and Nonlinear Models: lm(), glm(), nls() functions
@@ -645,35 +648,35 @@ modcomp <- function(..., difftest = FALSE, print.fit = c("none", "deviance", "ch
 
   if (isTRUE(difftest)) {
 
-    #--------------------------------------
+    #—————————————————————————————————————— #
     ### Latent Variable Models, lavaan package ####
 
     if (isTRUE(all(mod.class == "lavaan"))) {
 
       restab <- suppressMessages(suppressWarnings(lavaan::anova(...))) |> (\(p) data.frame(restab[as.numeric(gsub("\\.", "", row.names(p))), ], d.chisq = p[, "Chisq diff"], d.df = p[, "Df diff"], p = p[, "Pr(>Chisq)"]))()
 
-    #--------------------------------------
+    #—————————————————————————————————————— #
     ### Linear Models ####
 
     } else if (isTRUE(all(mod.class == "lm"))) {
 
       restab <- suppressMessages(suppressWarnings(eval(parse(text = paste0("anova(", paste(mod.names[order(restab$npar)], collapse = ", "), ")"))))) |> (\(p) data.frame(restab[order(restab$npar), ], F = p[, "F"], p = p[, "Pr(>F)"]))()
 
-    #--------------------------------------
+    #—————————————————————————————————————— #
     ### Generalize Linear Models ####
 
     } else if (isTRUE(all(mod.class == "glm"))) {
 
       restab <- suppressMessages(suppressWarnings(eval(parse(text = paste0("anova(", paste(mod.names[order(restab$npar)], collapse = ", "), ")"))))) |> (\(p) data.frame(restab[order(restab$npar), ], chisq = p[, "Deviance"], df = p[, "Df"], p = p[, "Pr(>Chi)"]))()
 
-    #--------------------------------------
+    #—————————————————————————————————————— #
     ### Nonlinear Models ####
 
     } else if (isTRUE(all(mod.class == "nls"))) {
 
       restab <- suppressMessages(suppressWarnings(eval(parse(text = paste0("anova(", paste(mod.names[order(restab$npar)], collapse = ", "), ")"))))) |> (\(p) data.frame(restab[order(restab$npar), ], F = p[, "F value"], p = p[, "Pr(>F)"]))()
 
-    #--------------------------------------
+    #—————————————————————————————————————— #
     ### Linear and Generalized Mixed-Effects Models, lme4 package ####
 
     } else if (isTRUE(all(mod.class %in% c("lmerMod", "lmerModLmerTest", "glmerMod")))) {
@@ -696,7 +699,7 @@ modcomp <- function(..., difftest = FALSE, print.fit = c("none", "deviance", "ch
 
       }
 
-    #--------------------------------------
+    #—————————————————————————————————————— #
     ### Linear and Nonlinear Mixed-Effects Models, nlme package ####
 
     } else if (isTRUE(all(mod.class %in% c("lme", "nlme")))) {
@@ -712,7 +715,7 @@ modcomp <- function(..., difftest = FALSE, print.fit = c("none", "deviance", "ch
 
       }
 
-    #--------------------------------------
+    #—————————————————————————————————————— #
     ### Generalized Linear Mixed Model Using Template Model Builder, glmmTMB package ####
 
     } else if (isTRUE(all(mod.class %in% "glmmTMB"))) {
@@ -728,14 +731,14 @@ modcomp <- function(..., difftest = FALSE, print.fit = c("none", "deviance", "ch
 
       }
 
-    #--------------------------------------
+    #—————————————————————————————————————— #
     ### Negative Binomial Generalized Linear Models: glm.nb() function, MASS package ####
 
     } else if (isTRUE(all(mod.class == "negbin"))) {
 
       restab <- suppressMessages(suppressWarnings(anova(...))) |> (\(p) data.frame(restab[as.numeric(gsub("\\.", "", row.names(p))), ], chisq = p[, "LR stat."], df = p[, "   df"], p = p[, "Pr(Chi)"]))()
 
-    #--------------------------------------
+    #—————————————————————————————————————— #
     ### Ordered Logistic or Probit Regression Model: polr() function, MASS package ####
 
     } else if (isTRUE(all(mod.class == "polr"))) {
@@ -749,12 +752,12 @@ modcomp <- function(..., difftest = FALSE, print.fit = c("none", "deviance", "ch
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Select Model Fit Measures and Remove NA Columns ####
 
-  #--------------------------------------
+  #—————————————————————————————————————— #
   ### Model Fit ####
 
   if (isTRUE(all(mod.class == "lavaan"))) { restab <- restab[, which(!colnames(restab) %in% setdiff(c("deviance", "chisq", "cfi", "tli", "rmsea", "srmr"), print.fit))] }
 
-  #--------------------------------------
+  #—————————————————————————————————————— #
   ### Remove NA columns ####
 
   restab <- restab[, sapply(restab, function(y) any(!is.na(y)))]

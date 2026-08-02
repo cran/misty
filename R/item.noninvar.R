@@ -387,11 +387,11 @@
 #' # Load data set "HolzingerSwineford1939" in the lavaan package
 #' data("HolzingerSwineford1939", package = "lavaan")
 #'
-#' #----------------------------------------------------------------------------
+#' #————————————————————————————————————————————————————————————————————————————
 #' # Between-Group Measurement Non-Invariance: Continuous Indicators
 #'
-#' #..................
-#' # Measurement model with one factor
+#' #——————————————————————————————————————
+#' ## Measurement Model with One Factor
 #'
 #' # Example 1a: Model specification using the argument '...'
 #' item.noninvar(HolzingerSwineford1939, x1, x2, x3, x4, group = "school")
@@ -410,8 +410,8 @@
 #' fit <- cfa('f =~ x1 + x2 + x3 + x4', data = HolzingerSwineford1939, group = "school", std.lv = TRUE)
 #' item.noninvar(object = fit)
 #'
-#' #..................
-#' # Measurement model with two factors
+#' #——————————————————————————————————————
+#' ## Measurement Model with Two Factors
 #'
 #' # Example 2a: Model specification using the argument 'model'
 #' item.noninvar(HolzingerSwineford1939,
@@ -422,11 +422,11 @@
 #' model <- 'f1 =~ x1 + x2 + x3 + x4
 #'           f2 =~ x5 + x6 + x7 + x8'
 #'
-#' fit <- cfa(model, data = HolzingerSwineford1939, group = "school", std.lv = TRUE)
+#' fit <- lavaan::cfa(model, data = HolzingerSwineford1939, group = "school", std.lv = TRUE)
 #' item.noninvar(object = fit)
 #'
-#' #..................
-#' # Signed dMACS and reference group
+#' #——————————————————————————————————————
+#' ## Signed dMACS and Reference Group
 #'
 #' # Example 3a: Signed dMACS
 #' item.noninvar(HolzingerSwineford1939, x1, x2, x3, x4, group = "school", signed = TRUE)
@@ -435,8 +435,8 @@
 #' item.noninvar(HolzingerSwineford1939, x1, x2, x3, x4, group = "school",
 #'               ref = "Pasteur", pooled = FALSE)
 #'
-#' #..................
-#' # Residual covariances
+#' #——————————————————————————————————————
+#' ## Residual Covariances
 #'
 #' # Example 4a: One residual covariance
 #' item.noninvar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
@@ -446,38 +446,36 @@
 #' item.noninvar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
 #'               rescov = list(c("x1", "x4"), c("x3", "x4")), group = "school")
 #'
-#' #..................
-#' # Print argument
+#' #——————————————————————————————————————
+#' # Print Argument
 #'
 #' # Example 5: Request all results
 #' item.noninvar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
 #'               group = "school", print = "all")
 #'
-#' #----------------------------------------------------------------------------
+#' #————————————————————————————————————————————————————————————————————————————
 #' # Longitudinal Measurement Non-Invariance: Continuous Indicators
 #'
 #' # Example 6: Two time points with three indicators at each time point
 #' item.noninvar(HolzingerSwineford1939,
 #'               model = list(c("x1", "x2", "x3"), c("x5", "x6", "x7")), long = TRUE)
 #'
-#' #----------------------------------------------------------------------------
+#' #————————————————————————————————————————————————————————————————————————————
 #' # Between-Group Measurement Non-Invariance: Ordered Categorical Indicators
-#' #
-#' # Note that the example analysis for ordered categorical indicators cannot be
-#' # conduct since the data set 'data' is not available.
 #'
 #' # Example 7: Two groups
-#' item.noninvar(data, item1, item2, item3, item4, group = "two.group", ordered = TRUE)
+#' item.noninvar(data.items, pitem1, pitem2r, pitem3r, pitem4, group = "group2",
+#'               ordered = TRUE)
 #'
-#' #----------------------------------------------------------------------------
+#' #————————————————————————————————————————————————————————————————————————————
 #' # Longitudinal Measurement Non-Invariance: Ordered Categorical Indicators
 #'
 #' # Example 8: Two Time Points
-#' item.noninvar(data, model = list(c("aitem1", "aitem2", "aitem3"),
-#'                                  c("bitem1", "bitem2", "bitem3")),
+#' item.noninvar(data.items, model = list(c("pitem1", "pitem5", "pitem3r"),
+#'                                        c("pitem4", "pitem2r", "pitem6")),
 #'               long = TRUE, ordered = TRUE)
 #'
-#' #------------------------------------------------
+#' #————————————————————————————————————————————————————————————————————————————
 #' # Write Results
 #'
 #' # Example 9a: Write Results into a text file
@@ -492,8 +490,8 @@ item.noninvar <- function(data = NULL, ..., object = NULL, model = NULL, group =
                           ref = NULL, pooled = TRUE, signed = FALSE, cluster = NULL, long = FALSE, ordered = FALSE,
                           rescov = NULL, rescov.long = TRUE, ident = c("marker", "var", "effect"),
                           estimator = c("ML", "MLM", "MLMV", "MLMVS", "MLF", "MLR",
-                                        "GLS", "WLS", "DWLS", "WLSM", "WLSMV",
-                                        "ULS", "ULSM", "ULSMV", "DLS", "PML"),
+                                        "GLS", "WLS", "DWLS", "WLSM", "WLSMV", "WLSMVS",
+                                        "ULS", "ULSM", "ULSMV", "ULSMVS", "DLS", "PML"),
                           missing = c("listwise", "pairwise", "fiml", "two.stage", "robust.two.stage", "doubly.robust"),
                           print = c("all", "summary", "dmacs", "bias"), digits = 3, as.na = NULL,
                           write = NULL, append = TRUE, check = TRUE, output = TRUE) {
@@ -517,14 +515,14 @@ item.noninvar <- function(data = NULL, ..., object = NULL, model = NULL, group =
 
   if (isTRUE(is.null(object))) {
 
-    #--------------------------------------
+    #—————————————————————————————————————— #
     ### Model Estimation ####
 
     # Between-Group and Longitudinal Measurement Invariance Evaluation
     item.invar.fit <- misty::item.invar(data = data, ... = ..., model = model, group = group, cluster = cluster, long = long,
                                         ordered = ordered, parameterization = "delta", rescov = rescov, rescov.long = rescov.long,
                                         invar = "config", ident = ident, estimator = estimator, missing = missing, null.model = FALSE,
-                                        print = NULL, se = "none", as.na = as.na, write = NULL, check = check, output = FALSE)
+                                        print = "coverage", se = "none", as.na = as.na, write = NULL, check = check, output = FALSE)
 
     # Extract fitted lavaan object
     mod.fit <- item.invar.fit$model.fit$config
@@ -534,7 +532,7 @@ item.noninvar <- function(data = NULL, ..., object = NULL, model = NULL, group =
 
   } else {
 
-    #--------------------------------------
+    #—————————————————————————————————————— #
     ### Check Argument 'object' ####
 
     # Class lavaan
@@ -576,7 +574,7 @@ item.noninvar <- function(data = NULL, ..., object = NULL, model = NULL, group =
 
   .check.input(logical = c("pooled", "signed"), m.character = list(print = c("all", "summary", "dmacs", "bias")), envir = environment(), input.check = check)
 
-  #--------------------------------------
+  #—————————————————————————————————————— #
   ### Argument 'ref' ####
 
   if (isTRUE(!is.null(ref))) {
@@ -598,7 +596,7 @@ item.noninvar <- function(data = NULL, ..., object = NULL, model = NULL, group =
 
   }
 
-  #--------------------------------------
+  #—————————————————————————————————————— #
   ### Argument 'print' ####
 
   # Default Setting
@@ -618,12 +616,12 @@ item.noninvar <- function(data = NULL, ..., object = NULL, model = NULL, group =
 
   if (isTRUE(!long)) {
 
-    #--------------------------------------
+    #—————————————————————————————————————— #
     ### Group Label ####
 
     group.label <- lavaan::lavInspect(mod.fit, what = "group.label")
 
-    #--------------------------------------
+    #—————————————————————————————————————— #
     ### Reference Group ####
 
     if (isTRUE(!is.null(ref))) {
@@ -638,7 +636,7 @@ item.noninvar <- function(data = NULL, ..., object = NULL, model = NULL, group =
 
     ref <- group.label[ref.group]
 
-    #--------------------------------------
+    #—————————————————————————————————————— #
     ### Extract Parameter Estimates ####
 
     LambdaList <- NuList <- MeanList <- VarList <- NULL
@@ -659,7 +657,7 @@ item.noninvar <- function(data = NULL, ..., object = NULL, model = NULL, group =
 
         })()
 
-    #--------------------------------------
+    #—————————————————————————————————————— #
     ### Standard Deviations for the Denominator of the dMACS Effect Size ####
 
     #...................
@@ -730,12 +728,12 @@ item.noninvar <- function(data = NULL, ..., object = NULL, model = NULL, group =
 
   } else {
 
-    #--------------------------------------
+    #—————————————————————————————————————— #
     ### Labels for Time Points ####
 
     group.label <- colnames(lavaan::lavInspect(mod.fit, what = "est")$lambda)
 
-    #--------------------------------------
+    #—————————————————————————————————————— #
     ### Reference Time Point ####
 
     if (isTRUE(!is.null(ref))) {
@@ -750,7 +748,7 @@ item.noninvar <- function(data = NULL, ..., object = NULL, model = NULL, group =
 
     ref <- group.label[ref.group]
 
-    #--------------------------------------
+    #—————————————————————————————————————— #
     ### Extract Parameter Estimates ####
 
     LambdaList <- NuList <- MeanList <- VarList <- NULL
@@ -771,7 +769,7 @@ item.noninvar <- function(data = NULL, ..., object = NULL, model = NULL, group =
 
       })()
 
-    #--------------------------------------
+    #—————————————————————————————————————— #
     ### Standard Deviations for the Denominator of the dMACS Effect Size ####
 
     #...................
@@ -813,7 +811,7 @@ item.noninvar <- function(data = NULL, ..., object = NULL, model = NULL, group =
 
     }
 
-    #--------------------------------------
+    #—————————————————————————————————————— #
     ### Ordered Categorical Indicators ####
 
     ThreshList <- ThetaList <- NULL

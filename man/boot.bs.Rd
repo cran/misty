@@ -5,7 +5,7 @@
 \title{Bollen-Stine Bootstrapping with Incomplete Data}
 \usage{
 boot.bs(object = NULL, data = NULL, model = NULL, sigma = NULL, mu = NULL,
-        group = NULL, chisq = NULL, em.cov = NULL, trans = c(1, 2), R = 500,
+        group = NULL, chisq = NULL, em.cov = NULL, trans = c(1, 2), nrep = 500,
         return = c("transdat", "bootsamp", "output"), seed = NULL,
         progress = TRUE, digits = 2, p.digits = 3, plot = FALSE, filename = NULL,
         width = NA, height = NA, dpi = 600, write = NULL, append = TRUE,
@@ -50,7 +50,7 @@ missing data patterns, each of which has a large size, such as
 in a planned missing data design, or \code{trans = 2} (default)
 when there are more missing data patterns.}
 
-\item{R}{a numeric value indicating the number of bootstrap replicates
+\item{nrep}{a numeric value indicating the number of bootstrap replicates
 (default is 500).}
 
 \item{return}{a character string indicating which results to return, i.e.,
@@ -161,7 +161,7 @@ fit <- sem(model, data = dat, meanstructure = TRUE, std.lv = TRUE,
 #————————————————————————————————————————————————————————————————————————————
 # Bollen-Stine Bootstrapping with Incomplete Data
 
-# Example 1: Default setting, transformation method 2, R = 500 replicates
+# Example 1: Default setting, transformation method 2, 500 replicates
 # Plot bootstrap sampling distribution of the test statistic
 boot.bs(fit, seed = 42, plot = TRUE)
 

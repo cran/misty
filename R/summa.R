@@ -12,11 +12,12 @@
 #' @param model      a fitted model of class \code{"lm"}, \code{"lmerMod"},
 #'                   \code{"rlmerMod"}, \code{"lmerModLmerTest"}, or \code{"lme"}.
 #' @param print      a character vector indicating which results to print, i.e.
-#'                   \code{"all"}, for all results, \code{"call"} for the function
-#'                   call, \code{"descript"} for descriptive statistics, \code{cormat}
-#'                   for the Pearson product-moment correlation matrix for models
-#'                   estimated by \code{"lm"} (see \code{\link{cor.matrix}} function)
-#'                   or within- and between-group correlation matrix for models
+#'                   \code{"all"} for all results, \code{"default"} for default
+#'                   results, \code{"call"} for the function call, \code{"descript"}
+#'                   for descriptive statistics, \code{cormat} for the Pearson
+#'                   product-moment correlation matrix for models estimated by
+#'                   \code{"lm"} (see \code{\link{cor.matrix}} function) or
+#'                   within- and between-group correlation matrix for models
 #'                   estimated by \code{"lmer"} or \code{"lme"} (see
 #'                   \code{\link{multilevel.cor}} function), \code{modsum} for
 #'                   the multiple correlation, r-squared, and F-test for models
@@ -72,7 +73,7 @@
 #'                   according to the argument \code{boot}.
 #' @param conf.level a numeric value between 0 and 1 indicating the confidence
 #'                   level of the interval.
-#' @param R          a numeric value indicating the number of bootstrap replicates
+#' @param nrep       a numeric value indicating the number of bootstrap replicates
 #'                   (default is 1000).
 #' @param boot       a character string for specifying the type of bootstrap
 #'                   confidence intervals (CI), i.e., i.e., \code{"perc"} (default),
@@ -147,7 +148,7 @@
 #' @export
 #'
 #' @examples
-#' #----------------------------------------------------------------------------
+#' #—————————————————————————————————————— #——————————————————————————————————————
 #' # Linear Model
 #'
 #' # Estimate linear model
@@ -166,7 +167,7 @@
 #' summa(mod.lm, print = c("default", "stdcoef"))
 #'
 #' \dontrun{
-#' #----------------------------------------------------------------------------
+#' #—————————————————————————————————————— #——————————————————————————————————————
 #' # Multilevel and Linear Mixed-Effects Model
 #'
 #' # Load lme4, nlme, and misty package
@@ -262,7 +263,7 @@
 #'# Example 3c: Default setting
 #' summa(mod.lmer3r)
 #'
-#' #----------------------------------------------------------------------------
+#' #—————————————————————————————————————— #——————————————————————————————————————
 #' # Write Results
 #'
 #' # Example 4a: Write Results into a text file
@@ -276,7 +277,7 @@ summa <- function(model,
                             "modsum", "randeff", "varcor", "coef", "confint", "stdcoef", "vif"),
                   robust = FALSE, ddf = c("Satterthwaite", "Kenward-Roger", "lme4"),
                   method = c("profile", "wald", "boot"), conf.level = 0.95,
-                  R = 1000, boot = c("perc", "basic", "norm"), seed = NULL,
+                  nrep = 1000, boot = c("perc", "basic", "norm"), seed = NULL,
                   digits = 2, p.digits = 3, write = NULL, append = TRUE,
                   check = TRUE, output = TRUE) {
 
@@ -298,7 +299,7 @@ summa <- function(model,
   .check.input(logical = c("robust", "append", "output"), numeric = list(seed = 1L),
                s.character = list(ddf = c("Satterthwaite", "Kenward-Roger", "lme4"), method = c("profile", "wald", "boot"), boot = c("perc", "basic", "norm")),
                m.character = list(print = c("all", "default", "call", "descript", "cormat", "modsum", "randeff", "varcor", "coef", "confint", "stdcoef", "vif")),
-               args = c("R", "digits", "p.digits", "conf.level", "write2"), envir = environment(), input.check = check)
+               args = c("digits", "p.digits", "conf.level", "nrep", "write2"), envir = environment(), input.check = check)
 
   #_____________________________________________________________________________
   #
@@ -311,11 +312,11 @@ summa <- function(model,
 
     model.class <- "lm"
 
-  } else if (all(class(model) %in% c("lmerMod", "rlmerMod", "lmerModLmerTest"))) {
+  } else if (isTRUE(all(class(model) %in% c("lmerMod", "rlmerMod", "lmerModLmerTest")))) {
 
     model.class <- "lmer"
 
-  } else if (all(class(model) == "lme")) {
+  } else if (isTRUE(all(class(model) == "lme"))) {
 
     model.class <- "lme"
 
@@ -421,11 +422,17 @@ summa <- function(model,
 
   }
 
-  # Model of class 'lme'
-  if (isTRUE(model.class != "lme")) { print <- setdiff(print, "varcor") }
+  # Model of class 'lm'
+  if (isTRUE(model.class == "lm")) { print <- setdiff(print, c("randeff", "varcor")) }
 
-  # Model of class 'rlmerMod'
-  if (isTRUE(class(model) == "rlmerMod")) { print <- setdiff(print,  c("descript", "cormat", "modsum", "confint", "stdcoef", "vif")) }
+  # Model of class 'lmer'
+  if (isTRUE(model.class == "lmer")) { print <- setdiff(print, "varcor") }
+
+  # Model of class 'lme'
+  if (isTRUE(model.class == "lme" && is.null(model$modelStruct$corStruct) && is.null(model$modelStruct$varStruct))) { print <- setdiff(print, "varcor") }
+
+  # Check
+  if (isTRUE(length(print) == 0L)) { stop("No results left after omitting inadmissible elements for the 'print' argument.", call. = FALSE) }
 
   #_____________________________________________________________________________
   #
@@ -474,27 +481,27 @@ summa <- function(model,
 
            }
 
-           #--------------------------------------
+           #—————————————————————————————————————— #
            ### Call ####
 
            if (isTRUE("call" %in% print)) { call <- as.character(stats::getCall(model)) |> (\(p) list(formula = p[2L], data = p[3L]))() }
 
-           #--------------------------------------
+           #—————————————————————————————————————— #
            ### Descriptive Statistics ####
 
            if (isTRUE("descript" %in% print)) { descript <- suppressWarnings(misty::descript(model$model, check = FALSE, output = FALSE))$result[, c("variable", "n", "nUQ", "m", "sd", "min", "p.min", "max", "p.max", "skew", "kurt")] }
 
-           #--------------------------------------
+           #—————————————————————————————————————— #
            ### Correlation Matrix ####
 
            if (isTRUE("cormat" %in% print)) { cormat <- suppressWarnings(misty::cor.matrix(model$model, check = FALSE, output = FALSE))$result$cor }
 
-           #--------------------------------------
+           #—————————————————————————————————————— #
            ### Model Summary ####
 
            if (isTRUE("modsum" %in% print)) { modsum <- data.frame(n = nrow(model$model), nNA = length(model.summary$na.action), R = sqrt(model.summary$r.squared), R2 = model.summary$r.squared, R2.adj = ifelse(model.summary$adj.r.squared < 0L, 0L, model.summary$adj.r.squared), df1 = model.summary$fstatistic[2L] |> (\(p) if (isTRUE(!is.null(p))) { p } else { NA })(), df2 = model.summary$fstatistic[3L] |> (\(p) if (isTRUE(!is.null(p))) { p } else { NA })(), F = model.summary$fstatistic[1L] |> (\(p) if (isTRUE(!is.null(p))) { p } else { NA })(), p = model.summary$fstatistic |> (\(p) if (isTRUE(!is.null(p))) { pf(p[1L], p[2L], p[3L], lower.tail = FALSE) } else { NA } )(), row.names = NULL) }
 
-           #--------------------------------------
+           #—————————————————————————————————————— #
            ### Coefficients ####
 
            if (isTRUE(any(c("coef", "confint", "stdcoef", "vif") %in% print))) {
@@ -562,7 +569,7 @@ summa <- function(model,
 
          }, lmer = {
 
-           #--------------------------------------
+           #—————————————————————————————————————— #
            ### Check ####
 
            # Remove 'vif' from the 'print' argument when only one predictor
@@ -583,7 +590,7 @@ summa <- function(model,
 
            }
 
-           #--------------------------------------
+           #—————————————————————————————————————— #
            ### Model Summary and Data ####
 
            # Model summary
@@ -622,7 +629,7 @@ summa <- function(model,
            # Outcome and predictor variables
            model.data.yx <- model.data[, setdiff(colnames(model.data), model.cluster), drop = FALSE]
 
-           #--------------------------------------
+           #—————————————————————————————————————— #
            ### Level of the Predictors ####
 
            #...................
@@ -631,7 +638,7 @@ summa <- function(model,
            if (isTRUE(model.twolevel)) {
 
              # Level of Variables, 1 = Level-1 and 2 = Level-2 variable
-             var.level <- sapply(colnames(model.data.yx), function(y) { if (all(tapply(as.numeric(model.data[, y]), model.data[, model.cluster], var, na.rm = TRUE) < .Machine$double.eps^0.5, na.rm = TRUE)) { 2L } else { 1L } })
+             var.level <- sapply(colnames(model.data.yx), function(y) { if (isTRUE(all(tapply(as.numeric(model.data[, y]), model.data[, model.cluster], var, na.rm = TRUE) < .Machine$double.eps^0.5, na.rm = TRUE))) { 2L } else { 1L } })
 
            #...................
            #### Three-Level Model
@@ -646,12 +653,12 @@ summa <- function(model,
                  1L
 
                # Level 2 Variable
-               } else if (isTRUE(all(na.omit(as.vector(tapply(as.numeric(model.data[, y]), apply(model.data[, model.cluster], 1L, paste, collapse = ""), var, na.rm = TRUE))) < .Machine$double.eps^0.5) && any(as.vector(tapply(model.data[, y], model.data[, model.cluster[2L]], var, na.rm = TRUE)) != 0L))) {
+               } else if (isTRUE(all(na.omit(as.vector(tapply(as.numeric(model.data[, y]), apply(model.data[, model.cluster], 1L, paste, collapse = ""), var, na.rm = TRUE))) < .Machine$double.eps^0.5, na.rm = TRUE) && any(as.vector(tapply(model.data[, y], model.data[, model.cluster[2L]], var, na.rm = TRUE)) != 0L))) {
 
                  2L
 
                # Level 3 Variable
-               } else if (isTRUE(all(na.omit(as.vector(tapply(as.numeric(model.data[, y]), apply(model.data[, model.cluster], 1L, paste, collapse = ""), var, na.rm = TRUE))) < .Machine$double.eps^0.5) && all(na.omit(as.vector(tapply(model.data[, y], model.data[, model.cluster[1L]], var, na.rm = TRUE))) < .Machine$double.eps^0.5))) {
+               } else if (isTRUE(all(na.omit(as.vector(tapply(as.numeric(model.data[, y]), apply(model.data[, model.cluster], 1L, paste, collapse = ""), var, na.rm = TRUE))) < .Machine$double.eps^0.5, na.rm = TRUE) && all(na.omit(as.vector(tapply(model.data[, y], model.data[, model.cluster[1L]], var, na.rm = TRUE))) < .Machine$double.eps^0.5, na.rm = TRUE))) {
 
                  3L
 
@@ -673,23 +680,23 @@ summa <- function(model,
            # Factors or Character
            var.factor <- names(which(!sapply(model.data.yx, is.numeric)))
 
-           #--------------------------------------
+           #—————————————————————————————————————— #
            ### Cluster-Robust Standard Errors ####
 
            if (isTRUE(robust)) { model.robust <- misty::coeff.robust(model, output = FALSE)$result }
 
-           #--------------------------------------
+           #—————————————————————————————————————— #
            ### Model Not Converged or Singular ####
 
            # -1 = not converged, 0 = singular, 1 = model converged
            converg <- if (isTRUE(!is.null(unlist(model@optinfo$conv$lme4)) && any(grepl("-1", unlist(model@optinfo$conv$lme4))))) { -1L } else if (isTRUE(!is.null(unlist(model@optinfo$conv$lme4)))) { 0L } else { 1L }
 
-           #--------------------------------------
+           #—————————————————————————————————————— #
            ### Call ####
 
            if (isTRUE("call" %in% print)) { call <- as.character(stats::getCall(model)) |> (\(p) list(formula = p[2L], data = p[3L]))() }
 
-           #--------------------------------------
+           #—————————————————————————————————————— #
            ### Descriptive Statistics ####
 
            if (isTRUE("descript" %in% print)) {
@@ -729,7 +736,7 @@ summa <- function(model,
 
            }
 
-           #--------------------------------------
+           #—————————————————————————————————————— #
            ### Within-Group and Between-Group Correlation Matrix ####
 
            if (isTRUE("cormat" %in% print)) {
@@ -775,7 +782,7 @@ summa <- function(model,
 
            }
 
-           #--------------------------------------
+           #—————————————————————————————————————— #
            ### Model Summary ####
 
            if (isTRUE("modsum" %in% print)) {
@@ -817,7 +824,7 @@ summa <- function(model,
 
            }
 
-           #--------------------------------------
+           #—————————————————————————————————————— #
            ### Random Effects ####
 
            if (isTRUE("randeff" %in% print)) {
@@ -832,7 +839,7 @@ summa <- function(model,
 
            }
 
-           #--------------------------------------
+           #—————————————————————————————————————— #
            ### Coefficients ####
 
            if (isTRUE(any(c("coef", "confint", "stdcoef", "vif") %in% print))) {
@@ -868,7 +875,7 @@ summa <- function(model,
 
              }
 
-             #--------------------------------------
+             #—————————————————————————————————————— #
              ### Degrees of Freedom for the rlmerMod Object ####
 
              # Compute df and significance values only if the lmerTest package is attached
@@ -885,7 +892,7 @@ summa <- function(model,
 
              }
 
-             #--------------------------------------
+             #—————————————————————————————————————— #
              ### Robustness Weights for the rlmerMod Object ####
 
              if (isTRUE(class(model) == "rlmerMod")) {
@@ -913,7 +920,7 @@ summa <- function(model,
              if (isTRUE("confint" %in% print)) {
 
                ##### Profile or Bootstrap CI
-               if (method != "wald") {
+               if (isTRUE(method != "wald")) {
 
                  if (!isTRUE(converg %in% c(-1L, 0L) && method == "profile")) {
 
@@ -921,7 +928,7 @@ summa <- function(model,
                    if (isTRUE(method == "boot" && !is.null(seed))) { set.seed(seed) }
 
                    modcoef <- cbind(modcoef,
-                                    setNames(as.data.frame(tryCatch(suppressMessages(lme4::confint.merMod(model, parm = "beta_", level = conf.level, method = ifelse(method == "wald", "Wald", method), nsim = R, boot.type = boot)),
+                                    setNames(as.data.frame(tryCatch(suppressMessages(lme4::confint.merMod(model, parm = "beta_", level = conf.level, method = ifelse(method == "wald", "Wald", method), nsim = nrep, boot.type = boot)),
 
                                                                        error = function(y) {
 
@@ -937,7 +944,7 @@ summa <- function(model,
 
                                                                            method <<- "wald"
 
-                                                                           lme4::confint.merMod(model, parm = "beta_", level = conf.level, method = "Wald", nsim = R, boot.type = boot)
+                                                                           lme4::confint.merMod(model, parm = "beta_", level = conf.level, method = "Wald", nsim = nrep, boot.type = boot)
 
                                                                        })), nm = c("Low", "Upp")))
 
@@ -1019,7 +1026,7 @@ summa <- function(model,
 
          }, lme = {
 
-           #--------------------------------------
+           #—————————————————————————————————————— #
            ### Check ####
 
            # Remove 'vif' from the 'print' argument when only one predictor
@@ -1040,7 +1047,7 @@ summa <- function(model,
 
            }
 
-           #--------------------------------------
+           #—————————————————————————————————————— #
            ### Model Summary and Data ####
 
            # Model summary
@@ -1061,7 +1068,7 @@ summa <- function(model,
            # Outcome and predictor variables
            model.data.yx <- model.data[, all.vars(formula(model)), drop = FALSE]
 
-           #--------------------------------------
+           #—————————————————————————————————————— #
            ### Level of the Predictors ####
 
            #...................
@@ -1070,7 +1077,7 @@ summa <- function(model,
            if (isTRUE(model.twolevel)) {
 
              # Level of Variables, 1 = Level-1 and 2 = Level-2 variable
-             var.level <- sapply(colnames(model.data.yx), function(y) { if (all(tapply(as.numeric(model.data[, y]), model.data[, model.cluster], var, na.rm = TRUE) < .Machine$double.eps^0.5, na.rm = TRUE)) { 2L } else { 1L } })
+             var.level <- sapply(colnames(model.data.yx), function(y) { if (isTRUE(all(tapply(as.numeric(model.data[, y]), model.data[, model.cluster], var, na.rm = TRUE) < .Machine$double.eps^0.5, na.rm = TRUE))) { 2L } else { 1L } })
 
            #...................
            #### Three-Level Model
@@ -1085,12 +1092,12 @@ summa <- function(model,
                  1L
 
                # Level 2 Variable
-               } else if (isTRUE(all(na.omit(as.vector(tapply(as.numeric(model.data[, y]), apply(model.data[, model.cluster], 1L, paste, collapse = ""), var, na.rm = TRUE))) < .Machine$double.eps^0.5) && any(as.vector(tapply(model.data[, y], model.data[, model.cluster[2L]], var, na.rm = TRUE)) != 0L))) {
+               } else if (isTRUE(all(na.omit(as.vector(tapply(as.numeric(model.data[, y]), apply(model.data[, model.cluster], 1L, paste, collapse = ""), var, na.rm = TRUE))) < .Machine$double.eps^0.5, na.rm = TRUE) && any(as.vector(tapply(model.data[, y], model.data[, model.cluster[2L]], var, na.rm = TRUE)) != 0L))) {
 
                  2L
 
                # Level 3 Variable
-               } else if (isTRUE(all(na.omit(as.vector(tapply(as.numeric(model.data[, y]), apply(model.data[, model.cluster], 1L, paste, collapse = ""), var, na.rm = TRUE))) < .Machine$double.eps^0.5) && all(na.omit(as.vector(tapply(model.data[, y], model.data[, model.cluster[1L]], var, na.rm = TRUE))) < .Machine$double.eps^0.5))) {
+               } else if (isTRUE(all(na.omit(as.vector(tapply(as.numeric(model.data[, y]), apply(model.data[, model.cluster], 1L, paste, collapse = ""), var, na.rm = TRUE))) < .Machine$double.eps^0.5, na.rm = TRUE) && all(na.omit(as.vector(tapply(model.data[, y], model.data[, model.cluster[1L]], var, na.rm = TRUE))) < .Machine$double.eps^0.5, na.rm = TRUE))) {
 
                  3L
 
@@ -1112,22 +1119,22 @@ summa <- function(model,
            # Factors or Character
            var.factor <- names(which(!sapply(model.data.yx, is.numeric)))
 
-           #--------------------------------------
+           #—————————————————————————————————————— #
            ### Cluster-Robust Standard Errors ####
 
            if (isTRUE(robust)) { model.robust <- misty::coeff.robust(model, output = FALSE)$result }
 
-           #--------------------------------------
+           #—————————————————————————————————————— #
            ### Model Not Converged or Singular ####
            #
            # Info not available in the lme object
 
-           #--------------------------------------
+           #—————————————————————————————————————— #
            ### Call ####
 
            if (isTRUE("call" %in% print)) { call <- as.character(stats::getCall(model)) |> (\(p) list(formula = paste0(p[2L], " + (", sub("~", "", p[4L]), ")"), data = p[3L]))() }
 
-           #--------------------------------------
+           #—————————————————————————————————————— #
            ### Descriptive Statistics ####
 
            if (isTRUE("descript" %in% print)) {
@@ -1167,7 +1174,7 @@ summa <- function(model,
 
            }
 
-           #--------------------------------------
+           #—————————————————————————————————————— #
            ### Within-Group and Between-Group Correlation Matrix ####
 
            if (isTRUE("cormat" %in% print)) {
@@ -1213,7 +1220,7 @@ summa <- function(model,
 
            }
 
-           #--------------------------------------
+           #—————————————————————————————————————— #
            ### Model Summary ####
 
            if (isTRUE("modsum" %in% print)) {
@@ -1247,7 +1254,7 @@ summa <- function(model,
 
            }
 
-           #--------------------------------------
+           #—————————————————————————————————————— #
            ### Random Effects ####
 
            if (isTRUE("randeff" %in% print)) {
@@ -1280,7 +1287,7 @@ summa <- function(model,
 
            }
 
-           #--------------------------------------
+           #—————————————————————————————————————— #
            ### Variance and Correlation Structure ####
 
            if (isTRUE("varcor" %in% print)) {
@@ -1332,7 +1339,7 @@ summa <- function(model,
 
            }
 
-           #--------------------------------------
+           #—————————————————————————————————————— #
            ### Coefficients ####
 
            if (isTRUE(any(c("coef", "confint", "stdcoef", "vif") %in% print))) {
@@ -1426,7 +1433,7 @@ summa <- function(model,
   object <- list(call = match.call(),
                  type = "summa",
                  model = model,
-                 args = list(print = print, robust = robust, ddf = ddf, method = method, conf.level = conf.level, R = R, boot = boot, seed = seed, digits = digits, p.digits = p.digits, write = write, append = append, check = check, output = output),
+                 args = list(print = print, robust = robust, ddf = ddf, method = method, conf.level = conf.level, nrep = nrep, boot = boot, seed = seed, digits = digits, p.digits = p.digits, write = write, append = append, check = check, output = output),
                  result = list(call = call, descript = descript, cormat = cormat, modsum = modsum, randeff = randeff, varcor = varcor, coef = modcoef, weights = weights, converg = converg))
 
   class(object) <- "misty.object"

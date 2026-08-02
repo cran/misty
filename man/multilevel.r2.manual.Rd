@@ -166,6 +166,7 @@ misty::libraries(misty, lme4)
 data("Demo.twolevel", package = "lavaan")
 
 #————————————————————————————————————————————————————————————————————————————
+# Estimate Multilevel Models
 
 Demo.twolevel <- center(Demo.twolevel, x2, type = "CWC", cluster = "cluster")
 
@@ -181,7 +182,7 @@ mod2 <- lmer(y1 ~ x2.c + x2.b + w1 + (1 + x2.c | cluster), data = Demo.twolevel,
              REML = FALSE, control = lmerControl(optimizer = "bobyqa"))
 
 #————————————————————————————————————————————————————————————————————————————
-# Example 1: Random intercept model
+# R-Squared Measures According to Rights and Sterba (2019)
 
 # Fixed slope estimates
 fixef(mod1)
@@ -189,7 +190,7 @@ fixef(mod1)
 # Random effects variance-covariance matrix
 as.data.frame(VarCorr(mod1))
 
-# R-squared measures according to Rights and Sterba (2019)
+# Example 1a: R-squared measures for a random intercept model
 multilevel.r2.manual(data = Demo.twolevel,
                      within = "x2.c", between = c("x2.b", "w1"),
                      gamma.w = 0.41127956,
@@ -197,8 +198,7 @@ multilevel.r2.manual(data = Demo.twolevel,
                      tau = 0.9297401,
                      sigma2 = 1.813245794)
 
-#————————————————————————————————————————————————————————————————————————————
-# Example 2: Random intercept and slope model
+#——————————————————————————————————————
 
 # Fixed slope estimates
 fixef(mod2)
@@ -206,7 +206,7 @@ fixef(mod2)
 # Random effects variance-covariance matrix
 as.data.frame(VarCorr(mod2))
 
-# R-squared measures according to Rights and Sterba (2019)
+# Example 1b: R-squared measures for a random intercept and slope model
 multilevel.r2.manual(data = Demo.twolevel,
                      within = "x2.c", between = c("x2.b", "w1"), random = "x2.c",
                      gamma.w = 0.41127956,

@@ -5,12 +5,13 @@
 \title{Multilevel Composite Reliability}
 \usage{
 multilevel.omega(data, ..., cluster, rescov = NULL,
-                 const = c("within", "shared", "config"),
-                 fix.resid = NULL, optim.method = c("nlminb", "em"),
-                 missing = c("listwise", "fiml"), nrep = 100000, seed = NULL,
-                 conf.level = 0.95, print = c("all", "omega", "item"),
-                 digits = 2, as.na = NULL, write = NULL, append = TRUE,
-                 check = TRUE, output = TRUE)
+                 const = c("within", "shared", "config"), fix.resid = NULL,
+                 se = c("none", "standard", "robust.huber.white"),
+                 optim.method = c("nlminb", "em"), missing = c("listwise", "fiml"),
+                 nrep = 100000, seed = NULL, conf.level = 0.95,
+                 print = c("all", "omega", "item"), digits = 2, r.digits = 3,
+                 as.na = NULL, write = NULL, append = TRUE, check = TRUE,
+                 output = TRUE)
 }
 \arguments{
 \item{data}{a data frame. Multilevel confirmatory factor
@@ -46,7 +47,7 @@ Between level cannot be  specified using this function.}
 \item{const}{a character string indicating the type of construct(s), i.e.,
 \code{"within"} for within-cluster constructs, \code{"shared"}
 for shared cluster-level constructs, and \code{"config"}
-(default) for configural cluster constructs.}
+(default) for individual and configural constructs.}
 
 \item{fix.resid}{a character vector for specifying residual variances to be
 fixed at 0 at the Between level, e.g., \code{fix.resid = c("x1", "x3")}
@@ -55,6 +56,16 @@ at the Between level at 0. Note that it is also possible
 to specify \code{fix.resid = "all"} which fixes all residual
 variances at the Between level at 0 in line with the strong
 factorial measurement invariance assumption across cluster.}
+
+\item{se}{a character string indicating the standard errors used for
+computing Monte Carlo confidence intervals, i.e.,
+\code{"none"} for no standard errors, \code{"standard"} for
+conventional standard error based on inverting the expected
+observed or first.order information matrix, and
+\code{"robust.huber.white"} for the 'MLR' (aka pseudo ML,
+Huber-White) approach. Note that \code{se = "none"} saves
+computation time by not computing standard errors and
+Monte Carlo confidence intervals.}
 
 \item{optim.method}{a character string indicating the optimizer, i.e., \code{"nlminb"}
 (default) for the unconstrained and bounds-constrained
@@ -76,13 +87,17 @@ generator for computing the Monte Carlo confidence interval.}
 level of the interval.}
 
 \item{print}{a character vector indicating which results to show, i.e.
-\code{"all"} (default), for all results \code{"omega"} for
-omega, and \code{"item"} for item statistics.}
+\code{"all"} (default) for all results \code{"omega"} for
+the composite reliability omega and \code{"item"} for item
+statistics.}
 
 \item{digits}{an integer value indicating the number of decimal places
-to be used for displaying results. Note that loglikelihood,
-information criteria and chi-square test statistic is
-printed with \code{digits} minus 1 decimal places.}
+to be used for displaying mean, standard deviation, minimum,
+maximum, skewness, and kurtosis.}
+
+\item{r.digits}{an integer value indicating the number of decimal places
+to be used for displaying multilevel coefficient alpha,
+ICC(1), and standardized factor loadings.}
 
 \item{as.na}{a numeric vector indicating user-defined missing values,
 i.e. these values are converted to \code{NA} before conducting
@@ -121,9 +136,104 @@ and model identification is checked.}
 }
 \description{
 This function computes point estimate and Monte Carlo confidence interval for
-the multilevel composite reliability defined by Lai (2021) for a within-cluster
-construct, shared cluster-level construct, and configural cluster construct by
-calling the \code{cfa} function in the R package \pkg{lavaan}.
+the multilevel composite reliability defined by Lai (2021) for a (1) within-cluster
+construct, (2) shared cluster-level construct, and (3) individual and configural cluster
+construct by calling the \code{cfa} function in the R package \pkg{lavaan}. By
+default, the function prints level-specific multilevel composite reliability indices for
+an individual and configural cluster construct with 95\% Monte Carlo confidence interval based
+on Huber-White standard errors.
+}
+\details{
+Geldhof et al. (2014) introduced a multilevel confirmatory factor analysis
+approach for estimating score reliability at each level. This approach uses
+the estimated factor loadings, factor variances, and residual variances from both
+the within-level and between-level model to compute the within-level reliability
+\eqn{\tilde{\omega}^w} and the between-level reliability \eqn{\tilde{\omega}^b}
+based on McDonald's \eqn{\omega}. However, Lai (2021) pointed out two limitations
+of this approach. First, it does not account for different conceptualizations
+of constructs in multilevel data, where constructs may have different
+meaning (Stapleton et al., 2016). Second, the between-level reliability \eqn{\tilde{\omega}^b}
+in Geldhof et al. (2014) is a measure of reliability of the latent cluster means,
+which ignores the sampling error in the observed cluster means (see Lüdtke et
+al., 2011). Consequently, \eqn{\tilde{\omega}^b} substantially overestimates
+the true reliability of observed between-level composite scores. To address these
+limitations, Lai (2021) proposed multilevel reliability coefficients tailored for
+different types of constructs to estimate the reliability of the observed scores
+at each level, i.e., (1) within-cluster construct, (2) shared cluster-level construct, and (3)
+individual and configural constructs:
+\describe{
+\item{\strong{Within-Cluster Construct}}{The latent variable representing the
+within-cluster construct is only meaningful at the within level. For example,
+students' popularity among their peers within the same classroom based on
+sociometric ratings. In this case any variation across classrooms should be
+irrelevant to the construct. Thus, a saturated between-level model is specified.
+The reliability for a within-level composite, \eqn{Z^w_{ij}}, measuring
+a within-cluster construct is
+
+\deqn{\omega^w = \frac{ (\sum^p_{k = 1}\lambda^w_k)^2\phi^w} {(\sum^p_{k = 1}\lambda^w_k)^2\phi^w + \mathbf{1}^{\prime}\mathbf{\Theta}^w\mathbf{1}}}
+
+Note that this formula is essentially the same as the formula for the individual
+construct of an individual and configural construct, except that the factor loadings
+are specific to the within level as the between-level model is saturated.
+
+}
+\item{\strong{Shared Cluster-Level Construct}}{The latent variable representing
+the shared construct is only meaningful at the between level. For example,
+safety of a neighborhood, effectiveness of a teacher, or organizational
+climate are measured by multiple informants at the within level. In these cases,
+any variation within clusters should be irrelevant to the construct. Thus, a
+saturated within-level model is specified. The reliability for a
+between-level composite, \eqn{Z^b_{j}}, measuring a shared construct is
+
+\deqn{\omega^b = \frac{(\sum^p_{k = 1}\lambda^b_k)^2\phi^b} {(\sum^p_{k = 1}\lambda^b_k)^2\phi^b + \mathbf{1}^{\prime}\mathbf{\Theta}^b\mathbf{1} + \mathbf{1}^{\prime}\mathbf{\sum}^w\mathbf{1}/\tilde{n}}}
+
+where \eqn{\mathbf{\sum}^w} is the variance covariance matrix of the saturated
+within-level model and \eqn{\tilde{n}} is the harmonic mean of cluster sizes
+\eqn{\tilde{n} = \frac{1}{\sum^p_{k = 1}\frac{1}{n_j}}}.
+}
+\item{\strong{Individual and Configural Construct}}{The individual construct is
+defined at the within level (e.g., individual student achievement), whereas the
+configural construct consists of cluster averages of individual constructs (e.g.,
+mean student achievement of a classroom). Note that the factor loadings need to
+be constrained to be equal across levels, i.e., \eqn{\mathbf{\lambda}^w = \mathbf{\lambda}^b}
+so that the latent variables at the within level, \eqn{\eta^w}, and between level,
+\eqn{\eta^b}, are on the same metric.
+\describe{
+  \item{\emph{Individual Construct}}{The reliability for a within-level
+  composite, \eqn{Z^w_{ij}}, measuring an individual construct is
+
+  \deqn{\omega^w = \frac{ (\sum^p_{k = 1}\lambda_k)^2\phi^w} {(\sum^p_{k = 1}\lambda_k)^2\phi^w + \mathbf{1}^{\prime}\mathbf{\Theta}^w\mathbf{1}}}
+
+  }
+
+  \item{\emph{Configural Construct}}{The reliability for a between-level
+  composite, \eqn{Z^b_{j}}, measuring a configural construct is
+
+  \deqn{\omega^b = \frac{(\sum^p_{k = 1}\lambda_k)^2\phi^b}{(\sum^p_{k = 1}\lambda_k)^2(\phi^b + \phi^w / \tilde{n}) + \mathbf{1}^{\prime}\mathbf{\Theta}^b\mathbf{1} + \mathbf{1}^{\prime}\mathbf{\Theta}^w\mathbf{1}/\tilde{n}}}}
+
+  \item{\emph{Composite Measuring an Individual and Configural Construct}}{The
+  reliability for an overall composite, \eqn{Z_{ij}}, measuring an individual construct
+  capturing the population variance of both the within-level and the between-level
+  components of the true score and the errors is
+
+  \deqn{\omega^{2l} = \frac{(\sum^p_{k = 1}\lambda_k)^2(\phi^w + \phi^b)}{(\sum^p_{k = 1}\lambda_k)^2(\phi^w + \phi^b) + \mathbf{1}^{\prime}\mathbf{\Theta}^b\mathbf{1} + \mathbf{1}^{\prime}\mathbf{\Theta}^w\mathbf{1}}}
+
+  Note that \eqn{\omega^{2l}} is simply the ratio of true variance to total variance
+  of the observed scores. In practice, \eqn{\omega^{2l}} is not the most interesting
+  coefficient because researchers are mainly interested in distinguishing within-
+  and between effects (Castro-Alvarez et al., 2026).}}
+}}
+Note that the multilevel factor model assumes \eqn{p} items measuring one latent
+construct at the within level (within-cluster construct), between level (shared
+cluster-level construct), or within- and between level (individual and configural
+construct). Local independence is assumed, \eqn{\Theta^w_j = diag[\theta^w_{11} ... \theta^w_{pp}]}
+and \eqn{\Theta^b_j = diag[\theta^b_{11} ... \theta^b_{pp}]}, but composite reliability
+can be computed when this assumption is violated by specifying the \code{rescov}
+argument. The model assumes equal factor loadings across clusters,
+\eqn{\mathbf{\lambda}^w_j = \mathbf{\lambda}^w}, and homogeneity of error
+covariances across cluster, \eqn{\mathbf{\Theta}^w_j = \mathbf{\Theta}^w}.
+In case of an individual and configural construct, the model also assumes cross-level
+measurement invariance, i.e., \eqn{\mathbf{\lambda}^w = \mathbf{\lambda}^b}.
 }
 \note{
 The function uses the functions \code{lavInspect}, \code{lavTech}, and \code{lavNames},
@@ -138,7 +248,7 @@ provided in the R package \pkg{lavaan} by Yves Rosseel (2012). The internal func
 data("Demo.twolevel", package = "lavaan")
 
 #————————————————————————————————————————————————————————————————————————————
-# Cluster variable specification
+# Cluster Variable Specification
 
 # Example 1a: Specification using the argument '...'
 multilevel.omega(Demo.twolevel, y1:y4, cluster = "cluster")
@@ -150,7 +260,7 @@ multilevel.omega(Demo.twolevel[, c("y1", "y2", "y3", "y4", "cluster")], cluster 
 multilevel.omega(Demo.twolevel[, c("y1", "y2", "y3", "y4")], cluster = Demo.twolevel$cluster)
 
 #————————————————————————————————————————————————————————————————————————————
-# Type of construct
+# Type of Construct
 
 # Example 2a: Within-Cluster Construct
 multilevel.omega(Demo.twolevel[, c("y1", "y2", "y3", "y4")],
@@ -163,7 +273,7 @@ multilevel.omega(Demo.twolevel, y1, y2, y3, y4, cluster = "cluster", const = "sh
 multilevel.omega(Demo.twolevel, y1, y2, y3, y4, cluster = "cluster", const = "config")
 
 #————————————————————————————————————————————————————————————————————————————
-# Residual covariance at the Within level and residual variance at the Between level
+# Residual (Co)Variances
 
 # Example 3a: Residual covariance between "y4" and "y5" at the Within level
 multilevel.omega(Demo.twolevel, y1, y2, y3, y4, cluster = "cluster", const = "config",
@@ -171,34 +281,61 @@ multilevel.omega(Demo.twolevel, y1, y2, y3, y4, cluster = "cluster", const = "co
 
 # Example 3b: Residual variances of 'y1' at the Between level fixed at 0
 multilevel.omega(Demo.twolevel, y1, y2, y3, y4, cluster = "cluster", const = "config",
-                 fix.resid = c("y1", "y2"), digits = 3)
+                 fix.resid = c("y1", "y2"))
 
 #————————————————————————————————————————————————————————————————————————————
-# Write results
+# Arguments 'se' and 'print'
 
-# Example 4a: Write results into a text file
+# Example 4a: No confidence intervals to speed up computation
+ multilevel.omega(Demo.twolevel, y1:y4, cluster = "cluster", se = "none")
+
+# Example 4b: Omega and item statistics
+multilevel.omega(Demo.twolevel, y1:y4, cluster = "cluster", print = "all")
+
+#————————————————————————————————————————————————————————————————————————————
+# Write Results
+
+# Example 5a: Write results into a text file
 multilevel.omega(Demo.twolevel[, c("y1", "y2", "y3", "y4")],
                  cluster = Demo.twolevel$cluster, write = "Multilevel_Omega.txt")
 
-# Example 4b: Write results into a Excel file
+# Example 5b: Write results into a Excel file
 multilevel.omega(Demo.twolevel, y1, y2, y3, y4, cluster = "cluster",
                  write = "Multilevel_Omega.xlsx")
 }
 }
 \references{
+Castro-Alvarez, S., Bringmann, L. F., Back, J., & Liu, S. (2026). The many
+reliabilities of psychological dynamics: An overview of statistical approaches
+to estimate the internal consistency reliability of intensive longitudinal data.
+\emph{Psychological Methods, 31}(2), 281–296. https://doi.org/10.1037/met0000778
+
+Geldhof, G. J., Preacher, K. J., & Zyphur, M. J. (2014). Reliability
+estimation in a multilevel confirmatory factor analysis framework. \emph{Psychological
+Methods, 19}, 72-91. http://dx.doi.org/10.1037/a0032138
+
 Lai, M. H. C. (2021). Composite reliability of multilevel data: It’s about
 observed scores and construct meanings. \emph{Psychological Methods, 26}(1),
 90–102. https://doi.org/10.1037/met0000287
 
+Lüdtke, O., Marsh, H. W., Robitzsch, A., & Trautwein, U. (2011). A 2 2
+taxonomy of multilevel latent contextual models: Accuracy bias tradeoffs
+in full and partial error correction models. \emph{Psychological Methods, 16},
+444-467. http://dx.doi.org/10.1037/a0024376
+
 Rosseel, Y. (2012). lavaan: An R Package for Structural Equation Modeling.
 \emph{Journal of Statistical Software, 48}, 1-36. https://doi.org/10.18637/jss.v048.i02
+
+Stapleton, L. M., Yang, J. S., & Hancock, G. R. (2016). Construct meaning in
+multilevel settings. \emph{Journal of Educational and Behavioral Statistics, 41}(5),
+481–520. https://doi.org/10.3102/1076998616646200
 
 Venables, W. N., Ripley, B. D. (2002).\emph{Modern Applied Statistics with S} (4th ed.).
 Springer. https://www.stats.ox.ac.uk/pub/MASS4/.
 }
 \seealso{
-\code{\link{item.omega}}, \code{\link{multilevel.cfa}}, \code{\link{multilevel.fit}},
-\code{\link{multilevel.invar}}, \code{\link{multilevel.cor}},
+\code{\link{multilevel.alpha}}, \code{\link{item.omega}}, \code{\link{multilevel.cfa}},
+\code{\link{multilevel.fit}}, \code{\link{multilevel.invar}}, \code{\link{multilevel.cor}},
 \code{\link{multilevel.descript}}
 }
 \author{

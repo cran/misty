@@ -80,28 +80,29 @@ item means or the inter-item correlation vary (Lee, Bartholow, McCarthy, Pederso
 & Sher, 2014; Mazza et al., 2015).
 }
 \examples{
-dat <- data.frame(item1 = c(3,  2,  4, 1,  5, 1,  3, NA),
-                  item2 = c(2,  2, NA, 2,  4, 2, NA,  1),
-                  item3 = c(1,  1,  2, 2,  4, 3, NA, NA),
-                  item4 = c(4,  2,  4, 4, NA, 2, NA, NA),
-                  item5 = c(3, NA, NA, 2,  4, 3, NA,  3))
+\dontrun{
+
+# Reverse code inverted item
+data.items <- item.reverse(data.items, pitem2, pitem3, min = 0, max = 3)
 
 # Example 1: Prorated mean scale scores
-item.scores(dat)
+item.scores(data.items, pitem1, pitem2.r, pitem3.r, pitem4::pitem6)
 
 # Example 2: Prorated standard deviation scale scores
-item.scores(dat, fun = "sd")
+item.scores(data.items, pitem1, pitem2.r, pitem3.r, pitem4::pitem6, fun = "sd")
 
 # Example 3: Sum scale scores without proration
-item.scores(dat, fun = "sum", prorated = FALSE)
+item.scores(data.items, pitem1, pitem2.r, pitem3.r, pitem4::pitem6, fun = "sum",
+            prorated = FALSE)
 
 # Example 4: Prorated mean scale scores,
 # minimum proportion of available item responses = 0.8
-item.scores(dat, p.avail = 0.8)
+item.scores(data.items, pitem1, pitem2.r, pitem3.r, pitem4::pitem6, p.avail = 0.8)
 
 # Example 5: Prorated mean scale scores,
 # minimum number of available item responses = 3
-item.scores(dat, n.avail = 3)
+item.scores(data.items, pitem1, pitem2.r, pitem3.r, pitem4::pitem6, n.avail = 3)
+}
 }
 \references{
 Enders, C. K. (2010). \emph{Applied missing data analysis}. New York, NY: Guilford

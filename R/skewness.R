@@ -137,16 +137,16 @@ skewness <- function(data, ..., sample = TRUE, digits = 2, p.digits = 3,
   #
   # Data -----------------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data using the argument '...' ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Using the Argument '...' ####
 
   if (isTRUE(!missing(...))) {
 
     # Extract data and convert tibble into data frame or vector
     x <- data[, .var.names(data = data, ...)] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(y)) == 1L)) { unname(unlist(y)) } else { as.data.frame(y) } } else { y })()
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data without using the argument '...' ####
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Without Using the Argument '...' ####
 
   } else {
 
@@ -155,8 +155,8 @@ skewness <- function(data, ..., sample = TRUE, digits = 2, p.digits = 3,
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Convert user-missing values into NA ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Convert User-Missing Values into NA ####
 
   if (isTRUE(!is.null(as.na))) { x <- .as.na(x, na = as.na) }
 
@@ -171,7 +171,7 @@ skewness <- function(data, ..., sample = TRUE, digits = 2, p.digits = 3,
 
     if (isTRUE(!is.null(attributes(x)$na.action))) { warning(paste0("Number of observations removed from the analysis: ", length(attributes(x)$na.action)), call. = FALSE) }
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Input Check ####
 
     # Check inputs
@@ -191,7 +191,7 @@ skewness <- function(data, ..., sample = TRUE, digits = 2, p.digits = 3,
 
     }
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Main Function ####
 
     # Number of observations
@@ -202,7 +202,7 @@ skewness <- function(data, ..., sample = TRUE, digits = 2, p.digits = 3,
       (\(y) if (isTRUE(sample)) { y * sqrt(n * (n - 1L)) / (n - 2L) } else { y })() |>
       (\(z) ifelse(is.nan(z), NA, z))()
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Output ####
 
     return(object)
@@ -213,10 +213,8 @@ skewness <- function(data, ..., sample = TRUE, digits = 2, p.digits = 3,
 
   } else {
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Missing Data ####
-
-
 
     # Omit complete missing columns
     x <- x[, misty::na.prop(t(x), append = FALSE) != 1L]
@@ -226,13 +224,13 @@ skewness <- function(data, ..., sample = TRUE, digits = 2, p.digits = 3,
 
     if (isTRUE(!is.null(attributes(x)$na.action))) { warning(paste0("Listwise deletion of incomplete data, number of cases removed from the analysis: ", length(attributes(x)$na.action)), call. = FALSE) }
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Input Check ####
 
     # Check inputs
     .check.input(logical = "output", args = c("digits", "p.digits"), envir = environment(), input.check = check)
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Main Function ####
 
     # Number of rows
@@ -254,7 +252,7 @@ skewness <- function(data, ..., sample = TRUE, digits = 2, p.digits = 3,
     # Result table
     result <- data.frame(n = n, var = p, skew = skew, chi2 = chi2, df = df, pval = pchisq(chi2, df = df, lower.tail = FALSE))
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Return Object ####
 
     object <- list(call = match.call(),
@@ -265,7 +263,7 @@ skewness <- function(data, ..., sample = TRUE, digits = 2, p.digits = 3,
 
     class(object) <- "misty.object"
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Output ####
 
     if (isTRUE(output)) { print(object, check = FALSE) }
@@ -294,16 +292,16 @@ kurtosis <- function(data, ..., sample = TRUE, center = TRUE, digits = 2,
   #
   # Data -----------------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data using the argument 'data' ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Using the Argument 'data' ####
 
   if (isTRUE(!missing(...))) {
 
     # Extract data and convert tibble into data frame or vector
     x <- data[, .var.names(..., data = data)] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(y)) == 1L)) { unname(unlist(y)) } else { as.data.frame(y) } } else { y })()
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data without using the argument 'data' ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Without Using the Argument 'data' ####
 
   } else {
 
@@ -312,8 +310,8 @@ kurtosis <- function(data, ..., sample = TRUE, center = TRUE, digits = 2,
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Convert user-missing values into NA ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Convert User-Missing Values into NA ####
 
   # Convert user-missing values into NA
   if (isTRUE(!is.null(as.na))) { x <- .as.na(x, na = as.na) }
@@ -329,7 +327,7 @@ kurtosis <- function(data, ..., sample = TRUE, center = TRUE, digits = 2,
 
     if (isTRUE(!is.null(attributes(x)$na.action))) { warning(paste0("Number of observations removed from the analysis: ", length(attributes(x)$na.action)), call. = FALSE) }
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Input Check ####
 
     # Check inputs
@@ -349,7 +347,7 @@ kurtosis <- function(data, ..., sample = TRUE, center = TRUE, digits = 2,
 
     }
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Main Function ####
 
     # Number of observations
@@ -361,7 +359,7 @@ kurtosis <- function(data, ..., sample = TRUE, center = TRUE, digits = 2,
       (\(z) if (isTRUE(sample)) { ((n + 1L) * z + 6L) * (n - 1L) / ((n - 2L) * (n - 3L)) } else { z })() |>
       (\(w) ifelse(is.nan(w), NA, w))()
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Output ####
 
     return(object)
@@ -372,7 +370,7 @@ kurtosis <- function(data, ..., sample = TRUE, center = TRUE, digits = 2,
 
   } else {
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Missing Data ####
 
     # Omit complete missing columns
@@ -383,13 +381,13 @@ kurtosis <- function(data, ..., sample = TRUE, center = TRUE, digits = 2,
 
     if (isTRUE(!is.null(attributes(x)$na.action))) { warning(paste0("Listwise deletion of incomplete data, number of cases removed from the analysis: ", length(attributes(x)$na.action)), call. = FALSE) }
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Input Check ####
 
     # Check inputs
     .check.input(logical = c("center", "output"), args = c("digits", "p.digits"), envir = environment(), input.check = check)
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Main Function ####
 
     # Number of rows
@@ -411,7 +409,7 @@ kurtosis <- function(data, ..., sample = TRUE, center = TRUE, digits = 2,
     # Result table
     result <- data.frame(n = nrow(x), var = p, kurt = kurt, z = z, pval = pnorm(-abs(z)) * 2L)
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Return Object ####
 
     object <- list(call = match.call(),
@@ -422,7 +420,7 @@ kurtosis <- function(data, ..., sample = TRUE, center = TRUE, digits = 2,
 
     class(object) <- "misty.object"
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Output ####
 
     if (isTRUE(output)) { print(object, check = FALSE) }

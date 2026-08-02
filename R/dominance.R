@@ -107,8 +107,8 @@
 #' @export
 #'
 #' @examples
-#' #----------------------------------------------------------------------------
-#' # Example 1: Dominance analysis for a linear model
+#' #—————————————————————————————————————————————————————————————————————————————
+#' # Example 1: Dominance Analysis for a Linear Model
 #'
 #' mod <- lm(mpg ~ cyl + disp + hp, data = mtcars)
 #' dominance(mod)
@@ -116,13 +116,13 @@
 #' # Print all results
 #' dominance(mod, print = "all")
 #'
-#' #----------------------------------------------------------------------------
-#' # Example 2: Write Results into a text file
+#' #—————————————————————————————————————————————————————————————————————————————
+#' # Example 2: Write Results into a Text File
 #'
 #' dominance(mod, write = "Dominance.txt", output = FALSE)
 #'
-#' #----------------------------------------------------------------------------
-#' # Example 3: Write Results into a Excel file
+#' #—————————————————————————————————————————————————————————————————————————————
+#' # Example 3: Write Results into a Excel File
 #'
 #' dominance(mod, write = "Dominance.xlsx", output = FALSE)
 dominance <- function(model, print = c("all", "gen", "cond", "comp"), digits = 3,
@@ -149,7 +149,7 @@ dominance <- function(model, print = c("all", "gen", "cond", "comp"), digits = 3
   #
   # Data and Arguments ---------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Print ####
 
   if (isTRUE(all(c("all", "gen", "cond", "comp") %in% print))) {
@@ -174,8 +174,8 @@ dominance <- function(model, print = c("all", "gen", "cond", "comp"), digits = 3
   #
   # Main Function --------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Dominance analysis ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Dominance Analysis ####
 
   domin.res <- .domin(eval(model$call[[2L]]), lm, list(summary, "r.squared"), data = model$model)
 
@@ -183,16 +183,16 @@ dominance <- function(model, print = c("all", "gen", "cond", "comp"), digits = 3
   #
   # Return object --------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## General dominance ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## General Dominance ####
 
   gen.res <- data.frame(r2 = domin.res$General_Dominance, perc = domin.res$Standardized * 100, rank = domin.res$Ranks) |>
     (\(y) rbind(y, c(sum(y[, "r2"]), sum(y[, "perc"]), NA)))()
 
   row.names(gen.res) <- c(names(domin.res$General_Dominance), "Total")
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Conditional dominance ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Conditional Dominance ####
 
   # Extract result table
   cond <- domin.res$Conditional_Dominance
@@ -214,14 +214,14 @@ dominance <- function(model, print = c("all", "gen", "cond", "comp"), digits = 3
 
   cond.res <- t(cond.res)
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Complete dominance ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Complete Dominance ####
 
   comp.res <- domin.res$Complete_Dominance
   rownames(comp.res) <- colnames(comp.res) <- names(domin.res$General_Dominance)
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Return object ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Return Object ####
 
   object <- list(call = match.call(),
                  type = "dominance",

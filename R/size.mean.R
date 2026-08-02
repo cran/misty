@@ -66,8 +66,8 @@
 #' @export
 #'
 #' @examples
-#' #----------------------------------------------------------------------------
-#' # Example 1: One- and two-sample t-test
+#' #—————————————————————————————————————————————————————————————————————————————
+#' # One- and Two-Sample t-Test
 #'
 #' # Example 1a: One-sample t-test
 #' # H0: mu = mu.0, H1: mu != mu.0
@@ -81,8 +81,8 @@
 #' size.mean(delta = 1, sample = "two.sample",
 #'           alternative = "less", alpha = 0.01, beta = 0.1)
 #'
-#' #----------------------------------------------------------------------------
-#' # Example 2: One- and two-sample test for proportions
+#' #—————————————————————————————————————————————————————————————————————————————
+#' # One- and Two-Sample Test for Proportions
 #'
 #' # Example 2a: Two-sided one-sample test
 #' # H0: pi = 0.5, H1: pi != 0.5
@@ -96,8 +96,8 @@
 #' size.prop(pi = 0.5, delta = 0.2, sample = "two.sample",
 #'           alternative = "greater", alpha = 0.01, beta = 0.1)
 #'
-#' #----------------------------------------------------------------------------
-#' # Example 3: Testing the Pearson product-moment correlation coefficient
+#' #—————————————————————————————————————————————————————————————————————————————
+#' # Testing the Pearson Product-Moment Correlation Coefficient
 #'
 #  # Example 3a: Two-sided test
 #' # H0: rho = 0.3, H1: rho != 0.3
@@ -156,8 +156,8 @@ size.mean <- function(delta, sample = c("two.sample", "one.sample"),
   #
   # Main Function --------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Two-sided ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Two-Sided ####
 
   if (isTRUE(alternative == "two.sided")) {
 
@@ -167,8 +167,8 @@ size.mean <- function(delta, sample = c("two.sample", "one.sample"),
       pt(qu, nu, ncp = sqrt(n / samp) * delta, lower = FALSE) + pt(-qu, nu, ncp = sqrt(n / samp) * delta, lower = TRUE)
     })
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## One-sided ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## One-Sided ####
 
   } else {
 
@@ -179,8 +179,8 @@ size.mean <- function(delta, sample = c("two.sample", "one.sample"),
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Optimal sample size ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Optimal Sample Size ####
 
   n <- uniroot(function(n) eval(p.body) - (1L - beta) , c(2L + 1e-10, 1e+07))$root
 
@@ -201,10 +201,10 @@ size.mean <- function(delta, sample = c("two.sample", "one.sample"),
 
   if (isTRUE(!is.null(write))) {
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Text file ####
 
-    # Send R output to textfile
+    # Send R output to text file
     sink(file = write, append = ifelse(isTRUE(file.exists(write)), append, FALSE), type = "output", split = FALSE)
 
     if (isTRUE(append && file.exists(write))) { write("", file = write, append = TRUE) }
@@ -227,8 +227,8 @@ size.mean <- function(delta, sample = c("two.sample", "one.sample"),
 
 }
 
-#-------------------------------------------------------------------------------
-#-------------------------------------------------------------------------------
+#----------------------------------------------------------------------------- #
+#----------------------------------------------------------------------------- #
 
 #' @rdname size.prop
 size.prop <- function(pi = 0.5, delta, sample = c("two.sample", "one.sample"),
@@ -268,13 +268,13 @@ size.prop <- function(pi = 0.5, delta, sample = c("two.sample", "one.sample"),
   #
   # Arguments ------------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Sample ####
 
   # one or two sample
   sample <- ifelse(all(c("two.sample", "one.sample") %in% alternative), "two.sample", sample)
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Alternative ####
 
   # two- or one-sided test
@@ -323,8 +323,8 @@ size.prop <- function(pi = 0.5, delta, sample = c("two.sample", "one.sample"),
 
   side <- switch(alternative, two.sided = 2L, less = 1L, greater = 1L)
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Two-sample ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Two-Sample ####
 
   if (isTRUE(sample == "two.sample")) {
 
@@ -344,8 +344,8 @@ size.prop <- function(pi = 0.5, delta, sample = c("two.sample", "one.sample"),
 
     }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## One-sample ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## One-Sample ####
 
   } else {
 
@@ -380,10 +380,10 @@ size.prop <- function(pi = 0.5, delta, sample = c("two.sample", "one.sample"),
 
   if (isTRUE(!is.null(write))) {
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Text file ####
 
-    # Send R output to textfile
+    # Send R output to text file
     sink(file = write, append = ifelse(isTRUE(file.exists(write)), append, FALSE), type = "output", split = FALSE)
 
     if (isTRUE(append && file.exists(write))) { write("", file = write, append = TRUE) }
@@ -406,8 +406,8 @@ size.prop <- function(pi = 0.5, delta, sample = c("two.sample", "one.sample"),
 
 }
 
-#-------------------------------------------------------------------------------
-#-------------------------------------------------------------------------------
+#----------------------------------------------------------------------------- #
+#----------------------------------------------------------------------------- #
 
 #' @rdname size.cor
 size.cor <- function(rho, delta,
@@ -438,7 +438,7 @@ size.cor <- function(rho, delta,
 
     if (isTRUE(beta <= 0L || beta >= 1L)) { stop("Argument beta out of bound, specify a value between 0 and 1.", call. = FALSE) }
 
-    #-----------------------------------------------------------------------------------
+    #------------------------------------------------------------------------- #
 
     if (isTRUE(alternative == "two.sided")) {
 
@@ -495,10 +495,10 @@ size.cor <- function(rho, delta,
 
   if (isTRUE(!is.null(write))) {
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Text file ####
 
-    # Send R output to textfile
+    # Send R output to text file
     sink(file = write, append = ifelse(isTRUE(file.exists(write)), append, FALSE), type = "output", split = FALSE)
 
     if (isTRUE(append && file.exists(write))) { write("", file = write, append = TRUE) }

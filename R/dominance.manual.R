@@ -69,7 +69,7 @@
 #' @export
 #'
 #' @examples
-#' #----------------------------------------------------------------------------
+#' #—————————————————————————————————————————————————————————————————————————————
 #' # Linear model
 #'
 #' # Example 1a: Dominance analysis, 'mpg' predicted by 'cyl', 'disp', and 'hp'
@@ -85,13 +85,13 @@
 #' dominance.manual(cor(mtcars[, c("mpg", "cyl", "disp", "hp")]),
 #'                  write = "Dominance_Manual.txt")
 #'
-#' #----------------------------------------------------------------------------
-#' # Example 2: Structural equation modeling
+#' #—————————————————————————————————————————————————————————————————————————————
+#' # Structural equation modeling
 #'
 #' library(lavaan)
 #'
-#' #.............
-#' # Latent variables
+#' #——————————————————————————————————————
+#' ## Example 2: Latent variables
 #'
 #' # Model specification
 #' model <- '# Measurement model
@@ -110,8 +110,8 @@
 #' # Dominance analysis
 #' dominance.manual(fit.cor)
 #'
-#' #.............
-#' # Example 3: Latent and manifest variables
+#' #——————————————————————————————————————
+#' ## Example 3: Latent and manifest variables
 #'
 #' # Model specification, convert manifest to latent variable
 #' model <- '# Measurement model
@@ -132,8 +132,8 @@
 #' # Dominance analysis
 #' dominance.manual(fit.cor)
 #'
-#' #----------------------------------------------------------------------------
-#' # Example 4: Multilevel modeling
+#' #—————————————————————————————————————————————————————————————————————————————
+#' # Example 4: Multilevel Modeling
 #'
 #' # Model specification
 #' model <- 'level: 1
@@ -168,7 +168,7 @@
 #' dominance.manual(fit.cor$cluster)
 #'
 #' \dontrun{
-#' #----------------------------------------------------------------------------
+#' #—————————————————————————————————————————————————————————————————————————————
 #' # Example 5: Mplus
 #' #
 #' # In Mplus, the model-implied correlation matrix of the latent variables
@@ -221,8 +221,8 @@ dominance.manual <- function(x, out = NULL, digits = 3, write = NULL, append = T
   #
   # Data and Arguments ---------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Correlation matrix ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Correlation Matrix ####
 
   # Lower triangular missing
   if (all(is.na(x[lower.tri(x)]))) { x[lower.tri(x)] <- t(x)[lower.tri(x)] }
@@ -230,7 +230,7 @@ dominance.manual <- function(x, out = NULL, digits = 3, write = NULL, append = T
   # Upper triangular missing
   if (all(is.na(x[upper.tri(x)]))) { x[upper.tri(x)] <- t(x)[upper.tri(x)] }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Outcome ####
 
   if (isTRUE(!is.null(out))) {
@@ -247,7 +247,7 @@ dominance.manual <- function(x, out = NULL, digits = 3, write = NULL, append = T
   #
   # Main Function --------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Dominance analysis ####
 
   domin.res <- .DA(x)
@@ -256,7 +256,7 @@ dominance.manual <- function(x, out = NULL, digits = 3, write = NULL, append = T
   #
   # Return object --------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## General dominance ####
 
   gen.res <- data.frame(r2 = domin.res, perc = domin.res / sum(domin.res)  * 100, rank = rank(-domin.res)) |>
@@ -264,7 +264,7 @@ dominance.manual <- function(x, out = NULL, digits = 3, write = NULL, append = T
 
   row.names(gen.res) <- c(colnames(x)[-1L], "Total")
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Return object ####
 
   object <- list(call = match.call(),

@@ -268,13 +268,13 @@ blimp.update <- function(x, update, file = "Blimp_Input_Update.imp", comment = F
   #
   # Arguments ------------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## update Argument ####
 
   # Upper case characters
   update.upp <- toupper(update)
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## file Argument ####
 
   # File extension .inp
@@ -283,7 +283,7 @@ blimp.update <- function(x, update, file = "Blimp_Input_Update.imp", comment = F
   # .out object
   file.out <- sub("\\.imp", ".blimp-out", file)
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## replace.out Argument ####
 
   if (isTRUE(all(c("always", "never", "modified") %in% replace.out))) {
@@ -296,7 +296,7 @@ blimp.update <- function(x, update, file = "Blimp_Input_Update.imp", comment = F
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## format ####
 
   if (isTRUE(all(c("csv", "csv2", "xlsx", "rds", "RData") %in% format))) {
@@ -317,7 +317,7 @@ blimp.update <- function(x, update, file = "Blimp_Input_Update.imp", comment = F
   #
   # Main Function --------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Remove Comments ####
 
   if (isTRUE(!comment)) {
@@ -344,7 +344,7 @@ blimp.update <- function(x, update, file = "Blimp_Input_Update.imp", comment = F
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Extract Position of Update Input Command Sections ####
 
   section.pos <- c(if (isTRUE(any(grepl("DATA:", x, ignore.case = TRUE)))) { as.numeric(gregexec("DATA:", toupper(x))[[1L]]) } else { NULL },
@@ -395,157 +395,157 @@ blimp.update <- function(x, update, file = "Blimp_Input_Update.imp", comment = F
                    if (isTRUE(any(grepl("SAVE:", x, ignore.case = TRUE)))) { as.numeric(gregexec("SAVE:", update.upp)[[1L]]) } else { NULL })
 
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Extract Update Input Command Sections ####
 
   bdata <- variables <- ordinal <- nominal <- count <- clusterid <- weight <- missing <- latent <- randomeffect <- transform <- bygroup <- fixed <- center <- model <- simple <- parameters <- test <- fcs <- simulate <- seed <- burn <- iterations <- chains <- nimps <- thin <- options <- boutput <- save <- NULL
 
-  #...................
+  #—————————————————————————————————————— #
   ### DATA ####
 
   if (isTRUE(any(grepl("DATA:", update, ignore.case = TRUE)))) { bdata <- .extract.section("DATA:", update, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### VARIABLES ####
 
   if (isTRUE(any(grepl("VARIABLES:", update, ignore.case = TRUE)))) { variables <- .extract.section("VARIABLES:", update, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### ORDINAL ####
 
   if (isTRUE(any(grepl("ORDINAL:", update, ignore.case = TRUE)))) { ordinal <- .extract.section("ORDINAL:", update, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### NOMINAL ####
 
   if (isTRUE(any(grepl("NOMINAL:", update, ignore.case = TRUE)))) { nominal <- .extract.section("NOMINAL:", update, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### COUNT ####
 
   if (isTRUE(any(grepl("COUNT:", update, ignore.case = TRUE)))) { count <- .extract.section("COUNT:", update, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### CLUSTERID ####
 
   if (isTRUE(any(grepl("CLUSTERID:", update, ignore.case = TRUE)))) { clusterid <- .extract.section("CLUSTERID:", update, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### WEIGHT ####
 
   if (isTRUE(any(grepl("WEIGHT:", update, ignore.case = TRUE)))) { weight <- .extract.section("WEIGHT:", update, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### MISSING ####
 
   if (isTRUE(any(grepl("MISSING:", update, ignore.case = TRUE)))) { missing <- .extract.section("MISSING:", update, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### LATENT ####
 
   if (isTRUE(any(grepl("LATENT:", update, ignore.case = TRUE)))) { latent <- .extract.section("LATENT:", update, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### RANDOMEFFECT ####
 
   if (isTRUE(any(grepl("RANDOMEFFECT:", update, ignore.case = TRUE)))) { randomeffect <- .extract.section("RANDOMEFFECT:", update, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### TRANSFORM ####
 
   if (isTRUE(any(grepl("TRANSFORM:", update, ignore.case = TRUE)))) { transform <- .extract.section("TRANSFORM:", update, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### BYGROUP ####
 
   if (isTRUE(any(grepl("BYGROUP:", update, ignore.case = TRUE)))) { bygroup <- .extract.section("BYGROUP:", update, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### FIXED ####
 
   if (isTRUE(any(grepl("FIXED:", update, ignore.case = TRUE)))) { fixed <- .extract.section("FIXED:", update, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### CENTER ####
 
   if (isTRUE(any(grepl("CENTER:", update, ignore.case = TRUE)))) { center <- .extract.section("CENTER:", update, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### MODEL ####
 
   if (isTRUE(any(grepl("MODEL:", update, ignore.case = TRUE)))) { model <- .extract.section("MODEL:", update, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### SIMPLE ####
 
   if (isTRUE(any(grepl("SIMPLE:", update, ignore.case = TRUE)))) { simple <- .extract.section("SIMPLE:", update, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### PARAMETERS ####
 
   if (isTRUE(any(grepl("PARAMETERS:", update, ignore.case = TRUE)))) { parameters <- .extract.section("PARAMETERS:", update, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### TEST ####
 
   if (isTRUE(any(grepl("TEST:", update, ignore.case = TRUE)))) { test <- .extract.section("TEST:", update, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### FCS ####
 
   if (isTRUE(any(grepl("FCS:", update, ignore.case = TRUE)))) { fcs <- .extract.section("FCS:", update, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### SIMULATE ####
 
   if (isTRUE(any(grepl("SIMULATE:", update, ignore.case = TRUE)))) { simulate <- .extract.section("SIMULATE:", update, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### SEED ####
 
   if (isTRUE(any(grepl("SEED:", update, ignore.case = TRUE)))) { seed <- .extract.section("SEED:", update, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### BURN ####
 
   if (isTRUE(any(grepl("BURN:", update, ignore.case = TRUE)))) { burn <- .extract.section("BURN:", update, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### ITERATIONS ####
 
   if (isTRUE(any(grepl("ITERATIONS:", update, ignore.case = TRUE)))) { iterations <- .extract.section("ITERATIONS:", update, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### CHAINS ####
 
   if (isTRUE(any(grepl("CHAINS:", update, ignore.case = TRUE)))) { chains <- .extract.section("CHAINS:", update, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### NIMPS ####
 
   if (isTRUE(any(grepl("NIMPS:", update, ignore.case = TRUE)))) { nimps <- .extract.section("NIMPS:", update, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### THIN ####
 
   if (isTRUE(any(grepl("THIN:", update, ignore.case = TRUE)))) { thin <- .extract.section("THIN:", update, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### OPTIONS ####
 
   if (isTRUE(any(grepl("OPTIONS:", update, ignore.case = TRUE)))) { options <- .extract.section("OPTIONS:", update, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### OUTPUT ####
 
   if (isTRUE(any(grepl("OUTPUT:", update, ignore.case = TRUE)))) { boutput <- .extract.section("OUTPUT:", update, section.pos) }
 
-  #...................
+  #—————————————————————————————————————— #
   ### SAVE ####
 
   if (isTRUE(any(grepl("SAVE:", update, ignore.case = TRUE)))) { save <- .extract.section("SAVE:", update, section.pos) }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Update Input Object ####
 
   input.object.update <- Filter(Negate(is.null),
@@ -558,19 +558,19 @@ blimp.update <- function(x, update, file = "Blimp_Input_Update.imp", comment = F
   # Input object
   input.object <- Filter(Negate(is.null), x$input)
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Update Input Section ####
 
   for (i in names(input.object.update)) {
 
-    #...................
+    #—————————————————————————————————————— #
     ### Update section available in input ####
 
     if (isTRUE(i %in% names(input.object))) {
 
       input.object[[i]] <- input.object.update[[i]]
 
-    #...................
+    #—————————————————————————————————————— #
     ### Update section not available in input ####
     } else {
 
@@ -582,8 +582,8 @@ blimp.update <- function(x, update, file = "Blimp_Input_Update.imp", comment = F
 
     }
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Remove sections using --- ####
+    #—————————————————————————————————————— #
+    ### Remove sections using --- ####
 
     if (isTRUE(grepl("---", input.object[[i]], fixed = TRUE))) {
 
@@ -593,12 +593,12 @@ blimp.update <- function(x, update, file = "Blimp_Input_Update.imp", comment = F
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Write Object ####
 
   write.object <- misty::chr.gsub(c("\n\n\n", "\n\n\n\n", "\n\n\n\n\n", "\n\n\n\n\n\n", "\n\n\n\n\n\n\n"), rep("\n\n", times = 5L), paste(input.object, collapse = "\n"))
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Write Input ####
 
   # Input file already exists
@@ -623,7 +623,7 @@ blimp.update <- function(x, update, file = "Blimp_Input_Update.imp", comment = F
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Run Blimp ####
 
   if (isTRUE(blimp.run)) {
@@ -650,7 +650,7 @@ blimp.update <- function(x, update, file = "Blimp_Input_Update.imp", comment = F
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Blimp Output ####
 
   if (isTRUE(output)) {

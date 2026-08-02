@@ -6,15 +6,16 @@
 \usage{
 multilevel.invar(data, ..., cluster, model = NULL, rescov = NULL,
                  invar = c("config", "metric", "scalar"), fix.resid = NULL,
-                 ident = c("marker", "var", "effect"),
-                 estimator = c("ML", "MLR"), optim.method = c("nlminb", "em"),
-                 missing = c("listwise", "fiml"),
-                 print = c("all", "summary", "coverage", "descript", "fit",
-                           "est", "modind", "resid"),
+                 ident = c("marker", "var", "effect"), estimator = c("ML", "MLR"),
+                 optim.method = c("nlminb", "em"), missing = c("listwise", "fiml"),
+                 print = c("all", "summary", "coverage", "descript", "fit", "est",
+                           "modind", "resid", "opdyke"),
                  print.fit = c("all", "standard", "scaled", "robust"),
-                 mod.minval = 6.63, resid.minval = 0.1, digits = 3, p.digits = 3,
-                 as.na = NULL, write = NULL, append = TRUE, check = TRUE,
-                 output = TRUE)
+                 mod.minval = 6.63, resid.minval = 0.1,
+                 opdyke.prec = 1, opdyke.minmax = c(0.40, 0.60),
+                 color = "b.red", style = c("regular", "bold", "italic"),
+                 digits = 3, p.digits = 3, as.na = NULL, write = NULL,
+                 append = TRUE, check = TRUE, output = TRUE)
 }
 \arguments{
 \item{data}{a data frame. If \code{model} is \code{NULL},
@@ -160,6 +161,48 @@ correlation coefficients and standardized means equal
 or higher 0.1 are highlighted. Note that highlighting
 can be disabled by setting the minimum value to 1.}
 
+\item{opdyke.prec}{a numeric value indicating the precision of the probability
+density function calculations of the Opdyke distribution.
+The default is \code{1} which calculates the PDF
+for polar angles between \eqn{(0, pi)} in \eqn{0.01}
+increments. Specifying \code{10} calculates the PDF
+polar angles between \eqn{(0, pi)} in 0.001 increments,
+which takes considerably longer, especially if there
+are many correlation elements.}
+
+\item{opdyke.minmax}{a numeric vector with two elements indicating the
+minimum and maximum percentile of the Opdyke distribution
+that is considered to be acceptably close to the
+observed correlation represented by the Opdyke distribution
+median. Predicted correlation outside the range will be
+color highlighted in line with to the argument \code{color}.}
+
+\item{color}{a character string indicating the text color for
+highlighting absolute residual correlation coefficients
+and standardized means equal or higher \code{resid.minval}
+and predicted correlations outside the minimum and
+maximum percentile of the Opdyke distribution, i.e.,
+i.e., \code{"default"} for the default text color without
+color coding and various text colors for highlighting
+\code{"red"}, \code{"b.red"} (default), \code{"green"},
+\code{"b.green"}, \code{"blue"}, or \code{"b.blue"},
+see the help page of the \code{\link{chr.color}} function.
+Note that this option is not supported when using R
+Markdown and when writing the output into a text file
+(\code{.txt}).}
+
+\item{style}{a character vector indicating the font style for
+highlighting absolute residual correlation coefficients
+and standardized means equal or higher \code{resid.minval},
+i.e., \code{"regular"} (default) for regular text, \code{"bold"}
+for bold text, and \code{"italic"} for italic text. Note
+that the font style \code{"bold"} and \code{"italic"} can
+be combined, i.e., style = c("bold", "italic") provides a
+bold and italic text. Note that the argument \code{color}
+needs to be specified to change the style of the text, e.g.
+\code{color = "black"} and \code{style = "bold"} to for
+bold text.}
+
 \item{digits}{an integer value indicating the number of decimal places
 to be used for displaying results. Note that information
 criteria and chi-square test statistic is printed with
@@ -218,11 +261,21 @@ entries:
 \description{
 This function evaluates configural, metric, and scalar cross-level measurement
 invariance using multilevel confirmatory factor analysis with continuous indicators
-by calling the \code{cfa} function in the R package \pkg{lavaan}.
+by calling the \code{cfa} function in the R package \pkg{lavaan}. By default,
+the function evaluates configural and metric cross-level measurement invariance
+by providing a table with model fit information (i.e., chi-square test, fit
+indices and information criteria), and model comparison (i.e., chi-square
+difference test, change in fit indices, and change in information criteria).
+Additionally, variance-covariance coverage of the data, descriptive statistics,
+parameter estimates, modification indices, residual correlation matrix, and
+relative Opdyke distribution percentile matrix can be requested by specifying
+the argument \code{print}.
 }
 \note{
 The function uses the functions \code{lavTestLRT} provided in the R package
-\pkg{lavaan} by Yves Rosseel (2012).
+\pkg{lavaan} by Yves Rosseel (2012). The relative Opdyke
+distribution percentile matrix is based on the functions \code{opdyke} and
+\code{opdyke.percentiles} provided in the R package \pkg{opddyke} by Dan McNeish (2026).
 }
 \examples{
 \dontrun{
@@ -230,8 +283,8 @@ The function uses the functions \code{lavTestLRT} provided in the R package
 # Load data set "Demo.twolevel" in the lavaan package
 data("Demo.twolevel", package = "lavaan")
 
-#————————————————————————————————————————————————————————————————————————————
-# Cluster variable specification
+#—————————————————————————————————————————————————————————————————————————————
+# Cluster Variable Specification
 
 # Example 1a: Specification using the argument '...'
 multilevel.invar(Demo.twolevel, y1:y4, cluster = "cluster")
@@ -239,14 +292,14 @@ multilevel.invar(Demo.twolevel, y1:y4, cluster = "cluster")
 # Example 1b: Alternative specification with cluster variable 'cluster' in 'data'
 multilevel.invar(Demo.twolevel[, c("y1", "y2", "y3", "y4", "cluster")], cluster = "cluster")
 
-# Example 1b: Alternative specification with cluster variable 'cluster' not in 'data'
+# Example 1c: Alternative specification with cluster variable 'cluster' not in 'data'
 multilevel.invar(Demo.twolevel[, c("y1", "y2", "y3", "y4")], cluster = Demo.twolevel$cluster)
 
-#————————————————————————————————————————————————————————————————————————————
-# Model specification using 'data' for a one-factor model
+#—————————————————————————————————————————————————————————————————————————————
+# Model Specification Using 'data' for an One-Factor Model
 
-#···················
-# Level of measurement invariance
+#——————————————————————————————————————
+## Level of Measurement Invariance
 
 # Example 2a: Configural invariance
 multilevel.invar(Demo.twolevel, y1, y2, y3, y4, cluster = "cluster", invar = "config")
@@ -257,8 +310,8 @@ multilevel.invar(Demo.twolevel, y1, y2, y3, y4, cluster = "cluster", invar = "me
 # Example 2c: Scalar invariance
 multilevel.invar(Demo.twolevel, y1, y2, y3, y4, cluster = "cluster", invar = "scalar")
 
-#···················
-# Residual covariance at the Within level and residual variance at the Between level
+#——————————————————————————————————————
+## Residual (Co-)Variance at the Within and Between Level
 
 # Example 3a: Residual covariance between "y3" and "y4" at the Within level
 multilevel.invar(Demo.twolevel, y1, y2, y3, y4, cluster = "cluster",
@@ -267,11 +320,27 @@ multilevel.invar(Demo.twolevel, y1, y2, y3, y4, cluster = "cluster",
 # Example 3b: Residual variances of 'y1' at the Between level fixed at 0
 multilevel.invar(Demo.twolevel, y1, y2, y3, y4, cluster = "cluster", fix.resid = "y1")
 
-#···················
-# Example 4: Print all results
-multilevel.invar(Demo.twolevel, y1, y2, y3, y4, cluster = "cluster", print = "all")
+#——————————————————————————————————————
+## Arguments 'print', 'mod.minval', 'resid.minval', and 'opdyke.minmax'
 
-#···················
+# Example 4a: Request all results
+multilevel.invar(Demo.twolevel, y1:y6, cluster = "cluster", print = "all")
+
+# Example 4b: Request modification indices with value equal or higher than 2
+multilevel.invar(Demo.twolevel, y1:y6, cluster = "cluster", print = "modind",
+                 mod.minval = 2)
+
+# Example 4c: Highlight absolute residual correlation equal or higher than 0.05
+multilevel.invar(Demo.twolevel, y1:y6, cluster = "cluster", print = "resid",
+                 resid.minval = 0.05, color = "b.blue")
+
+# Example 4d: Highlight Opdyke distribution percentiles outside 0.45 and 0.55
+multilevel.invar(Demo.twolevel, y1:y6, cluster = "cluster", print = "opdyke",
+                 opdyke.minmax = c(0.45, 0.55), color = "black", style = "bold")
+
+#————————————————————————————————————————————————————————————————————————————
+# lavaan Summary of the Estimated Model
+
 # Example 5: lavaan model and summary of the estimated model
 mod <- multilevel.invar(Demo.twolevel, y1, y2, y3, y4, cluster = "cluster", output = FALSE)
 
@@ -281,8 +350,8 @@ mod$model$metric
 # Fitted lavaan object of the metric invariance model
 lavaan::summary(mod$model.fit$metric, standardized = TRUE, fit.measures = TRUE)
 
-#————————————————————————————————————————————————————————————————————————————
-# Model specification using 'model' for one or multiple factor model
+#—————————————————————————————————————————————————————————————————————————————
+# Model Specification Using 'model' for an One- or Multiple-Factor Model
 
 # Example 6a: One-factor model
 multilevel.invar(Demo.twolevel, cluster = "cluster", model = c("y1", "y2", "y3", "y4"))
@@ -291,8 +360,8 @@ multilevel.invar(Demo.twolevel, cluster = "cluster", model = c("y1", "y2", "y3",
 multilevel.invar(Demo.twolevel, cluster = "cluster",
                  model = list(c("y1", "y2", "y3"), c("y4", "y5", "y6")))
 
-#————————————————————————————————————————————————————————————————————————————
-# Write results
+#—————————————————————————————————————————————————————————————————————————————
+# Write Results
 
 # Example 7a: Write Results into a Excel file
 multilevel.invar(Demo.twolevel, y1, y2, y3, y4, cluster = "cluster", print = "all",
@@ -304,6 +373,10 @@ multilevel.invar(Demo.twolevel, y1, y2, y3, y4, cluster = "cluster", print = "al
 }
 }
 \references{
+McNeish D (2026). opdyke: Opdyke Percentiles for Approximate Local Fit in
+Structural Equation Models. R package version 1.0.0. Retrieved from
+https://github.com/dmcneish18/opdyke
+
 Rosseel, Y. (2012). lavaan: An R Package for Structural Equation Modeling.
 \emph{Journal of Statistical Software, 48}, 1-36. https://doi.org/10.18637/jss.v048.i02
 }

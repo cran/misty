@@ -250,7 +250,7 @@
 #' @export
 #'
 #' @examples
-#' #----------------------------------------------------------------------------
+#' #————————————————————————————————————————————————————————————————————————————
 #' # Example 1: Linear model
 #'
 #' # Estimate linear model
@@ -263,7 +263,7 @@
 #' # Note that the is an illustrative example, variable 'carb' is not a cluster variable
 #' coeff.robust(mod.lm, cluster = mtcars$carb)
 #'
-#' #----------------------------------------------------------------------------
+#' #————————————————————————————————————————————————————————————————————————————
 #' # Example 2: Generalized linear model
 #'
 #' # Estimate generalized linear model
@@ -277,7 +277,7 @@
 #' coeff.robust(mod.glm, cluster = mtcars$carb)
 #'
 #' \dontrun{
-#' #----------------------------------------------------------------------------
+#' #————————————————————————————————————————————————————————————————————————————
 #' # Example 3: Multilevel and Linear Mixed-Effects Model
 #'
 #' # Load lme4 and misty package
@@ -304,7 +304,7 @@
 #' # Statistical significance testing based on cluster-robust SE
 #' coeff.robust(mod.lme)
 #'
-#' #----------------------------------------------------------------------------
+#' #————————————————————————————————————————————————————————————————————————————
 #' # Write Results
 #'
 #' # Example 3a: Write results into a text file
@@ -340,7 +340,7 @@ coeff.robust <- function(model, cluster = NULL,
   #
   # Data and Arguments ---------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Model Class ####
 
   # (Generalized) Linear Model
@@ -359,10 +359,10 @@ coeff.robust <- function(model, cluster = NULL,
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Argument 'type' ####
 
-  #...................
+  #—————————————————————————————————————— #
   ### Default setting ####
 
   if (isTRUE(all(c("HC0", "HC1", "HC2", "HC3", "HC4", "HC4m", "HC5", "CR0", "CR1", "CR1p", "CR1S", "CR2", "CR3") %in% type))) {
@@ -386,7 +386,7 @@ coeff.robust <- function(model, cluster = NULL,
 
          lm = {
 
-           #...................
+           #—————————————————————————————————————— #
            ### Heteroscedasticity-Consistent Standard Error ####
 
            if (isTRUE(type %in% c("HC0", "HC1", "HC2", "HC3", "HC4", "HC4m", "HC5"))) {
@@ -409,7 +409,7 @@ coeff.robust <- function(model, cluster = NULL,
 
             }
 
-           #...................
+           #—————————————————————————————————————— #
            ### Cluster-Robust Standard Error ####
 
            } else {
@@ -485,7 +485,7 @@ coeff.robust <- function(model, cluster = NULL,
   #
   # Return object --------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Return object ####
 
   object <- list(call = match.call(),

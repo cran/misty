@@ -94,7 +94,7 @@ check.outlier <- function(model, append = TRUE, check = TRUE, ...) {
   #
   # Main Function --------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Leverage ####
 
   # Mahalanobis distance
@@ -103,7 +103,7 @@ check.outlier <- function(model, append = TRUE, check = TRUE, ...) {
   # Hat values
   mod.hat <- hatvalues(model)
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Distance ####
 
   # Standardized leverage-corrected residual
@@ -112,7 +112,7 @@ check.outlier <- function(model, append = TRUE, check = TRUE, ...) {
   # Studentized leverage-corrected residual
   mod.rstud <- rstudent(model)
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Influence ####
 
   # Cook's distance
@@ -121,7 +121,7 @@ check.outlier <- function(model, append = TRUE, check = TRUE, ...) {
   # DfBetas
   mod.dfbeta <- setNames(as.data.frame(dfbetas(model)), nm = paste0(misty::chr.gsub(c("\\(", "\\)"), c("", ""), mod.int.pred), ".dfb"))
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Result table ####
 
   result <- merge(data.frame(idout = if (isTRUE(all(!is.na(suppressWarnings(as.numeric(row.names(mod.dat))))))) { as.numeric(row.names(mod.dat)) } else { row.names(mod.dat) }, mahal = mod.mahal),
@@ -152,7 +152,7 @@ check.outlier <- function(model, append = TRUE, check = TRUE, ...) {
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Append ####
 
   if (isTRUE(append)) {

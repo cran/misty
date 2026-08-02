@@ -7,7 +7,7 @@
 summa(model, print = c("all", "default", "call", "descript", "cormat", "modsum",
                        "randeff", "varcor", "coef", "confint", "stdcoef", "vif"),
       robust = FALSE, ddf = c("Satterthwaite", "Kenward-Roger", "lme4"),
-      method = c("profile", "wald", "boot"), conf.level = 0.95, R = 1000,
+      method = c("profile", "wald", "boot"), conf.level = 0.95, nrep = 1000,
       boot = c("perc", "basic", "norm"), seed = NULL, digits = 2, p.digits = 3,
       write = NULL, append = TRUE, check = TRUE, output = TRUE)
 }
@@ -81,7 +81,7 @@ according to the argument \code{boot}..}
 \item{conf.level}{a numeric value between 0 and 1 indicating the confidence
 level of the interval.}
 
-\item{R}{a numeric value indicating the number of bootstrap replicates
+\item{nrep}{a numeric value indicating the number of bootstrap replicates
 (default is 1000).}
 
 \item{boot}{a character string for specifying the type of bootstrap

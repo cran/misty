@@ -80,15 +80,15 @@ df.rename <- function(data, ..., from = NULL, to = NULL, check = TRUE) {
   #
   # Variables ------------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Rename variables using ... ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Rename Variables Using ... ####
 
   if (isTRUE(is.null(from) && is.null(to))) {
 
     # Extract argument '...'
     dots <- sapply(substitute(list(...)), as.character) |> (\(y) if (isTRUE(is.list(y))) { y[[2]] } else { misty::chr.omit(y, omit = "list", check = FALSE) })()
 
-    #...................
+    #—————————————————————————————————————— #
     ### Function ####
 
     if (isTRUE(any(dots == "~"))) {
@@ -175,8 +175,8 @@ df.rename <- function(data, ..., from = NULL, to = NULL, check = TRUE) {
 
       }
 
-    #...................
-    ### No function ####
+    #—————————————————————————————————————— #
+    ### No Function ####
 
     } else {
 
@@ -188,7 +188,7 @@ df.rename <- function(data, ..., from = NULL, to = NULL, check = TRUE) {
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Rename variables using 'from' and 'to' ####
 
   } else {

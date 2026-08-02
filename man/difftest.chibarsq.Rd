@@ -112,9 +112,9 @@ from the \pkg{ChiBarSq.DiffTest} package by Rebecca M. Kuiper.
 # Model specification based on code provided on the accompanying website of
 # Mulder and Hamaker (2021)
 
-#···················
-# Model Specification: Cross-Lagged Panel Model (CLPM)
-# i.e., Var(Kappa) = 0, Var(Omega) = 0, Cov(Kappa, Omega) = 0
+#——————————————————————————————————————
+## Model Specification: Cross-Lagged Panel Model (CLPM)
+## i.e., Var(Kappa) = 0, Var(Omega) = 0, Cov(Kappa, Omega) = 0
 
 mod.clpm <- '
   # Create between components (random intercepts)
@@ -154,9 +154,9 @@ mod.clpm <- '
   wy3 ~~ wy3
 '
 
-#···················
-# Model Specification: Random Intercept Cross-Lagged Panel Model RI-CLPM(Kappa)
-# i.e., Var(Kappa) > 0, Var(Omega) = 0, Cov(Kappa, Omega) = 0
+#——————————————————————————————————————
+## Model Specification: Random Intercept Cross-Lagged Panel Model RI-CLPM(Kappa)
+## i.e., Var(Kappa) > 0, Var(Omega) = 0, Cov(Kappa, Omega) = 0
 
 mod.ri.clpm.k <- '
   # Create between components (random intercepts)
@@ -196,9 +196,9 @@ mod.ri.clpm.k <- '
   wy3 ~~ wy3
 '
 
-#···················
-# Model Specification: Random Intercept Cross-Lagged Panel Model RI-CLPM(Omega)
-# i.e., Var(Kappa) = 0, Var(Omega) > 0, Cov(Kappa, Omega) = 0
+#——————————————————————————————————————
+## Model Specification: Random Intercept Cross-Lagged Panel Model RI-CLPM(Omega)
+## i.e., Var(Kappa) = 0, Var(Omega) > 0, Cov(Kappa, Omega) = 0
 
 mod.ri.clpm.o <- '
   # Create between components (random intercepts)
@@ -238,8 +238,8 @@ mod.ri.clpm.o <- '
   wy3 ~~ wy3
 '
 
-#···················
-# Estimate Models
+#——————————————————————————————————————
+## Estimate Models
 #
 # Note that the example analysis cannot be conduct as the data set 'data'
 # is not available.

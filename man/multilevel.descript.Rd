@@ -5,7 +5,7 @@
 \title{Multilevel Descriptive Statistics for Two-Level and Three-Level Data}
 \usage{
 multilevel.descript(data, ..., cluster, type = c("1a", "1b"),
-                    method = c("aov", "lme4", "nlme"),
+                    method = c("lme4", "nlme"),
                     print = c("all", "var", "sd"), REML = TRUE, digits = 2,
                     icc.digits = 3, as.na = NULL, write = NULL, append = TRUE,
                     check = TRUE, output = TRUE)
@@ -40,8 +40,7 @@ a three-level model (i.e., two cluster variables). See 'Details' in the
 in this function.}
 
 \item{method}{a character string indicating the method used to estimate
-intraclass correlation coefficients, i.e., \code{"aov"} ICC
-estimated using the \code{aov} function, \code{"lme4"} (default)
+intraclass correlation coefficients, i.e., \code{"lme4"} (default)
 ICC estimated using the \code{lmer} function in the \pkg{lme4}
 package, \code{"nlme"} ICC estimated using the \code{lme} function
 in the \pkg{nlme} package.}
@@ -173,11 +172,11 @@ cluster size at Level 3.}
 # Load data set "Demo.twolevel" in the lavaan package
 data("Demo.twolevel", package = "lavaan")
 
-#————————————————————————————————————————————————————————————————————————————
+#—————————————————————————————————————————————————————————————————————————————
 # Two-Level Data
 
-#···················
-# Cluster variable specification
+#——————————————————————————————————————
+## Cluster variable specification
 
 # Example 1a: Specification using the argument '...'
 multilevel.descript(Demo.twolevel, y1, cluster = "cluster")
@@ -188,53 +187,51 @@ multilevel.descript(Demo.twolevel[, c("y1", "cluster")], cluster = "cluster")
 # Example 1c: Alternative specification with cluster variable 'cluster' not in 'data'
 multilevel.descript(Demo.twolevel$y1, cluster = Demo.twolevel$cluster)
 
-#···················
+#——————————————————————————————————————
+## Arguments 'print', 'icc.digits', 'method'
 
-# Example 2: Multilevel descriptive statistics for 'y1'
-multilevel.descript(Demo.twolevel, y1, cluster = "cluster")
-
-# Example 3: Multilevel descriptive statistics, print variance and standard deviation
+# Example 2a: Multilevel descriptive statistics, print variance and standard deviation
 multilevel.descript(Demo.twolevel, y1, cluster = "cluster", print = "all")
 
-# Example 4: Multilevel descriptive statistics, print ICC with 5 digits
+# Example 2b: Multilevel descriptive statistics, print ICC with 5 digits
 multilevel.descript(Demo.twolevel, y1, cluster = "cluster", icc.digits = 5)
 
-# Example 5: Multilevel descriptive statistics
+# Example 2c: Multilevel descriptive statistics
 # use lme() function in the nlme package to estimate ICC
 multilevel.descript(Demo.twolevel, y1, cluster = "cluster", method = "nlme")
 
-# Example 6a: Multilevel descriptive statistics for 'y1', 'y2', 'y3', 'w1', and 'w2'
+# Example 2d: Multilevel descriptive statistics for 'y1', 'y2', 'y3', 'w1', and 'w2'
 multilevel.descript(Demo.twolevel, y1, y2, y3, w1, w2, cluster = "cluster")
 
 # Alternative specification without using the '...' argument
 multilevel.descript(Demo.twolevel[, c("y1", "y2", "y3", "w1", "w2")],
                     cluster = Demo.twolevel$cluster)
 
-#————————————————————————————————————————————————————————————————————————————
+#—————————————————————————————————————————————————————————————————————————————
 # Three-Level Data
 
 # Create arbitrary three-level data
 Demo.threelevel <- data.frame(Demo.twolevel, cluster2 = Demo.twolevel$cluster,
                                              cluster3 = rep(1:10, each = 250))
 
-#···················
-# Cluster variable specification
+#——————————————————————————————————————
+## Cluster Variable Specification
 
-# Example 7a: Specification using the argument '...'
+# Example 3a: Specification using the argument '...'
 multilevel.descript(Demo.threelevel, y1, cluster = c("cluster3", "cluster2"))
 
-# Example 7b: Alternative specification without using the argument '...'
+# Example 3b: Alternative specification without using the argument '...'
 multilevel.descript(Demo.threelevel[, c("y1", "cluster3", "cluster2")],
                     cluster = c("cluster3", "cluster2"))
 
-# Example 7c: Alternative specification with cluster variables 'cluster' not in 'data'
+# Example 3c: Alternative specification with cluster variables 'cluster' not in 'data'
 multilevel.descript(Demo.threelevel$y1,
                     cluster = Demo.threelevel[, c("cluster3", "cluster2")])
 
-# Example 8: Multilevel descriptive statistics for 'y1', 'y2', 'y3', 'w1', and 'w2'
+# Example 3: Multilevel descriptive statistics for 'y1', 'y2', 'y3', 'w1', and 'w2'
 multilevel.descript(Demo.threelevel, y1:y3, w1, w2, cluster = c("cluster3", "cluster2"))
 
-#————————————————————————————————————————————————————————————————————————————
+#—————————————————————————————————————————————————————————————————————————————
 # Write Results
 
 # Example 9a: Write Results into a text file

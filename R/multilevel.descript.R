@@ -30,11 +30,10 @@
 #'                    \code{\link{multilevel.icc}} function for the formula used
 #'                    in this function.
 #' @param method      a character string indicating the method used to estimate
-#'                    intraclass correlation coefficients, i.e., \code{"aov"} ICC
-#'                    estimated using the \code{aov} function, \code{"lme4"} (default)
-#'                    ICC estimated using the \code{lmer} function in the \pkg{lme4}
-#'                    package, \code{"nlme"} ICC estimated using the \code{lme} function
-#'                    in the \pkg{nlme} package.
+#'                    intraclass correlation coefficients, i.e., \code{"lme4"}
+#'                    (default) ICC estimated using the \code{lmer} function in
+#'                    the \pkg{lme4} package, \code{"nlme"} ICC estimated using
+#'                    the \code{lme} function in the \pkg{nlme} package.
 #' @param print       a character string or character vector indicating which
 #'                    results to show on the console, i.e. \code{"all"} for
 #'                    variances and standard deviations, \code{"var"} (default)
@@ -167,11 +166,11 @@
 #' # Load data set "Demo.twolevel" in the lavaan package
 #' data("Demo.twolevel", package = "lavaan")
 #'
-#' #----------------------------------------------------------------------------
+#' #—————————————————————————————————————————————————————————————————————————————
 #' # Two-Level Data
 #'
-#' #..........
-#' # Cluster variable specification
+#' #——————————————————————————————————————
+#' ## Cluster variable specification
 #'
 #' # Example 1a: Specification using the argument '...'
 #' multilevel.descript(Demo.twolevel, y1, cluster = "cluster")
@@ -182,53 +181,51 @@
 #' # Example 1c: Alternative specification with cluster variable 'cluster' not in 'data'
 #' multilevel.descript(Demo.twolevel$y1, cluster = Demo.twolevel$cluster)
 #'
-#' #---------------------------
+#' #——————————————————————————————————————
+#' ## Arguments 'print', 'icc.digits', 'method'
 #'
-#' # Example 2: Multilevel descriptive statistics for 'y1'
-#' multilevel.descript(Demo.twolevel, y1, cluster = "cluster")
-#'
-#' # Example 3: Multilevel descriptive statistics, print variance and standard deviation
+#' # Example 2a: Multilevel descriptive statistics, print variance and standard deviation
 #' multilevel.descript(Demo.twolevel, y1, cluster = "cluster", print = "all")
 #'
-#' # Example 4: Multilevel descriptive statistics, print ICC with 5 digits
+#' # Example 2b: Multilevel descriptive statistics, print ICC with 5 digits
 #' multilevel.descript(Demo.twolevel, y1, cluster = "cluster", icc.digits = 5)
 #'
-#' # Example 5: Multilevel descriptive statistics
+#' # Example 2c: Multilevel descriptive statistics
 #' # use lme() function in the nlme package to estimate ICC
 #' multilevel.descript(Demo.twolevel, y1, cluster = "cluster", method = "nlme")
 #'
-#' # Example 6a: Multilevel descriptive statistics for 'y1', 'y2', 'y3', 'w1', and 'w2'
+#' # Example 2d: Multilevel descriptive statistics for 'y1', 'y2', 'y3', 'w1', and 'w2'
 #' multilevel.descript(Demo.twolevel, y1, y2, y3, w1, w2, cluster = "cluster")
 #'
 #' # Alternative specification without using the '...' argument
 #' multilevel.descript(Demo.twolevel[, c("y1", "y2", "y3", "w1", "w2")],
 #'                     cluster = Demo.twolevel$cluster)
 #'
-#' #----------------------------------------------------------------------------
+#' #—————————————————————————————————————————————————————————————————————————————
 #' # Three-Level Data
 #'
 #' # Create arbitrary three-level data
 #' Demo.threelevel <- data.frame(Demo.twolevel, cluster2 = Demo.twolevel$cluster,
 #'                                              cluster3 = rep(1:10, each = 250))
 #'
-#' #..........
-#' # Cluster variable specification
+#' #——————————————————————————————————————
+#' ## Cluster Variable Specification
 #'
-#' # Example 7a: Specification using the argument '...'
+#' # Example 3a: Specification using the argument '...'
 #' multilevel.descript(Demo.threelevel, y1, cluster = c("cluster3", "cluster2"))
 #'
-#' # Example 7b: Alternative specification without using the argument '...'
+#' # Example 3b: Alternative specification without using the argument '...'
 #' multilevel.descript(Demo.threelevel[, c("y1", "cluster3", "cluster2")],
 #'                     cluster = c("cluster3", "cluster2"))
 #'
-#' # Example 7c: Alternative specification with cluster variables 'cluster' not in 'data'
+#' # Example 3c: Alternative specification with cluster variables 'cluster' not in 'data'
 #' multilevel.descript(Demo.threelevel$y1,
 #'                     cluster = Demo.threelevel[, c("cluster3", "cluster2")])
 #'
-#' # Example 8: Multilevel descriptive statistics for 'y1', 'y2', 'y3', 'w1', and 'w2'
+#' # Example 3: Multilevel descriptive statistics for 'y1', 'y2', 'y3', 'w1', and 'w2'
 #' multilevel.descript(Demo.threelevel, y1:y3, w1, w2, cluster = c("cluster3", "cluster2"))
 #'
-#' #----------------------------------------------------------------------------
+#' #—————————————————————————————————————————————————————————————————————————————
 #' # Write Results
 #'
 #' # Example 9a: Write Results into a text file
@@ -240,7 +237,7 @@
 #'                     write = "Multilevel_Descript.xlsx")
 #' }
 multilevel.descript <- function(data, ..., cluster, type = c("1a", "1b"),
-                                method = c("aov", "lme4", "nlme"), print = c("all", "var", "sd"),
+                                method = c("lme4", "nlme"), print = c("all", "var", "sd"),
                                 REML = TRUE, digits = 2, icc.digits = 3, as.na = NULL,
                                 write = NULL, append = TRUE, check = TRUE, output = TRUE) {
 
@@ -258,8 +255,8 @@ multilevel.descript <- function(data, ..., cluster, type = c("1a", "1b"),
   #
   # Data -----------------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data using the argument '...' ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Using the Argument '...' ####
 
   if (isTRUE(!missing(...))) {
 
@@ -269,8 +266,8 @@ multilevel.descript <- function(data, ..., cluster, type = c("1a", "1b"),
     # Extract cluster variable and convert tibble into data frame or vector
     cluster <- data[, cluster] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(y)) == 1L)) { unname(unlist(y)) } else { as.data.frame(y) } } else { y })()
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data without using the argument '...' ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Data Without Using the Argument '...' ####
 
   } else {
 
@@ -288,8 +285,8 @@ multilevel.descript <- function(data, ..., cluster, type = c("1a", "1b"),
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Cluster variables ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Cluster Variables ####
 
   # Two cluster variables
   if (isTRUE(ncol(as.data.frame(cluster)) == 2L)) {
@@ -306,8 +303,8 @@ multilevel.descript <- function(data, ..., cluster, type = c("1a", "1b"),
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Three-level data with ambiguously coded cluster variables ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Three-Level Data with Ambiguously Coded Cluster Variables ####
 
   if (isTRUE(no.clust == "two")) {
 
@@ -319,8 +316,8 @@ multilevel.descript <- function(data, ..., cluster, type = c("1a", "1b"),
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Convert user-missing values into NA ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Convert User-Missing Values into NA ####
 
   if (isTRUE(!is.null(as.na))) { x <- misty::as.na(x, na = as.na, check = check) }
 
@@ -330,7 +327,7 @@ multilevel.descript <- function(data, ..., cluster, type = c("1a", "1b"),
 
   # Check inputs
   .check.input(logical = c("REML", "append", "output"),
-               s.character = list(type = c("1a", "1b"), method = c("aov", "lme4", "nlme")),
+               s.character = list(type = c("1a", "1b"), method = c("lme4", "nlme")),
                m.character = list(print = c("all", "var", "sd")),
                args = c("digits", "icc.digits", "write2"), envir = environment(), input.check = check)
 
@@ -349,22 +346,17 @@ multilevel.descript <- function(data, ..., cluster, type = c("1a", "1b"),
   #
   # Data and Arguments ---------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Argument type ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Argument 'type' ####
 
   if (isTRUE(all(c("1a", "1b") %in% type))) { type <- "1a" }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Argument method ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Argument 'method' ####
 
-  if (isTRUE(all(c("aov", "lme4", "nlme") %in% method))) { method <- "lme4" }
+  if (isTRUE(all(c("lme4", "nlme") %in% method))) { method <- "lme4" }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Two cluster variables ####
-
-  if (isTRUE(ncol(as.data.frame(cluster)) == 2L && method == "aov")) { stop("Please specify \"lme4\" or \"nlme\" for the argument 'method' when specifying two cluster variables.", call. = FALSE) }
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Print ####
 
   if (isTRUE(all(c("all", "var", "sd") %in% print))) { print <- "var" }
@@ -375,15 +367,17 @@ multilevel.descript <- function(data, ..., cluster, type = c("1a", "1b"),
   #
   # Main Function --------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## One variable ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## One Variable ####
 
   if (isTRUE(is.null(dim(x)))) {
 
-    #...................
+    #—————————————————————————————————————— #
     ### Variable ####
 
-    ##### One cluster variable
+    #···················
+    #### One Cluster Variable ####
+
     if (isTRUE(no.clust == "one")) {
 
       # Level 1 Variable
@@ -398,7 +392,9 @@ multilevel.descript <- function(data, ..., cluster, type = c("1a", "1b"),
 
       }
 
-    ##### Two cluster variables
+    #···················
+    #### Two Cluster Variables ####
+
     } else if (isTRUE(no.clust == "two")) {
 
       # Level 1 Variable
@@ -420,20 +416,18 @@ multilevel.descript <- function(data, ..., cluster, type = c("1a", "1b"),
 
     }
 
-    #...................
+    #—————————————————————————————————————— #
     ### Descriptive Statistics ####
 
     #...................
-    #### One cluster variable ####
+    #### One Cluster Variable ####
 
     if (isTRUE(no.clust == "one")) {
 
-      #...................
-      #### Variable with non-zero variance
+      ##### Variable with non-zero variance ####
       if (isTRUE(var(x, na.rm = TRUE) != 0L)) {
 
-        #............
-        ##### Level 1 Variable
+        ###### Level 1 Variable
         switch(vartype, L1 = {
 
           # No. of observations
@@ -442,7 +436,7 @@ multilevel.descript <- function(data, ..., cluster, type = c("1a", "1b"),
           # No. of missing values
           no.miss <- nrow(data.frame(x, cluster)) - no.obs
 
-          ###### Cluster
+          # Cluster
           x.cluster <- na.omit(data.frame(x, cluster = cluster))[, "cluster"]
 
           # No. of clusters
@@ -463,29 +457,8 @@ multilevel.descript <- function(data, ..., cluster, type = c("1a", "1b"),
           # Objects not used in a two-level model
           no.cluster.l3 <- m.cluster.size.l3 <- sd.cluster.size.l3 <- min.cluster.size.l3 <- max.cluster.size.l3 <- NA
 
-          ###### ICC using aov() function
-          if (isTRUE(method == "aov")) {
-
-            # Estimate model
-            mod <- aov(x ~ 1 + Error(as.factor(cluster)))
-
-            # Model summary
-            mod.summary <- summary(mod)
-
-            # Mean
-            mean.x <- mean(tapply(unlist(x), cluster, mean, na.rm = TRUE))
-
-            # Mean Squared Error Between
-            var.u <- unname(unlist(mod.summary[[1L]])["Mean Sq"])
-
-            # Mean Squared Error Within
-            var.r <- unname(unlist(mod.summary[[2L]])["Mean Sq"])
-
-            # Total variance
-            var.total <- var.u + var.r
-
-          ###### Variance components lmer() function
-          } else if (isTRUE(method == "lme4")) {
+          ####### Variance components lmer() function
+          if (isTRUE(method == "lme4")) {
 
             # Estimate model
             mod <- suppressMessages(lme4::lmer(x ~ 1 + (1|cluster), REML = REML, control = lme4::lmerControl(optimizer = "bobyqa")))
@@ -505,7 +478,7 @@ multilevel.descript <- function(data, ..., cluster, type = c("1a", "1b"),
             # Total variance
             var.total <- var.u + var.r
 
-          ###### Variance components lme() function
+          ####### Variance components lme() function
           } else if (isTRUE(method == "nlme")) {
 
             # REML or ML
@@ -554,8 +527,7 @@ multilevel.descript <- function(data, ..., cluster, type = c("1a", "1b"),
           # Objects not used for a Level 1 variable in a two-level model
           icc1.l3 <- icc2.l3 <- var.v <- sd.v <- NA
 
-        #............
-        ##### Level 2 Variable
+        ###### Level 2 Variable
         }, L2 = {
 
           # Data
@@ -590,8 +562,7 @@ multilevel.descript <- function(data, ..., cluster, type = c("1a", "1b"),
 
         })
 
-      #...................
-      #### Variable with zero variance
+      ##### Variable with zero variance ####
       } else {
 
         mean.x <-  deff <- deff.sqrt <- n.effect <- icc1.l3 <- icc2.l3 <- icc1.l2 <- icc2.l2 <- var.v <- sd.v <- var.u <- sd.u <- var.r <- sd.r <- no.cluster.l3 <- m.cluster.size.l3 <- sd.cluster.size.l3 <- min.cluster.size.l3 <- max.cluster.size.l3 <- NA
@@ -599,16 +570,14 @@ multilevel.descript <- function(data, ..., cluster, type = c("1a", "1b"),
       }
 
     #...................
-    #### Two cluster variables ####
+    #### Two Cluster Variables ####
 
     } else if (isTRUE(no.clust == "two")) {
 
-      #...................
-      #### Variable with non-zero variance
+      ##### Variable with non-zero variance ####
       if (isTRUE(var(x, na.rm = TRUE) != 0L)) {
 
-        #............
-        ##### Level 1 Variable
+        ###### Level 1 Variable
         switch(vartype, L1 = {
 
           # No. of observations
@@ -618,9 +587,9 @@ multilevel.descript <- function(data, ..., cluster, type = c("1a", "1b"),
           no.miss <- nrow(data.frame(x, cluster)) - no.obs
 
           #...................
-          #### Level 2
+          ####### Level 2
 
-          ###### Clusters
+          # Clusters
           x.cluster <- na.omit(data.frame(x, cluster = cluster[, 2L]))[, "cluster"]
 
           # No. of clusters
@@ -639,9 +608,9 @@ multilevel.descript <- function(data, ..., cluster, type = c("1a", "1b"),
           max.cluster.size.l2 <- max(table(x.cluster))
 
           #...................
-          #### Level 3
+          ####### Level 3
 
-          ###### Clusters
+          # Clusters
           x.cluster <- data.frame(x, cluster = cluster)
           x.cluster <- x.cluster[which(!is.na(x.cluster[, 1L]) & !is.na(x.cluster[, 2L])), ]
 
@@ -749,8 +718,7 @@ multilevel.descript <- function(data, ..., cluster, type = c("1a", "1b"),
           sd.u <- sqrt(var.u)
           sd.r <- sqrt(var.r)
 
-        #............
-        ##### Level 2 Variable
+        ###### Level 2 Variable
         }, L2 = {
 
           # Data
@@ -764,7 +732,7 @@ multilevel.descript <- function(data, ..., cluster, type = c("1a", "1b"),
           cluster.l2 <- data.l2[which(!duplicated(data.l2[, 3L])), 2L]
 
           #...................
-          #### Level 2
+          ####### Level 2
 
           # No. of clusters
           no.cluster.l2 <- length(na.omit(x.l2))
@@ -782,7 +750,7 @@ multilevel.descript <- function(data, ..., cluster, type = c("1a", "1b"),
           max.cluster.size.l2 <- NA
 
           #...................
-          #### Level 3
+          ####### Level 3
 
           # No. of clusters
           no.cluster.l3 <- length(na.omit(unique(cluster.l2)))
@@ -869,8 +837,7 @@ multilevel.descript <- function(data, ..., cluster, type = c("1a", "1b"),
           # Objects not used for a Level 2 variable in a three-level model
           icc1.l2 <- icc2.l2 <- var.r <- sd.r <- NA
 
-        #............
-        ##### Level 3 Variable
+        ###### Level 3 Variable
         }, L3 = {
 
           # Data
@@ -901,8 +868,7 @@ multilevel.descript <- function(data, ..., cluster, type = c("1a", "1b"),
 
         })
 
-      #...................
-      #### Variable with zero variance
+      ##### Variable with zero variance ####
       } else {
 
         mean.x <-  deff <- deff.sqrt <- n.effect <- icc1.l3 <- icc2.l3 <- icc1.l2 <- icc2.l2 <- var.v <- sd.v <- var.u <- sd.u <- var.r <- sd.r <- no.cluster.l3 <- m.cluster.size.l3 <- sd.cluster.size.l3 <- min.cluster.size.l3 <- max.cluster.size.l3 <- NA
@@ -911,8 +877,9 @@ multilevel.descript <- function(data, ..., cluster, type = c("1a", "1b"),
 
     }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## More than one variable ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## More Than One Variable ####
+
   } else {
 
     object <- apply(x, 2L, function(y) misty::multilevel.descript(y, cluster = cluster, method = method,
@@ -932,7 +899,7 @@ multilevel.descript <- function(data, ..., cluster, type = c("1a", "1b"),
 
   #_____________________________________________________________________________
   #
-  # Return object --------------------------------------------------------------
+  # Return Object --------------------------------------------------------------
 
   object <- list(call = match.call(),
                  type = "multilevel.descript",

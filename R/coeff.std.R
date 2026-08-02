@@ -19,10 +19,9 @@
 #'                 are continuous and binary, the default setting is
 #'                 \code{print = c("stdy", "stdyx")}.
 #' @param digits   an integer value indicating the number of decimal places to
-#'                 be used for displaying
-#'                 results.
-#' @param p.digits an integer value indicating the number of decimal places to be
-#'                 used for displaying the \emph{p}-value.
+#'                 be used for displaying results.
+#' @param p.digits an integer value indicating the number of decimal places to
+#'                 be used for displaying the \emph{p}-value.
 #' @param write    a character string naming a file for writing the output into
 #'                 either a text file with file extension \code{".txt"} (e.g.,
 #'                 \code{"Output.txt"}) or Excel file with file extension
@@ -186,7 +185,7 @@
 #' @export
 #'
 #' @examples
-#' #----------------------------------------------------------------------------
+#' #————————————————————————————————————————————————————————————————————————————
 #' # Linear Model
 #'
 #' # Example 1a: Continuous predictors
@@ -216,7 +215,7 @@
 #' mod.lm6 <- lm(mpg ~ cyl + I(cyl^2), data = mtcars)
 #' coeff.std(mod.lm6)
 #'
-#' #----------------------------------------------------------------------------
+#' #————————————————————————————————————————————————————————————————————————————
 #' # Multilevel and Linear Mixed-Effects Model
 #'
 #' # Load lme4 and nlme package
@@ -239,22 +238,22 @@
 #' mod1b <- lme(y1 ~ x2.c + w1.c, random = ~ 1 + x2.c | cluster, data = Demo.twolevel, method = "ML")
 #' mod2b <- lme(y1 ~ x2.c + w1.c + x2.c:w1.c, random = ~ 1 + x2.c | cluster, data = Demo.twolevel, method = "ML")
 #'
-#' # Example 2: Continuous predictors
+#' # Example 2a: Continuous predictors
 #' coeff.std(mod1a)
 #' coeff.std(mod1b)
 #'
-#' # Example 2: Continuous predictors with cross-level interaction
+#' # Example 2b: Continuous predictors with cross-level interaction
 #' coeff.std(mod2a)
 #' coeff.std(mod2b)
 #'
-#' #----------------------------------------------------------------------------
+#' #————————————————————————————————————————————————————————————————————————————
 #' # Example 3: Write Results into a text or Excel file
 #'
 #' # Example 3a: Text file
-#' coeff.std(mod.lm1, write = "Std_Coef.txt", output = FALSE, check = FALSE)
+#' coeff.std(mod.lm1, write = "Std_Coef.txt", output = FALSE)
 #'
 #' # Example 3b: Excel file
-#' coeff.std(mod.lm1, write = "Std_Coef.xlsx", output = FALSE, check = FALSE)
+#' coeff.std(mod.lm1, write = "Std_Coef.xlsx", output = FALSE)
 coeff.std <- function(model, print = c("all", "stdx", "stdy", "stdyx"),
                       digits = 2, p.digits = 3, write = NULL, append = TRUE,
                       check = TRUE, output = TRUE) {
@@ -291,12 +290,12 @@ coeff.std <- function(model, print = c("all", "stdx", "stdy", "stdyx"),
   #
   # Main Function --------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Linear Model, lm() function ####
 
   if (isTRUE(class(model) == "lm")) {
 
-    #...................
+    #—————————————————————————————————————— #
     ### Predictor and Criterion Info ####
 
     # Data
@@ -363,7 +362,7 @@ coeff.std <- function(model, print = c("all", "stdx", "stdy", "stdyx"),
 
       }))())
 
-    #...................
+    #—————————————————————————————————————— #
     ### Binary Predictor ####
     #
     # 0 = non-binary, 1 = binary predictor including ordered factors with polynomial contrasts
@@ -384,7 +383,7 @@ coeff.std <- function(model, print = c("all", "stdx", "stdy", "stdyx"),
 
     })
 
-    #...................
+    #—————————————————————————————————————— #
     ### Predictor standard deviations ####
 
     sd.pred <- sapply(names(coeff), function(y) {
@@ -410,17 +409,17 @@ coeff.std <- function(model, print = c("all", "stdx", "stdy", "stdyx"),
 
     })
 
-    #...................
+    #—————————————————————————————————————— #
     ### Criterion Standard Deviation ####
 
     sd.crit <- sapply(model.data[, crit.var, drop = FALSE], sd, na.rm = TRUE)
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Linear Mixed-Effects Model, lmer() or lme() function from the lme4 or nlme package ####
 
   } else if (isTRUE(class(model) %in% c("lmerMod", "lmerModLmerTest", "lme"))) {
 
-    #...................
+    #—————————————————————————————————————— #
     ### Predictor and criterion info ####
 
     #### lmer() function from the lme4 package ####
@@ -522,7 +521,7 @@ coeff.std <- function(model, print = c("all", "stdx", "stdy", "stdyx"),
 
        }))())
 
-    #...................
+    #—————————————————————————————————————— #
     ### Level of Predictor Variables ####
     #
     # 1 = Level-1, 2 = Level-2, 12 = Cross-Level predictor
@@ -530,19 +529,19 @@ coeff.std <- function(model, print = c("all", "stdx", "stdy", "stdyx"),
     # No interaction terms
     if (isTRUE(length(pred.var.int) == 0L)) {
 
-      pred.level <- sapply(pred.var, function(y) { if (all(round(tapply(as.numeric(model.data[, y]), model.data[, group.var], var, na.rm = TRUE), digits = 7L) == 0L)) { 2L } else { 1L } })
+      pred.level <- sapply(pred.var, function(y) { if (all(round(tapply(as.numeric(model.data[, y]), model.data[, group.var], var, na.rm = TRUE), digits = 7L) == 0L, na.rm = TRUE)) { 2L } else { 1L } })
 
     # Interaction terms
     } else {
 
-      pred.level <- sapply(setdiff(pred.var, pred.var.int), function(y) { if (all(round(tapply(model.data[, y], model.data[, group.var], var, na.rm = TRUE), digits = 7L) == 0L)) { 2L } else { 1L } })
+      pred.level <- sapply(setdiff(pred.var, pred.var.int), function(y) { if (all(round(tapply(model.data[, y], model.data[, group.var], var, na.rm = TRUE), digits = 7L) == 0L, na.rm = TRUE)) { 2L } else { 1L } })
 
       # Add interaction term
-      pred.level <- unlist(lapply(sapply(pred.var.int, function(y) strsplit(y, ":")), function(z) { if (isTRUE(all(pred.level[z] == 1L))) { 1L } else if (all(pred.level[z] == 2L)) { 2L } else { 12L }})) |> (\(w) c(pred.level, w)[names(coeff)])()
+      pred.level <- unlist(lapply(sapply(pred.var.int, function(y) strsplit(y, ":")), function(z) { if (isTRUE(all(pred.level[z] == 1L, na.rm = TRUE))) { 1L } else if (all(pred.level[z] == 2L, na.rm = TRUE)) { 2L } else { 12L }})) |> (\(w) c(pred.level, w)[names(coeff)])()
 
     }
 
-    #...................
+    #—————————————————————————————————————— #
     ### Binary Predictor ####
     #
     # 0 = non-binary, 1 = binary predictor including ordered factors with polynomial contrasts
@@ -559,7 +558,7 @@ coeff.std <- function(model, print = c("all", "stdx", "stdy", "stdyx"),
         # Level-1 predictor
         if (isTRUE(pred.level[y] == 1L)) {
 
-          if (isTRUE(all(tapply(model.data[, y], model.data[, group.var], misty::uniq.n) <= 2L))) { return(1L) } else { return(0L) }
+          if (isTRUE(all(tapply(model.data[, y], model.data[, group.var], misty::uniq.n) <= 2L, na.rm = TRUE))) { return(1L) } else { return(0L) }
 
         # Level-2 predictor
         } else {
@@ -573,9 +572,9 @@ coeff.std <- function(model, print = c("all", "stdx", "stdy", "stdyx"),
     })
 
     # Add interaction term
-    if (isTRUE(length(pred.var.int) != 0L)) { pred.binary <- c(pred.binary, unlist(lapply(sapply(pred.var.int, function(y) strsplit(y, ":")), function(z) if (all(pred.binary[z] == 1L)) { return(1L) } else { return(0L) }))) |> (\(w) c(pred.binary, w)[names(coeff)])() }
+    if (isTRUE(length(pred.var.int) != 0L)) { pred.binary <- c(pred.binary, unlist(lapply(sapply(pred.var.int, function(y) strsplit(y, ":")), function(z) if (all(pred.binary[z] == 1L, na.rm = TRUE)) { return(1L) } else { return(0L) }))) |> (\(w) c(pred.binary, w)[names(coeff)])() }
 
-    #...................
+    #—————————————————————————————————————— #
     ### Predictor standard deviations ####
 
     sd.pred <- sapply(names(coeff), function(y) {
@@ -591,7 +590,7 @@ coeff.std <- function(model, print = c("all", "stdx", "stdy", "stdyx"),
                        if (isTRUE(pred.level[w] == 1L)) {
 
                          # Binary predictor
-                         if (isTRUE(all(tapply(model.data[, w], model.data[, group.var], misty::uniq.n) <= 2))) {
+                         if (isTRUE(all(tapply(model.data[, w], model.data[, group.var], misty::uniq.n) <= 2, na.rm = TRUE))) {
 
                            return(1L)
 
@@ -599,7 +598,7 @@ coeff.std <- function(model, print = c("all", "stdx", "stdy", "stdyx"),
                          } else {
 
                            # No Level-2 variance
-                           if (isTRUE(all(round(misty::cluster.scores(model.data[, w], cluster = model.data[, group.var], expand = FALSE), digits = 7L) == 0L))) {
+                           if (isTRUE(all(round(misty::cluster.scores(model.data[, w], cluster = model.data[, group.var], expand = FALSE), digits = 7L) == 0L, na.rm = TRUE))) {
 
                              return(summary(lm(model.data[, w] ~ 1))$sigma)
 
@@ -637,7 +636,7 @@ coeff.std <- function(model, print = c("all", "stdx", "stdy", "stdyx"),
           (\(z) if (isTRUE(pred.level[z] == 1L)) {
 
             # No Level-2 variance
-            if (isTRUE(all(round(misty::cluster.scores(model.data[, z], cluster = model.data[, group.var], expand = FALSE), digits = 7) == 0L))) {
+            if (isTRUE(all(round(misty::cluster.scores(model.data[, z], cluster = model.data[, group.var], expand = FALSE), digits = 7) == 0L, na.rm = TRUE))) {
 
               return(summary(lm(model.data[, z] ~ 1))$sigma)
 
@@ -667,7 +666,7 @@ coeff.std <- function(model, print = c("all", "stdx", "stdy", "stdyx"),
           if (isTRUE(pred.level[y] == 1L)) {
 
             # No Level-2 variance
-            if (isTRUE(all(round(misty::cluster.scores(model.data[, y], cluster = model.data[, group.var], expand = FALSE), digits = 7L) == 0L))) {
+            if (isTRUE(all(round(misty::cluster.scores(model.data[, y], cluster = model.data[, group.var], expand = FALSE), digits = 7L) == 0L, na.rm = TRUE))) {
 
               return(summary(lm(model.data[, y] ~ 1))$sigma)
 
@@ -698,7 +697,7 @@ coeff.std <- function(model, print = c("all", "stdx", "stdy", "stdyx"),
 
     })
 
-    #...................
+    #—————————————————————————————————————— #
     ### Criterion Standard Deviation ####
 
     # SD at Level 1 and Level 2
@@ -709,7 +708,7 @@ coeff.std <- function(model, print = c("all", "stdx", "stdy", "stdyx"),
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Print Argument ####
 
   #### Default settings, print = c("all", "stdx", "stdy", "stdyx") ####
@@ -739,7 +738,7 @@ coeff.std <- function(model, print = c("all", "stdx", "stdy", "stdyx"),
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Coefficient Table ####
 
   ### Linear Model, lm() function ####

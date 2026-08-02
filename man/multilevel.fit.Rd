@@ -8,14 +8,15 @@ multilevel.fit(model, print = c("all", "summary", "fit"), digits = 3, p.digits =
                write = NULL, append = TRUE, check = TRUE, output = TRUE)
 }
 \arguments{
-\item{model}{a fitted model of class \code{"lavaan"} from the \pkg{lavaan}
+\item{model}{a fitted multilevel model of class \code{"lavaan"} from the \pkg{lavaan}
 package.}
 
 \item{print}{a character string or character vector indicating which results
 to show on the console, i.e. \code{"all"} for all results,
 \code{"summary"} for a summary of the specification of the
 estimation method and missing data handling in lavaan and
-\code{"fit"} for model fit.}
+\code{"fit"} for model fit. By default, the function only prints
+simultaneous and level-specific multilevel model fit information.}
 
 \item{digits}{an integer value indicating the number of decimal places
 to be used for displaying results. Note that loglikelihood,
@@ -46,23 +47,8 @@ Returns an object of class \code{misty.object}, which is a list with following
 entries:
 \item{\code{call}}{function call}
 \item{\code{type}}{type of analysis}
-\item{\code{model}}{a fitted model of class \code{"lavaan"}}
 \item{\code{args}}{specification of function arguments}
-\item{\code{model}}{specified models, i.e., \code{mod.l1} for the model at the
-                    Within level, \code{mod.l1.syntax} for the lavaan syntax
-                    for the model at the Between level, \code{mod.l2} for the
-                    model at the Within level, \code{mod.l2.syntax} for the
-                    lavaan syntax for the model at the Between level,
-                    \code{mod.l12} for the model at the Within and Between
-                    level, \code{mod.l12.syntax} for the lavaan syntax for
-                    the model at the Within and Between level, \code{l1.mod.base}
-                    for the baseline model at the Within level saturated at
-                    the Between level, \code{l1.mod.hypo} for the hypothesized
-                    model at the Within level saturated at the Between level,
-                    \code{l2.mod.base} for the baseline model at the Between
-                    level saturated at the Within level, \code{l2.mod.hypo}
-                    for the hypothesized model at the Between level saturated
-                    at the Within level}
+\item{\code{model.fit}}{a fitted model of class \code{"lavaan"}}
 \item{\code{result}}{list with result tables, i.e., \code{summary} for the
                      summary of the specification of the estimation method
                      and missing data handling in lavaan and \code{fit} for
@@ -77,7 +63,7 @@ equal factor loadings across levels in line with the metric cross-level
 measurement invariance assumption.
 }
 \note{
-The function uses the functions \code{cfa}, \code{fitmeasures}, \code{lavInspect},
+The function uses the functions \code{fitmeasures}, \code{lavInspect},
 \code{lavTech}, and \code{parTable} provided in the R package \pkg{lavaan} by
 Yves Rosseel (2012).
 }
@@ -87,6 +73,12 @@ Yves Rosseel (2012).
 # Load data set "Demo.twolevel" in the lavaan package
 data("Demo.twolevel", package = "lavaan")
 
+#————————————————————————————————————————————————————————————————————————————
+# Model Specification and Model Estimation
+
+# Load lavaan package
+library(lavaan)
+
 # Model specification
 model <- 'level: 1
               fw =~ y1 + y2 + y3
@@ -95,27 +87,28 @@ model <- 'level: 1
               fb =~ y1 + y2 + y3
               fb ~ w1 + w2'
 
+# Model estimation with estimator = "ML"
+fit1 <- sem(model = model, data = Demo.twolevel, cluster = "cluster", estimator = "ML")
+
+# Model estimation with estimator = "MLR"
+fit2 <- sem(model = model, data = Demo.twolevel, cluster = "cluster", estimator = "MLR")
+
 #————————————————————————————————————————————————————————————————————————————
+# Simultaneous and Level-Specific Multilevel Model Fit Information
 
-# Example 1: Model estimation with estimator = "ML"
-fit1 <- lavaan::sem(model = model, data = Demo.twolevel, cluster = "cluster",
-                    estimator = "ML")
+# Example 1a: Standard fit indices
+multilevel.fit(fit1)
 
-# Simultaneous and level-specific multilevel model fit information
-ls.fit1 <- multilevel.fit(fit1)
+# Example 1b: Standard, scaled, and robust fit indices
+multilevel.fit(fit2)
 
-# Write results into a text file
+#————————————————————————————————————————————————————————————————————————————
+# Write Results
+
+# Example 2a: Write results into a text file
 multilevel.fit(fit1, write = "LS-Fit1.txt")
 
-# Write results into an Excel file
-write.result(ls.fit1, "LS-Fit1.xlsx")
-
-# Example 2: Model estimation with estimator = "MLR"
-fit2 <- lavaan::sem(model = model, data = Demo.twolevel, cluster = "cluster",
-                    estimator = "MLR")
-
-# Simultaneous and level-specific multilevel model fit information
-# Write results into an Excel file
+# Example 2b: Write results into an Excel file
 multilevel.fit(fit2, write = "LS-Fit2.xlsx")
 }
 }

@@ -565,7 +565,7 @@ plot.misty.object <- function(x, plot = x$args$plot, bar = x$args$bar,
 
     ci.table <- misty::ci.mean(x$data, y, group = "group", adjust = adjust, conf.level = conf.level, output = FALSE)$result
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— # #
     ### Create ggplot ####
 
     # Subtitle
@@ -578,22 +578,22 @@ plot.misty.object <- function(x, plot = x$args$plot, bar = x$args$bar,
       ggplot2::labs(title = title, subtitle = subtitle) +
       ggplot2::theme(plot.subtitle = ggplot2::element_text(hjust = 0.5), plot.title = ggplot2::element_text(hjust = 0.5))
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— # #
     ### Bars ####
 
     if (isTRUE(bar)) { p <- p + suppressWarnings(ggplot2::geom_bar(data = ci.table, ggplot2::aes(group, m), stat = "summary", fun = "mean")) }
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— # #
     ### Confidence Intervals ####
 
     if (isTRUE(ci)) { p <- p + suppressWarnings(ggplot2::geom_errorbar(data = ci.table, ggplot2::aes(group, m, ymin = low, ymax = upp), width = errorbar.width)) }
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— # #
     ### Points ####
 
     if (isTRUE(point)) { p <- p + suppressWarnings(ggplot2::geom_point(data = ci.table, ggplot2::aes(group, m), stat = "identity", size = point.size)) }
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— # #
     ### Jittered Points ####
 
     if (isTRUE(jitter)) { p <- p + suppressWarnings(ggplot2::geom_jitter(alpha = jitter.alpha, width = jitter.width, height = jitter.height, size = jitter.size)) }
@@ -625,7 +625,7 @@ plot.misty.object <- function(x, plot = x$args$plot, bar = x$args$bar,
 
     ci.table <- misty::ci.mean.w(x$data$wide, adjust = adjust, conf.level = conf.level, na.omit = x$args$na.omit, check = FALSE, output = FALSE)$result
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— # #
     ### Create ggplot ####
 
     # Subtitle
@@ -638,27 +638,27 @@ plot.misty.object <- function(x, plot = x$args$plot, bar = x$args$bar,
       ggplot2::labs(title = title, subtitle = subtitle) +
       ggplot2::theme(plot.subtitle = ggplot2::element_text(hjust = 0.5), plot.title = ggplot2::element_text(hjust = 0.5))
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— # #
     ### Confidence Intervals ####
 
     if (isTRUE(ci)) { p <- p + suppressWarnings(ggplot2::geom_errorbar(data = ci.table, ggplot2::aes(variable, m, ymin = low, ymax = upp), width = errorbar.width)) }
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— # #
     ### Points ####
 
     if (isTRUE(point)) { p <- p + suppressWarnings(ggplot2::geom_point(data = ci.table, ggplot2::aes(variable, m), stat = "identity", size = point.size)) }
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— # #
     ### Lines ####
 
     if (isTRUE(line)) { p <- p + suppressWarnings(ggplot2::geom_line(data = ci.table, ggplot2::aes(variable, m), stat = "identity", linewidth = linewidth)) }
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— # #
     ### Add jittered points ####
 
     if (isTRUE(jitter)) { p <- p + suppressWarnings(ggplot2::geom_jitter(alpha = jitter.alpha, width = jitter.width, height = jitter.height, size = jitter.size)) }
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— # #
     ### Individual lines ####
 
     if (isTRUE(jitter && line)) { p <- p + ggplot2::geom_line(data = x$data$long, ggplot2::aes(time, y, group = id), alpha = jitter.alpha, position = ggplot2::position_dodge(jitter.width)) }
@@ -729,7 +729,7 @@ plot.misty.object <- function(x, plot = x$args$plot, bar = x$args$bar,
     if (isTRUE(is.null(facet.scales))) { facet.scales <- "free_y" }
     if (is.null(units)) { units <- "in" }
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— #
     ### 'xlab', 'ylab', 'xlim' and 'ylim' Argument ####
 
     switch(plot, "ci" = {
@@ -745,7 +745,7 @@ plot.misty.object <- function(x, plot = x$args$plot, bar = x$args$bar,
 
     })
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— #
     ### 'plot.margin' Argument ####
 
     if (isTRUE(is.null(plot.margin))) { if (isTRUE(is.null(x$data$group))) { plot.margin <- c(5.5, 5.5, 5.5, 5.5) } else { plot.margin <- c(5.5, 5.5, -2.5, 5.5) } }
@@ -820,7 +820,7 @@ plot.misty.object <- function(x, plot = x$args$plot, bar = x$args$bar,
     if (isTRUE(is.null(facet.scales))) { facet.scales <- "free_y" }
     if (is.null(units)) { units <- "in" }
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— #
     ### 'xlab' and 'ylab' Argument ####
 
     switch(plot, "ci" = {
@@ -834,7 +834,7 @@ plot.misty.object <- function(x, plot = x$args$plot, bar = x$args$bar,
 
     })
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— #
     ### 'plot.margin' Argument ####
 
     if (isTRUE(is.null(plot.margin))) { if (isTRUE(is.null(x$data$group))) { plot.margin <- c(5.5, 5.5, 5.5, 5.5) } else { plot.margin <- c(5.5, 5.5, -2.5, 5.5) } }
@@ -914,7 +914,7 @@ plot.misty.object <- function(x, plot = x$args$plot, bar = x$args$bar,
     if (isTRUE(is.null(facet.scales))) { facet.scales <- "free_y" }
     if (is.null(units)) { units <- "in" }
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— #
     ### 'xlab' and 'ylab' Argument ####
 
     switch(plot, "ci" = {
@@ -928,7 +928,7 @@ plot.misty.object <- function(x, plot = x$args$plot, bar = x$args$bar,
 
     })
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— #
     ### 'plot.margin' Argument ####
 
     if (isTRUE(is.null(plot.margin))) { if (isTRUE(is.null(x$data$group))) { plot.margin <- c(5.5, 5.5, 5.5, 5.5) } else { plot.margin <- c(5.5, 5.5, -2.5, 5.5) } }
@@ -1003,7 +1003,7 @@ plot.misty.object <- function(x, plot = x$args$plot, bar = x$args$bar,
     if (isTRUE(is.null(facet.scales))) { facet.scales <- "free_y" }
     if (is.null(units)) { units <- "in" }
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— #
     ### 'xlab', 'ylab', and 'ylim' Argument ####
 
     switch(plot, "ci" = {
@@ -1019,7 +1019,7 @@ plot.misty.object <- function(x, plot = x$args$plot, bar = x$args$bar,
 
     })
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— #
     ### 'plot.margin' Argument ####
 
     if (isTRUE(is.null(plot.margin))) { if (isTRUE(is.null(x$data$group))) { plot.margin <- c(5.5, 5.5, 5.5, 5.5) } else { plot.margin <- c(5.5, 5.5, -2.5, 5.5) } }
@@ -1094,7 +1094,7 @@ plot.misty.object <- function(x, plot = x$args$plot, bar = x$args$bar,
     if (isTRUE(is.null(facet.scales))) { facet.scales <- "free_y" }
     if (is.null(units)) { units <- "in" }
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— #
     ### 'xlab' and 'ylab' Argument ####
 
     switch(plot, "ci" = {
@@ -1108,7 +1108,7 @@ plot.misty.object <- function(x, plot = x$args$plot, bar = x$args$bar,
 
     })
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— #
     ### 'plot.margin' Argument ####
 
     if (isTRUE(is.null(plot.margin))) { if (isTRUE(is.null(x$data$group))) { plot.margin <- c(5.5, 5.5, 5.5, 5.5) } else { plot.margin <- c(5.5, 5.5, -2.5, 5.5) } }
@@ -1183,7 +1183,7 @@ plot.misty.object <- function(x, plot = x$args$plot, bar = x$args$bar,
     if (isTRUE(is.null(facet.scales))) { facet.scales <- "free_y" }
     if (is.null(units)) { units <- "in" }
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— #
     ### 'xlab' and 'ylab' Argument ####
 
     switch(plot, "ci" = {
@@ -1197,7 +1197,7 @@ plot.misty.object <- function(x, plot = x$args$plot, bar = x$args$bar,
 
     })
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— #
     ### 'plot.margin' Argument ####
 
     if (isTRUE(is.null(plot.margin))) { if (isTRUE(is.null(x$data$group))) { plot.margin <- c(5.5, 5.5, 5.5, 5.5) } else { plot.margin <- c(5.5, 5.5, -2.5, 5.5) } }
@@ -1249,7 +1249,7 @@ plot.misty.object <- function(x, plot = x$args$plot, bar = x$args$bar,
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Data ####
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— #
     ### Level 0 ####
 
     if (isTRUE(length(x$result$fit.sim) == 1L)) {
@@ -1260,7 +1260,7 @@ plot.misty.object <- function(x, plot = x$args$plot, bar = x$args$bar,
                        cutoff = rep( unlist(x$result$fit.cutoff["Level 0", c("cfi", "tli", "rmsea", "srmr")]), each = x$args$nrep))
 
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— #
     ### Level 0, 1, 2, and/or 3 ####
 
     } else {
@@ -1554,7 +1554,7 @@ plot.misty.object <- function(x, plot = x$args$plot, bar = x$args$bar,
     ## One-, Two-, or Paired Sample ####
 
     switch(x$sample,
-           #——————————————————————————————————————
+           #—————————————————————————————————————— #
            ### One-Sample ####
 
            "one" = {
@@ -1598,7 +1598,7 @@ plot.misty.object <- function(x, plot = x$args$plot, bar = x$args$bar,
 
              if (isTRUE(line)) { p <- p + ggplot2::geom_hline(data = data.frame(mu = x$args$mu), ggplot2::aes(yintercept = mu), linetype = linetype, linewidth = linewidth) }
 
-           #——————————————————————————————————————
+           #—————————————————————————————————————— #
            ### Two-Sample ####
 
            }, "two" = {
@@ -1641,7 +1641,7 @@ plot.misty.object <- function(x, plot = x$args$plot, bar = x$args$bar,
 
              if (isTRUE(jitter)) { p <- p + suppressWarnings(ggplot2::geom_jitter(data = plotdat, ggplot2::aes(x = group, y = y), alpha = jitter.alpha, width = jitter.width, height = jitter.height, size = jitter.size)) }
 
-           #——————————————————————————————————————
+           #—————————————————————————————————————— #
            ### Paired-Sample ####
 
            }, "paired" = {
@@ -1726,22 +1726,22 @@ plot.misty.object <- function(x, plot = x$args$plot, bar = x$args$bar,
       ggplot2::labs(title = title, subtitle = subtitle) +
       ggplot2::theme(plot.subtitle = ggplot2::element_text(hjust = 0.5), plot.title = ggplot2::element_text(hjust = 0.5))
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— #
     ### Bars ####
 
     if (isTRUE(bar)) { p <- p + suppressWarnings(ggplot2::geom_bar(data = ci.table, ggplot2::aes(group, m), stat = "summary", fun = "mean")) }
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— #
     ### Confidence Intervals ####
 
     if (isTRUE(ci)) { p <- p + suppressWarnings(ggplot2::geom_errorbar(data = ci.table, ggplot2::aes(group, m, ymin = low, ymax = upp), width = errorbar.width)) }
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— #
     ### Points ####
 
     if (isTRUE(point)) { p <- p + suppressWarnings(ggplot2::geom_point(data = ci.table, ggplot2::aes(group, m), stat = "identity", size = point.size)) }
 
-    #——————————————————————————————————————
+    #—————————————————————————————————————— #
     ### Jittered Points ####
 
     if (isTRUE(jitter)) { p <- p + suppressWarnings(ggplot2::geom_jitter(data = x$data, ggplot2::aes(group, y), alpha = jitter.alpha, width = jitter.width, height = jitter.height, size = jitter.size)) }
@@ -1771,7 +1771,7 @@ plot.misty.object <- function(x, plot = x$args$plot, bar = x$args$bar,
     ## One-, Two-, or Paired Sample ####
 
     switch(x$sample,
-           #——————————————————————————————————————
+           #—————————————————————————————————————— #
            ### One-Sample ####
 
            "one" = {
@@ -1815,7 +1815,7 @@ plot.misty.object <- function(x, plot = x$args$plot, bar = x$args$bar,
 
              if (isTRUE(line)) { p <- p + ggplot2::geom_hline(data = data.frame(mu = x$args$mu), ggplot2::aes(yintercept = mu), linetype = linetype, linewidth = linewidth) }
 
-           #——————————————————————————————————————
+           #—————————————————————————————————————— #
            ### Two-Sample ####
 
            }, "two" = {
@@ -1858,7 +1858,7 @@ plot.misty.object <- function(x, plot = x$args$plot, bar = x$args$bar,
 
              if (isTRUE(jitter)) { p <- p + suppressWarnings(ggplot2::geom_jitter(data = plotdat, ggplot2::aes(x = group, y = y), alpha = jitter.alpha, width = jitter.width, height = jitter.height, size = jitter.size)) }
 
-           #——————————————————————————————————————
+           #—————————————————————————————————————— #
            ### Paired-Sample ####
 
            }, "paired" = {

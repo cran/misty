@@ -46,7 +46,8 @@ while  the function \code{as.na} replaces user-specified values in the argument
 }
 \examples{
 #————————————————————————————————————————————————————————————————————————————
-# Numeric vector
+# Numeric Vector
+
 num <- c(1, 3, 2, 4, 5)
 
 # Example 11: Replace NA with 2
@@ -59,7 +60,8 @@ as.na(num, na = 2)
 as.na(num, na = c(2, 3, 4))
 
 #————————————————————————————————————————————————————————————————————————————
-# Character vector
+# Character Vector
+
 chr <- c("a", "b", "c", "d", "e")
 
 # Example 2a: Replace NA with "b"
@@ -73,6 +75,7 @@ as.na(chr, na = c("b", "c", "d"))
 
 #————————————————————————————————————————————————————————————————————————————
 # Factor
+
 fac <- factor(c("a", "a", "b", "b", "c", "c"))
 
 # Example 3a: Replace NA with "b"
@@ -86,6 +89,7 @@ as.na(fac, na = c("b", "c"))
 
 #————————————————————————————————————————————————————————————————————————————
 # Matrix
+
 mat <- matrix(1:20, ncol = 4)
 
 # Example 4a: Replace NA with 2
@@ -111,6 +115,7 @@ as.na(list(x1 = c(1, 2, 3, 1, 2, 3), x2 = c(2, 1, 3, 2, 1)), na = 1)
 
 #————————————————————————————————————————————————————————————————————————————
 # Data frame
+
 df <- data.frame(x1 = c(1, NA, 3), x2 = c(2, 1, 3), x3 = c(3, NA, 2))
 
 # Example 7a: Replace NA with -99

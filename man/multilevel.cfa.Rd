@@ -9,10 +9,14 @@ multilevel.cfa(data, ..., cluster, model = NULL, rescov = NULL,
                const = c("within", "shared", "config", "shareconf"),
                fix.resid = NULL, ident = c("marker", "var", "effect"),
                ls.fit = FALSE, estimator = c("ML", "MLR"),
+               test = c("none", "standard", "yuan.bentler", "yuan.bentler.mplus"),
+               se = c("none", "standard", "robust.huber.white"),
                optim.method = c("nlminb", "em"), missing = c("listwise", "fiml"),
                print = c("all", "summary", "coverage", "descript", "fit", "est",
-                         "modind", "resid"),
-               mod.minval = 6.63, resid.minval = 0.1, digits = 3, p.digits = 3,
+                         "modind", "resid", "opdyke"),
+               mod.minval = 6.63, resid.minval = 0.1, opdyke.prec = 1,
+               opdyke.minmax = c(0.40, 0.60), color = "b.red",
+               style = c("regular", "bold", "italic"), digits = 3, p.digits = 3,
                as.na = NULL, write = NULL, append = TRUE, check = TRUE, output = TRUE)
 }
 \arguments{
@@ -126,6 +130,26 @@ when using \code{"ML"} (\code{missing = "fiml"}), whereas
 incomplete cases are removed listwise (i.e., \code{missing = "listwise"})
 when using \code{"MLR"}.}
 
+\item{test}{a character string indicating the test statistics, i.e.,
+\code{"none"} for no test statistic, \code{"standard"}
+for a conventional chi-square test, \code{"yuan.bentler"}
+for a Yuan-Bentler scaled test statistic, and \code{"yuan.bentler.mplus"}
+for a test statistic which is asymptotically equivalent to
+the Yuan-Bentler T2-star test statistic. Note that the
+default setting is depending on the argument \code{estimator},
+i.e., \code{test = "standard"} when \code{estimator = "ML"}
+and \code{test = "yuan.bentler.mplus"} when \code{estimator = "MLR"}.}
+
+\item{se}{a character string indicating the standard errors, i.e.,
+\code{"none"} for no standard errors, \code{"standard"}
+for conventional standard error based on inverting the
+expected observed or first.order information matrix, and
+\code{"robust.huber.white"} for the 'MLR' (aka pseudo ML,
+Huber-White) approach. Note that the default setting is
+depending on the argument \code{estimator}, i.e.,
+\code{test = "standard"} when \code{estimator = "ML"}
+and \code{test = "robust.huber.white"} when \code{estimator = "MLR"}.}
+
 \item{optim.method}{a character string indicating the optimizer, i.e., \code{"nlminb"}
 (default) for the unconstrained and bounds-constrained
 quasi-Newton method optimizer and \code{"em"} for the
@@ -146,9 +170,16 @@ of the estimation method and missing data handling in lavaan,
 \code{"coverage"} for the variance-covariance coverage of
 the data, \code{"descript"} for descriptive statistics,
 \code{"fit"} for model fit,  \code{"est"} for parameter
-estimates, and \code{"modind"} for modification indices.
-By default, a summary of the specification, descriptive
-statistics, model fit, and parameter estimates are printed.}
+estimates, \code{"modind"} for modification indices,
+\code{"resid"} for the residual correlation matrix and
+standardized residual means, and \code{"opdyke"} for the
+discrepancy between model-implied and observed correlation
+expressed in terms of the relative percentile of an Opdyke
+distribution (McNeish, 2025). By default, a summary of
+the specification, model fit, and parameter estimates are
+printed. By default, a summary of the specification,
+descriptive statistics, model fit, and parameter estimates
+are printed.}
 
 \item{mod.minval}{numeric value to filter modification indices and only
 show modifications with a modification index value equal
@@ -159,10 +190,53 @@ significance level of \eqn{\alpha = .01}.}
 
 \item{resid.minval}{numeric value indicating the minimum absolute residual
 correlation coefficients and standardized means to
-highlight in boldface. By default, absolute residual
+highlight. By default, absolute residual
 correlation coefficients and standardized means equal
 or higher 0.1 are highlighted. Note that highlighting
-can be disabled by setting the minimum value to 1.}
+can be disabled by setting the minimum value to 1 or
+by setting the argument \code{color} to \code{"default"}.}
+
+\item{opdyke.prec}{a numeric value indicating the precision of the probability
+density function calculations of the Opdyke distribution.
+The default is \code{1} which calculates the PDF
+for polar angles between \eqn{(0, pi)} in \eqn{0.01}
+increments. Specifying \code{10} calculates the PDF
+polar angles between \eqn{(0, pi)} in 0.001 increments,
+which takes considerably longer, especially if there
+are many correlation elements.}
+
+\item{opdyke.minmax}{a numeric vector with two elements indicating the
+minimum and maximum percentile of the Opdyke distribution
+that is considered to be acceptably close to the
+observed correlation represented by the Opdyke distribution
+median. Predicted correlation outside the range will be
+color highlighted in line with to the argument \code{color}.}
+
+\item{color}{a character string indicating the text color for
+highlighting absolute residual correlation coefficients
+and standardized means equal or higher \code{resid.minval}
+and predicted correlations outside the minimum and
+maximum percentile of the Opdyke distribution, i.e.,
+i.e., \code{"default"} for the default text color without
+color coding and various text colors for highlighting
+\code{"red"}, \code{"b.red"} (default), \code{"green"},
+\code{"b.green"}, \code{"blue"}, or \code{"b.blue"},
+see the help page of the \code{\link{chr.color}} function.
+Note that this option is not supported when using R
+Markdown and when writing the output into a text file
+(\code{.txt}).}
+
+\item{style}{a character vector indicating the font style for
+highlighting absolute residual correlation coefficients
+and standardized means equal or higher \code{resid.minval},
+i.e., \code{"regular"} (default) for regular text, \code{"bold"}
+for bold text, and \code{"italic"} for italic text. Note
+that the font style \code{"bold"} and \code{"italic"} can
+be combined, i.e., style = c("bold", "italic") provides a
+bold and italic text. Note that the argument \code{color}
+needs to be specified to change the style of the text, e.g.
+\code{color = "black"} and \code{style = "bold"} to for
+bold text.}
 
 \item{digits}{an integer value indicating the number of decimal places
 to be used for displaying results. Note that loglikelihood,
@@ -209,24 +283,155 @@ entries:
                      and missing data handling in lavaan, \code{coverage} for
                      the variance-covariance coverage of the data, \code{descript}
                      for descriptive statistics, \code{fit} for model fit,
-                     \code{est} for parameter estimates, and \code{modind}
-                     for modification indices.}
+                     \code{est} for a list with parameter estimates for Within
+                     and Between, \code{score} fir a list with modification
+                     indices for parameter constraints for Within and Between,
+                     \code{resid} for a list with residual correlation
+                     matrices and standardized residual means for the Within
+                     and Between level, and \code{opdyke} for the relative
+                     Opdyke distribution percentile matrix for the Within and
+                     Between level.}
 }
 \description{
 This function conducts multilevel confirmatory factor analysis to investigate
-four types of constructs, i.e., within-cluster constructs, shared cluster-level
-constructs, configural cluster constructs, and simultaneous shared and configural
-cluster constructs by calling the \code{cfa} function in the R package \pkg{lavaan}.
-By default, the function specifies and estimates a configural cluster construct
-and provides a table with univariate sample statistics, model fit information,
-and parameter estimates. Additionally, variance-covariance coverage of the data,
-modification indices, and residual correlation matrix can be requested by specifying
-the argument \code{print}.
+different types of constructs with distinct construct meanings at the individual
+and cluster level (Stapleton et al., 2016) by calling the \code{cfa} function
+in the R package \pkg{lavaan}.  By default, the function specifies and estimates
+a measurement model for an individual and configural construct to provides a
+table with univariate sample statistics, model fit information, and parameter
+estimates. Additionally, variance-covariance coverage of the data, modification
+indices, residual correlation matrix, and relative Opdyke distribution percentile
+matrix can be requested by specifying the argument \code{print}.
+}
+\details{
+Stapleton et al. (2016) identified different types of constructs when data are
+collected from individuals nested within clusters characterized by different
+interpretations of construct meaning. At the individual level, the hypothesized
+construct is expected to be relevant to individual item responses, i.e., scores
+on the measure reflect individual variability. At the cluster level, there are
+two types of constructs measured using item responses from individuals:
+\emph{shared construct}, a characteristic of the cluster itself and
+\emph{configural construct}, which reflects a construct at the individual level.
+Marsh et al. (2012) introduced the terms \emph{climate construct} and
+\emph{contextual construct}, while Lüdtke et al., (2011) used the term
+\emph{reflective construct} and \emph{formative construct} to differentiate
+between shared and configural constructs.
+
+Five types of confirmatory factor analysis (CFA) models were proposed for construct
+validation with nested data, depending on whether the construct of interest exists
+solely at the individual level or is also relevant at the cluster level (Stapleton
+et al., 2016).
+
+\describe{
+\item{\strong{Model 1: Individual Constructs, Single-Level Model}}{Model 1 is
+a single-level CFA model whose parameter estimates provide an aggregate of
+the relationship between item responses and the individual construct. A design-based
+estimation approach is used to adjust the standard error estimates, chi-square test
+statistic, and fit indices to account for the dependency of item responses
+among individuals within clusters. Note that this model is estimated using
+the \code{item.cfa} with specifying the \code{cluster} argument.
+
+This model is appropriate when a positive ICC(1) is spurious, resulting from a
+selection process. For example, lactose intolerance is an entirely individual
+characteristic, unaffected by environment. However, item responses measuring
+lactose intolerance might exhibit a non-negligible ICC(1) due to the selection
+of individuals across different clusters, rather than reflecting a true cluster-level
+construct. That is, lactose intolerance is a completely individual measure, not
+able to be influenced by environmental effect.
+
+The model is designed for application across a broad population that may or may
+not be nested within clusters in a single-level model. However, if the measure
+aims to compare the relative positions of individuals within a cluster, a
+within-cluster approach is more suitable.}
+
+\item{\strong{Model 2: Within-Cluster Constructs}}{Model 2 is a two-level CFA model
+specified by \code{const = "within"} that includes a within-cluster construct
+representing an individual's standing within the cluster. The model does not assume
+the existence of a cluster-level construct but allows for cluster-level variability
+in each measure through a saturated variance-covariance model.
+
+The model is designed for application within clusters to compare individuals and
+their relative positions within a specific cluster, while between-cluster constructs
+are not meaningful or not of interest.}
+
+\item{\strong{Model 3: Shared Cluster-Level Constructs}}{Model 3 is a two-level
+CFA model specified by \code{const = "shared"} that includes a between-cluster
+construct representing a cluster-level characteristic that is measured using
+individuals within a cluster as the information source. The model does not assume
+the existence of an individual-level construct but allows for individual-level
+variability in each measure through a saturated variance-covariance model.
+
+For a shared construct, individual item responses should be interchangeable,
+reflecting perfect interrater reliability and complete within-cluster agreement.
+However, within-cluster variation can exist for shared constructs, as these
+constructs stem from the experiences, attitudes, perceptions, values, or cognitions
+of individual cluster members. Given evidence of adequate agreement within clusters,
+the aggregate value of the measure can be assigned to the cluster, i.e., the shared
+perceptions of individuals in a cluster are interpreted as a proxy for the
+cluster-level characteristic (Jak et al., 2023). From this perspective, the greater
+the agreement within the cluster, the more reliably the shared construct is measured,
+although perfect agreement is not required. A reasonable step in the shared construct
+modeling process is to examine the ICC(2) values for each item measuring the shared
+construct. Klein et al. (2000) suggested that ICC(2) values of at least 0.7 indicate
+acceptable reliability of the measured shared construct, values between 0.5 and 0.7
+indicate marginal reliability, and values below 0.5 are considered poor.
+
+Note that the wording of questionnaire items plays a crucial role in the context
+of multilevel measurement. For example, the statement "The instructor presents
+materials in ways that keep it interesting." would likely to elicit responses
+reflecting the instructor's qualities, whereas the statement "I find the class
+meeting interest." would likely to reflect both a characteristic of the cluster
+and the individual's intrinsic interest in the class topic. Accordingly, an argument
+should be made regarding how the item wording targets cluster characteristics.}
+
+\item{\strong{Model 4: Individual and Configural Constructs}}{Model 4 is a two-level
+CFA model specified by \code{const = "config"} that includes a within-cluster
+construct representing an individual's standing within the cluster and a
+between-cluster construct representing an aggregate of the measurements of
+individuals within the cluster. The configural cluster construct model requires
+cross-level measurement invariance of factor loadings to interpret the individual-
+and cluster-level common factors as reflecting the individual- and cluster-level
+components of the same construct (Jak et al., 2023).
+
+For a configural construct, individual item responses are not interchangeable, and
+it is not expected that individuals within a cluster respond similarly to  the items.
+Marsh et al. (2012) noted that if item responses have an ICC(1) of zero, there is
+little justification for continuing to examine the configural cluster-level construct.
+However, Stapleton et al. (2016) argued that it may still be of interest to investigate
+the variability in individual hypothetical latent scores across clusters, i.e.,
+the dispersion of the construct may differ across clusters and represent an important
+cluster characteristic.}
+
+\item{\strong{Model 5: Simultaneous Shared and Configural Constructs}}{Model 5 is
+a two-level CFA model specified by \code{const = "shareconf"} that includes a
+within-cluster construct representing an individual's standing within the cluster
+and two between-cluster constructs: a configural construct representing the
+individual-level construct, and a shared construct modeling additional covariation
+among cluster-average item responses, representing rater effects. The factor loadings
+of the configural construct are constrained to be equal across levels, i.e., metric
+cross-level measurement invariance.
+
+For example, suppose that teachers have provided ratings of their students' motivation
+using multiple items for each child. It is possible that some teachers rate more
+positively compared to others, resulting in two sources of covariation at the
+cluster level: variation due to the fact that students in some classes are truly
+more motivated on average than those in other classes, and variation due to rater
+effects, because some teachers tend to rate their students more positively or more
+negatively on average.
+
+Note that what may appear to be an additional shared construct could instead reflect
+a spurious contextual effect. Specifically, when constraining factor loadings across
+levels results in a relatively poor fit compared to a model with unconstrained
+loadings in a configural model, this suggests that the apparent additional shared
+construct is actually due to measurement noninvariance at the within-cluster level.}
+}
 }
 \note{
 The function uses the functions \code{cfa}, \code{lavInspect}, \code{lavTech},
 \code{modindices}, \code{parameterEstimates}, and \code{standardizedsolution}
-provided in the R package \pkg{lavaan} by Yves Rosseel (2012).
+provided in the R package \pkg{lavaan} by Yves Rosseel (2012). The relative Opdyke
+distribution percentile matrix is based on the functions \code{opdyke} and
+\code{opdyke.percentiles} provided in the R package \pkg{opddyke} by Dan McNeish (2026).
 }
 \examples{
 \dontrun{
@@ -235,11 +440,12 @@ provided in the R package \pkg{lavaan} by Yves Rosseel (2012).
 data("Demo.twolevel", package = "lavaan")
 
 #————————————————————————————————————————————————————————————————————————————
-# Model specification using 'data' for a one-factor model
-# with the same factor structure with one factor at the Within and Between Level
+# Model Specification Using 'data' for a One-Factor Model
+#
+# Same factor structure with one factor at the Within and Between Level
 
-#···················
-# Cluster variable specification
+#——————————————————————————————————————
+## Cluster Variable Specification
 
 # Example 1a: Specification using the argument '...'
 multilevel.cfa(Demo.twolevel, y1:y4, cluster = "cluster")
@@ -250,8 +456,8 @@ multilevel.cfa(Demo.twolevel[, c("y1", "y2", "y3", "y4", "cluster")], cluster = 
 # Example 1c: Alternative specification with cluster variable 'cluster' not in 'data'
 multilevel.cfa(Demo.twolevel[, c("y1", "y2", "y3", "y4")], cluster = Demo.twolevel$cluster)
 
-#···················
-# Type of construct
+#——————————————————————————————————————
+## Type of Construct
 
 # Example 2a: Within-cluster constructs
 multilevel.cfa(Demo.twolevel, y1:y4, cluster = "cluster", const = "within")
@@ -259,14 +465,14 @@ multilevel.cfa(Demo.twolevel, y1:y4, cluster = "cluster", const = "within")
 # Example 2b: Shared cluster-level construct
 multilevel.cfa(Demo.twolevel, y1:y4, cluster = "cluster", const = "shared")
 
-# Example 2c: Configural cluster construct (default)
+# Example 2c: Individual and configural cluster construct (default)
 multilevel.cfa(Demo.twolevel, y1:y4, cluster = "cluster", const = "config")
 
 # Example 2d: Simultaneous shared and configural cluster construct
 multilevel.cfa(Demo.twolevel, y1:y4, cluster = "cluster", const = "shareconf")
 
-#···················
-# Residual covariances at the Within level
+#——————————————————————————————————————
+## Residual Covariances at the Within Level
 
 # Example 3a: Residual covariance between 'y1' and 'y3'
 multilevel.cfa(Demo.twolevel, y1:y4, cluster = "cluster", rescov = c("y1", "y3"))
@@ -275,8 +481,8 @@ multilevel.cfa(Demo.twolevel, y1:y4, cluster = "cluster", rescov = c("y1", "y3")
 multilevel.cfa(Demo.twolevel, y1:y4, cluster = "cluster",
                rescov = list(c("y1", "y3"), c("y2", "y4")))
 
-#···················
-# Residual variances at the Between level fixed at 0
+#——————————————————————————————————————
+## Residual Variances at the Between Level fixed at 0
 
 # Example 4a: All residual variances fixed at 0
 # i.e., strong factorial invariance across clusters
@@ -284,18 +490,101 @@ multilevel.cfa(Demo.twolevel, y1:y4, cluster = "cluster", fix.resid = "all")
 
 # Example 4b: Residual variances of 'y1', 'y2', and 'y4' fixed at 0
 # i.e., partial strong factorial invariance across clusters
-multilevel.cfa(Demo.twolevel, y1:y4, cluster = "cluster", fix.resid = c("y1", "y2", "y4"))
+multilevel.cfa(Demo.twolevel, y1:y4, cluster = "cluster", fix.resid = c("y1", "y2"))
 
-#···················
-# Print all results
+#——————————————————————————————————————
+## Arguments 'print', 'mod.minval', 'resid.minval', and 'opdyke.minmax'
 
-# Example 5: Set minimum value for modification indices to 1
-multilevel.cfa(Demo.twolevel, y1:y4, cluster = "cluster", print = "all",
-               mod.minval = 1)
+# Example 5a: Request all results
+item.cfa(Demo.twolevel, y1:y6, cluster = "cluster", print = "all")
 
-#···················
-# Example 6: lavaan model and summary of the estimated model
+# Example 5b: Request modification indices with value equal or higher than 2
+item.cfa(Demo.twolevel, y1:y6, cluster = "cluster", print = "modind", mod.minval = 2)
 
+# Example 5c: Highlight absolute residual correlation equal or higher than 0.05
+item.cfa(Demo.twolevel, y1:y6, cluster = "cluster", print = "resid", resid.minval = 0.05,
+         color = "b.blue")
+
+# Example 5d: Highlight Opdyke distribution percentiles outside 0.45 and 0.55
+item.cfa(Demo.twolevel, y1:y6, cluster = "cluster", print = "opdyke", opdyke.minmax = c(0.45, 0.55),
+         color = "black", style = "bold")
+
+#————————————————————————————————————————————————————————————————————————————
+# Model Specification using 'model' for One or Multiple-Factor Model
+#
+# Same factor structure at the Within and Between Level
+
+# Example 6a: One-factor model
+multilevel.cfa(Demo.twolevel, cluster = "cluster", model = c("y1", "y2", "y3", "y4"))
+
+# Example 6b: Two-factor model
+multilevel.cfa(Demo.twolevel, cluster = "cluster",
+               model = list(c("y1", "y2", "y3"), c("y4", "y5", "y6")))
+
+# Example 6c: Two-factor model with user-specified labels for the factors
+multilevel.cfa(Demo.twolevel, cluster = "cluster",
+               model = list(factor1 = c("y1", "y2", "y3"), factor2 = c("y4", "y5", "y6")))
+
+#——————————————————————————————————————
+# Type of Construct
+
+# Example 7a: Within-cluster constructs
+multilevel.cfa(Demo.twolevel, cluster = "cluster", const = "within",
+               model = list(c("y1", "y2", "y3"), c("y4", "y5", "y6")))
+
+# Example 7b: Shared cluster-level construct
+multilevel.cfa(Demo.twolevel, cluster = "cluster", const = "shared",
+               model = list(c("y1", "y2", "y3"), c("y4", "y5", "y6")))
+
+# Example 7c: Individual and configural cluster construct (default)
+multilevel.cfa(Demo.twolevel, cluster = "cluster", const = "config",
+               model = list(c("y1", "y2", "y3"), c("y4", "y5", "y6")))
+
+# Example 7d: Simultaneous shared and configural cluster construct
+multilevel.cfa(Demo.twolevel, cluster = "cluster", const = "shareconf",
+               model = list(c("y1", "y2", "y3"), c("y4", "y5", "y6")))
+
+#——————————————————————————————————————
+## Residual Covariances at the Within Level
+
+# Example 8a: Residual covariance between 'y1' and 'y4' at the Within level
+multilevel.cfa(Demo.twolevel, cluster = "cluster",
+               model = list(c("y1", "y2", "y3"), c("y4", "y5", "y6")),
+               rescov = c("y1", "y4"))
+
+# Example 8b: Fix all residual variances at 0
+# i.e., strong factorial invariance across clusters
+multilevel.cfa(Demo.twolevel, cluster = "cluster",
+               model = list(c("y1", "y2", "y3"), c("y4", "y5", "y6")),
+               fix.resid = "all")
+
+#————————————————————————————————————————————————————————————————————————————
+# Model Specification Using 'model.w' and 'model.b' for One or Multiple_Factor Model
+#
+# Different factor structure at the Within and Between Level
+
+# Example 9a: Simultaneous and level-specific fit indices
+multilevel.cfa(Demo.twolevel, cluster = "cluster",
+               model.w = c("y1", "y2", "y3", "y4", "y5", "y6"),
+               model.b = c("y1", "y2", "y3", "y4", "y5", "y6"), ls.fit = TRUE)
+
+# Example 9b: Two-factor model at the Within level and one-factor model at the Between level
+multilevel.cfa(Demo.twolevel, cluster = "cluster",
+               model.w = list(c("y1", "y2", "y3"), c("y4", "y5", "y6")),
+               model.b = c("y1", "y2", "y3", "y4", "y5", "y6"))
+
+# Example 9c: Residual covariance between 'y1' and 'y4' at the Within level
+# Residual covariance between 'y5' and 'y6' at the Between level
+multilevel.cfa(Demo.twolevel, cluster = "cluster",
+               model.w = list(c("y1", "y2", "y3"), c("y4", "y5", "y6")),
+               model.b = c("y1", "y2", "y3", "y4", "y5", "y6"),
+               rescov.w = c("y1", "y4"),
+               rescov.b = c("y5", "y6"))
+
+#————————————————————————————————————————————————————————————————————————————
+# lavaan Model and Summary of the Estimated Model
+
+# Example 10
 mod <- multilevel.cfa(Demo.twolevel, y1:y4, cluster = "cluster", output = FALSE)
 
 # lavaan model syntax
@@ -304,93 +593,51 @@ cat(mod$model)
 # Fitted lavaan object
 lavaan::summary(mod$model.fit, standardized = TRUE, fit.measures = TRUE)
 
-#···················
-# Write results
+#————————————————————————————————————————————————————————————————————————————
+# Write Results
 
-# Example 7a: Assign results into an object and write results into an Excel file
-mod <- multilevel.cfa(Demo.twolevel, y1:y4, cluster = "cluster", print = "all",
+# Example 11a: Write results into a text file
+multilevel.cfa(Demo.twolevel, y1:y4, cluster = "cluster", print = "all",
                       write = "Multilevel_CFA.txt", output = FALSE)
 
-# Example 7b: Assign results into an object and write results into an Excel file
-mod <- multilevel.cfa(Demo.twolevel, y1:y4, cluster = "cluster", print = "all",
-                      output = FALSE)
-
-# Write results into an Excel file
-write.result(mod, "Multilevel_CFA.xlsx")
-
-# Estimate model and write results into an Excel file
+# Example 11b: Write results into an Excel file
 multilevel.cfa(Demo.twolevel, y1:y4, cluster = "cluster", print = "all",
-               write = "Multilevel_CFA.xlsx")
-
-#————————————————————————————————————————————————————————————————————————————
-# Model specification using 'model' for one or multiple factor model
-# with the same factor structure at the Within and Between Level
-
-# Example 8a: One-factor model
-multilevel.cfa(Demo.twolevel, cluster = "cluster", model = c("y1", "y2", "y3", "y4"))
-
-# Example 8b: Two-factor model
-multilevel.cfa(Demo.twolevel, cluster = "cluster",
-               model = list(c("y1", "y2", "y3"), c("y4", "y5", "y6")))
-
-# Example 8c: Two-factor model with user-specified labels for the factors
-multilevel.cfa(Demo.twolevel, cluster = "cluster",
-               model = list(factor1 = c("y1", "y2", "y3"), factor2 = c("y4", "y5", "y6")))
-
-#···················
-# Type of construct
-
-# Example 9a: Within-cluster constructs
-multilevel.cfa(Demo.twolevel, cluster = "cluster", const = "within",
-               model = list(c("y1", "y2", "y3"), c("y4", "y5", "y6")))
-
-# Example 9b: Shared cluster-level construct
-multilevel.cfa(Demo.twolevel, cluster = "cluster", const = "shared",
-               model = list(c("y1", "y2", "y3"), c("y4", "y5", "y6")))
-
-# Example 9c: Configural cluster construct (default)
-multilevel.cfa(Demo.twolevel, cluster = "cluster", const = "config",
-               model = list(c("y1", "y2", "y3"), c("y4", "y5", "y6")))
-
-# Example 9d: Simultaneous shared and configural cluster construct
-multilevel.cfa(Demo.twolevel, cluster = "cluster", const = "shareconf",
-               model = list(c("y1", "y2", "y3"), c("y4", "y5", "y6")))
-
-#···················
-# Residual covariances at the Within level
-
-# Example 10a: Residual covariance between 'y1' and 'y4' at the Within level
-multilevel.cfa(Demo.twolevel, cluster = "cluster",
-               model = list(c("y1", "y2", "y3"), c("y4", "y5", "y6")),
-               rescov = c("y1", "y4"))
-
-# Example 10b: Fix all residual variances at 0
-# i.e., strong factorial invariance across clusters
-multilevel.cfa(Demo.twolevel, cluster = "cluster",
-               model = list(c("y1", "y2", "y3"), c("y4", "y5", "y6")),
-               fix.resid = "all")
-
-#————————————————————————————————————————————————————————————————————————————
-# Model specification using 'model.w' and 'model.b' for one or multiple factor model
-# with different factor structure at the Within and Between Level
-
-# Example 11a: Two-factor model at the Within level and one-factor model at the Between level
-multilevel.cfa(Demo.twolevel, cluster = "cluster",
-               model.w = list(c("y1", "y2", "y3"), c("y4", "y5", "y6")),
-               model.b = c("y1", "y2", "y3", "y4", "y5", "y6"))
-
-# Example 11b: Residual covariance between 'y1' and 'y4' at the Within level
-# Residual covariance between 'y5' and 'y6' at the Between level
-multilevel.cfa(Demo.twolevel, cluster = "cluster",
-               model.w = list(c("y1", "y2", "y3"), c("y4", "y5", "y6")),
-               model.b = c("y1", "y2", "y3", "y4", "y5", "y6"),
-               rescov.w = c("y1", "y4"),
-               rescov.b = c("y5", "y6"))
+               write = "Multilevel_CFA.xlsx", output = FALSE)
 }
 }
 \references{
+Jak, S., Jorgensen, T. D., ten Hove, D., & Nevicka, B. (2023). Modeling cluster-level
+constructs measured by individual responses: Configuring a shared approach.
+\emph{Advances in Methods and Practices in Psychological Science, 6}(3),
+Article 25152459231182319. https://doi.org/10.1177/25152459231182319
+
+Klein, K. J., & Kozlowski, S. W. (2000). Multilevel theory, research, and methods
+in organizations: Foundations, extensions, and new directions. Jossey-Bass.
+
+Lüdtke, O., Marsh, H. W., Robitzsch, A., & Trautwein, U. (2011). A 2x2 taxonomy of
+multilevel latent contextual models: Accuracy-bias trade-offs in full and partial
+error correction models. \emph{Psychological Methods, 16}, 444-467.
+https://doi.org/10.1037/a0024376
+
+Marsh, H. W., Ludtke, O., Nagengast, B., Trautwein, U., Morin, A. J. S., Abduljabbar, A.
+S., & Koller, O. (2012). Classroom climate and contextual effects: Conceptual and
+methodological issues in the evaluation of group-level effects. \emph{Educational Psychologist, 47},
+106-124. https://doi.org/10.1080/00461520.2012.670488
+
+McNeish, D. (2025). Less Heuristic Approximate Local Fit Evaluation in Structural Equation Models.
+\emph{Structural Equation Modeling: A Multidisciplinary Journal, 32}(4), 590-605.
+https://doi.org/10.1080/10705511.2025.2473342
+
+McNeish D (2026). opdyke: Opdyke Percentiles for Approximate Local Fit in
+Structural Equation Models. R package version 1.0.0. Retrieved from
+https://github.com/dmcneish18/opdyke
+
 Rosseel, Y. (2012). lavaan: An R Package for Structural Equation Modeling.
 \emph{Journal of Statistical Software, 48}, 1-36. https://doi.org/10.18637/jss.v048.i02
+
+Stapleton, L. M., Yang, J. S., & Hancock, G. R. (2016). Construct meaning
+in multilevel settings. \emph{Journal of Educational and Behavioral Statistics, 41},
+481-520. http://dx.doi.org/10.3102/1076998616646200
 }
 \seealso{
 \code{\link{item.cfa}}, \code{\link{multilevel.fit}}, \code{\link{multilevel.invar}},
