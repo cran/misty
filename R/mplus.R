@@ -121,7 +121,7 @@
 #'
 #' @examples
 #' \dontrun{
-#' #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#' #————————————————————————————————————————————————————————————————————————————
 #' # Example 1: Write data, specify input, and run input
 #'
 #' # Write Mplus data file
@@ -138,7 +138,7 @@
 #' # Run Mplus input
 #' mplus(input1, file = "ex3_1.inp")
 #'
-#' #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#' #————————————————————————————————————————————————————————————————————————————
 #' # Example 2: Alternative specification using the data argument
 #'
 #' # Read Mplus data file and set variables names
@@ -167,14 +167,14 @@ mplus <- function(x, file = "Mplus_Input.inp", data = NULL, comment = FALSE, rep
 
   #_____________________________________________________________________________
   #
-  # Initial Check --------------------------------------------------------------
+  # Initial Check ——————————————————————————————————————————————————————————————
 
   # Check if input 'x' is missing or NULL or character string
   if (isTRUE(missing(x) ||is.null(x) || !is.character(x) || length(x) != 1L)) { stop("Please specify a character string indicating the Mplus input text for the argument 'x'", call. = FALSE) }
 
   #_____________________________________________________________________________
   #
-  # Arguments ------------------------------------------------------------------
+  # Arguments ——————————————————————————————————————————————————————————————————
 
   # All input options
   input.all <- c("title", "data", "data.imp", "data.wl", "data.lw", "data.tp", "data.miss", "data.surv", "data.coh", "variable", "define", "analysis", "model", "mod.ind", "mod.test", "mod.prior", "montecarlo", "mod.pop", "mod.cov", "mod.miss", "inpoutput", "savedata", "plot", "output", "message")
@@ -184,12 +184,14 @@ mplus <- function(x, file = "Mplus_Input.inp", data = NULL, comment = FALSE, rep
 
   #_____________________________________________________________________________
   #
-  # Input Check ----------------------------------------------------------------
+  # Input Check ————————————————————————————————————————————————————————————————
 
-  # Check inputs
   .check.input(logical = c("comment", "replace.inp", "mplus.run", "variable", "not.input", "not.result", "append", "output"),
                character = list(file = 1L), s.character = list(replace.out = c("always", "never", "modified"), print = c("all", "input", "result")),
                args = "write1", envir = environment(), input.check = check)
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Additional Checks ####
 
   if (isTRUE(check)) {
 
@@ -229,7 +231,7 @@ mplus <- function(x, file = "Mplus_Input.inp", data = NULL, comment = FALSE, rep
 
   #_____________________________________________________________________________
   #
-  # Arguments ------------------------------------------------------------------
+  # Arguments ——————————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## file Argument ####
@@ -247,7 +249,7 @@ mplus <- function(x, file = "Mplus_Input.inp", data = NULL, comment = FALSE, rep
 
   #_____________________________________________________________________________
   #
-  # Main Function --------------------------------------------------------------
+  # Main Function ——————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Remove Comments ####
@@ -609,9 +611,7 @@ mplus <- function(x, file = "Mplus_Input.inp", data = NULL, comment = FALSE, rep
     # Existing output file
     if (isTRUE(file.exists(file.out))) {
 
-      result.object <- misty::mplus.print(tolower(file.out), print = print, input = input, result = result,
-                                          exclude = exclude, variable = variable, not.input = not.input,
-                                          not.result = not.result, write = write, append = append, check = FALSE)
+      result.object <- misty::mplus.print(tolower(file.out), print = print, input = input, result = result, exclude = exclude, variable = variable, not.input = not.input, not.result = not.result, write = write, append = append, check = FALSE)
 
     # Output file does not exist
     } else {
@@ -624,22 +624,18 @@ mplus <- function(x, file = "Mplus_Input.inp", data = NULL, comment = FALSE, rep
 
   } else {
 
-    result.object <- NULL
+    result.object <- misty::mplus.print(tolower(file.out), print = print, input = input, result = result, exclude = exclude, variable = variable, not.input = not.input, not.result = not.result, write = write, append = append, check = FALSE, output = FALSE)
 
   }
 
   #_____________________________________________________________________________
   #
-  # Return Object --------------------------------------------------------------
+  # Return Object ——————————————————————————————————————————————————————————————
 
   object <- list(call = match.call(),
                  type = "mplus",
                  x = x,
-                 args = list(file = file, replace.inp = replace.inp, data = data, mplus.run = mplus.run,
-                             show.out = show.out, replace.out = replace.out,
-                             Mplus = Mplus, print = print, input = input, result = result, exclude = exclude,
-                             variable = variable, not.input = not.input, not.result = not.result,
-                             write = write, append = append, check = check, output = output),
+                 args = list(file = file, replace.inp = replace.inp, data = data, mplus.run = mplus.run, show.out = show.out, replace.out = replace.out, Mplus = Mplus, print = print, input = input, result = result, exclude = exclude, variable = variable, not.input = not.input, not.result = not.result, write = write, append = append, check = check, output = output),
                  input = input.object, write = write.object,
                  result = result.object$result)
 
@@ -647,7 +643,7 @@ mplus <- function(x, file = "Mplus_Input.inp", data = NULL, comment = FALSE, rep
 
   #_____________________________________________________________________________
   #
-  # Output ---------------------------------------------------------------------
+  # Output —————————————————————————————————————————————————————————————————————
 
   return(invisible(object))
 

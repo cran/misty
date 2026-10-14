@@ -131,7 +131,7 @@
 #'
 #' @examples
 #' \dontrun{
-#' #—————————————————————————————————————— #——————————————————————————————————————
+#' #————————————————————————————————————————————————————————————————————————————
 #' # Example 1: Write data, specify input without VARIABLES section, and run input
 #'
 #' # Write Data File
@@ -154,7 +154,7 @@
 #' # Run Blimp input
 #' blimp(input1, file = "Ex4.3.imp")
 #'
-#' #—————————————————————————————————————— #——————————————————————————————————————
+#' #————————————————————————————————————————————————————————————————————————————
 #' # Example 2: Write data, specify input with VARIABLES section, and run input
 #'
 #' # Write Data File
@@ -177,7 +177,7 @@
 #' # Run Blimp input
 #' blimp(input2, file = "Ex4.3.imp")
 #'
-#' #—————————————————————————————————————— #——————————————————————————————————————
+#' #————————————————————————————————————————————————————————————————————————————
 #' # Example 3: Alternative specification using the data argument
 #'
 #' # Write Data File
@@ -218,14 +218,14 @@ blimp <- function(x, file = "Blimp_Input.imp", data = NULL, comment = FALSE,
 
   #_____________________________________________________________________________
   #
-  # Result Argument ------------------------------------------------------------
+  # Result Argument ————————————————————————————————————————————————————————————
 
   # All result options
   result.all <- c("algo.options", "simdat.summary", "simdat.summary", "order.simdat", "burnin.psr", "mh.accept", "data.info", "var.imp", "model.info", "param.label", "warn.mess", "error.mess", "fit", "cor.resid", "out.model", "pred.model", "gen.param", "order.impdat")
 
   #_____________________________________________________________________________
   #
-  # Input Check ----------------------------------------------------------------
+  # Input Check ————————————————————————————————————————————————————————————————
 
   # Check inputs
   .check.input(logical = c("comment", "replace.inp", "blimp.run", "posterior", "clear", "not.result", "append", "output"),
@@ -273,7 +273,7 @@ blimp <- function(x, file = "Blimp_Input.imp", data = NULL, comment = FALSE,
 
   #_____________________________________________________________________________
   #
-  # Arguments ------------------------------------------------------------------
+  # Arguments ——————————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## file Argument ####
@@ -341,7 +341,7 @@ blimp <- function(x, file = "Blimp_Input.imp", data = NULL, comment = FALSE,
 
   #_____________________________________________________________________________
   #
-  # Main Function --------------------------------------------------------------
+  # Main Function ——————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Remove Comments ####
@@ -727,7 +727,7 @@ blimp <- function(x, file = "Blimp_Input.imp", data = NULL, comment = FALSE,
 
   #_____________________________________________________________________________
   #
-  # Return Object --------------------------------------------------------------
+  # Return Object ——————————————————————————————————————————————————————————————
 
   object <- list(call = match.call(),
                  type = "blimp",
@@ -744,7 +744,7 @@ blimp <- function(x, file = "Blimp_Input.imp", data = NULL, comment = FALSE,
 
   #_____________________________________________________________________________
   #
-  # Output ---------------------------------------------------------------------
+  # Output —————————————————————————————————————————————————————————————————————
 
   return(invisible(object))
 

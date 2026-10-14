@@ -9,11 +9,11 @@
 #'                \code{+}, \code{-}, \code{~}, \code{:}, \code{::},
 #'                and \code{!} can also be used to select variables, see 'Details'
 #'                in the \code{\link{df.subset}} function.
-#' @param print   a character string or character vector indicating which
-#'                percentage(s) to be printed on the console, i.e., no percentages
-#'                (\code{"no"}) (default), all percentages (\code{"all"}),
-#'                row-wise percentages (\code{"row"}), column-wise percentages
-#'                (\code{"col"}), and total percentages (\code{"total"}).
+#' @param print   a character vector indicating which percentage(s) to be printed
+#'                on the console, i.e., no percentages (\code{"no"}) (default),
+#'                all percentages (\code{"all"}), row-wise percentages (\code{"row"}),
+#'                column-wise percentages (\code{"col"}), and total percentages
+#'                (\code{"total"}).
 #' @param freq    logical: if \code{TRUE} (default), absolute frequencies will be included
 #'                in the cross tabulation.
 #' @param split   logical: if \code{TRUE}, output table is split in absolute
@@ -118,32 +118,16 @@ crosstab <- function(data, ..., print = c("no", "all", "row", "col", "total"),
 
   #_____________________________________________________________________________
   #
-  # Initial Check --------------------------------------------------------------
+  # Initial Check ——————————————————————————————————————————————————————————————
 
   # Check if input 'data' is missing or NULL
   if (isTRUE(missing(data) || is.null(data))) { stop("Please specify a data frame for the argument 'data'", call. = FALSE) }
 
   #_____________________________________________________________________________
   #
-  # Data -----------------------------------------------------------------------
+  # Data ———————————————————————————————————————————————————————————————————————
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Using the Argument '...' ####
-
-  if (isTRUE(!missing(...))) {
-
-    # Extract data and convert tibble into data frame or vector
-    x <- data[, .var.names(data = data, ...)] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { as.data.frame(y) } else { y })()
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Without Using the Argument '...' ####
-
-  } else {
-
-    # Data frame
-    x <- data |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { as.data.frame(y) } else { y })()
-
-  }
+  .data(data, ...) |> (\(p) { assign("x", p$data, envir = parent.frame()) })()
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Convert user-missing values into NA ####
@@ -152,7 +136,7 @@ crosstab <- function(data, ..., print = c("no", "all", "row", "col", "total"),
 
   #_____________________________________________________________________________
   #
-  # Input Check ----------------------------------------------------------------
+  # Input Check ————————————————————————————————————————————————————————————————
 
   # Check inputs
   .check.input(logical = c("freq", "na.omit", "append", "output"),
@@ -175,7 +159,7 @@ crosstab <- function(data, ..., print = c("no", "all", "row", "col", "total"),
 
   #_____________________________________________________________________________
   #
-  # Arguments ------------------------------------------------------------------
+  # Arguments ——————————————————————————————————————————————————————————————————
 
   # Argument print
   if (isTRUE(all(c("no", "all", "row", "col", "total") %in% print))) { print <- "no" }
@@ -187,7 +171,7 @@ crosstab <- function(data, ..., print = c("no", "all", "row", "col", "total"),
 
   #_____________________________________________________________________________
   #
-  # Main Function --------------------------------------------------------------
+  # Main Function ——————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Two Variables ####
@@ -210,7 +194,8 @@ crosstab <- function(data, ..., print = c("no", "all", "row", "col", "total"),
     }
 
     #—————————————————————————————————————— #
-    ### Absolute frequencies without margins ####
+    ### Absolute Frequencies Without Mrgins ####
+
     freq.a <- table(x)
 
     #—————————————————————————————————————— #
@@ -670,7 +655,7 @@ crosstab <- function(data, ..., print = c("no", "all", "row", "col", "total"),
 
   #_____________________________________________________________________________
   #
-  # Return Object --------------------------------------------------------------
+  # Return Object ——————————————————————————————————————————————————————————————
 
   object <- list(call = match.call(),
                  type = "crosstab",
@@ -684,13 +669,13 @@ crosstab <- function(data, ..., print = c("no", "all", "row", "col", "total"),
 
   #_____________________________________________________________________________
   #
-  # Write Results --------------------------------------------------------------
+  # Write Results ——————————————————————————————————————————————————————————————
 
   if (isTRUE(!is.null(write))) { .write.result(object = object, write = write, append = append) }
 
   #_____________________________________________________________________________
   #
-  # Output ---------------------------------------------------------------------
+  # Output —————————————————————————————————————————————————————————————————————
 
   if (isTRUE(output)) { print(object, check = FALSE) }
 

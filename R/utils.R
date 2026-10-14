@@ -5,9 +5,8 @@
 # Collection of internal functions used within functions of the misty package
 
 #_______________________________________________________________________________
-#_______________________________________________________________________________
 #
-# Check Argument Specification -------------------------------------------------
+# Check Argument Specification —————————————————————————————————————————————————
 
 .check.input <- function(logical = NULL, numeric = NULL, character = NULL, m.character = NULL, s.character = NULL, args = NULL, package = NULL, envir = environment(), input.check = check) {
 
@@ -110,9 +109,9 @@
 
       invisible(sapply(names(s.character), function(y) eval(parse(text = y), envir = envir) |> (\(p) if (isTRUE(!is.character(p) || any(!p %in% s.character[[y]]) || (!all(p %in% s.character[[y]]) && length(p) != 1L))) {
 
-            stop(paste0("Please specify ", paste0(paste(unlist(s.character[y]) |> (\(p) paste(sapply(p[-length(p)], dQuote, q = FALSE)))(), collapse = ", "), ", or ", dQuote(rev(unlist(s.character[y]))[1L], q = FALSE)), " for the argument ", sQuote(y, q = FALSE), "."), call. = FALSE)
+        stop(paste0("Please specify ", paste0(paste(unlist(s.character[y]) |> (\(p) paste(sapply(p[-length(p)], dQuote, q = FALSE)))(), collapse = ", "), ", or ", dQuote(rev(unlist(s.character[y]))[1L], q = FALSE)), " for the argument ", sQuote(y, q = FALSE), "."), call. = FALSE)
 
-          })()))
+      })()))
 
     }
 
@@ -122,88 +121,128 @@
     if (isTRUE(!is.null(args))) {
 
       # Check input 'alpha'
-      if (isTRUE("alpha" %in% args)) { eval(parse(text = "alpha"), envir = envir) |> (\(y) if (isTRUE(!is.null(y) && (!is.numeric(y) || length(y) != 1L || y >= 1L || y <= 0L))) { stop("Please specify a numeric value between 0 and 1 for the argument 'alpha'", call. = FALSE) })() }
+      if (isTRUE("alpha" %in% args)) { eval(parse(text = "alpha"), envir = envir) |> (\(p) if (isTRUE(!is.null(p) && (!is.numeric(p) || length(p) != 1L || p >= 1L || p <= 0L))) { stop("Please specify a numeric value between 0 and 1 for the argument 'alpha'", call. = FALSE) })() }
 
       # Check input 'alternative'
-      if (isTRUE("alternative" %in% args)) { eval(parse(text = "alternative"), envir = envir) |> (\(y) if (isTRUE(!is.null(y) && !all(c("two.sided", "less", "greater") %in% y) && (length(y) != 1L || !is.character(y) || any(!y %in% c("two.sided", "less", "greater"))))) { stop("Character string specified in the argument 'alternative' does not match with \"two.sided\", \"less\", or \"greater\".", call. = FALSE) })() }
+      if (isTRUE("alternative" %in% args)) { eval(parse(text = "alternative"), envir = envir) |> (\(p) if (isTRUE(!is.null(p) && !all(c("two.sided", "less", "greater") %in% p) && (length(p) != 1L || !is.character(p) || any(!p %in% c("two.sided", "less", "greater"))))) { stop("Character string specified in the argument 'alternative' does not match with \"two.sided\", \"less\", or \"greater\".", call. = FALSE) })() }
 
       # Check input 'conf.level'
-      if (isTRUE("conf.level" %in% args)) { eval(parse(text = "conf.level"), envir = envir) |> (\(y) if (isTRUE(!is.null(y) && (!is.numeric(y) || length(y) != 1L || y >= 1L || y <= 0L))) { stop("Please specify a numeric value between 0 and 1 for the argument 'start'", call. = FALSE) })() }
+      if (isTRUE("conf.level" %in% args)) { eval(parse(text = "conf.level"), envir = envir) |> (\(p) if (isTRUE(!is.null(p) && (!is.numeric(p) || length(p) != 1L || p >= 1L || p <= 0L))) { stop("Please specify a numeric value between 0 and 1 for the argument 'conf.level'", call. = FALSE) })() }
 
       # Check input 'color'
-      if (isTRUE("color" %in% args)) { eval(parse(text = "color"), envir = envir) |> (\(y) if (isTRUE(!is.null(y) && all(y != "default") && (!is.character(y) || any(!y %in% c("black", "red", "green", "yellow", "blue", "violet", "cyan", "white", "gray1", "gray2", "gray3", "b.red", "b.green", "b.yellow", "b.blue", "b.violet", "b.cyan", "b.white"))))) { stop("Character string specified in the argument 'color' does not match with \"black\", \"red\", \"green\", \"yellow\", \"blue\", \"violet\", \"cyan\", \"white\", \"gray1\" etc.", call. = FALSE) })() }
+      if (isTRUE("color" %in% args)) { eval(parse(text = "color"), envir = envir) |> (\(p) if (isTRUE(!is.null(p) && all(p != "default") && (!is.character(p) || any(!p %in% c("black", "red", "green", "yellow", "blue", "violet", "cyan", "white", "gray1", "gray2", "gray3", "b.red", "b.green", "b.yellow", "b.blue", "b.violet", "b.cyan", "b.white"))))) { stop("Character string specified in the argument 'color' does not match with \"black\", \"red\", \"green\", \"yellow\", \"blue\", \"violet\", \"cyan\", \"white\", \"gray1\" etc.", call. = FALSE) })() }
 
       # Check input 'digits'
-      if (isTRUE("digits" %in% args)) { eval(parse(text = "digits"), envir = envir) |> (\(y) if (isTRUE(!is.null(y) && (!is.numeric(y) || length(y) != 1L || y %% 1L != 0L || y < 0L))) { stop("Please specify a positive integer number for the argument 'digits'.", call. = FALSE) })() }
+      if (isTRUE("digits" %in% args)) { eval(parse(text = "digits"), envir = envir) |> (\(p) if (isTRUE(!is.null(p) && (!is.numeric(p) || length(p) != 1L || p %% 1L != 0L || p < 0L))) { stop("Please specify a positive integer number for the argument 'digits'.", call. = FALSE) })() }
 
       # Check input 'end'
-      if (isTRUE("end" %in% args)) { eval(parse(text = "end"), envir = envir) |> (\(y) if (isTRUE(!is.null(y) && (!is.numeric(y) || length(y) != 1L || y >= 1L || y <= 0L))) { stop("Please specifiy a numeric value between 0 and 1 for the argument 'end '.", call. = FALSE) })() }
+      if (isTRUE("end" %in% args)) { eval(parse(text = "end"), envir = envir) |> (\(p) if (isTRUE(!is.null(p) && (!is.numeric(p) || length(p) != 1L || p >= 1L || p <= 0L))) { stop("Please specifiy a numeric value between 0 and 1 for the argument 'end '.", call. = FALSE) })() }
 
       # Check input 'ess.digits'
-      if (isTRUE("ess.digits" %in% args)) { eval(parse(text = "ess.digits"), envir = envir) |> (\(y) if (isTRUE(!is.null(y) && (!is.numeric(y) || length(y) != 1L || y %% 1L != 0L || y < 0L))) { stop("Please specify a positive integer number for the argument 'ess.digits'.", call. = FALSE) })() }
+      if (isTRUE("ess.digits" %in% args)) { eval(parse(text = "ess.digits"), envir = envir) |> (\(p) if (isTRUE(!is.null(p) && (!is.numeric(p) || length(p) != 1L || p %% 1L != 0L || p < 0L))) { stop("Please specify a positive integer number for the argument 'ess.digits'.", call. = FALSE) })() }
 
       # Check input 'facet.scales'
-      if (isTRUE("facet.scales" %in% args)) { eval(parse(text = "facet.scales"), envir = envir) |> (\(y) if (isTRUE(!is.null(y) && !all(c("fixed", "free_x", "free_y", "free") %in% y) && (length(y) != 1L || !is.character(y) || any(!y %in% c("fixed", "free_x", "free_y", "free"))))) { stop("Character string specified in the argument 'facet.scales' does not match with \"fixed\", \"free_x\", \"free_y\", or \"free\".", call. = FALSE) })() }
+      if (isTRUE("facet.scales" %in% args)) { eval(parse(text = "facet.scales"), envir = envir) |> (\(p) if (isTRUE(!is.null(p) && !all(c("fixed", "free_x", "free_y", "free") %in% p) && (length(p) != 1L || !is.character(p) || any(!p %in% c("fixed", "free_x", "free_y", "free"))))) { stop("Character string specified in the argument 'facet.scales' does not match with \"fixed\", \"free_x\", \"free_y\", or \"free\".", call. = FALSE) })() }
+
+      # Check input 'filename'
+      if (isTRUE("filename" %in% args)) { eval(parse(text = "filename"), envir = envir) |> (\(p) if (isTRUE(!is.null(p) && (!grepl(".", p) || !rev(unlist(strsplit(p, split = "\\.")))[1L] %in% c("eps", "ps", "tex", "pdf", "jpeg", "tiff", "png", "bmp", "svg", "wmf")))) { stop("Please specify a character string including the file extension (e.g., \".pdf\" or \".png\") for the argument 'filename'.", call. = FALSE) })() }
 
       # Check input 'fit.digits'
-      if (isTRUE("fit.digits" %in% args)) { eval(parse(text = "fit.digits"), envir = envir) |> (\(y) if (isTRUE(!is.null(y) && (!is.numeric(y) || length(y) != 1L || y %% 1L != 0L || y < 0L))) { stop("Please specify a positive integer number for the argument 'fit.digits'.", call. = FALSE) })() }
+      if (isTRUE("fit.digits" %in% args)) { eval(parse(text = "fit.digits"), envir = envir) |> (\(p) if (isTRUE(!is.null(p) && (!is.numeric(p) || length(p) != 1L || p %% 1L != 0L || p < 0L))) { stop("Please specify a positive integer number for the argument 'fit.digits'.", call. = FALSE) })() }
 
       # Check input 'hist.alpha'
-      if (isTRUE("hist.alpha" %in% args)) { eval(parse(text = "hist.alpha"), envir = envir) |> (\(y) if (isTRUE(!is.null(y) && (!is.numeric(y) || length(y) != 1L || y >= 1L || y <= 0L))) { stop("Please specifiy a numeric value between 0 and 1 for the argument 'hist.alpha '.", call. = FALSE) })() }
+      if (isTRUE("hist.alpha" %in% args)) { eval(parse(text = "hist.alpha"), envir = envir) |> (\(p) if (isTRUE(!is.null(p) && (!is.numeric(p) || length(p) != 1L || p >= 1L || p <= 0L))) { stop("Please specifiy a numeric value between 0 and 1 for the argument 'hist.alpha '.", call. = FALSE) })() }
 
       # Check input 'ic.digits'
-      if (isTRUE("ic.digits" %in% args)) { eval(parse(text = "ic.digits"), envir = envir) |> (\(y) if (isTRUE(!is.null(y) && (!is.numeric(y) || length(y) != 1L || y %% 1L != 0L || y < 0L))) { stop("Please specify a positive integer number for the argument 'ic.digits'.", call. = FALSE) })() }
+      if (isTRUE("ic.digits" %in% args)) { eval(parse(text = "ic.digits"), envir = envir) |> (\(p) if (isTRUE(!is.null(p) && (!is.numeric(p) || length(p) != 1L || p %% 1L != 0L || p < 0L))) { stop("Please specify a positive integer number for the argument 'ic.digits'.", call. = FALSE) })() }
 
       # Check input 'icc.digits'
-      if (isTRUE("icc.digits" %in% args)) { eval(parse(text = "icc.digits"), envir = envir) |> (\(y) if (isTRUE(!is.null(y) && (!is.numeric(y) || length(y) != 1L || y %% 1L != 0L || y < 0L))) { stop("Please specify a positive integer number for the argument 'icc.digits'.", call. = FALSE) })() }
+      if (isTRUE("icc.digits" %in% args)) { eval(parse(text = "icc.digits"), envir = envir) |> (\(p) if (isTRUE(!is.null(p) && (!is.numeric(p) || length(p) != 1L || p %% 1L != 0L || p < 0L))) { stop("Please specify a positive integer number for the argument 'icc.digits'.", call. = FALSE) })() }
 
       # Check input 'legend.position'
-      if (isTRUE("legend.position" %in% args)) { eval(parse(text = "legend.position"), envir = envir) |> (\(y) if (isTRUE(!is.null(y) && !all(c("right", "top", "left", "bottom", "none") %in% y) && (length(y) != 1L || !is.character(y) || any(!y %in% c("right", "top", "left", "bottom", "none"))))) { stop("Character string specified in the argument 'legend.position' does not match with \"right\", \"top\", \"left\", \"bottom\", or \"none\".", call. = FALSE) })() }
+      if (isTRUE("legend.position" %in% args)) { eval(parse(text = "legend.position"), envir = envir) |> (\(p) if (isTRUE(!is.null(p) && !all(c("right", "top", "left", "bottom", "none") %in% p) && (length(p) != 1L || !is.character(p) || any(!p %in% c("right", "top", "left", "bottom", "none"))))) { stop("Character string specified in the argument 'legend.position' does not match with \"right\", \"top\", \"left\", \"bottom\", or \"none\".", call. = FALSE) })() }
 
       # Check input 'linetype'
-      if (isTRUE("linetype" %in% args)) { eval(parse(text = "linetype"), envir = envir) |> (\(y) if (isTRUE(!is.null(y) && (!is.character(y) || any(!y %in% c("twodash", "solid", "longdash", "dotted", "dotdash", "dashed"))))) { stop("Character string specified in the argument 'linetype' does not match with \"twodash\", \"solid\", \"longdash\", \"dotted\", \"ldotdash\", or \"dashed\".", call. = FALSE) })() }
+      if (isTRUE("linetype" %in% args)) { eval(parse(text = "linetype"), envir = envir) |> (\(p) if (isTRUE(!is.null(p) && (!is.character(p) || any(!p %in% c("twodash", "solid", "longdash", "dotted", "dotdash", "dashed"))))) { stop("Character string specified in the argument 'linetype' does not match with \"twodash\", \"solid\", \"longdash\", \"dotted\", \"ldotdash\", or \"dashed\".", call. = FALSE) })() }
 
       # Check input 'mcse.digits'
-      if (isTRUE("mcse.digits" %in% args)) { eval(parse(text = "mcse.digits"), envir = envir) |> (\(y) if (isTRUE(!is.null(y) && (!is.numeric(y) || length(y) != 1L || y %% 1L != 0L || y < 0L))) { stop("Please specify a positive integer number for the argument 'mcse.digits'.", call. = FALSE) })() }
+      if (isTRUE("mcse.digits" %in% args)) { eval(parse(text = "mcse.digits"), envir = envir) |> (\(p) if (isTRUE(!is.null(p) && (!is.numeric(p) || length(p) != 1L || p %% 1L != 0L || p < 0L))) { stop("Please specify a positive integer number for the argument 'mcse.digits'.", call. = FALSE) })() }
 
       # Check input 'n'
-      if (isTRUE("n" %in% args)) { eval(parse(text = "n"), envir = envir) |> (\(y) if (isTRUE(!is.null(y) && (!is.numeric(y) || length(y) != 1L || y %% 1L != 0L || y < 0L))) { stop("Please specify a positive integer number for the argument 'n'.", call. = FALSE) })() }
+      if (isTRUE("n" %in% args)) { eval(parse(text = "n"), envir = envir) |> (\(p) if (isTRUE(!is.null(p) && (!is.numeric(p) || length(p) != 1L || p %% 1L != 0L || p < 0L))) { stop("Please specify a positive integer number for the argument 'n'.", call. = FALSE) })() }
+
+      # Check input 'nprem'
+      if (isTRUE("nprem" %in% args)) { eval(parse(text = "nprem"), envir = envir) |> (\(p) if (isTRUE(!is.null(p) && (!is.numeric(p) || length(p) != 1L || p %% 1L != 0L || p < 0L))) { stop("Please specify a positive integer number for the argument 'nprem'.", call. = FALSE) })() }
 
       # Check input 'nrep'
-      if (isTRUE("nrep" %in% args)) { eval(parse(text = "nrep"), envir = envir) |> (\(y) if (isTRUE(!is.null(y) && (!is.numeric(y) || length(y) != 1L || y %% 1L != 0L || y < 0L))) { stop("Please specify a positive integer number for the argument 'nrep'.", call. = FALSE) })() }
+      if (isTRUE("nrep" %in% args)) { eval(parse(text = "nrep"), envir = envir) |> (\(p) if (isTRUE(!is.null(p) && (!is.numeric(p) || length(p) != 1L || p %% 1L != 0L || p < 0L))) { stop("Please specify a positive integer number for the argument 'nrep'.", call. = FALSE) })() }
 
       # Check input 'p.adj'
-      if (isTRUE("p.adj" %in% args)) { eval(parse(text = "p.adj"), envir = envir) |> (\(y) if (isTRUE(!is.null(y) && !all(c("none", "holm", "bonferroni", "hochberg", "hommel", "BH", "BY", "fdr") %in% y) && (length(y) != 1L || !is.character(y) || any(!y %in% c("none", "holm", "bonferroni", "hochberg", "hommel", "BH", "BY", "fdr"))))) { stop("Character string specified in the argument 'p.adj' does not match with \"none\", \"bonferroni\", \"holm\", \"hochberg\", \"hommel\", \"BH\", \"BY\", or \"fdr\".", call. = FALSE) })() }
+      if (isTRUE("p.adj" %in% args)) { eval(parse(text = "p.adj"), envir = envir) |> (\(p) if (isTRUE(!is.null(p) && !all(c("none", "holm", "bonferroni", "hochberg", "hommel", "BH", "BY", "fdr") %in% p) && (length(p) != 1L || !is.character(p) || any(!p %in% c("none", "holm", "bonferroni", "hochberg", "hommel", "BH", "BY", "fdr"))))) { stop("Character string specified in the argument 'p.adj' does not match with \"none\", \"bonferroni\", \"holm\", \"hochberg\", \"hommel\", \"BH\", \"BY\", or \"fdr\".", call. = FALSE) })() }
 
       # Check input 'p.digits'
-      if (isTRUE("p.digits" %in% args)) { eval(parse(text = "p.digits"), envir = envir) |> (\(y) if (isTRUE(!is.null(y) && (!is.numeric(y) || length(y) != 1L || y %% 1L != 0L || y < 0L))) { stop("Please specify a positive integer number for the argument 'p.digits'.", call. = FALSE) })() }
+      if (isTRUE("p.digits" %in% args)) { eval(parse(text = "p.digits"), envir = envir) |> (\(p) if (isTRUE(!is.null(p) && (!is.numeric(p) || length(p) != 1L || p %% 1L != 0L || p < 0L))) { stop("Please specify a positive integer number for the argument 'p.digits'.", call. = FALSE) })() }
 
       # Check input 'res.cor'
-      if (isTRUE("res.cor" %in% args)) { eval(parse(text = "res.cor"), envir = envir) |> (\(y) if (isTRUE(!is.null(y) && (!is.numeric(y) || length(y) != 1L || y >= 1L || y <= 0L))) { stop("Please specify a numeric value between 0 and 1 for the argument 'res.cor'", call. = FALSE) })() }
+      if (isTRUE("res.cor" %in% args)) { eval(parse(text = "res.cor"), envir = envir) |> (\(p) if (isTRUE(!is.null(p) && (!is.numeric(p) || length(p) != 1L || p >= 1L || p <= 0L))) { stop("Please specify a numeric value between 0 and 1 for the argument 'res.cor'", call. = FALSE) })() }
 
       # Check input 'r.digits'
-      if (isTRUE("r.digits" %in% args)) { eval(parse(text = "r.digits"), envir = envir) |> (\(y) if (isTRUE(!is.null(y) && (!is.numeric(y) || length(y) != 1L || y %% 1L != 0L || y < 0L))) { stop("Please specify a positive integer number for the argument 'r.digits'.", call. = FALSE) })() }
+      if (isTRUE("r.digits" %in% args)) { eval(parse(text = "r.digits"), envir = envir) |> (\(p) if (isTRUE(!is.null(p) && (!is.numeric(p) || length(p) != 1L || p %% 1L != 0L || p < 0L))) { stop("Please specify a positive integer number for the argument 'r.digits'.", call. = FALSE) })() }
 
       # Check input 'seed'
-      if (isTRUE("seed" %in% args)) { eval(parse(text = "seed"), envir = envir) |> (\(y) if (isTRUE(!is.null(y) && (length(y) != 1L || (mode(y) != "numeric")))) { stop("Please specify a numeric value for the argument 'seed'.", call. = FALSE) })() }
+      if (isTRUE("seed" %in% args)) { eval(parse(text = "seed"), envir = envir) |> (\(p) if (isTRUE(!is.null(p) && (length(p) != 1L || (mode(p) != "numeric")))) { stop("Please specify a numeric value for the argument 'seed'.", call. = FALSE) })() }
 
       # Check input 'sensitiv'
-      if (isTRUE("sensitiv" %in% args)) { eval(parse(text = "sensitiv"), envir = envir) |> (\(y) if (isTRUE(!is.null(y) && (!is.numeric(y) || length(y) != 1L || y >= 1L || y <= 0L))) { stop("Please specify a numeric value between 0 and 1 for the argument 'sensitiv'", call. = FALSE) })() }
+      if (isTRUE("sensitiv" %in% args)) { eval(parse(text = "sensitiv"), envir = envir) |> (\(p) if (isTRUE(!is.null(p) && (!is.numeric(p) || length(p) != 1L || p >= 1L || p <= 0L))) { stop("Please specify a numeric value between 0 and 1 for the argument 'sensitiv'", call. = FALSE) })() }
 
       # Check input 'specific'
-      if (isTRUE("specific" %in% args)) { eval(parse(text = "specific"), envir = envir) |> (\(y) if (isTRUE(!is.null(y) && (!is.numeric(y) || length(y) != 1L || y >= 1L || y <= 0L))) { stop("Please specify a numeric value between 0 and 1 for the argument 'specific'", call. = FALSE) })() }
+      if (isTRUE("specific" %in% args)) { eval(parse(text = "specific"), envir = envir) |> (\(p) if (isTRUE(!is.null(p) && (!is.numeric(p) || length(p) != 1L || p >= 1L || p <= 0L))) { stop("Please specify a numeric value between 0 and 1 for the argument 'specific'", call. = FALSE) })() }
 
       # Check input 'start'
-      if (isTRUE("start" %in% args)) { eval(parse(text = "start"), envir = envir) |> (\(y) if (isTRUE(!is.null(y) && (!is.numeric(y) || length(y) != 1L || y >= 1L || y <= 0L))) { stop("Please specifiy a numeric value between 0 and 1 for the argument 'start '.", call. = FALSE) })() }
+      if (isTRUE("start" %in% args)) { eval(parse(text = "start"), envir = envir) |> (\(p) if (isTRUE(!is.null(p) && (!is.numeric(p) || length(p) != 1L || p >= 1L || p <= 0L))) { stop("Please specifiy a numeric value between 0 and 1 for the argument 'start '.", call. = FALSE) })() }
 
       # Check input 'units'
-      if (isTRUE("units" %in% args)) { eval(parse(text = "units"), envir = envir) |> (\(y) if (isTRUE(!is.null(y) && !all(c("in", "cm", "mm", "px") %in% y) && (length(y) != 1L || !is.character(y) || any(!y %in% c("in", "cm", "mm", "px"))))) { stop("Character string specified in the argument 'units' does not match with \"in\", \"cm\", \"mm\", or \"px\".", call. = FALSE) })() }
+      if (isTRUE("units" %in% args)) { eval(parse(text = "units"), envir = envir) |> (\(p) if (isTRUE(!is.null(p) && !all(c("in", "cm", "mm", "px") %in% p) && (length(p) != 1L || !is.character(p) || any(!y %in% c("in", "cm", "mm", "px"))))) { stop("Character string specified in the argument 'units' does not match with \"in\", \"cm\", \"mm\", or \"px\".", call. = FALSE) })() }
 
       # Check input 'write' text file
-      if (isTRUE("write1" %in% args)) { eval(parse(text = "write"), envir = envir) |> (\(y) if (isTRUE(!is.null(y) && (!is.null(y) && (!is.character(y) || !grepl(".txt", y))))) { stop("Please specify a character string with file extenstion '.txt' for the argument 'write'.") })() }
+      if (isTRUE("write1" %in% args)) { eval(parse(text = "write"), envir = envir) |> (\(p) if (isTRUE(!is.null(p) && (!is.null(p) && (!is.character(p) || !grepl(".txt", p))))) { stop("Please specify a character string with file extenstion '.txt' for the argument 'write'.") })() }
 
       # Check input 'write' text and Excel file
-      if (isTRUE("write2" %in% args)) { eval(parse(text = "write"), envir = envir) |> (\(y) if (isTRUE(!is.null(y) && (!is.null(y) && (!is.character(y) || all(!misty::chr.grepl(c(".txt", ".xlsx"), y)))))) { stop("Please specify a character string with file extenstion '.txt' or '.xlsx' for the argument 'write'.") })() }
+      if (isTRUE("write2" %in% args)) { eval(parse(text = "write"), envir = envir) |> (\(p) if (isTRUE(!is.null(p) && (!is.null(p) && (!is.character(p) || all(!misty::chr.grepl(c(".txt", ".xlsx"), p)))))) { stop("Please specify a character string with file extenstion '.txt' or '.xlsx' for the argument 'write'.") })() }
+
+      # Check input 'x' and 'y'
+      if (isTRUE("xy" %in% args)) {
+
+        #—————————————————————————————————————— #
+        ### One Sample ####
+
+        if (isTRUE(is.null(eval(parse(text = "y"), envir = envir)))) {
+
+          if (isTRUE(length(na.omit(unlist(eval(parse(text = "x"), envir = envir)))) <= 1L)) { stop("Not enough observations to conduct the analysis.") }
+
+          if (isTRUE(var(unlist(eval(parse(text = "x"), envir = envir)), na.rm = TRUE) == 0L)) { stop("Data specified in 'x' are essentially constant.") }
+
+        #—————————————————————————————————————— #
+        ### Two Samples ####
+
+        } else if (isTRUE(!is.null(eval(parse(text = "y"), envir = envir)) && !eval(parse(text = "paired"), envir = envir))) {
+
+          if (isTRUE(length(na.omit(eval(parse(text = "x"), envir = envir))) <= 1L)) { stop("Not enough 'x' observations to conduct the analysis.") }
+
+          if (isTRUE(length(na.omit(eval(parse(text = "y"), envir = envir))) <= 1L)) { stop("Not enough 'y' observations to conduct the analysis.") }
+
+          if (isTRUE(var(eval(parse(text = "x"), envir = envir), na.rm = TRUE) == 0L && var(eval(parse(text = "y"), envir = envir), na.rm = TRUE) == 0L)) { stop("Data specified in 'x' and 'y' are essentially constant.") }
+
+        #—————————————————————————————————————— #
+        ### Paired Samples ####
+
+        } else if (isTRUE(!is.null(eval(parse(text = "y"), envir = envir)) && eval(parse(text = "paired"), envir = envir))) {
+
+          if (isTRUE(length(na.omit(apply(data.frame(eval(parse(text = "x"), envir = envir), eval(parse(text = "y"), envir = envir)), 1L, diff))) <= 2L)) { stop("Not enough observations to conduct the analysis.") }
+
+        }
+
+      }
 
     }
 
@@ -217,9 +256,120 @@
 }
 
 #_______________________________________________________________________________
+#
+# Extract Variables Using or Without Using the ... Argument ————————————————————
+
+.data <- function(data, ..., group = NULL, split = NULL, cluster = NULL, drop = FALSE, check.one.two = FALSE, check.two = FALSE) {
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Using the Argument '...' ####
+
+  if (isTRUE(!missing(...))) {
+
+    # Variable names
+    var.names <- .var.names(data = data, ..., group = group, split = split, cluster = cluster)
+
+    # Extract data
+    x <- if (isTRUE(drop)) { data[, var.names, drop = TRUE] } else { as.data.frame(data[, var.names, drop = FALSE])  }
+
+    # Extract grouping variable and convert tibble into a vector
+    if (isTRUE(!is.null(group))) { group <- data[, group] |> (\(p) if (isTRUE("tbl" %in% substr(class(p), 1L, 3L))) { unname(unlist(p)) } else { return(p) })() }
+
+    # Extract splitting variable and convert tibble into a vector
+    if (isTRUE(!is.null(split))) { split <- data[, split] |> (\(p) if (isTRUE("tbl" %in% substr(class(p), 1L, 3L))) { unname(unlist(p)) } else { return(p) })() }
+
+    # Extract splitting variable and convert tibble into a vector
+    if (isTRUE(!is.null(cluster))) { cluster <- data[, cluster] |> (\(p) if (isTRUE("tbl" %in% substr(class(p), 1L, 3L))) { unname(unlist(p)) } else { return(p) })() }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Without Using the Argument '...' ####
+
+  } else {
+
+    # Variable names
+    var.names <- colnames(data)
+
+    # Data frame
+    x <- if (isTRUE(drop)) { if (isTRUE(ncol(data) == 1L)) { unlist(data) } else { data } } else { as.data.frame(data) }
+
+    # Data and cluster
+    var.group <- .var.group(data = x, group = group, split = split, cluster = cluster)
+
+    # Data
+    if (isTRUE(!is.null(var.group$data)))  { x <- var.group$data }
+
+    # Grouping variable
+    if (isTRUE(!is.null(var.group$group))) { group <- var.group$group |> (\(p) if (isTRUE("tbl" %in% substr(class(p), 1L, 3L))) { unname(unlist(p)) } else { return(p) })() }
+
+    # Split variable
+    if (isTRUE(!is.null(var.group$split))) { split <- var.group$split |> (\(p) if (isTRUE("tbl" %in% substr(class(p), 1L, 3L))) { unname(unlist(p)) } else { return(p) })() }
+
+    # Cluster variable
+    if (isTRUE(!is.null(var.group$cluster))) { cluster <- var.group$cluster |> (\(p) if (isTRUE("tbl" %in% substr(class(p), 1L, 3L))) { unname(unlist(p)) } else { return(p) })() }
+
+  }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Check ####
+
+  #—————————————————————————————————————— #
+  ### Grouping Variable ####
+
+  if (isTRUE(!is.null(group))) {
+
+    x <- as.data.frame(x) |> (\(p) which(sapply(names(p), function(y) identical(group, p[, y]))) |> (\(q) if (isTRUE(length(q) != 0L)) { return(p[, -q]) } else { x })())()
+
+    if (isTRUE(ncol(as.data.frame(x)) == 0L)) { stop("There are no variables left in the data frame after excluding the grouping variable.") }
+
+  }
+
+  #—————————————————————————————————————— #
+  ### Split Variable ####
+
+  if (isTRUE(!is.null(split))) {
+
+    x <- as.data.frame(x) |> (\(p) which(sapply(names(p), function(y) identical(split, p[, y]))) |> (\(q) if (isTRUE(length(q) != 0L)) { return(p[, -q]) } else { x })())()
+
+    if (isTRUE(ncol(as.data.frame(x)) == 0L)) { stop("There are no variables left in the data frame after excluding the split variable.") }
+
+  }
+
+  #—————————————————————————————————————— #
+  ### Identical Grouping and Split Variable ####
+
+  if (isTRUE(!is.null(group) && !is.null(split) && identical(group, split))) { stop("Grouping and split variables are identical.", call. = FALSE) }
+
+  #—————————————————————————————————————— #
+  ### Cluster Variable ####
+
+  if (isTRUE(!is.null(cluster))) {
+
+    x <- as.data.frame(x) |> (\(p) which(sapply(names(p), function(y) identical(cluster, p[, y]))) |> (\(q) if (isTRUE(length(q) != 0L)) { return(p[, -q]) } else { x })())()
+
+    if (isTRUE(ncol(as.data.frame(x)) == 0L)) { stop("There are no variables left in the data frame after excluding the cluster variable.") }
+
+  }
+
+  #—————————————————————————————————————— #
+  ### Check if One or Two Variables Specified ####
+
+  if (isTRUE(check.one.two)) { if (isTRUE(length(var.names > 2L))) { stop("Please specify either one or two variables for the analysis.", call. = FALSE) } }
+
+  #—————————————————————————————————————— #
+  ### Check if Two Variables Specified ####
+
+  if (isTRUE(check.two)) { if (isTRUE(length(var.names != 2L))) { stop("Please specify two variables for the analysis.", call. = FALSE) } }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Return Object ####
+
+  return(list(data = x, var.names = var.names, group = group, split = split, cluster = cluster))
+
+}
+
 #_______________________________________________________________________________
 #
-# Extract Variable Names Specified in the ... Argument  ------------------------
+# Extract Variable Names Specified in the ... Argument —————————————————————————
 
 .var.names <- function(data, ..., group = NULL, split = NULL, cluster = NULL, id = NULL, obs = NULL, day = NULL, time = NULL) {
 
@@ -227,7 +377,7 @@
   ## Check if Input 'data' is a Data Frame ####
 
   # Check if input 'data' is data frame
-  if (isTRUE(!is.data.frame(data))) { stop("Please specify a data frame for the argument 'data'.", call. = FALSE) }
+  if (isTRUE(!is.data.frame(data) && !is.matrix(data))) { stop("Please specify a matrix or data frame for the argument 'data'.", call. = FALSE) }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Convert Tibble into Data Frame ####
@@ -253,24 +403,24 @@
       # Plus (+) Operator
       if (isTRUE("+" %in% var.names.i)) {
 
-         var.names[[i]] <- unlist(strsplit(var.names[[i]], "(?=[/+])", perl = TRUE))
+        var.names[[i]] <- unlist(strsplit(var.names[[i]], "(?=[/+])", perl = TRUE))
 
-      # Minus (-) Operator
+        # Minus (-) Operator
       } else if (isTRUE("-" %in% var.names.i)) {
 
         var.names[[i]] <- unlist(strsplit(var.names[[i]], "(?=[/-])", perl = TRUE))
 
-      # Tilde (~) Operator
+        # Tilde (~) Operator
       } else if (isTRUE("~" %in% var.names.i)) {
 
         var.names[[i]] <- unlist(strsplit(var.names[[i]], "(?=[/~])", perl = TRUE))
 
-      # Colon (:) operator
+        # Colon (:) operator
       } else if (isTRUE(sum(var.names.i %in% ":") == 1L)) {
 
         var.names[[i]] <- c("!", ":", unlist(strsplit(var.names[[i]], ":"))[2L:3L])
 
-      # Double Colon (::) Operator
+        # Double Colon (::) Operator
       } else if (isTRUE(sum(var.names.i %in% ":") == 2L)) {
 
         var.names[[i]] <- c("!", "::", unlist(strsplit(var.names[[i]], "::"))[2L:3L])
@@ -304,7 +454,7 @@
 
         var.names[[i]] <- colnames(data)[which(substr(colnames(data), start = 1L, stop = nchar(var.i)) == var.i)]
 
-      # Complement !
+        # Complement !
       } else {
 
         var.i <- misty::chr.omit(var.i, omit = "!", check = FALSE)
@@ -337,7 +487,7 @@
 
         var.names[[i]] <- colnames(data)[which(substr(colnames(data), start = nchar(colnames(data)) - nchar(var.i) + 1L, stop = nchar(colnames(data))) == var.i)]
 
-      # Complement !
+        # Complement !
       } else {
 
         var.i <- misty::chr.omit(var.i, omit = "!", check = FALSE)
@@ -370,7 +520,7 @@
 
         var.names[[i]] <- grep(var.i, colnames(data), value = TRUE)
 
-      # Complement !
+        # Complement !
       } else {
 
         var.exclude <- c(var.exclude, misty::chr.grep(misty::chr.omit(var.i, omit = "!", check = FALSE), colnames(data), value = TRUE))
@@ -408,7 +558,7 @@
 
         var.names[[i]] <- colnames(data)[which(colnames(data) == var.i[1L]):which(colnames(data) == var.i[2L])]
 
-      # Complement !
+        # Complement !
       } else {
 
         var.exclude <- c(var.exclude, colnames(data)[which(colnames(data) == var.i[2L]):which(colnames(data) == var.i[3L])])
@@ -461,14 +611,14 @@
 
         var.names[[i]] <- paste0(var.i1.root,
                                  as.numeric(paste(var.i1.split[(max(which(var.i1.log == FALSE)) + 1L):length(var.i1.split)], collapse = "")):
-                                 as.numeric(paste(var.i2.split[(max(which(var.i2.log == FALSE)) + 1L):length(var.i2.split)], collapse = "")))
+                                   as.numeric(paste(var.i2.split[(max(which(var.i2.log == FALSE)) + 1L):length(var.i2.split)], collapse = "")))
 
       } else {
 
         var.exclude <- c(var.exclude,
                          paste0(var.i1.root,
                                 as.numeric(paste(var.i1.split[(max(which(var.i1.log == FALSE)) + 1L):length(var.i1.split)], collapse = "")):
-                                as.numeric(paste(var.i2.split[(max(which(var.i2.log == FALSE)) + 1L):length(var.i2.split)], collapse = ""))))
+                                  as.numeric(paste(var.i2.split[(max(which(var.i2.log == FALSE)) + 1L):length(var.i2.split)], collapse = ""))))
 
         var.names[[i]] <- ""
 
@@ -541,8 +691,8 @@
 
       if (isTRUE(!cluster %in% colnames(data))) { stop("Cluster variable specifed in 'cluster' was not found in 'data'.", call. = FALSE) }
 
-    #···················
-    #### Two Cluster Variables ####
+      #···················
+      #### Two Cluster Variables ####
 
     } else {
 
@@ -640,7 +790,6 @@
 }
 
 #_______________________________________________________________________________
-#_______________________________________________________________________________
 #
 # Extract Grouping, Split, or Cluster Variable —————————————————————————————————
 
@@ -658,8 +807,17 @@
     #—————————————————————————————————————— #
     ### Tibble ####
 
-    # Convert 'group' as tibble into data frame
-    if (isTRUE("tbl" %in% substr(class(group), 1L, 3L))) { group <- unname(unlist(cluster)) }
+    # Convert tibble into a data frame
+    if (isTRUE("tbl" %in% substr(class(data), 1L, 3L))) { data <- as.data.frame(data) }
+
+    # Convert tibble into a vector
+    if (isTRUE("tbl" %in% substr(class(group), 1L, 3L) && length(group) > 1L)) { group <- unname(unlist(group)) }
+    if (isTRUE("tbl" %in% substr(class(split), 1L, 3L) && length(split) > 1L)) { split <- unname(unlist(split)) }
+    if (isTRUE("tbl" %in% substr(class(cluster), 1L, 3L) && length(cluster) > 1L)) { cluster <- unname(unlist(cluster)) }
+    if (isTRUE("tbl" %in% substr(class(id), 1L, 3L) && length(id) > 1L)) { id <- unname(unlist(id)) }
+    if (isTRUE("tbl" %in% substr(class(obs), 1L, 3L) && length(obs) > 1L)) { obs <- unname(unlist(obs)) }
+    if (isTRUE("tbl" %in% substr(class(day), 1L, 3L) && length(day) > 1L)) { day <- unname(unlist(day)) }
+    if (isTRUE("tbl" %in% substr(class(time), 1L, 3L) && length(time) > 1L)) { time <- unname(unlist(time)) }
 
     #—————————————————————————————————————— #
     ### Grouping Variable Specified with the Variable Name ####
@@ -1114,7 +1272,6 @@
 }
 
 #_______________________________________________________________________________
-#_______________________________________________________________________________
 #
 # Exclude Non-Numeric Variables ————————————————————————————————————————————————
 
@@ -1171,7 +1328,6 @@
 
 }
 
-#_______________________________________________________________________________
 #_______________________________________________________________________________
 #
 # Convert user-missing values into NA ——————————————————————————————————————————
@@ -1237,10 +1393,48 @@
 
 }
 
-#_______________________________________________________________________________
+
 #_______________________________________________________________________________
 #
-# Internal Functions for the blimp.run() function ------------------------------
+# Internal Functions for the plot.misty.object() function ——————————————————————
+
+.plot.argument <- function(..., x = x, envir = environment()) {
+
+  invisible(list(...) |> (\(p) sapply(names(p), function(y) if (isTRUE(y != "geom")) {
+
+    if (isTRUE(is.null(eval(parse(text = y), envir = envir)))) {
+
+      if (isTRUE(p[[y]] == ".x")) {
+
+        assign(y, eval(parse(text = paste0("x$args$", y))), envir = envir)
+
+      } else if (isTRUE(all(p[[y]] == "ggplot2::waiver()"))) {
+
+        assign(y, eval(parse(text = p[[y]])), envir = envir)
+
+      } else {
+
+        assign(y, p[[y]], envir = envir)
+
+      }
+
+    }
+
+  } else if (isTRUE(eval(parse(text = "geom"), envir = envir) |> (\(q) !is.null(q) && all(q == "all"))())) {
+
+    assign(y, p[[y]], envir = envir)
+
+  } else if (isTRUE(is.null(eval(parse(text = y), envir = envir)))) {
+
+    assign(y, eval(parse(text = "x$args$geom")), envir = envir)
+
+  }))())
+
+}
+
+#_______________________________________________________________________________
+#
+# Internal Functions for the blimp.run() function ——————————————————————————————
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ## Run Blimp ####
@@ -1510,10 +1704,9 @@
 }
 
 #_______________________________________________________________________________
-#_______________________________________________________________________________
 #
-# Internal Functions for the blimp.bayes() function ----------------------------
-#                            mplus.bayes() function ----------------------------
+# Internal Functions for the blimp.bayes() function ————————————————————————————
+#                            mplus.bayes() function ————————————————————————————
 #
 # - .map
 # - .hdi
@@ -1784,9 +1977,8 @@
 }
 
 #_______________________________________________________________________________
-#_______________________________________________________________________________
 #
-# Internal Functions for the boot.bs() function --------------------------------
+# Internal Functions for the boot.bs() function ————————————————————————————————
 #
 # https://github.com/simsem/semTools/blob/master/semTools/R/missingBootstrap.R
 #
@@ -1961,9 +2153,8 @@
 }
 
 #_______________________________________________________________________________
-#_______________________________________________________________________________
 #
-# Internal Functions for the check.resid() function ----------------------------
+# Internal Functions for the check.resid() function ————————————————————————————
 #
 # - .resid.partial
 # - .calc_ranef
@@ -2035,9 +2226,8 @@
 }
 
 #_______________________________________________________________________________
-#_______________________________________________________________________________
 #
-# Internal Functions for the chr.gsub() function -------------------------------
+# Internal Functions for the chr.gsub() function ———————————————————————————————
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ## Fast escape replace ####
@@ -2182,9 +2372,8 @@
 }
 
 #_______________________________________________________________________________
-#_______________________________________________________________________________
 #
-# Internal Functions for the ci.cor() function ---------------------------------
+# Internal Functions for the ci.cor() function —————————————————————————————————
 #
 # - .multsolvefun
 # - .sqerrVMc
@@ -3113,9 +3302,8 @@
 }
 
 #_______________________________________________________________________________
-#_______________________________________________________________________________
 #
-# Internal Functions for the ci._() functions ----------------------------------
+# Internal Functions for the ci._() functions ——————————————————————————————————
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ## Nonparametric Bootstrap Confidence Intervals ####
@@ -3211,7 +3399,6 @@
 }
 
 #_______________________________________________________________________________
-#_______________________________________________________________________________
 #
 # Internal Functions for the ci.mean() function --------------------------------
 
@@ -3290,9 +3477,8 @@
 .boot.func.mean <- function(data, ind) { return(c(mean(data[ind], na.rm = TRUE), var(data[ind], na.rm = TRUE) / length(na.omit(data[ind])))) }
 
 #_______________________________________________________________________________
-#_______________________________________________________________________________
 #
-# Internal Functions for the ci.median() function ------------------------------
+# Internal Functions for the ci.median() function ——————————————————————————————
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ## Confidence interval for the median ####
@@ -3356,9 +3542,8 @@
 .boot.func.median <- function(data, ind) { return(c(median(data[ind], na.rm = TRUE), (pi / 2L) * var(data[ind], na.rm = TRUE) / length(na.omit(data[ind])))) }
 
 #_______________________________________________________________________________
-#_______________________________________________________________________________
 #
-# Internal Functions for the ci.prop() function --------------------------------
+# Internal Functions for the ci.prop() function ————————————————————————————————
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ## Confidence Interval for the Proportion ####
@@ -3424,9 +3609,8 @@
 }
 
 #_______________________________________________________________________________
-#_______________________________________________________________________________
 #
-# Internal Functions for the ci.var() function ---------------------------------
+# Internal Functions for the ci.var() function —————————————————————————————————
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ## Confidence interval for the variance ####
@@ -3515,9 +3699,8 @@
 .boot.func.var <- function(data, ind) { return(var(data[ind], na.rm = TRUE)) }
 
 #_______________________________________________________________________________
-#_______________________________________________________________________________
 #
-# Internal Functions for the ci.sd() function ----------------------------------
+# Internal Functions for the ci.sd() function ——————————————————————————————————
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ## Confidence interval for the standard deviation ####
@@ -3606,9 +3789,8 @@
 .boot.func.sd <- function(data, ind) { return(sd(data[ind], na.rm = TRUE)) }
 
 #_______________________________________________________________________________
-#_______________________________________________________________________________
 #
-# Internal Functions for the ci.mean.diff() function ---------------------------
+# Internal Functions for the ci.mean.diff() function ———————————————————————————
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ## Confidence interval for the difference of arithmetic means ####
@@ -3769,9 +3951,8 @@
 }
 
 #_______________________________________________________________________________
-#_______________________________________________________________________________
 #
-# Internal Functions for the ci.prop.diff() function ---------------------------
+# Internal Functions for the ci.prop.diff() function ———————————————————————————
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ## Confidence Interval for the Difference of Proportions ####
@@ -3975,15 +4156,14 @@
 }
 
 #_______________________________________________________________________________
-#_______________________________________________________________________________
 #
-# Internal Functions for Plotting Confidence Intervals -------------------------
+# Internal Functions for Plotting Confidence Intervals —————————————————————————
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ## Plot Function Confidence Interval ####
 
-.plot.ci <- function(result, stat, group = NULL, split = NULL, point.size, point.shape, errorbar.width, dodge.width,
-                     line, intercept, linetype, line.col, xlab, ylab, xlim , ylim, xbreaks, ybreaks,
+.plot.ci <- function(result, stat, group = NULL, split = NULL, point.size, point.shape, errorbar.width, errorbar.dodge.width,
+                     line, hline.intercept, hline.type, hline.col, xlab, ylab, xlim, ylim, xbreaks, ybreaks,
                      axis.title.size, axis.text.size, strip.text.size, title, subtitle, group.col, plot.margin,
                      legend.title, legend.position, legend.box.margin, facet.ncol, facet.nrow, facet.scales) {
 
@@ -4017,7 +4197,7 @@
     #...................
     #### Horizontal Line ####
 
-    if (isTRUE(line)) { p <- p + ggplot2::geom_hline(yintercept = intercept, linetype = linetype, color = line.col) }
+    if (isTRUE(line)) { p <- p + ggplot2::geom_hline(yintercept = hline.intercept, linetype = hline.type, color = hline.col) }
 
     #...................
     #### Error Bars  ####
@@ -4062,15 +4242,15 @@
     #...................
     #### Horizontal Line ####
 
-    if (isTRUE(line)) { p <- p + ggplot2::geom_hline(yintercept = intercept, linetype = linetype, color = line.col) }
+    if (isTRUE(line)) { p <- p + ggplot2::geom_hline(yintercept = hline.intercept, linetype = hline.type, color = hline.col) }
 
     #...................
     #### Error Bars  ####
 
     p <- p +
       ggplot2::geom_errorbar(ggplot2::aes(ymin = low, ymax = upp), width = errorbar.width,
-                             position = ggplot2::position_dodge(dodge.width)) +
-      ggplot2::geom_point(size = point.size, shape = point.shape, position = ggplot2::position_dodge(dodge.width)) +
+                             position = ggplot2::position_dodge(errorbar.dodge.width)) +
+      ggplot2::geom_point(size = point.size, shape = point.shape, position = ggplot2::position_dodge(errorbar.dodge.width)) +
       ggplot2::scale_x_discrete(name = xlab) +
       ggplot2::scale_y_continuous(name = ylab, limits = ylim, breaks = ybreaks) +
       ggplot2::labs(title = title, subtitle = subtitle, color = legend.title) +
@@ -4119,7 +4299,7 @@
     #...................
     #### Horizontal Line ####
 
-    if (isTRUE(line)) { p <- p + ggplot2::geom_hline(yintercept = intercept, linetype = linetype, color = line.col) }
+    if (isTRUE(line)) { p <- p + ggplot2::geom_hline(yintercept = hline.intercept, linetype = hline.type, color = hline.col) }
 
     #...................
     #### Error Bars  ####
@@ -4167,15 +4347,15 @@
     #...................
     #### Horizontal Line ####
 
-    if (isTRUE(line)) { p <- p + ggplot2::geom_hline(yintercept = intercept, linetype = linetype, color = line.col) }
+    if (isTRUE(line)) { p <- p + ggplot2::geom_hline(yintercept = hline.intercept, linetype = hline.type, color = hline.col) }
 
     #...................
     #### Error Bars  ####
 
     p <- p +
       ggplot2::geom_errorbar(ggplot2::aes(ymin = low, ymax = upp), width = errorbar.width,
-                             position = ggplot2::position_dodge(dodge.width)) +
-      ggplot2::geom_point(size = point.size, shape = point.shape, position = ggplot2::position_dodge(dodge.width)) +
+                             position = ggplot2::position_dodge(errorbar.dodge.width)) +
+      ggplot2::geom_point(size = point.size, shape = point.shape, position = ggplot2::position_dodge(errorbar.dodge.width)) +
       ggplot2::scale_x_discrete(name = xlab) +
       ggplot2::scale_y_continuous(name = ylab, limits = ylim, breaks = ybreaks) +
       ggplot2::facet_wrap(~ split, ncol = facet.ncol, nrow = facet.nrow) +
@@ -4203,9 +4383,9 @@
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ## Plot Function Bootstrap Samples ####
 
-.plot.boot <- function(result, boot.sample, stat, group = NULL, split = NULL, hist, binwidth, bins, alpha, fill,
-                       density, density.col, density.linewidth, density.linetype, plot.point, point.col, point.linewidth, point.linetype,
-                       plot.ci, ci.col, ci.linewidth, ci.linetype, line, intercept, linetype, line.col,
+.plot.boot <- function(result, boot.sample, stat, group = NULL, split = NULL, hist, hist.binwidth, hist.bins, hist.alpha, hist.fill,
+                       density, density.col, density.width, density.type, density.alpha, plot.point, point.col, point.width, point.type,
+                       plot.ci, ci.col, ci.width, ci.type, line, vline.intercept, vline.type, vline.col,
                        xlab, ylab, xlim, ylim, xbreaks, ybreaks, axis.title.size, axis.text.size, strip.text.size, title, subtitle, group.col,
                        plot.margin, legend.title, legend.position, legend.box.margin, facet.ncol, facet.nrow, facet.scales) {
 
@@ -4252,27 +4432,28 @@
     #...................
     #### Histogram ####
 
-    if (isTRUE(hist)) { p <- p + ggplot2::geom_histogram(ggplot2::aes(y = ggplot2::after_stat(density)), binwidth = binwidth, bins = bins, color = "black", alpha = alpha, fill = fill) }
+    if (isTRUE(hist)) { p <- p + ggplot2::geom_histogram(ggplot2::aes(y = ggplot2::after_stat(density)),
+                                                         binwidth = hist.binwidth, bins = hist.bins, color = "black", alpha = hist.alpha, fill = hist.fill) }
 
     #...................
     #### Density Curve ####
 
-    if (isTRUE(density)) { p <- p + ggplot2::geom_density(color = density.col, linewidth = density.linewidth, linetype = density.linetype) }
+    if (isTRUE(density)) { p <- p + ggplot2::geom_density(color = density.col, linewidth = density.width, linetype = density.type) }
 
     #...................
     #### Vertical Line ####
 
-    if (isTRUE(line)) { p <- p + ggplot2::geom_vline(xintercept = intercept, linetype = linetype, color = line.col) }
+    if (isTRUE(line)) { p <- p + ggplot2::geom_vline(xintercept = vline.intercept, linetype = vline.type, color = vline.col) }
 
     #...................
     #### Point Estimate ####
 
-    if (isTRUE(plot.point)) { p <- p + ggplot2::geom_vline(ggplot2::aes(xintercept = point), color = point.col, linetype = point.linetype, linewidth = point.linewidth) }
+    if (isTRUE(plot.point)) { p <- p + ggplot2::geom_vline(ggplot2::aes(xintercept = point), color = point.col, linetype = point.type, linewidth = point.width) }
 
     #...................
     ### Confidence Interval ####
 
-    if (isTRUE(plot.ci)) { p <- p + ggplot2::geom_vline(ggplot2::aes(xintercept = low), color = ci.col, linetype = ci.linetype, linewidth = ci.linewidth) + ggplot2::geom_vline(ggplot2::aes(xintercept = upp), color = ci.col, linetype = ci.linetype , linewidth = ci.linewidth) }
+    if (isTRUE(plot.ci)) { p <- p + ggplot2::geom_vline(ggplot2::aes(xintercept = low), color = ci.col, linetype = ci.type, linewidth = ci.width) + ggplot2::geom_vline(ggplot2::aes(xintercept = upp), color = ci.col, linetype = ci.type , linewidth = ci.width) }
 
   #—————————————————————————————————————— #
   ### Grouping, No Split ####
@@ -4319,27 +4500,27 @@
     #...................
     #### Histogram ####
 
-    if (isTRUE(hist)) { p <- p + ggplot2::geom_histogram(ggplot2::aes(y = ggplot2::after_stat(density), fill = group), position = "identity", binwidth = binwidth, bins = bins, color = "black", alpha = alpha) }
+    if (isTRUE(hist)) { p <- p + ggplot2::geom_histogram(ggplot2::aes(y = ggplot2::after_stat(density), fill = group), position = "identity", binwidth = hist.binwidth, bins = hist.bins, color = "black", alpha = hist.alpha) }
 
     #...................
     #### Density Curve ####
 
-    if (isTRUE(density)) { p <- suppressMessages(p + ggplot2::geom_density(alpha = alpha, linewidth = density.linewidth, linetype = density.linetype)) }
+    if (isTRUE(density)) { p <- suppressMessages(p + ggplot2::geom_density(alpha = density.alpha, linewidth = density.width, linetype = density.type)) }
 
     #...................
     #### Vertical Line ####
 
-    if (isTRUE(line)) { p <- p + ggplot2::geom_vline(xintercept = intercept, linetype = linetype, color = line.col) }
+    if (isTRUE(line)) { p <- p + ggplot2::geom_vline(xintercept = vline.intercept, linetype = vline.type, color = vline.col) }
 
     #...................
     #### Point Estimate ####
 
-    if (isTRUE(plot.point)) { p <- p + ggplot2::geom_vline(ggplot2::aes(xintercept = point, color = group), linetype = point.linetype, linewidth = point.linewidth) }
+    if (isTRUE(plot.point)) { p <- p + ggplot2::geom_vline(ggplot2::aes(xintercept = point, color = group), linetype = point.type, linewidth = point.width) }
 
     #...................
     #### Confidence Interval ####
 
-    if (isTRUE(plot.ci)) { p <- p + ggplot2::geom_vline(ggplot2::aes(xintercept = low, color = group), linetype = ci.linetype, linewidth = ci.linewidth) + ggplot2::geom_vline(ggplot2::aes(xintercept = upp, color = group), linetype = ci.linetype, linewidth = ci.linewidth) }
+    if (isTRUE(plot.ci)) { p <- p + ggplot2::geom_vline(ggplot2::aes(xintercept = low, color = group), linetype = ci.type, linewidth = ci.width) + ggplot2::geom_vline(ggplot2::aes(xintercept = upp, color = group), linetype = ci.type, linewidth = ci.width) }
 
     #...................
     #### Manual Colors ####
@@ -4387,27 +4568,27 @@
     #...................
     #### Histogram ####
 
-    if (isTRUE(hist)) { p <- p + ggplot2::geom_histogram(ggplot2::aes(y = ggplot2::after_stat(density)), binwidth = binwidth, bins = bins, color = "black", alpha = alpha, fill = fill) }
+    if (isTRUE(hist)) { p <- p + ggplot2::geom_histogram(ggplot2::aes(y = ggplot2::after_stat(density)), binwidth = hist.binwidth, bins = hist.bins, color = "black", alpha = hist.alpha, fill = hist.fill) }
 
     #...................
     #### Density Curve ####
 
-    if (isTRUE(density)) { p <- p + ggplot2::geom_density(color = density.col, linewidth = density.linewidth, linetype = density.linetype) }
+    if (isTRUE(density)) { p <- p + ggplot2::geom_density(color = density.col, linewidth = density.width, linetype = density.type) }
 
     #...................
     #### Vertical Line ####
 
-    if (isTRUE(line)) { p <- p + ggplot2::geom_vline(xintercept = intercept, linetype = linetype, color = line.col) }
+    if (isTRUE(line)) { p <- p + ggplot2::geom_vline(xintercept = vline.intercept, linetype = vline.type, color = vline.col) }
 
     #...................
     #### Point Estimate ####
 
-    if (isTRUE(plot.point)) { p <- p + ggplot2::geom_vline(ggplot2::aes(xintercept = point), color = point.col, linetype = point.linetype, linewidth = point.linewidth) }
+    if (isTRUE(plot.point)) { p <- p + ggplot2::geom_vline(ggplot2::aes(xintercept = point), color = point.col, linetype = point.type, linewidth = point.width) }
 
     #...................
     #### Confidence Interval ####
 
-    if (isTRUE(plot.ci)) { p <- p + ggplot2::geom_vline(ggplot2::aes(xintercept = low), color = ci.col, linetype = ci.linetype, linewidth = ci.linewidth) + ggplot2::geom_vline(ggplot2::aes(xintercept = upp), color = ci.col, linetype = ci.linetype, linewidth = ci.linewidth) }
+    if (isTRUE(plot.ci)) { p <- p + ggplot2::geom_vline(ggplot2::aes(xintercept = low), color = ci.col, linetype = ci.type, linewidth = ci.width) + ggplot2::geom_vline(ggplot2::aes(xintercept = upp), color = ci.col, linetype = ci.type, linewidth = ci.width) }
 
   #—————————————————————————————————————— #
   ### Grouping, Split ####
@@ -4454,27 +4635,27 @@
     #...................
     #### Histogram ####
 
-    if (isTRUE(hist)) { p <- p + ggplot2::geom_histogram(ggplot2::aes(y = ggplot2::after_stat(density), fill = group), position = "identity", binwidth = binwidth, bins = bins, color = "black", alpha = alpha) }
+    if (isTRUE(hist)) { p <- p + ggplot2::geom_histogram(ggplot2::aes(y = ggplot2::after_stat(density), fill = group), position = "identity", binwidth = hist.binwidth, bins = hist.bins, color = "black", alpha = hist.alpha) }
 
     #...................
     #### Density Curve ####
 
-    if (isTRUE(density)) { p <- p + ggplot2::geom_density(alpha = alpha, linewidth = density.linewidth, linetype = density.linetype) }
+    if (isTRUE(density)) { p <- p + ggplot2::geom_density(alpha = density.alpha, linewidth = density.width, linetype = density.type) }
 
     #...................
     #### Vertical Line ####
 
-    if (isTRUE(line)) { p <- p + ggplot2::geom_vline(xintercept = intercept, linetype = linetype, color = line.col) }
+    if (isTRUE(line)) { p <- p + ggplot2::geom_vline(xintercept = vline.intercept, linetype = vline.type, color = vline.col) }
 
     #...................
     #### Point Estimate ####
 
-    if (isTRUE(plot.point)) { p <- p + ggplot2::geom_vline(plotdat, ggplot2::aes(xintercept = point, color = group), linetype = point.linetype, linewidth = point.linewidth) }
+    if (isTRUE(plot.point)) { p <- p + ggplot2::geom_vline(plotdat, ggplot2::aes(xintercept = point, color = group), linetype = point.type, linewidth = point.width) }
 
     #...................
     #### Confidence Interval ####
 
-    if (isTRUE(plot.ci)) { p <- p + ggplot2::geom_vline(ggplot2::aes(xintercept = low, color = group), linetype = ci.linetype, linewidth = ci.linewidth) + ggplot2::geom_vline(ggplot2::aes(xintercept = upp, color = group), linetype = ci.linetype, linewidth = ci.linewidth) }
+    if (isTRUE(plot.ci)) { p <- p + ggplot2::geom_vline(ggplot2::aes(xintercept = low, color = group), linetype = ci.type, linewidth = ci.width) + ggplot2::geom_vline(ggplot2::aes(xintercept = upp, color = group), linetype = ci.type, linewidth = ci.width) }
 
     #...................
     #### Manual Colors ####
@@ -4488,9 +4669,8 @@
 }
 
 #_______________________________________________________________________________
-#_______________________________________________________________________________
 #
-# Internal Functions for the df.rbind() function -------------------------------
+# Internal Functions for the df.rbind() function ———————————————————————————————
 #
 # - .make_names
 # - .quickdf
@@ -4725,9 +4905,8 @@
 }
 
 #_______________________________________________________________________________
-#_______________________________________________________________________________
 #
-# Internal Functions for the coding() function ---------------------------------
+# Internal Functions for the coding() function —————————————————————————————————
 #
 # - .contr.sum
 # - .contr.wec
@@ -4825,9 +5004,8 @@
 }
 
 #_______________________________________________________________________________
-#_______________________________________________________________________________
 #
-# Internal Functions for the cohens.d() function -------------------------------
+# Internal Functions for the cohens.d() function ———————————————————————————————
 
 .internal.d.function <- function(x, y, mu, paired, weighted, cor, ref, correct,
                                  alternative, conf.level) {
@@ -5127,7 +5305,7 @@
 
         sd.group <- sqrt(xy.var.sum - 2L * xy.r * prod(c(sqrt(x.var), sqrt(y.var))))
 
-        # Ignoring correlation, Cohen's d.av
+      # Ignoring correlation, Cohen's d.av
       } else {
 
         sd.group <- (x.sd + y.sd) / 2
@@ -5228,9 +5406,8 @@
 }
 
 #_______________________________________________________________________________
-#_______________________________________________________________________________
 #
-# Internal Functions for the cor.matrix() function -----------------------------
+# Internal Functions for the cor.matrix() function —————————————————————————————
 #
 # - .cor.test.pearson
 # - .cor.test.spearman
@@ -5544,9 +5721,8 @@
 }
 
 #_______________________________________________________________________________
-#_______________________________________________________________________________
 #
-# Internal Functions for the difftest.chibarsq() function ----------------------
+# Internal Functions for the difftest.chibarsq() function ——————————————————————
 
 .find.c2 <- function(weight, k, u, alpha) {
 
@@ -5566,9 +5742,8 @@
 }
 
 #_______________________________________________________________________________
-#_______________________________________________________________________________
 #
-# Internal Functions for the dominance() function ------------------------------
+# Internal Functions for the dominance() function ——————————————————————————————
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ## Dominance analysis supporting formula-based modeling functions ####
@@ -5781,9 +5956,8 @@
 }
 
 #_______________________________________________________________________________
-#_______________________________________________________________________________
 #
-# Internal Functions for the dominance.manual() function -----------------------
+# Internal Functions for the dominance.manual() function ———————————————————————
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ## Enumerate the Combinations or Permutation of the ELements of a Vector ####
@@ -5894,9 +6068,8 @@
 }
 
 #_______________________________________________________________________________
-#_______________________________________________________________________________
 #
-# Internal Functions for the effsize() function --------------------------------
+# Internal Functions for the effsize() function ————————————————————————————————
 #
 # - .phi
 # - .cramer
@@ -6226,9 +6399,8 @@
 }
 
 #_______________________________________________________________________________
-#_______________________________________________________________________________
 #
-# Internal Functions for the indirect() function -------------------------------
+# Internal Functions for the indirect() function ———————————————————————————————
 #
 # - .qprodnormalMeeker
 
@@ -6310,9 +6482,8 @@
 }
 
 #_______________________________________________________________________________
-#_______________________________________________________________________________
 #
-# Internal Functions for the item.alpha() function -----------------------------
+# Internal Functions for the item.alpha() function —————————————————————————————
 #
 # - .alpha
 
@@ -6450,9 +6621,8 @@
 }
 
 #_______________________________________________________________________________
-#_______________________________________________________________________________
 #
-# Internal Functions for the item.omega() function -----------------------------
+# Internal Functions for the item.omega() function —————————————————————————————
 #
 # - .omega
 # - .categ.alpha.omega
@@ -6780,9 +6950,8 @@
 .p2 <- function(t1, t2, r) { mnormt::pmnorm(c(t1, t2), c(0L, 0L), matrix(c(1L, r, r, 1L), 2L, 2L)) }
 
 #_______________________________________________________________________________
-#_______________________________________________________________________________
 #
-# Internal Functions for the item.invar() function -----------------------------
+# Internal Functions for the item.invar() function —————————————————————————————
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ## Function for Convergence and Model Identification Checks ####
@@ -7114,9 +7283,8 @@
 }
 
 #_______________________________________________________________________________
-#_______________________________________________________________________________
 #
-# Internal Functions for the item.distract() function --------------------------
+# Internal Functions for the item.distract() function ——————————————————————————
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ## Function for Computing Attractor-Distractor-Total Correlation ####
@@ -7144,9 +7312,8 @@
 }
 
 #_______________________________________________________________________________
-#_______________________________________________________________________________
 #
-# Internal Functions for the item.stats() function -----------------------------
+# Internal Functions for the item.stats() function —————————————————————————————
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ## Function for Computing Item-Total Correlation with Confidence Intervals ####
@@ -7341,9 +7508,8 @@
 }
 
 #_______________________________________________________________________________
-#_______________________________________________________________________________
 #
-# Internal Functions for the modcomp() function --------------------------------
+# Internal Functions for the modcomp() function ————————————————————————————————
 #
 # .caic
 # .sabic
@@ -7539,9 +7705,8 @@
 }
 
 #_______________________________________________________________________________
-#_______________________________________________________________________________
 #
-# Internal Functions for the item.cfa() and multilevel.cfa function ------------
+# Internal Functions for the item.cfa() and multilevel.cfa function ————————————
 #
 # https://github.com/dmcneish18/opdyke/tree/main/R
 #
@@ -7696,9 +7861,8 @@
 .cot <- function(x) {  1L / tan(x) }
 
 #_______________________________________________________________________________
-#_______________________________________________________________________________
 #
-# Internal Functions for the item.dfi() function -------------------------------
+# Internal Functions for the item.dfi() function ———————————————————————————————
 #
 # https://github.com/melissagwolf/dynamic/tree/master/R
 # - .sim.fit
@@ -8431,9 +8595,8 @@
 }
 
 #_______________________________________________________________________________
-#_______________________________________________________________________________
 #
-# Internal Functions for the item.nonequi() function ---------------------------
+# Internal Functions for the item.nonequi() function ———————————————————————————
 #
 # https://github.com/ddueber/dmacs/blob/master/R/MeasEquiv_EffectSize_Wrappers.R
 #
@@ -8740,9 +8903,8 @@
 }
 
 #_______________________________________________________________________________
-#_______________________________________________________________________________
 #
-# Internal Functions for the mplus.print() function ----------------------------
+# Internal Functions for the mplus.print() function ————————————————————————————
 #
 # - .section.ind.from.to
 
@@ -8769,9 +8931,8 @@
 }
 
 #_______________________________________________________________________________
-#_______________________________________________________________________________
 #
-# Internal Functions for the mplus.lca.summa() function ------------------------
+# Internal Functions for the mplus.lca.summa() function ————————————————————————
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ## Functions for Extracting Results ####
@@ -9045,9 +9206,8 @@
 }
 
 #_______________________________________________________________________________
-#_______________________________________________________________________________
 #
-# Internal Functions for the mplus.run() function ------------------------------
+# Internal Functions for the mplus.run() function ——————————————————————————————
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ## Functions to Identify the Operating System ####
@@ -9389,10 +9549,9 @@ splitFilePath <- function(filepath, normalize = FALSE) {
 }
 
 #_______________________________________________________________________________
-#_______________________________________________________________________________
 #
-# Internal Functions for the mplus() and mplus.update() function ---------------
-#                        the blimp() and blimp.update() function ---------------
+# Internal Functions for the mplus() and mplus.update() function ———————————————
+#                        the blimp() and blimp.update() function ———————————————
 #
 # - .extract.section
 
@@ -9456,9 +9615,8 @@ splitFilePath <- function(filepath, normalize = FALSE) {
 }
 
 #_______________________________________________________________________________
-#_______________________________________________________________________________
 #
-# Internal Functions for the multilevel.r2() Function —-------------------------
+# Internal Functions for the multilevel.r2() Function ——————————————————————————
 #
 # - .variable.section
 # - .r2mlm
@@ -10127,9 +10285,8 @@ splitFilePath <- function(filepath, normalize = FALSE) {
 }
 
 #_______________________________________________________________________________
-#_______________________________________________________________________________
 #
-# Internal Functions for the mplus.update() function ---------------------------
+# Internal Functions for the mplus.update() function ———————————————————————————
 #
 # - .variable.section
 
@@ -10173,7 +10330,6 @@ splitFilePath <- function(filepath, normalize = FALSE) {
 
 }
 
-#_______________________________________________________________________________
 #_______________________________________________________________________________
 #
 # Internal Functions for the na.auxiliary() function ———————————————————————————
@@ -10266,7 +10422,6 @@ splitFilePath <- function(filepath, normalize = FALSE) {
 }
 
 #_______________________________________________________________________________
-#_______________________________________________________________________________
 #
 # Internal Functions for the multilevel.omega() function ———————————————————————
 #
@@ -10294,7 +10449,6 @@ splitFilePath <- function(filepath, normalize = FALSE) {
 
 }
 
-#_______________________________________________________________________________
 #_______________________________________________________________________________
 #
 # Internal Functions for the multilevel.r2() function ——————————————————————————
@@ -10325,7 +10479,6 @@ splitFilePath <- function(filepath, normalize = FALSE) {
 
 }
 
-#_______________________________________________________________________________
 #_______________________________________________________________________________
 #
 # Internal Functions for the na.test() function ————————————————————————————————
@@ -11457,9 +11610,40 @@ splitFilePath <- function(filepath, normalize = FALSE) {
 }
 
 #_______________________________________________________________________________
+#
+# Internal Functions for the plot.misty.object() function ——————————————————————
+#
+# - .qqdat
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## .qqdat ####
+#
+# Function is based on a Stack Overflow question at Stack Exchange,
+# see: http://stackoverflow.com/questions/4357031/qqnorm-and-qqline-in-ggplot2/27191036#27191036
+# That code is in turn based on the qqPlot() function from the car package
+
+.qqdat <- function(x, conf.level = 0.95) {
+
+  P <- ppoints(length(x))
+  plotdat <- data.frame(q = qnorm(P), y = x[ order(x)])
+
+  coef <- data.frame(Q.x = quantile(plotdat$y, c(0.25, 0.75)), Q.z = c(-0.6744898, 0.6744898)) |> (\(p) { (diff(p$Q.x) / diff(p$Q.z)) |> (\(q) c(p$Q.x[1L] - q * p$Q.z[1L], q))() })()
+
+  data.frame(fit.values = coef[1L] + coef[2L] * plotdat$q, zz = qnorm(1L - (1L - conf.level) / 2L), se = (coef[2L] / dnorm(plotdat$q)) * sqrt(P * (1L - P) / length(x))) |>
+    (\(p) {
+
+      plotdat$upper <<- p$fit.values + p$zz * p$se
+      plotdat$lower <<- p$fit.values - p$zz * p$se
+
+    })()
+
+  return(data.frame(plotdat, intercept = coef[1L], slope = coef[2]))
+
+}
+
 #_______________________________________________________________________________
 #
-# Internal Functions for the print.misty.object() function ---------------------
+# Internal Functions for the print.misty.object() function —————————————————————
 #
 # - .round
 # - .write.table
@@ -11514,7 +11698,7 @@ splitFilePath <- function(filepath, normalize = FALSE) {
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ## .write.table ####
 
-.write.table <- function(print.object, left = 1L, right = 3L, line = 1L, group = FALSE, result = NULL, horiz = TRUE) {
+.write.table <- function(print.object, left = 1L, right = 3L, line = 1L, group = NULL, result = NULL, horiz = TRUE) {
 
   # Data frame
   print.object <- as.data.frame(print.object)
@@ -11530,14 +11714,15 @@ splitFilePath <- function(filepath, normalize = FALSE) {
     #···················
     #### Grouping Variable ####
 
-    if (isTRUE(group)) {
+    if (isTRUE(!is.null(group))) {
 
-      split(print.object[-1L, ], f = result$group) |>
+      split(print.object[-1L, ], f = result[, group]) |>
         (\(p) for (i in seq_along(p)) {
 
           # Horizontal line
           cat(paste(rep(" ", times = left), collapse = ""), paste(rep("\u2500", times = sum(nchar(print.object[1L, ])) + length(print.object[1L, ]) - right), collapse = ""), "\n")
 
+          # Print output
           write.table(p[[i]], quote = FALSE, row.names = FALSE, col.names = FALSE)
 
         })()
@@ -11551,7 +11736,7 @@ splitFilePath <- function(filepath, normalize = FALSE) {
       cat(paste(rep(" ", times = left), collapse = ""), paste(rep("\u2500", times = sum(nchar(print.object[max(seq_len(line)), ])) + length(print.object[max(seq_len(line)), ]) - right), collapse = ""), "\n")
 
       # Output not including 'Total'
-      if (isTRUE(all(misty::chr.trim(print.object[, 1L]) != "Total") && (if (isTRUE(misty::chr.trim(print.object[1L, 2L]) == "Source")) { all(misty::chr.trim(print.object[, 2L]) != "Total") } else { TRUE }))) {
+      if (isTRUE(all(misty::chr.trim(print.object[, 1L]) != "Total") && (if (isTRUE(print.object[1L, 2L] |> (\(p) if (isTRUE(!is.null(p))) { misty::chr.trim(print.object[1L, 2L]) == "Source" } else { FALSE })())) { all(misty::chr.trim(print.object[, 2L]) != "Total") } else { TRUE }))) {
 
         write.table(print.object[-seq_len(line), ], quote = FALSE, row.names = FALSE, col.names = FALSE)
 
@@ -11586,9 +11771,8 @@ splitFilePath <- function(filepath, normalize = FALSE) {
 }
 
 #_______________________________________________________________________________
-#_______________________________________________________________________________
 #
-# Internal Functions for the robust.coef() function ----------------------------
+# Internal Functions for the robust.coef() function ————————————————————————————
 #
 # - .sandw
 # - .coeftest
@@ -11960,9 +12144,8 @@ splitFilePath <- function(filepath, normalize = FALSE) {
 }
 
 #_______________________________________________________________________________
-#_______________________________________________________________________________
 #
-# Internal Functions for the sim.lavaan() function -----------------------------
+# Internal Functions for the sim.lavaan() function —————————————————————————————
 #
 # https://github.com/wjschne/simstandard/blob/main/R/main.R
 #
@@ -12359,6 +12542,900 @@ splitFilePath <- function(filepath, normalize = FALSE) {
 }
 
 #_______________________________________________________________________________
+#
+# Internal Functions for the test.bm() function ————————————————————————————————
+#
+# - .expit
+# - .bm.perm.indices
+# - .perm.loop
+# - .bm.compute.perm.pval
+# - .permu
+#
+# Modified functions from the TOSTER package
+# see: https://github.com/Lakens/TOSTER/blob/master/R/brunner_munzel.R
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## .expit ####
+
+.expit <- function(G) { exp(G) / (1L + exp(G)) }
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Function to Generate Permutation Indices ####
+
+.bm.perm.indices <- function(N, n.x, nperm, seed) {
+
+  max.combs <- choose(N, n.x)
+
+  # Permutation: Enumerate all unique combinations
+  if (isTRUE(nperm >= max.combs)) {
+
+    perms <- matrix(NA, nrow = max.combs, ncol = N)
+    for (i in seq_len(max.combs)) {
+
+      x_idx <- combn(N, n.x)[, i]
+      y_idx <- setdiff(seq_len(N), x_idx)
+      perms[i, ] <- c(x_idx, y_idx)
+
+    }
+
+  # Randomization: Sampling without replacement
+  } else {
+
+    if (isTRUE(!is.null(seed))) { set.seed(seed) }
+
+    perms <- matrix(NA, nrow = nperm, ncol = N)
+    for (i in seq_len(nperm)) {
+
+      perm <- sample(seq_len(N), N, replace = FALSE)
+      perms[i, ] <- perm
+
+    }
+
+  }
+
+  return(t(perms))
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## .perm_loop ####
+
+.perm.loop <-function(x, y, n.x, n.y, nperm) {
+
+  pl1P <- matrix(0L, nrow = n.x, ncol = nperm)
+  pl2P <- matrix(0L, nrow = n.y, ncol = nperm)
+
+  # Compute P(Y < X_h1) for each h1 (used for variance calculation)
+  for(h1 in seq_len(n.x)) {
+
+    help1 <- matrix(t(x[h1,]), ncol = nperm, nrow = n.y, byrow = TRUE)
+
+    pl1P[h1, ] <- 1L / n.y*(colSums((y < help1) + 1L/2L*(y == help1)))
+
+  }
+
+  for(h2 in seq_len(n.y)) {
+
+    help2 <- matrix(t(y[h2, ]), ncol = nperm, nrow = n.x, byrow = TRUE)
+
+    pl2P[h2, ] <- 1L / n.x*(colSums((x > help2) + 1L/2L*(x == help2)))
+
+  }
+
+  pdP <- colMeans(pl2P)
+  pd2P <- colMeans(pl1P)
+
+  v1P <- (colSums(pl1P^2) - n.x*pd2P^2) / (n.x-1)
+  v2P <- (colSums(pl2P^2) - n.y*pdP^2) / (n.y-1)
+  vP <- v1P/n.x + v2P/n.y
+
+  v0P <- (vP == 0L)
+  vP[v0P] <- 0.5 / (n.x*n.y)^2
+
+  result <- matrix(rep(0L, nperm*3L), nrow = 3L)
+
+  result[1L, ] <- (pdP - 1L/2L) / sqrt(vP)
+
+  pdP0 <- (pdP == 0L)
+  pdP1 <- (pdP == 1L)
+
+  pdP[pdP0] <- 0.01
+  pdP[pdP1] <- 0.99
+
+  result[2L, ] <- log(pdP / (1L - pdP))*pdP*(1L - pdP) / sqrt(vP)
+  result[3L, ] <- qnorm(pdP)*exp(-0.5*qnorm(pdP)^2L) / (sqrt(2L*pi*vP))
+
+  return(result)
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## .bm.compute.perm.pval ####
+
+.bm.compute.perm.pval <- function(b, nperm, p.method) {
+
+  # Exact formula: Appropriate when all permutations are enumerated
+  switch(p.method, "exact" = {
+
+    return(b / nperm)
+
+    # Phipson & Smyth (2010) Formula: Exact Type I error control for randomization tests
+  }, "plusone" = {
+
+    return((b + 1) / (nperm + 1))
+
+  })
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## .permu ####
+
+.permu <- function(all.data, seed) {
+
+  n <- length(all.data)
+
+  if (isTRUE(!is.null(seed))) { set.seed(seed) }
+
+  result <- sample(c(0L, 1L), size = n, replace = TRUE)
+
+  return(result)
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Transform a Value on the Probability Scale to `scale` ####
+
+.trans.p <- function(x, scale) {
+
+  switch(scale, "diff" = 2L * x - 1L, "logodds" = qlogis(x), "odds" = x / (1L - x))
+
+}
+
+#_______________________________________________________________________________
+#
+# Internal Functions for the test.homo() function———————————————————————————————
+#
+# .gen.inter
+# .funcM
+# .pRQF
+# .almost.unique
+#
+# Modified functions from the skedastic package
+# see: https://github.com/tjfarrar/skedastic/tree/master/R
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Generate all Two-Way Interaction Terms ####
+
+.gen.inter <- function(x) {
+
+  k <- ncol(x)
+  if (k >= 2) {
+
+    return(combn(k, 2L) |> (\(p) apply(p, 2L, function(y) x[, y[1L]] * x[, y[2L]]) |> (\(q) matrix(q, ncol = ncol(q), dimnames = list(NULL, apply(p, 2L, function(y) paste(colnames(x)[y[1L]], colnames(x)[y[2L]], sep = "_")))))())())
+
+  } else {
+
+    return(NULL)
+
+  }
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## fastM Function ####
+
+.funcM <- function(X, n) { diag(n) - X %*% base::chol2inv(base::chol(crossprod(X))) %*% t(X) }
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Probabilities for a Ratio of Quadratic Forms in a Normal Random Vector ####
+
+.pRQF <- function(r, A, B, Sigma = diag(nrow(A)), algorithm = c("imhof", "davies", "integrate"), lower.tail = TRUE, usenames = FALSE) {
+
+  .sqrtm <- function(x) {
+
+    decomp <- eigen(x)
+    vectors <- decomp$vectors
+    values <- decomp$values
+
+    # Ensure no negative eigenvalues due to floating-point errors
+    values[values < 0L] <- 0L
+
+    vectors %*% diag(sqrt(values)) %*% t(vectors)
+
+  }
+
+  n <- dim(A)
+
+  if (isTRUE(all(Sigma == diag(n[1L])))) {
+
+    Astar <- A
+    Bstar <- B
+
+  } else {
+
+    Sigmasqrt <- .sqrtm(Sigma)
+    Astar <- Sigmasqrt %*% A %*% Sigmasqrt
+    Bstar <- Sigmasqrt %*% B %*% Sigmasqrt
+
+  }
+
+  oner <- function(s) {
+
+    mylambda <- .almost.unique(eigen((Astar - s * Bstar), only.values = TRUE)$values)
+
+    mylambda <- mylambda[(abs(Re(mylambda)) > .Machine$double.eps & abs(Im(mylambda)) < .Machine$double.eps)]
+
+    mylambda <- as.numeric(Re(mylambda))
+
+    if (algorithm %in% c("imhof", "davies")) {
+
+      upperprob <- do.call("::", args = list("CompQuadForm", algorithm))(q = 0L, lambda = mylambda)$Qq
+      ifelse(lower.tail, 1L - upperprob, upperprob)
+
+    } else if (isTRUE(algorithm == "integrate")) {
+
+      integrand <- function(u) {
+
+        if (isTRUE(length(u) == 1L)) {
+
+          theta <- 1L / 2L * sum(atan(mylambda * u))
+          rho <- prod((1L + mylambda^2L * u^2)^(1L / 4L))
+
+          return(sin(theta) / (u * rho))
+
+        } else if (isTRUE(length(u) > 1L)) {
+
+          theta <- vapply(u, function(v) 1L / 2L * sum(atan(mylambda * v)), NA_real_)
+          rho <- vapply(u, function(v) prod((1L + mylambda^2L * v^2L)^(1L / 4L)), NA_real_)
+
+          return(sin(theta) / (u * rho))
+
+        }
+
+      }
+
+      upperprob <- 1L / pi * do.call(`::`, args = list("stats", "integrate"))(f = integrand, lower = 0, upper = Inf)$value
+
+      ifelse(lower.tail, 1L / 2L - upperprob, 1L / 2L + upperprob)
+
+    }
+
+  }
+
+  return(vapply(r, oner, NA_real_, USE.NAMES = usenames))
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## .almost.unique Function ####
+
+.almost.unique <- function(x, tolerance = sqrt(.Machine$double.eps), ...) {
+
+  y <- round(x / tolerance, 0L)
+  d <- duplicated(y, ...)
+
+  return(x[!d])
+
+}
+
+#_______________________________________________________________________________
+#
+# Internal Functions for the test.linear() function—————————————————————————————
+#
+# .test.reset
+# .test.harv
+# .test.rain
+#
+# Modified functions from the lmtest package
+# see: https://github.com/cran/lmtest/tree/master/R
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## .test.reset Function: RESET Test ####
+
+.test.reset <- function(model, power = c(2L, 3L)) {
+
+  # Design matrix and response vector
+  X <- model.matrix(terms(model), data = model.frame(model))
+  y <- scale(model.response(model.frame(model)), center = attr(terms(model.frame(model)), which = "intercept") > 0L)
+
+  # Number of columns and rows
+  k <- ncol(X)
+  n <- nrow(X)
+
+  # Polynomial terms
+  Z <- matrix(t(sapply(lm.fit(X, y)$fitted.values, "^", power)), nrow = n)
+
+  XZ <- cbind(X, Z)
+  q <- ncol(Z)
+
+  # Residuals without and with polynomial terms
+  res1 <- lm.fit(X, y)$residuals
+  res2 <- lm.fit(XZ, y)$residuals
+
+  # Sum of squared residuals
+  res1 <- sum(res1^2L)
+  res2 <- sum(res2^2L)
+
+  # Degrees of freedom
+  df1 <- q
+  df2 <- n - (k + q)
+
+  # Test statistic
+  stat <- (df2 / df1) * ((res1 - res2) / res2)
+
+  return(data.frame(stat = (df2 / df1) * ((res1 - res2) / res2), df1 = df1, df2 = df2, pval = as.vector(pf(stat, df1, df2, lower.tail = FALSE))))
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## .test.harv Function: Harvey-Collier Test ####
+
+.test.harv <- function(model, order = NULL) {
+
+  # Design matrix and response vector
+  X <- model.matrix(terms(model), data = model.frame(model))
+  y <- model.response(model.frame(model))
+
+  # Number of columns and rows
+  k <- ncol(X)
+  n <- nrow(X)
+
+  # Main function
+  rec.res <- function(X, y, k = k, n = n) {
+
+    w <- rep(0L, (n - k))
+
+    Xr1 <- X[seq_len(k), , drop = FALSE]
+
+    xr <- as.vector(X[k + 1L, ])
+
+    X1 <- chol2inv(qr.R(qr(Xr1)))
+
+    fr <- as.vector((1L + (t(xr) %*% X1 %*% xr)))
+
+    betar <- X1 %*% t(Xr1) %*% y[seq_len(k)]
+
+    w[1L] <- (y[k + 1L] - t(xr) %*% betar) / sqrt(fr)
+
+    for (r in ((k + 2L):n)) {
+
+      X1 <- X1 - (X1 %*% outer(xr, xr) %*% X1) / fr
+      betar <- betar + X1 %*% xr * w[r - k - 1]*sqrt(fr)
+      xr <- as.vector(X[r, ])
+      fr <- as.vector((1L + (t(xr) %*% X1 %*% xr)))
+      w[r - k] <- (y[r] - t(xr) %*% betar) / sqrt(fr)
+
+    }
+
+    return(w)
+
+  }
+
+  # Order by predictor
+  if (isTRUE(!order %in% c("none", "all"))) {
+
+    order(X[, order]) |> (\(p) {
+
+      X <<- X[p, ]
+      y <<- y[p]
+
+    })()
+
+  }
+
+  # Test statistic
+  harv <- tryCatch(rec.res(X, y, k = k, n = n) |> (\(p) p / sqrt(var(p)*(length(p) - 1L) / (n - k - 1L)))() |> (\(q) abs(sum(q) / sqrt(n - k)) / sqrt(var(q)))(),
+                   warning = function(y) {
+
+                     stop("Harvey-Collier test could not be computed.", call. = FALSE)
+
+                   }, error = function(y) {
+
+                     stop("Harvey-Collier test could not be computed.", call. = FALSE)
+
+                   })
+
+  # Return object
+  return(data.frame(stat = harv, df = n - k - 1L,  pval = 2L * pt(harv, n - k - 1L, lower.tail = FALSE)))
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## .test.rain Function: Rainbow Test ####
+
+.test.rain <- function(model, frac = 0.5, order = NULL) {
+
+  # Design matrix and response vector
+  X <- model.matrix(terms(model), model.frame(model))
+  y <- model.response(model.frame(model))
+
+  # Number of columns and rows
+  k <- ncol(X)
+  n <- nrow(X)
+
+  # Order by Mahalanobis distance
+  if (isTRUE(order == "mahalanobis")) {
+
+    order(mahalanobis(X, apply(X, 2L, mean, na.rm = TRUE), chol2inv(qr.R(qr(X))), inverted = TRUE)) |>
+      (\(p) {
+
+        X <<- as.matrix(X[p, ])
+        y <<- y[p]
+
+      })()
+
+    from <- 1L
+    to <- floor(frac*n)
+
+  # Order by predictor
+  } else if (isTRUE(order != "none")) {
+
+    order(X[, order]) |> (\(p) {
+
+      X <<- X[p, ]
+      y <<- y[p]
+
+    })()
+
+    from <- ceiling(quantile(seq_len(n), probs = (1L - frac) / 2L))
+    to <- floor(quantile(seq_len(n), probs = 1L - ((1 - frac) / 2L)))
+
+  } else {
+
+    from <- ceiling(quantile(seq_len(n), probs = (1L - frac) / 2L))
+    to <- floor(quantile(seq_len(n), probs = 1L - ((1 - frac) / 2L)))
+
+  }
+
+  if (isTRUE(to <= from)) { stop("Number of observations in the subsample is too small, specify a higher value for the argument 'frac'.", call. = FALSE) }
+
+  # Subsample
+  X.sub <- as.matrix(X[from:to, ])
+  n1 <- nrow(X.sub)
+
+  if (isTRUE(n1 < k)) { stop("Number of predictors is larger than the number of observations in the subset.", call. = FALSE) }
+
+  # Sum of squared residuals
+  subresid.ss <- sum(lm.fit(X.sub, y[from:to])$residuals^2L)
+
+  # Test statistic
+  stat <- ((sum(lm.fit(X, y)$residuals^2L) - subresid.ss) / (n - n1)) / (subresid.ss / (n1 - k))
+
+  # Degrees of freedom
+  df <- c((n - n1), (n1 - k))
+
+  # Return object
+  return(data.frame(n.sub = n1, stat = stat, df1 = df[1L], df2 = df[2L], pval = pf(stat, df[1L], df[2L], lower.tail = FALSE)))
+
+}
+
+#_______________________________________________________________________________
+#
+# Internal Functions for the test.norm() function———————————————————————————————
+#
+# .test.lillie
+# .test.ad
+# .test.cm
+# .test.hz
+# .test.hw
+# .ginv
+# .test.royston
+# .test.sf
+#
+# Modified functions from the nortest, MASS, and MVN package
+# see: https://github.com/cran/nortest/tree/master/R
+#      https://github.com/selcukorkmaz/MVN/tree/master/R
+#      https://github.com/cran/MASS/tree/master/R
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## .test.lillie Function: Kolmogorov-Smirnov-Lilliefors Test for Normality ####
+
+.test.lillie <- function (x) {
+
+  x <- sort(x[complete.cases(x)])
+  n <- length(x)
+
+  if (isTRUE(n < 5L)) { stop("The Kolmogorov-Smirnov-Lilliefors test requires a sample size greater than 4.", call. = FALSE) }
+
+  p <- pnorm((x - mean(x)) / sd(x))
+  Dplus <- max(seq(seq_len(n)) / n - p)
+  Dminus <- max(p - (seq(seq_len(n)) - 1L) / n)
+
+  K <- max(Dplus, Dminus)
+  if (isTRUE(n <= 100)) {
+
+    Kd <- K
+    nd <- n
+
+  } else {
+
+    Kd <- K * ((n/100)^0.49)
+    nd <- 100
+
+  }
+
+  pvalue <- exp(-7.01256 * Kd^2 * (nd + 2.78019) + 2.99587 * Kd * sqrt(nd + 2.78019) - 0.122119 + 0.974598 / sqrt(nd) + 1.67997 / nd)
+
+  if (isTRUE(pvalue > 0.1)) {
+
+    KK <- (sqrt(n) - 0.01 + 0.85/sqrt(n)) * K
+    if (isTRUE(KK <= 0.302)) {
+
+      pvalue <- 1L
+
+    } else if (KK <= 0.5) {
+
+      pvalue <- 2.76773 - 19.828315 * KK + 80.709644 * KK^2L - 138.55152 * KK^3L + 81.218052 * KK^4L
+
+    } else if (KK <= 0.9) {
+
+      pvalue <- -4.901232 + 40.662806 * KK - 97.490286 * KK^2L + 94.029866 * KK^3L - 32.355711 * KK^4L
+
+    } else if (KK <= 1.31) {
+
+      pvalue <- 6.198765 - 19.558097 * KK + 23.186922 * KK^2L - 12.234627 * KK^3L + 2.423045 * KK^4L
+
+    } else {
+
+      pvalue <- 0L
+
+    }
+
+  }
+
+  return(data.frame(stat = K, pval = pvalue))
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## .test.ad Function: Anderson-Darling Test for Normality ####
+
+.test.ad <- function (x) {
+
+  x <- sort(x[complete.cases(x)])
+  n <- length(x)
+
+  if (isTRUE(n < 8L)) { stop("The Anderson-Darling test requires a sample size greater than 7.", call. = FALSE) }
+
+  logp1 <- pnorm((x-mean(x)) / sd(x), log.p = TRUE)
+  logp2 <- pnorm(-(x-mean(x)) / sd(x), log.p = TRUE)
+
+  h <- (2L * seq(seq_len(n)) - 1L) * (logp1 + rev(logp2))
+
+  A <- -n - mean(h)
+  AA <- (1L + 0.75 / n + 2.25 / n^2) * A
+
+  if (isTRUE(AA < 0.2)) {
+
+    pval <- 1L - exp(-13.436 + 101.14 * AA - 223.73 * AA^2L)
+
+  } else if (AA < 0.34) {
+
+    pval <- 1L - exp(-8.318 + 42.796 * AA - 59.938 * AA^2L)
+
+  } else if (AA < 0.6) {
+
+    pval <- exp(0.9177 - 4.279 * AA - 1.38 * AA^2L)
+
+  } else if (AA < 10) {
+
+    pval <- exp(1.2937 - 5.709 * AA + 0.0186 * AA^2L)
+
+  }  else  {
+
+    pval <- 3.7e-24
+
+  }
+
+  return(data.frame(stat = A, pval = pval))
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## .test.cm Function: Cramer-von Mise Test for Normality ####
+
+.test.cm <- function (x) {
+
+  x <- sort(x[complete.cases(x)])
+  n <- length(x)
+
+  if (isTRUE(n < 8L)) { stop("The Cramer-von Mises test requires a sample size greater than 7.", call. = FALSE) }
+
+  p <- pnorm((x - mean(x))/sd(x))
+  W <- (1L / (12L * n) + sum((p - (2L * seq(seq_len(n)) - 1L) / (2L * n))^2L))
+  WW <- (1L + 0.5 / n) * W
+
+  if (isTRUE(WW < 0.0275)) {
+
+    pval <- 1L - exp(-13.953 + 775.5 * WW - 12542.61 * WW^2L)
+
+  } else if (isTRUE(WW < 0.051)) {
+
+    pval <- 1L - exp(-5.903 + 179.546 * WW - 1515.29 * WW^2L)
+
+  } else if (isTRUE(WW < 0.092)) {
+
+    pval <- exp(0.886 - 31.62 * WW + 10.897 * WW^2L)
+
+  } else if (isTRUE(WW < 1.1)) {
+
+    pval <- exp(1.111 - 34.242 * WW + 12.832 * WW^2L)
+
+  } else {
+
+    pval <- 7.37e-10
+
+  }
+
+  return(data.frame(stat = W, pval = pval))
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## .test.hz Function: Henze-Zirkler Test for Multivariate Normality ####
+
+.test.hz <- function(data, use_population = TRUE, tol = 1e-25) {
+
+  # Handle missing values
+  df <- data[complete.cases(data), , drop = FALSE]
+
+  # Convert to matrix and dimensions
+  x <- as.matrix(df)
+
+  n <- nrow(x)
+  p <- ncol(x)
+
+  # Center data
+  x_centered <- scale(x, center = TRUE, scale = FALSE)
+
+  # Covariance matrix
+  if (isTRUE(use_population)) {
+
+    S <- ((n - 1L) / n) * cov(x_centered)
+
+  } else {
+
+    S <- cov(x_centered)
+
+  }
+
+  # Invert covariance
+  invS <- tryCatch(solve(S, tol = tol), error = function(e) stop("Covariance matrix is singular or near-singular: ", e$message))
+
+  # Squared Mahalanobis distances
+  D <- x_centered %*% invS %*% t(x_centered)
+  Dj <- diag(D)
+
+  # Pairwise squared differences
+  Djk <- outer(Dj, Dj, "+") - 2 * D
+
+  # Smoothing parameter b
+  b <- (n^(1L / (p + 4L))) * (((2L * p + 1L) / 4L)^(1L / (p + 4L))) / sqrt(2L)
+
+  # Compute HZ statistic
+  part1 <- sum(exp(- (b^2L) / 2L * Djk)) / (n^2L)
+  part2 <- 2L * (1L + b^2L)^(-p / 2L) * sum(exp(- (b^2L) / (2L * (1L + b^2L)) * Dj)) / n
+  hz_stat <- n * (part1 - part2 + (1L + 2L * b^2L)^(-p / 2L))
+
+  # Log-normal approximation parameters
+  a   <- 1L + 2L * b^2L
+  wb  <- (1L + b^2L) * (1L + 3L * b^2L)
+  mu  <- 1L - a^(-p / 2L) * (1L + (p * b^2L) / a + (p * (p + 2L) * b^4L) / (2L * a^2L))
+  si2 <-  2L * (1L + 4L * b^2L)^(-p / 2L) + 2L * a^(-p) * (1L + (2L * p * b^4L) / a^2L + (3L * p * (p + 2L) * b^8L) / (4L * a^4L)) - 4L * wb^(-p / 2L) * (1L + (3L * p * b^4L) / (2L * wb) + (p * (p + 2L) * b^8L) / (2L * wb^2L))
+  pmu <- log(sqrt(mu^4L / (si2 + mu^2L)))
+  psi <- sqrt(log((si2 + mu^2L) / mu^2L))
+
+  # p-value
+  p_value <- plnorm(hz_stat, pmu, psi, lower.tail = FALSE)
+
+  return(data.frame(stat = hz_stat, pval = p_value))
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## .test.hw Function: Henze-Wagner Test for Multivariate Normality ####
+
+.test.hw <- function(data, use_population = TRUE, tol = 1e-25) {
+
+  # Handle missing values
+  df <- data[complete.cases(data), , drop = FALSE]
+
+  # Convert to matrix and dimensions
+  x <- as.matrix(df)
+  n <- nrow(x)
+  p <- ncol(x)
+
+  # Center data
+  x_centered <- scale(x, center = TRUE, scale = FALSE)
+
+  # Compute covariance
+  if (use_population) {
+
+    S <- ((n - 1L) / n) * cov(x_centered)
+
+  } else {
+
+    S <- cov(x_centered)
+
+  }
+
+  # Invert covariance (use Moore-Penrose if singular)
+  invS <- tryCatch(solve(S, tol = tol), error = function(e) .ginv(S))
+
+  # Compute distance matrices
+  D <- x_centered %*% invS %*% t(x_centered)
+  Dj <- diag(D)
+  Djk <- outer(Dj, Dj, "+") - 2L * D
+
+  # Smoothing parameter b fixed to 1 for HW
+  b <- 1L
+
+  # Compute Henze-Wagner statistic (observed)
+  part1 <- sum(exp(-(b^2L) / 2L * Djk)) / (n^2L)
+  part2 <- 2L * (1L + b^2L)^(-p / 2L) * sum(exp(-(b^2L) / (2L * (1L + b^2L)) * Dj)) / n
+  hw_stat <- n * (part1 - part2 + (1L + 2L * b^2L)^(-p / 2L))
+
+  # Log-normal approximation parameters for p-value
+  a   <- 1L + 2L * b^2L
+  wb  <- (1L + b^2L) * (1L + 3L * b^2L)
+  mu  <- 1L - a^(-p / 2L) * (1L + (p * b^2L) / a + (p * (p + 2L) * b^4L) / (2L * a^2L))
+  si2 <- 2L * (1L + 4L * b^2L)^(-p / 2L) + 2L * a^(-p) * (1L + (2L * p * b^4L) / a^2L + (3L * p * (p + 2L) * b^8L) / (4L * a^4L)) - 4L * wb^(-p / 2L) * (1L + (3L * p * b^4) / (2L * wb) + (p * (p + 2L) * b^8L) / (2L * wb^2L))
+  pmu <- log(sqrt(mu^4L / (si2 + mu^2L)))
+  psi <- sqrt(log((si2 + mu^2) / mu^2L))
+
+  # Asymptotic p-value (log-normal)
+  p_value <- plnorm(hw_stat, pmu, psi, lower.tail = FALSE)
+
+  return(data.frame(stat = hw_stat, pval = p_value))
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## .ginv Function: Generalized Inverse of a Matrix  ####
+#
+# see: https://github.com/cran/MASS/blob/master/R/misc.R
+
+.ginv <- function(X, tol = sqrt(.Machine$double.eps)) {
+
+  if (isTRUE(length(dim(X)) > 2L || !(is.numeric(X) || is.complex(X)))) { stop("'X' must be a numeric or complex matrix") }
+
+  if (isTRUE(!is.matrix(X))) { X <- as.matrix(X) }
+
+  Xsvd <- svd(X)
+  if (isTRUE(is.complex(X))) { Xsvd$u <- Conj(Xsvd$u) }
+
+  Positive <- Xsvd$d > max(tol * Xsvd$d[1L], 0L)
+
+  if (isTRUE(all(Positive))) {
+
+    Xsvd$v %*% (1L / Xsvd$d * t(Xsvd$u))
+
+  } else if(isTRUE(!any(Positive))) {
+
+    array(0L, dim(X)[2L:1L])
+
+  } else {
+
+    Xsvd$v[, Positive, drop = FALSE] %*% ((1L / Xsvd$d[Positive]) * t(Xsvd$u[, Positive, drop = FALSE]))
+
+  }
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## .test.royston Function: Royston's Test for Multivariate Normality ####
+
+.test.royston <- function(data, tol = 1e-25) {
+
+  # Handle missing values
+  df <- data[complete.cases(data), , drop = FALSE]
+
+  # Dimensions and checks
+  x <- as.matrix(df)
+  n <- nrow(x)
+  p <- ncol(x)
+
+  if (isTRUE(n < 4L || n > 2000)) { stop("The Royston's test requires a sample size between 4 and 2000.", call. = FALSE) }
+
+  # Center the data for covariance estimation
+  x_centered <- scale(x, center = TRUE, scale = FALSE)
+
+  # Preallocate vector of z-values (one per variable)
+  z_vals <- numeric(p)
+
+  # Compute univariate W-statistics and z-transform
+  if (isTRUE(n >= 4L && n <= 11L)) {
+
+    # Small sample adjustment
+    g <- -2.273 + 0.459 * n
+    m <- 0.544 - 0.39978 * n + 0.025054 * n^2L - 0.0006714 * n^3L
+    s <- exp(1.3822 - 0.77857 * n + 0.062767 * n^2L - 0.0020322 * n^3L)
+
+    for (i in seq_len(p)) {
+
+      vec <- x[, i]
+      w <- if (misty::kurtosis(vec, sample = FALSE) > 0L) {
+
+        .test.sf(vec)$stat
+
+      } else {
+
+        stats::shapiro.test(vec)$statistic
+
+      }
+
+      z_vals[i] <- (-log(g - log(1L - w)) - m) / s
+
+    }
+
+  } else if (isTRUE(n >= 12L)) {
+
+    # Large sample adjustment
+    lx <- log(n)
+    m  <- -1.5861 - 0.31082 * lx - 0.083751 * lx^2 + 0.0038915 * lx^3L
+    s  <- exp(-0.4803 - 0.082676 * lx + 0.0030302 * lx^2L)
+
+    for (i in seq_len(p)) {
+
+      vec <- x[, i]
+      w <- if (misty::kurtosis(vec, sample = FALSE) > 0L) {
+
+        .test.sf(vec)$stat
+
+      } else {
+
+        shapiro.test(vec)$statistic
+
+      }
+
+      z_vals[i] <- (log(1L - w) - m) / s
+
+    }
+
+  }
+
+  # Adjust for correlation among variables
+  u  <- 0.715
+  v  <- 0.21364 + 0.015124 * (log(n))^2 - 0.0018034 * (log(n))^3L
+  l  <- 5L
+  C  <- cor(x)
+  NC <- (C^l) * (1L - (u * (1L - C)^u) / v)
+  T  <- sum(NC) - p
+  mC <- T / (p^2L - p)
+  edf <- p / (1L + (p - 1L) * mC)
+
+  # Compute observed Royston H statistic
+  H_stat <- (edf * sum((qnorm(pnorm(-z_vals) / 2L))^2L)) / p
+
+  # Asymptotic p-value
+  p_val <- pchisq(H_stat, df = edf, lower.tail = FALSE)
+
+  return(data.frame(stat = H_stat, pval = p_val))
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## .test.sf Function: Shapiro-Francia Test for Normality ####
+
+.test.sf <-function (x) {
+
+  x <- sort(x[complete.cases(x)])
+  n <- length(x)
+
+  y <- qnorm(ppoints(n, a = 3L/8L))
+  W <- cor(x, y)^2L
+  u <- log(n)
+  v <- log(u)
+  mu <- -1.2725 + 1.0521 * (v - u)
+  sig <- 1.0308 - 0.26758 * (v + 2/u)
+  z <- (log(1L - W) - mu) / sig
+  pval <- pnorm(z, lower.tail = FALSE)
+
+  return(data.frame(stat = W, pval = pval))
+
+}
+
 #_______________________________________________________________________________
 #
 # Internal Function for Writing Results ————————————————————————————————————————

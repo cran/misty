@@ -101,7 +101,7 @@
 #'
 #' @examples
 #' \dontrun{
-#' #—————————————————————————————————————— #------------------------------------
+#' #————————————————————————————————————————————————————————————————————————————
 #' # Blimp Example 4.3: Linear Regression
 #'
 #' # Example 1a: Default setting
@@ -122,7 +122,7 @@
 #' # Example 1g: Print result section in a different order
 #' blimp.print("Ex4.3.blimp-out", result = c("model.info", "fit", "algo.options"))
 #'
-#' #—————————————————————————————————————— #------------------------------------
+#' #————————————————————————————————————————————————————————————————————————————
 #' # misty.object of type 'blimp.print'
 #'
 #' # Example 2
@@ -132,7 +132,7 @@
 #' # Print misty.object
 #' blimp.print(object)
 #'
-#' #—————————————————————————————————————— #------------------------------------
+#' #————————————————————————————————————————————————————————————————————————————
 #' # Write Results
 #'
 #' # Example 3: Write Results into a text file
@@ -147,13 +147,13 @@ blimp.print <- function(x,
 
   #_____________________________________________________________________________
   #
-  # Initial Check --------------------------------------------------------------
+  # Initial Check ——————————————————————————————————————————————————————————————
 
   # Check if input 'x' is missing or NULL
   if (isTRUE(missing(x) || is.null(x))) { stop("Please specify a character string indicating the name of folder or name of the posterior data file for the argument 'x'", call. = FALSE) }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Character string ####
+  ## Character String ####
 
   if (isTRUE(is.character(x))) {
 
@@ -167,7 +167,7 @@ blimp.print <- function(x,
     if (isTRUE(!file.exists(x))) { stop(paste0("Unable to read the Blimp output file: ", sQuote(x), " does not exist."), call. = FALSE) }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## misty object ####
+  ## misty Object ####
 
   } else if (isTRUE(inherits(x, "misty.object"))) {
 
@@ -181,14 +181,14 @@ blimp.print <- function(x,
 
   #_____________________________________________________________________________
   #
-  # Result Arguments -----------------------------------------------------------
+  # Result Arguments ———————————————————————————————————————————————————————————
 
   # All result options
   result.all <- c("algo.options", "simdat.summary", "simdat.summary", "order.simdat", "burnin.psr", "mh.accept", "data.info", "var.imp", "model.info", "param.label", "warn.mess", "error.mess", "fit", "cor.resid", "out.model", "pred.model", "gen.param", "order.impdat")
 
   #_____________________________________________________________________________
   #
-  # Input Check ----------------------------------------------------------------
+  # Input Check ————————————————————————————————————————————————————————————————
 
   # Check inputs 'not.result', 'append', 'output', and 'write'
   .check.input(logical = c("not.result", "append", "output"), character = list(style = 2L), m.character = list(style = c("regular", "bold", "italic", "underline")), args = "write1", envir = environment(), input.check = check)
@@ -211,7 +211,7 @@ blimp.print <- function(x,
 
   #_____________________________________________________________________________
   #
-  # Arguments ------------------------------------------------------------------
+  # Arguments ——————————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## 'result' Argument ####
@@ -251,7 +251,7 @@ blimp.print <- function(x,
 
   #_____________________________________________________________________________
   #
-  # Main Function --------------------------------------------------------------
+  # Main Function ——————————————————————————————————————————————————————————————
 
   section <- c("ALGORITHMIC OPTIONS SPECIFIED:", "SIMULATED DATA SUMMARIES:", "VARIABLE ORDER IN SIMULATED DATA:",
                "BURN-IN POTENTIAL SCALE REDUCTION (PSR) OUTPUT:", "METROPOLIS-HASTINGS ACCEPTANCE RATES:",
@@ -522,7 +522,7 @@ blimp.print <- function(x,
 
   #_____________________________________________________________________________
   #
-  # Print Result Section -------------------------------------------------------
+  # Print Result Section ———————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Extract result sections ####
@@ -620,7 +620,7 @@ blimp.print <- function(x,
 
   #_____________________________________________________________________________
   #
-  # Print Output ---------------------------------------------------------------
+  # Print Output ———————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Print Result Sections ####
@@ -707,7 +707,7 @@ blimp.print <- function(x,
 
   #_____________________________________________________________________________
   #
-  # Return Object --------------------------------------------------------------
+  # Return Object ——————————————————————————————————————————————————————————————
 
   object <- list(call = match.call(),
                  type = "blimp",
@@ -719,7 +719,7 @@ blimp.print <- function(x,
 
   #_____________________________________________________________________________
   #
-  # Output ---------------------------------------------------------------------
+  # Output —————————————————————————————————————————————————————————————————————
 
   return(invisible(object))
 

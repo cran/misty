@@ -135,17 +135,16 @@
 #'                         indicators when using \code{estimator = "MLR"}, and
 #'                         \code{"pairwise"} for CFA models with ordered-categorical
 #'                         indicators when using \code{estimator = "pairwise"}.
-#' @param print            a character string or character vector indicating which
-#'                         results to show on the console, i.e. \code{"all"} for
-#'                         all results, \code{"summary"} for a summary of the
-#'                         specification of the estimation method and missing
-#'                         data handling in lavaan, \code{"coverage"} for the
-#'                         variance-covariance coverage of the data,
-#'                         \code{"descript"} for descriptive statistics,
-#'                         \code{"fit"} for model fit, \code{"est"} for parameter
-#'                         estimates, \code{"modind"} for modification indices,
-#'                         \code{"resid"} for the residual correlation, and
-#'                         \code{"opdyke"} for the discrepancy between model-implied
+#' @param print            a character vector indicating which results to show
+#'                         on the console, i.e. \code{"all"} for all results,
+#'                         \code{"summary"} for a summary of the specification
+#'                         of the estimation method and missing data handling in
+#'                         lavaan, \code{"coverage"} for the variance-covariance
+#'                         coverage of the data, \code{"descript"} for descriptive
+#'                         statistics, \code{"fit"} for model fit, \code{"est"}
+#'                         for parameter estimates, \code{"modind"} for modification
+#'                         indices, \code{"resid"} for the residual correlation,
+#'                         and \code{"opdyke"} for the discrepancy between model-implied
 #'                         and observed correlation expressed in terms of the relative
 #'                         percentile of an Opdyke distribution (McNeish, 2025).
 #'                         By default, a summary of the specification, model fit,
@@ -188,9 +187,10 @@
 #'                         \code{"red"}, \code{"b.red"} (default), \code{"green"},
 #'                         \code{"b.green"}, \code{"blue"}, or \code{"b.blue"},
 #'                         see the help page of the \code{\link{chr.color}} function.
-#'                         Note that this option is not supported when using R
-#'                         Markdown and when writing the output into a text file
-#'                         (\code{.txt}).
+#'                         Note that this option is only supported on the RStudio
+#'                         platform, i.e., the argument switches to \code{"default"}
+#'                         when using R Markdown and when writing the output into
+#'                         a text file (\code{.txt}).
 #' @param style            a character vector indicating the font style for
 #'                         highlighting absolute residual correlation coefficients
 #'                         and standardized means equal or higher \code{resid.minval},
@@ -684,7 +684,7 @@ item.cfa <- function(data, ..., model = NULL, rescov = NULL, hierarch = FALSE,
 
   #_____________________________________________________________________________
   #
-  # Initial Check --------------------------------------------------------------
+  # Initial Check ——————————————————————————————————————————————————————————————
 
   # Check if input 'data' is missing or NULL
   if (isTRUE(missing(data) ||is.null(data))) { stop("Please specify a data frame for the argument 'data'", call. = FALSE) }
@@ -694,44 +694,21 @@ item.cfa <- function(data, ..., model = NULL, rescov = NULL, hierarch = FALSE,
 
   #_____________________________________________________________________________
   #
-  # Data -----------------------------------------------------------------------
+  # Data ———————————————————————————————————————————————————————————————————————
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Using the Argument '...' ####
-
-  if (isTRUE(!missing(...))) {
-
-    # Extract data
-    x <- as.data.frame(data[, .var.names(data = data, ..., cluster = cluster), drop = FALSE])
-
-    # Cluster variable
-    if (isTRUE(!is.null(cluster))) { cluster <- data[, cluster] }
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Without Using the Argument '...' ####
-
-  } else {
-
-    # Data frame
-    x <- as.data.frame(data)
-
-    # Data and cluster
-    var.group <- .var.group(data = x, cluster = cluster)
+  .data(data, ..., cluster = cluster, drop = TRUE) |> (\(p) {
 
     # Data
-    if (isTRUE(!is.null(var.group$data)))  { x <- var.group$data }
+    assign("x", p$data, envir = parent.frame())
 
     # Cluster variable
-    if (isTRUE(!is.null(var.group$cluster))) { cluster <- var.group$cluster }
+    if (isTRUE(!is.null(p$cluster))) { assign("cluster", p$cluster, envir = parent.frame()) }
 
-  }
-
-  # Convert 'cluster' as tibble into a vector
-  if (!is.null(cluster) && isTRUE("tbl" %in% substr(class(cluster), 1L, 3L))) { cluster <- unname(unlist(cluster)) }
+  })()
 
   #_____________________________________________________________________________
   #
-  # Input Check ----------------------------------------------------------------
+  # Input Check ————————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Check Inputs ####
@@ -858,7 +835,7 @@ item.cfa <- function(data, ..., model = NULL, rescov = NULL, hierarch = FALSE,
 
   #_____________________________________________________________________________
   #
-  # Data and Arguments ---------------------------------------------------------
+  # Data and Arguments —————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Manifest Variables ####
@@ -1268,6 +1245,11 @@ item.cfa <- function(data, ..., model = NULL, rescov = NULL, hierarch = FALSE,
   if (isTRUE(test == "none")) { print <- setdiff(print, "fit") }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## 'color' Argument ####
+
+  if (isTRUE(color != "default" && .Platform$GUI != "RStudio")) { color <- "default" }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## 'style' Argument ####
 
   if (isTRUE(all(c("regular", "bold", "italic") %in% style))) { style <- "regular" }
@@ -1545,7 +1527,7 @@ item.cfa <- function(data, ..., model = NULL, rescov = NULL, hierarch = FALSE,
 
   #_____________________________________________________________________________
   #
-  # Return Object --------------------------------------------------------------
+  # Return Object ——————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Test Statistic and Standard Error ####
@@ -1847,13 +1829,13 @@ item.cfa <- function(data, ..., model = NULL, rescov = NULL, hierarch = FALSE,
 
   #_____________________________________________________________________________
   #
-  # Write Results --------------------------------------------------------------
+  # Write Results ——————————————————————————————————————————————————————————————
 
   if (isTRUE(!is.null(write))) { .write.result(object = object, write = write, append = append) }
 
   #_____________________________________________________________________________
   #
-  # Output ---------------------------------------------------------------------
+  # Output —————————————————————————————————————————————————————————————————————
 
   if (isTRUE(output)) { print(object, check = FALSE) }
 

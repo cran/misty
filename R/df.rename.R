@@ -13,11 +13,10 @@
 #'              and \code{gsub}. Note that a tilde (\code{~}) needs to be specified
 #'              before when using a function, e.g., \code{~toupper} or
 #'              \code{~gsub("_", ".")}.
-#' @param from  a character string or character vector indicating the column(s)
-#'              or variable(s) to be renamed.
-#' @param to    a character string or character vector indicating the corresponding
-#'              replacement values for the column(s) or variable(s) specified in
-#'              the argument \code{name}.
+#' @param from  a character vector indicating the column(s) or variable(s) to be
+#'              renamed.
+#' @param to    a character vector indicating the corresponding replacement values
+#'              for the column(s) or variable(s) specified in the argument \code{name}.
 #' @param check logical: if \code{TRUE} (default), argument specification is checked.
 #'
 #' @author
@@ -71,14 +70,14 @@ df.rename <- function(data, ..., from = NULL, to = NULL, check = TRUE) {
 
   #_____________________________________________________________________________
   #
-  # Initial Check --------------------------------------------------------------
+  # Initial Check ——————————————————————————————————————————————————————————————
 
   # Check if input 'data' is missing or NULL
   if (isTRUE(missing(data) || is.null(missing(data)) || (!is.matrix(data) && !is.data.frame(data)))) { stop("Please specify a matrix or data frame for the argument 'data'.", call. = FALSE) }
 
   #_____________________________________________________________________________
   #
-  # Variables ------------------------------------------------------------------
+  # Variables ——————————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Rename Variables Using ... ####
@@ -203,7 +202,7 @@ df.rename <- function(data, ..., from = NULL, to = NULL, check = TRUE) {
 
   #_____________________________________________________________________________
   #
-  # Input Check ----------------------------------------------------------------
+  # Input Check ————————————————————————————————————————————————————————————————
 
   # Check input 'check'
   .check.input(envir = environment(), input.check = check)
@@ -227,7 +226,7 @@ df.rename <- function(data, ..., from = NULL, to = NULL, check = TRUE) {
 
   #_____________________________________________________________________________
   #
-  # Main Function --------------------------------------------------------------
+  # Main Function ——————————————————————————————————————————————————————————————
 
   # Rename variables
   colnames(data)[match(from, colnames(data))] <- to
@@ -237,7 +236,7 @@ df.rename <- function(data, ..., from = NULL, to = NULL, check = TRUE) {
 
   #_____________________________________________________________________________
   #
-  # Output ---------------------------------------------------------------------
+  # Output —————————————————————————————————————————————————————————————————————
 
   return(data)
 

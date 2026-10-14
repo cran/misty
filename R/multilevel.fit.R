@@ -9,12 +9,12 @@
 #'
 #' @param model    a fitted multilevel model of class \code{"lavaan"} from the \pkg{lavaan}
 #'                 package.
-#' @param print    a character string or character vector indicating which results
-#'                 to show on the console, i.e. \code{"all"} for all results,
-#'                 \code{"summary"} for a summary of the specification of the
-#'                 estimation method and missing data handling in lavaan and
-#'                 \code{"fit"} for model fit. By default, the function only prints
-#'                 simultaneous and level-specific multilevel model fit information.
+#' @param print    a character vector indicating which results to show on the console,
+#'                 i.e. \code{"all"} for all results, \code{"summary"} for a summary
+#'                 of the specification of the estimation method and missing data
+#'                 handling in lavaan and \code{"fit"} for model fit. By default,
+#'                 the function only prints simultaneous and level-specific multilevel
+#'                 model fit information.
 #' @param digits   an integer value indicating the number of decimal places
 #'                 to be used for displaying results. Note that loglikelihood,
 #'                 information criteria and chi-square test statistic is
@@ -115,14 +115,14 @@ multilevel.fit <- function(model, print = c("all", "summary", "fit"), digits = 3
 
   #_____________________________________________________________________________
   #
-  # Initial Check --------------------------------------------------------------
+  # Initial Check ——————————————————————————————————————————————————————————————
 
   # Check if input 'model' is missing
   if (isTRUE(missing(model) || is.null(model) || !inherits(model, "lavaan"))) { stop("Please specify a fitted model of class 'lavaan' for the argument 'model'.", call. = FALSE) }
 
   #_____________________________________________________________________________
   #
-  # Input Check ----------------------------------------------------------------
+  # Input Check ————————————————————————————————————————————————————————————————
 
   .check.input(logical = c("append", "output"), m.character = list( print = c("all", "summary", "fit")),
                args = c("digits", "p.digits", "write2"), package = "lavaan", envir = environment(), input.check = check)
@@ -188,7 +188,7 @@ multilevel.fit <- function(model, print = c("all", "summary", "fit"), digits = 3
 
   #_____________________________________________________________________________
   #
-  # Arguments ------------------------------------------------------------------
+  # Arguments ——————————————————————————————————————————————————————————————————
 
   if (isTRUE(all(c("all", "summary", "fit") %in% print))) {
 
@@ -202,9 +202,9 @@ multilevel.fit <- function(model, print = c("all", "summary", "fit"), digits = 3
 
   #_____________________________________________________________________________
   #
-  # Main Function --------------------------------------------------------------
+  # Main Function ——————————————————————————————————————————————————————————————
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Extract Simultaneous and Level-Specific Fit Indices ####
 
   model.fit.measures <- tryCatch(suppressWarnings(list(simul = lavaan::fitmeasures(model), fit.l1 = lavaan::fitMeasures(model, level = 1L), fit.l2 = lavaan::fitMeasures(model, level = 2L))),
@@ -421,7 +421,7 @@ multilevel.fit <- function(model, print = c("all", "summary", "fit"), digits = 3
 
   #_____________________________________________________________________________
   #
-  # Return object --------------------------------------------------------------
+  # Return object ——————————————————————————————————————————————————————————————
 
   object <- list(call = match.call(),
                  type = "multilevel.fit",
@@ -433,13 +433,13 @@ multilevel.fit <- function(model, print = c("all", "summary", "fit"), digits = 3
 
   #_____________________________________________________________________________
   #
-  # Write Results --------------------------------------------------------------
+  # Write Results ——————————————————————————————————————————————————————————————
 
   if (isTRUE(!is.null(write))) { .write.result(object = object, write = write, append = append) }
 
   #_____________________________________________________________________________
   #
-  # Output ---------------------------------------------------------------------
+  # Output —————————————————————————————————————————————————————————————————————
 
   if (isTRUE(output)) { print(object, check = FALSE) }
 

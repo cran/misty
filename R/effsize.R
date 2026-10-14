@@ -109,10 +109,10 @@
 #' @export
 #'
 #' @examples
-#' # Example 1: Phi coefficient for 'vs' and 'am'
+#' # Example 1a: Phi coefficient for 'vs' and 'am'
 #' effsize(mtcars, vs, am)
 #'
-#' # Alternative specification without using the '...' argument
+#' # Example 1b: Alternative specification without using the '...' argument
 #' effsize(mtcars[, c("vs", "am")])
 #'
 #' # Example 2: Bias-corrected Cramer's V for 'gear' and 'carb'
@@ -127,17 +127,22 @@
 #' # Example 5: Fei for 'gear'
 #' effsize(mtcars, gear)
 #'
-#' # Example 6: Bias-corrected Cramer's V for 'cyl' and 'vs', 'am', 'gear', and 'carb'
+#' # Example 6a: Bias-corrected Cramer's V for 'cyl' and 'vs', 'am', 'gear', and 'carb'
 #' effsize(mtcars, cyl, vs:carb)
 #'
-#' # Alternative specification without using the '...' argument
+#' # Example 6b:  Alternative specification without using the '...' argument
 #' effsize(mtcars[, c("cyl", "vs", "am", "gear", "carb")])
+#'
+#' \dontrun{
+#' #————————————————————————————————————————————————————————————————————————————
+#' # Write Results
 #'
 #' # Example 7a: Write Results into a text file
 #' effsize(mtcars, cyl, vs:carb, write = "Cramer.txt")
 #'
 #' # Example 7b: Write Results into an Excel file
 #' effsize(mtcars, cyl, vs:carb, write = "Cramer.xlsx")
+#' }
 effsize <- function(data, ..., type = c("phi", "cramer", "tschuprow", "cont", "w", "fei"),
                     alternative = c("two.sided", "less", "greater"), conf.level = 0.95,
                     adjust = TRUE, indep = TRUE, p = NULL, digits = 3, as.na = NULL,
@@ -145,32 +150,16 @@ effsize <- function(data, ..., type = c("phi", "cramer", "tschuprow", "cont", "w
 
   #_____________________________________________________________________________
   #
-  # Initial Check --------------------------------------------------------------
+  # Initial Check ——————————————————————————————————————————————————————————————
 
   # Check if input 'data' is missing
   if (isTRUE(missing(data) || is.null(data))) { stop("Please specify a a vector, factor or data frame for the argument 'data'", call. = FALSE) }
 
   #_____________________________________________________________________________
   #
-  # Data -----------------------------------------------------------------------
+  # Data ———————————————————————————————————————————————————————————————————————
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Using the Argument '...' ####
-
-  if (isTRUE(!missing(...))) {
-
-    # Extract data and convert tibble into data frame or vector
-    x <- data[, .var.names(data = data, ...)] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(y)) == 1L)) { unname(unlist(y)) } else { as.data.frame(y) } } else { y })()
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Without Using the Argument '...' ####
-
-  } else {
-
-    # Convert 'data' as tibble into data frame
-    x <- data |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(y)) == 1L)) { unname(unlist(y)) } else { as.data.frame(y) } } else { y })()
-
-  }
+  .data(data, ..., drop = TRUE) |> (\(p) { assign("x", p$data, envir = parent.frame()) })()
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Convert user-missing values into NA ####
@@ -179,14 +168,15 @@ effsize <- function(data, ..., type = c("phi", "cramer", "tschuprow", "cont", "w
 
   #_____________________________________________________________________________
   #
-  # Input Check ----------------------------------------------------------------
+  # Input Check ————————————————————————————————————————————————————————————————
 
-  # Check inputs
   .check.input(logical = c("adjust", "indep", "append", "output"),
                s.character = list(type = c("phi", "cramer", "tschuprow", "cont", "w", "fei")),
                args = c("alternative", "conf.level", "digits", "write2"), envir = environment(), input.check = check)
 
-  # Additional checks
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Additional Checks ####
+
   if (isTRUE(check)) {
 
     # Check input 'p'
@@ -204,7 +194,7 @@ effsize <- function(data, ..., type = c("phi", "cramer", "tschuprow", "cont", "w
 
   #_____________________________________________________________________________
   #
-  # Arguments ------------------------------------------------------------------
+  # Arguments ——————————————————————————————————————————————————————————————————
 
   #—————————————————————————————————————— #
   ### Type of Analysis ####
@@ -275,7 +265,7 @@ effsize <- function(data, ..., type = c("phi", "cramer", "tschuprow", "cont", "w
 
   #_____________________________________________________________________________
   #
-  # Main Function --------------------------------------------------------------
+  # Main Function ——————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## One Variable ####
@@ -374,7 +364,7 @@ effsize <- function(data, ..., type = c("phi", "cramer", "tschuprow", "cont", "w
 
   #_____________________________________________________________________________
   #
-  # Return Object --------------------------------------------------------------
+  # Return Object ——————————————————————————————————————————————————————————————
 
   # Return object
   object <- list(call = match.call(),
@@ -387,13 +377,13 @@ effsize <- function(data, ..., type = c("phi", "cramer", "tschuprow", "cont", "w
 
   #_____________________________________________________________________________
   #
-  # Write Results --------------------------------------------------------------
+  # Write Results ——————————————————————————————————————————————————————————————
 
   if (isTRUE(!is.null(write))) { .write.result(object = object, write = write, append = append) }
 
   #_____________________________________________________________________________
   #
-  # Output ---------------------------------------------------------------------
+  # Output —————————————————————————————————————————————————————————————————————
 
   if (isTRUE(output)) { print(object, check = FALSE) }
 

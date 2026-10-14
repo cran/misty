@@ -76,7 +76,7 @@
 #' @export
 #'
 #' @examples
-#' #----------------------------------------------------------------------------
+#' #————————————————————————————————————————————————————————————————————————————
 #' # Extract Unique Elements, uniq() function
 #'
 #' # Example 1a: Extract unique elements in a vector
@@ -97,13 +97,13 @@
 #' # Example 2a: Extract unique elements in list
 #' uniq(airquality, table = FALSE)
 #'
-#' #----------------------------------------------------------------------------
+#' #————————————————————————————————————————————————————————————————————————————
 #' # Count Number of Unique Elements, uniq.n() function
 #'
 #' # Example 3a: Count number of unique elements in a vector
 #' uniq.n(airquality, Ozone)
 #'
-#' # Example 1b: Count number of unique elements for each variable in a data frame
+#' # Example 3b: Count number of unique elements for each variable in a data frame
 #' uniq.n(airquality)
 uniq <- function(data, ..., na.rm = TRUE, sort = TRUE, decreasing = FALSE, digits = NULL,
                  table = TRUE, write = NULL, append = TRUE, check = TRUE, output = TRUE) {
@@ -119,26 +119,7 @@ uniq <- function(data, ..., na.rm = TRUE, sort = TRUE, decreasing = FALSE, digit
   #
   # Data ———————————————————————————————————————————————————————————————————————
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Using the argument '...' ####
-
-  if (isTRUE(!missing(...))) {
-
-    # Variable names
-    var.names <- .var.names(data = data, ...)
-
-    # Extract data and convert tibble into data frame or vector
-    x <- data[, var.names] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(y)) == 1L)) { unname(unlist(y)) } else { as.data.frame(y) } } else { y })()
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Without using the argument '...' ####
-
-  } else {
-
-    # Convert tibble into data frame or vector
-    x <- data |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(y)) == 1L)) { unname(unlist(y)) } else { as.data.frame(y) } } else { y })()
-
-  }
+  .data(data, ..., drop = TRUE) |> (\(p) { assign("x", p$data, envir = parent.frame()) })()
 
   #_____________________________________________________________________________
   #
@@ -219,26 +200,7 @@ uniq.n <- function(data, ..., na.rm = TRUE, digits = NULL, check = TRUE) {
   #
   # Data ———————————————————————————————————————————————————————————————————————
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Using the argument '...' ####
-
-  if (isTRUE(!missing(...))) {
-
-    # Variable names
-    var.names <- .var.names(..., data = data)
-
-    # Extract data and convert tibble into data frame or vector
-    x <- data[, var.names] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(y)) == 1L)) { unname(unlist(y)) } else { as.data.frame(y) } } else { y })()
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Without using the argument '...' ####
-
-  } else {
-
-    # Convert tibble into data frame or vector
-    x <- data |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(y)) == 1L)) { unname(unlist(y)) } else { as.data.frame(y) } } else { y })()
-
-  }
+  .data(data, ..., drop = TRUE) |> (\(p) { assign("x", p$data, envir = parent.frame()) })()
 
   #_____________________________________________________________________________
   #
@@ -251,7 +213,7 @@ uniq.n <- function(data, ..., na.rm = TRUE, digits = NULL, check = TRUE) {
   # Main Function ——————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Dimension of the object = NULL ####
+  ## Dimension of the Object = NULL ####
 
   if (isTRUE(is.null(dim(x)))) {
 
@@ -262,7 +224,7 @@ uniq.n <- function(data, ..., na.rm = TRUE, digits = NULL, check = TRUE) {
     object <- unique(x) |> (\(y) if (isTRUE(na.rm)) { length(na.omit(y)) } else { length(y) })()
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Dimension of the object != NULL ####
+  ## Dimension of the Object != NULL ####
 
   } else {
 

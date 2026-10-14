@@ -161,13 +161,13 @@
 #'                    is not available for a limited-information estimator used
 #'                    to estimate the CFA model with ordered categorical
 #'                    indicators.
-#' @param print       a character string or character vector indicating which
-#'                    results to show on the console, i.e. \code{"all"} for all
-#'                    results, \code{"summary"} for a summary of the specification,
-#'                    \code{"dmacs"} for the effect sizes measure dMACS, and
-#'                    \code{"bias"} for the expected bias in the mean and variance
-#'                    of the total score. By default, a summary of the specification
-#'                    and the effect size measure dMACS are printed.
+#' @param print       a character vector indicating which results to show on the
+#'                    console, i.e. \code{"all"} for all results, \code{"summary"}
+#'                    for a summary of the specification, \code{"dmacs"} for the
+#'                    effect sizes measure dMACS, and \code{"bias"} for the expected
+#'                    bias in the mean and variance of the total score. By default,
+#'                    a summary of the specification and the effect size measure
+#'                    dMACS are printed.
 #' @param digits     an integer value indicating the number of decimal places
 #'                    to be used for displaying results.
 #' @param as.na       a numeric vector indicating user-defined missing values,
@@ -498,7 +498,7 @@ item.noninvar <- function(data = NULL, ..., object = NULL, model = NULL, group =
 
   #_____________________________________________________________________________
   #
-  # Initial Check --------------------------------------------------------------
+  # Initial Check ——————————————————————————————————————————————————————————————
 
   # Check if input 'data' and object are NULL
   if (isTRUE(is.null(data) && is.null(object))) { stop("Please specify the argument 'data' or the argument object.", call. = FALSE) }
@@ -508,7 +508,7 @@ item.noninvar <- function(data = NULL, ..., object = NULL, model = NULL, group =
 
   #_____________________________________________________________________________
   #
-  # Object of Class lavaan -----------------------------------------------------
+  # Object of Class lavaan —————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Argument 'object' Not Specified ####
@@ -567,7 +567,7 @@ item.noninvar <- function(data = NULL, ..., object = NULL, model = NULL, group =
 
   #_____________________________________________________________________________
   #
-  # Main Function --------------------------------------------------------------
+  # Main Function ——————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Check Inputs ####
@@ -835,7 +835,7 @@ item.noninvar <- function(data = NULL, ..., object = NULL, model = NULL, group =
 
   #_____________________________________________________________________________
   #
-  # Return Object --------------------------------------------------------------
+  # Return Object ——————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## lavaan summary ####
@@ -884,13 +884,13 @@ item.noninvar <- function(data = NULL, ..., object = NULL, model = NULL, group =
 
   #_____________________________________________________________________________
   #
-  # Write Results --------------------------------------------------------------
+  # Write Results ——————————————————————————————————————————————————————————————
 
   if (isTRUE(!is.null(write))) { .write.result(object = object, write = write, append = append) }
 
   #_____________________________________________________________________________
   #
-  # Output ---------------------------------------------------------------------
+  # Output —————————————————————————————————————————————————————————————————————
 
   if (isTRUE(output)) { print(object, check = FALSE) }
 

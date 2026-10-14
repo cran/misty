@@ -110,7 +110,7 @@ cluster.rwg <- function(data, ..., cluster, A = NULL, ranvar = NULL, z = TRUE,
 
   #_____________________________________________________________________________
   #
-  # Initial Check --------------------------------------------------------------
+  # Initial Check ——————————————————————————————————————————————————————————————
 
   # Check if input 'data' is missing
   if (isTRUE(missing(data) || is.null(data))) { stop("Please specify a numeric vector or data frame for the argument 'data'", call. = FALSE) }
@@ -120,37 +120,21 @@ cluster.rwg <- function(data, ..., cluster, A = NULL, ranvar = NULL, z = TRUE,
 
   #_____________________________________________________________________________
   #
-  # Data -----------------------------------------------------------------------
+  # Data ———————————————————————————————————————————————————————————————————————
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Using the Argument '...' ####
-
-  if (isTRUE(!missing(...))) {
-
-    # Extract data
-    x <- as.data.frame(data[, .var.names(data = data, ..., cluster = cluster), drop = FALSE])
-
-    # Extract cluster variable and convert tibble into data frame or vector
-    cluster <- data[, cluster] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { unname(unlist(y)) } else { return(y) })()
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Without Using the Argument '...' ####
-
-  } else {
-
-    # Data frame
-    x <- as.data.frame(data) |> (\(y) if (isTRUE(ncol(y) == 1L)) { unname(y) } else { return(y) })()
-
-    # Data and cluster
-    var.group <- .var.group(data = x, cluster = cluster, drop = FALSE)
+  var.names <- NULL
+  .data(data, ..., cluster = cluster, drop = TRUE) |> (\(p) {
 
     # Data
-    if (isTRUE(!is.null(var.group$data)))  { x <- var.group$data }
+    assign("x", p$data, envir = parent.frame())
+
+    # Variable names
+    assign("var.names", p$var.names, envir = parent.frame())
 
     # Cluster variable
-    if (isTRUE(!is.null(var.group$cluster))) { cluster <- var.group$cluster }
+    if (isTRUE(!is.null(p$cluster))) { assign("cluster", p$cluster, envir = parent.frame()) }
 
-  }
+  })()
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Convert User-Missing Values into NA ####
@@ -169,7 +153,7 @@ cluster.rwg <- function(data, ..., cluster, A = NULL, ranvar = NULL, z = TRUE,
 
   #_____________________________________________________________________________
   #
-  # Input Check ----------------------------------------------------------------
+  # Input Check ————————————————————————————————————————————————————————————————
 
   # Check inputs
   .check.input(logical = c("z", "expand"), numeric = list(A = 1L, ranvar = 1L), character = list(name = 1L), envir = environment(), input.check = check)
@@ -181,7 +165,7 @@ cluster.rwg <- function(data, ..., cluster, A = NULL, ranvar = NULL, z = TRUE,
     if (isTRUE(!is.null(A))) {
 
       # Check input 'data': Number of discrete responses
-      if (isTRUE(length(na.omit(unique(unlist(x)))) > A)) { warning("There are more unique values in 'data' than the number of discrete response options specified in 'A'.", call. = FALSE) }
+      if (isTRUE(length(na.omit(unique(unlist(x[, setdiff(colnames(x), "cluster")])))) > A)) { warning("There are more unique values in 'data' than the number of discrete response options specified in 'A'.", call. = FALSE) }
 
       # Check input 'data': Integer number
       if (isTRUE(A %% 1L != 0L || A < 0L)) { stop("Please specify a positive integer number for the argument 'A'.", call. = FALSE) }
@@ -195,7 +179,7 @@ cluster.rwg <- function(data, ..., cluster, A = NULL, ranvar = NULL, z = TRUE,
 
   #_____________________________________________________________________________
   #
-  # Data and Arguments ---------------------------------------------------------
+  # Data and Arguments —————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Random variance based on A ####
@@ -204,7 +188,7 @@ cluster.rwg <- function(data, ..., cluster, A = NULL, ranvar = NULL, z = TRUE,
 
   #_____________________________________________________________________________
   #
-  # Main Function --------------------------------------------------------------
+  # Main Function ——————————————————————————————————————————————————————————————
 
   x.split <- split(x[, -grep("cluster", names(x))], cluster)
 
@@ -233,7 +217,7 @@ cluster.rwg <- function(data, ..., cluster, A = NULL, ranvar = NULL, z = TRUE,
 
   #_____________________________________________________________________________
   #
-  # Output ---------------------------------------------------------------------
+  # Output —————————————————————————————————————————————————————————————————————
 
   return(object)
 

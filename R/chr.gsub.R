@@ -49,7 +49,7 @@ chr.gsub <- function(pattern, replacement, x, recycle = FALSE, check = TRUE, ...
 
   #_____________________________________________________________________________
   #
-  # Initial Check --------------------------------------------------------------
+  # Initial Check ——————————————————————————————————————————————————————————————
 
   # Check if input 'pattern' is missing or NULL
   if (isTRUE(missing(pattern) || is.null(pattern))) { stop("Please specify a character vector for the argument 'pattern'", call. = FALSE) }
@@ -62,7 +62,7 @@ chr.gsub <- function(pattern, replacement, x, recycle = FALSE, check = TRUE, ...
 
   #_____________________________________________________________________________
   #
-  # Data -----------------------------------------------------------------------
+  # Data ———————————————————————————————————————————————————————————————————————
 
   # Convert 'x' into a vector
   x <- unlist(x, use.names = FALSE)
@@ -72,7 +72,7 @@ chr.gsub <- function(pattern, replacement, x, recycle = FALSE, check = TRUE, ...
 
   #_____________________________________________________________________________
   #
-  # Input Check ----------------------------------------------------------------
+  # Input Check ————————————————————————————————————————————————————————————————
 
   # Check input 'recycle'
   .check.input(logical = "recycle", envir = environment(), input.check = check)
@@ -82,7 +82,7 @@ chr.gsub <- function(pattern, replacement, x, recycle = FALSE, check = TRUE, ...
 
   #_____________________________________________________________________________
   #
-  # Main Function --------------------------------------------------------------
+  # Main Function ——————————————————————————————————————————————————————————————
 
   if (isTRUE(length(replacement) > length(pattern))) {
 
@@ -106,7 +106,7 @@ chr.gsub <- function(pattern, replacement, x, recycle = FALSE, check = TRUE, ...
 
   #_____________________________________________________________________________
   #
-  # Output ---------------------------------------------------------------------
+  # Output —————————————————————————————————————————————————————————————————————
 
   return(x)
 

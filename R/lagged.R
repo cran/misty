@@ -35,20 +35,19 @@
 #'                \code{"days"} for days, and \code{"weeks"} for weeks.
 #' @param append  logical: if \code{TRUE} (default), lagged variable(s) are
 #'                appended to the data frame specified in the argument \code{data}.
-#' @param name    a character string or character vector indicating the names of
-#'                the lagged variables. By default, lagged variables are named
-#'                with the ending \code{".lag"} resulting in e.g. \code{"x1.lag"}
-#'                and \code{"x2.lag"} when specifying two variables. Variable
-#'                names can also be specified using a character vector matching
-#'                the number of variables, e.g. \code{name = c("lag.x1", "lag.x2")}).
-#' @param name.td a character string or character vector indicating the names of
-#'                the time difference variables when specifying a date and time
-#'                variables for the argument \code{time}. By default, time
-#'                difference variables are named with the ending \code{".td"}
-#'                resulting in e.g., \code{"x1.td"} and \code{"x2.td"} when
+#' @param name    a character vector indicating the names of the lagged variables.
+#'                By default, lagged variables are named with the ending \code{".lag"}
+#'                resulting in e.g. \code{"x1.lag"} and \code{"x2.lag"} when
 #'                specifying two variables. Variable names can also be specified
-#'                using a character vector matching the number of variables, e.g.,
-#'                \code{name = c("td.x1", "td.x2")}).
+#'                using a character vector matching the number of variables, e.g.
+#'                \code{name = c("lag.x1", "lag.x2")}).
+#' @param name.td a character vector indicating the names of the time difference
+#'                variables when specifying a date and time variables for the
+#'                argument \code{time}. By default, time difference variables are
+#'                named with the ending \code{".td"} resulting in e.g., \code{"x1.td"}
+#'                and \code{"x2.td"} when specifying two variables. Variable names
+#'                can also be specified using a character vector matching the
+#'                number of variables, e.g., \code{name = c("td.x1", "td.x2")}).
 #' @param as.na   a numeric vector indicating user-defined missing values, i.e.
 #'                these values are converted to \code{NA} before conducting the
 #'                analysis. Note that \code{as.na()} function is only applied to
@@ -147,14 +146,14 @@ lagged <- function(data, ..., id = NULL, obs = NULL, day = NULL, lag = 1, time =
 
   #_____________________________________________________________________________
   #
-  # Initial Check --------------------------------------------------------------
+  # Initial Check ——————————————————————————————————————————————————————————————
 
   # Check if input 'data' is missing or NULL
   if (isTRUE(missing(data) || is.null(data))) { stop("Please specify a numeric vector or data frame for the argument 'data'", call. = FALSE) }
 
   #_____________________________________________________________________________
   #
-  # Data -----------------------------------------------------------------------
+  # Data ———————————————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Using the Argument '...' ####
@@ -220,7 +219,7 @@ lagged <- function(data, ..., id = NULL, obs = NULL, day = NULL, lag = 1, time =
 
   #_____________________________________________________________________________
   #
-  # Arguments ------------------------------------------------------------------
+  # Arguments ——————————————————————————————————————————————————————————————————
 
   # Check input 'type'
   if (isTRUE(all(!units %in% c("secs", "mins", "hours", "days", "weeks")))) { stop("Character string in the argument 'units' does not match with \"secs\", \"mins\", \"hours\", \"days\"  or \"weeks\".", call. = FALSE) }
@@ -229,7 +228,7 @@ lagged <- function(data, ..., id = NULL, obs = NULL, day = NULL, lag = 1, time =
 
   #_____________________________________________________________________________
   #
-  # Input Check ----------------------------------------------------------------
+  # Input Check ————————————————————————————————————————————————————————————————
 
   # Check inputs
   .check.input(logical = "append", numeric = list(lag = 1L), s.character = list(units = c("secs", "mins", "hours", "days", "weeks")), envir = environment(), input.check = check)
@@ -258,7 +257,7 @@ lagged <- function(data, ..., id = NULL, obs = NULL, day = NULL, lag = 1, time =
 
   #_____________________________________________________________________________
   #
-  # Main Function --------------------------------------------------------------
+  # Main Function ——————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Single variable ####
@@ -448,7 +447,7 @@ lagged <- function(data, ..., id = NULL, obs = NULL, day = NULL, lag = 1, time =
 
   #_____________________________________________________________________________
   #
-  # Return Object --------------------------------------------------------------
+  # Return Object ——————————————————————————————————————————————————————————————
 
   return(object)
 

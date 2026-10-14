@@ -46,8 +46,10 @@
 #'                    highlighting like \code{"red"}, \code{"b.red"}, \code{"green"},
 #'                    \code{"b.green"}, \code{"blue"}, or \code{"b.blue"}, see
 #'                    the help page of the \code{\link{chr.color}} function.
-#'                    Note that this option is not supported when using R Markdown
-#'                    and when writing the output into a text file (\code{.txt}).
+#'                    Note that this option is only supported on the RStudio
+#'                    platform, i.e., the argument switches to \code{"default"}
+#'                    when using R Markdown and when writing the output into a
+#'                    text file (\code{.txt}).
 #' @param style       a character vector indicating the font style, i.e.,
 #'                    \code{"regular"} (default) for regular text, \code{"bold"}
 #'                    for bold text, and \code{"italic"} for italic text. Note
@@ -157,7 +159,7 @@ item.distract <- function(data, ..., key, exclude = NULL, na.keep = FALSE,
 
   #_____________________________________________________________________________
   #
-  # Input Check ####
+  # Input Check ————————————————————————————————————————————————————————————————
 
   # Check if input 'data' is missing or NULL
   if (isTRUE(missing(data) || is.null(data))) { stop("Please specify a data frame for the argument 'data'", call. = FALSE) }
@@ -166,19 +168,9 @@ item.distract <- function(data, ..., key, exclude = NULL, na.keep = FALSE,
 
   #_____________________________________________________________________________
   #
-  # Data -----------------------------------------------------------------------
+  # Data ———————————————————————————————————————————————————————————————————————
 
-  # Using the Argument '...'
-  if (isTRUE(!missing(...))) {
-
-    x <- as.data.frame(data[, .var.names(data = data, ...), drop = FALSE])
-
-  # Without Using the Argument '...'
-  } else {
-
-    x <- as.data.frame(data)
-
-  }
+  .data(data, ...) |> (\(p) { assign("x", p$data, envir = parent.frame()) })()
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   # Data and Key Check
@@ -234,6 +226,17 @@ item.distract <- function(data, ..., key, exclude = NULL, na.keep = FALSE,
   ## 'print' Argument ####
 
   if (isTRUE(all(c("all", "nUQ", "key", "n", "perc", "r") %in% print))) { print <- c("nUQ", "key", "n", "perc", "r") }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## 'color' Argument ####
+
+  if (isTRUE(color != "default" && .Platform$GUI != "RStudio")) {
+
+    warning("The argument 'color' is only available on the RStudio platform, argument switched to \"default\".", call. = FALSE)
+
+    color <- "default"
+
+  }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## 'style' Argument ####
@@ -349,7 +352,7 @@ item.distract <- function(data, ..., key, exclude = NULL, na.keep = FALSE,
 
   #_____________________________________________________________________________
   #
-  # Return Object ####
+  # Return Object ——————————————————————————————————————————————————————————————
 
   object <- list(call = match.call(),
                  type = "item.distract",
@@ -362,19 +365,19 @@ item.distract <- function(data, ..., key, exclude = NULL, na.keep = FALSE,
 
   #_____________________________________________________________________________
   #
-  # Write Results --------------------------------------------------------------
+  # Write Results ——————————————————————————————————————————————————————————————
 
   if (isTRUE(!is.null(write))) { .write.result(object = object, write = write, append = append) }
 
   #_____________________________________________________________________________
   #
-  # Output ---------------------------------------------------------------------
+  # Output —————————————————————————————————————————————————————————————————————
 
   if (isTRUE(output)) { print(object, check = FALSE) }
 
   #_____________________________________________________________________________
   #
-  # Return ---------------------------------------------------------------------
+  # Return —————————————————————————————————————————————————————————————————————
 
   return(invisible(object))
 

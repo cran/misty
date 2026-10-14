@@ -183,32 +183,16 @@ item.omega <- function(data, ..., rescov = NULL,
 
   #_____________________________________________________________________________
   #
-  # Initial Check --------------------------------------------------------------
+  # Initial Check ——————————————————————————————————————————————————————————————
 
   # Check if input 'data' is missing or NULL
   if (isTRUE(missing(data) || is.null(data))) { stop("Please specify a data frame for the argument 'data'", call. = FALSE) }
 
   #_____________________________________________________________________________
   #
-  # Data -----------------------------------------------------------------------
+  # Data ———————————————————————————————————————————————————————————————————————
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Using the Argument '...' ####
-
-  if (isTRUE(!missing(...))) {
-
-    # Extract data and convert tibble into data frame or vector
-    x <- as.data.frame(data[, .var.names(data = data, ...), drop = FALSE])
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Without Using the Argument '...' ####
-
-  } else {
-
-    # Data frame
-    x <- as.data.frame(data)
-
-  }
+  .data(data, ...) |> (\(p) { assign("x", p$data, envir = parent.frame()) })()
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Non-Numeric Variables ####
@@ -227,9 +211,8 @@ item.omega <- function(data, ..., rescov = NULL,
 
   #_____________________________________________________________________________
   #
-  # Input Check ----------------------------------------------------------------
+  # Input Check ————————————————————————————————————————————————————————————————
 
-  # Check inputs
   .check.input(logical = c("std", "append", "output"),
                s.character = list(type = c("omega", "hierarch", "categ"), estimator = c("ML", "GLS", "WLS", "DWLS", "ULS", "PML"), missing = c("listwise", "pairwise", "fiml")),
                m.character = list(print = c("all", "omega", "item")), args = c("digits", "r.digits", "conf.level"), package = "lavaan", envir = environment(), input.check = check)
@@ -282,7 +265,7 @@ item.omega <- function(data, ..., rescov = NULL,
 
   #_____________________________________________________________________________
   #
-  # Arguments ------------------------------------------------------------------
+  # Arguments ——————————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Type of Omega ####
@@ -379,7 +362,7 @@ item.omega <- function(data, ..., rescov = NULL,
 
   #_____________________________________________________________________________
   #
-  # Main Function --------------------------------------------------------------
+  # Main Function ——————————————————————————————————————————————————————————————
 
   omega <- .omega(y = x, rescov = rescov, type = type, std = std, estimator = estimator, missing = missing, check = check)
 
@@ -460,7 +443,7 @@ item.omega <- function(data, ..., rescov = NULL,
 
   #_____________________________________________________________________________
   #
-  # Return Object --------------------------------------------------------------
+  # Return Object ——————————————————————————————————————————————————————————————
 
   object <- list(call = match.call(),
                  type = "item.omega",
@@ -473,19 +456,19 @@ item.omega <- function(data, ..., rescov = NULL,
 
   #_____________________________________________________________________________
   #
-  # Write Results --------------------------------------------------------------
+  # Write Results ——————————————————————————————————————————————————————————————
 
   if (isTRUE(!is.null(write))) { .write.result(object = object, write = write, append = append) }
 
   #_____________________________________________________________________________
   #
-  # Output ---------------------------------------------------------------------
+  # Output —————————————————————————————————————————————————————————————————————
 
   if (isTRUE(output)) { print(object, check = FALSE) }
 
   #_____________________________________________________________________________
   #
-  # Return ---------------------------------------------------------------------
+  # Return —————————————————————————————————————————————————————————————————————
 
   return(invisible(object))
 

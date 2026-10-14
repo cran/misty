@@ -241,36 +241,36 @@
 #'                         evaluating measurement invariance for ordered categorical
 #'                         indicators i.e., the argument will switch to \code{FALSE}
 #'                         when specifying \code{ordered = TRUE).
-#' @param print            a character string or character vector indicating which
-#'                         results to show on the console, i.e. \code{"all"} for
-#'                         all results, \code{"summary"} for a summary of the
-#'                         specification (e.g., estimation and optimization method,
-#'                         test statistic, missing data handling, and identification
-#'                         method) \code{"partial"} for a summary of the partial
-#'                         measurement invariance specification listing parameters
-#'                         that are freely estimated when \code{partial} is not
-#'                         \code{NULL}, \code{"coverage"} for the variance-covariance
-#'                         coverage of the data, \code{"descript"} for descriptive
-#'                         statistics for continuous variables (\code{ordered = FALSE})
-#'                         and item frequencies for ordered categorical variable
-#'                         (\code{ordered = TRUE}), \code{"fit"} for model fit and
-#'                         model comparison, \code{"est"} for parameter estimates,
-#'                         \code{"modind"} for modification indices, \code{"resid"}
-#'                         for the residual correlation matrix and standardized residual
-#'                         means, and \code{"opdyke"} for the discrepancy between
-#'                         model-implied and observed correlation expressed in terms
-#'                         of the relative percentile of an Opdyke distribution
-#'                         (McNeish, 2025). By default, a summary of the specification,
-#'                         the partial measurement invariance specification, and model
-#'                         fit are printed. Note that parameter estimates, modification
-#'                         indices, and residual correlation matrix is only provided
+#' @param print            a character vector indicating which results to show on
+#'                         the console, i.e. \code{"all"} for all results, \code{"summary"}
+#'                         for a summary of the specification (e.g., estimation
+#'                         and optimization method, test statistic, missing data
+#'                         handling, and identification method) \code{"partial"}
+#'                         for a summary of the partial measurement invariance
+#'                         specification listing parameters that are freely estimated
+#'                         when \code{partial} is not \code{NULL}, \code{"coverage"}
+#'                         for the variance-covariance coverage of the data,
+#'                         \code{"descript"} for descriptive statistics for continuous
+#'                         variables (\code{ordered = FALSE}) and item frequencies
+#'                         for ordered categorical variable (\code{ordered = TRUE}),
+#'                         \code{"fit"} for model fit and model comparison, \code{"est"}
+#'                         for parameter estimates, \code{"modind"} for modification
+#'                         indices, \code{"resid"} for the residual correlation
+#'                         matrix and standardized residual means, and \code{"opdyke"}
+#'                         for the discrepancy between model-implied and observed
+#'                         correlation expressed in terms of the relative percentile
+#'                         of an Opdyke distribution (McNeish, 2025). By default,
+#'                         a summary of the specification, the partial measurement
+#'                         invariance specification, and model fit are printed.
+#'                         Note that parameter estimates, modification indices,
+#'                         and residual correlation matrix is only provided
 #'                         for the model investigating the level of measurement
 #'                         invariance specified in the argument \code{"invar"}.
-#' @param print.fit        a character string or character vector indicating which
-#'                         version of the CFI, TLI, and RMSEA to show on the console
-#'                         when using a robust estimation method involving a scaling
-#'                         correction factor, i.e., \code{"all"} for all versions of
-#'                         the CFI, TLI, and RMSEA, \code{"standard"} (default when
+#' @param print.fit        a character vector indicating which version of the CFI,
+#'                         TLI, and RMSEA to show on the console when using a
+#'                         robust estimation method involving a scaling correction
+#'                         factor, i.e., \code{"all"} for all versions of the CFI,
+#'                         TLI, and RMSEA, \code{"standard"} (default when
 #'                         \code{estimator} is one of
 #'                         \code{"ML", "MLF", "GLS", "WLS", "DWLS", "ULS", "PML"})
 #'                         for fit indices without any non-normality correction,
@@ -318,9 +318,10 @@
 #'                         \code{"red"}, \code{"b.red"} (default), \code{"green"},
 #'                         \code{"b.green"}, \code{"blue"}, or \code{"b.blue"},
 #'                         see the help page of the \code{\link{chr.color}} function.
-#'                         Note that this option is not supported when using R
-#'                         Markdown and when writing the output into a text file
-#'                         (\code{.txt}).
+#'                         Note that this option is only supported on the RStudio
+#'                         platform, i.e., the argument switches to \code{"default"}
+#'                         when using R Markdown and when writing the output into
+#'                         a text file (\code{.txt}).
 #' @param style            a character vector indicating the font style for
 #'                         highlighting absolute residual correlation coefficients
 #'                         and standardized means equal or higher \code{resid.minval},
@@ -669,7 +670,7 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
 
   #_____________________________________________________________________________
   #
-  # Initial Check --------------------------------------------------------------
+  # Initial Check ——————————————————————————————————————————————————————————————
 
   # Check if input 'data' is missing or NULL
   if (isTRUE(missing(data) || is.null(data))) { stop("Please specify a data frame for the argument 'data'", call. = FALSE) }
@@ -685,51 +686,24 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
 
   #_____________________________________________________________________________
   #
-  # Data -----------------------------------------------------------------------
+  # Data ———————————————————————————————————————————————————————————————————————
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Using the argument '...' ####
-
-  if (isTRUE(!missing(...))) {
-
-    # Extract data and convert tibble into a data frame
-    x <- data[, .var.names(data = data, ..., group = group, cluster = cluster)] |> (\(p) if (isTRUE("tbl" %in% substr(class(p), 1L, 3L))) { as.data.frame(p) } else { return(p) })()
-
-    # Grouping variable
-    if (isTRUE(!is.null(group))) { group <- data[, group] }
-
-    # Cluster variable
-    if (isTRUE(!is.null(cluster))) { cluster <- data[, cluster] }
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Without using the argument '...' ####
-
-  } else {
-
-    # Convert 'data' as tibble into a data frame
-    x <- data |> (\(p) if (isTRUE("tbl" %in% substr(class(p), 1L, 3L))) { as.data.frame(p) } else { return(p) })()
-
-    # Data and cluster
-    var.group <- .var.group(data = x, group = group, cluster = cluster)
+  .data(data, ..., group = group, cluster = cluster) |> (\(p) {
 
     # Data
-    if (isTRUE(!is.null(var.group$data))) { x <- var.group$data }
+    assign("x", p$data, envir = parent.frame())
 
     # Grouping variable
-    if (isTRUE(!is.null(var.group$group))) { group <- var.group$group }
+    if (isTRUE(!is.null(p$group))) { assign("group", p$group, envir = parent.frame()) }
 
     # Cluster variable
-    if (isTRUE(!is.null(var.group$cluster))) { cluster <- var.group$cluster }
+    if (isTRUE(!is.null(p$cluster))) { assign("cluster", p$cluster, envir = parent.frame()) }
 
-  }
-
-  # Convert 'group' and 'cluster' as tibble into a vector
-  if (!is.null(group) && isTRUE("tbl" %in% substr(class(group), 1L, 3L))) { group <- unname(unlist(group)) }
-  if (!is.null(cluster) && isTRUE("tbl" %in% substr(class(cluster), 1L, 3L))) { cluster <- unname(unlist(cluster)) }
+  })()
 
   #_____________________________________________________________________________
   #
-  # Input Check ----------------------------------------------------------------
+  # Input Check ————————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Check Inputs ####
@@ -919,7 +893,7 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
 
   #_____________________________________________________________________________
   #
-  # Data and Arguments ---------------------------------------------------------
+  # Data and Arguments —————————————————————————————————————————————————————————
 
   # Visible binding for global variable
   .group <- idvar <- ind <- thres <- NULL
@@ -1264,6 +1238,11 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
   if (isTRUE(estimator %in% c("ML", "MLMVS", "MLF", "GLS", "WLS", "DWLS", "ULS", "PML"))) { print.fit <- "standard" }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## 'color' Argument ####
+
+  if (isTRUE(color != "default" && .Platform$GUI != "RStudio")) { color <- "default" }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## 'style' Argument ####
 
   if (isTRUE(all(c("regular", "bold", "italic") %in% style))) { style <- "regular" }
@@ -1275,7 +1254,7 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
 
   #_____________________________________________________________________________
   #
-  # Main Function --------------------------------------------------------------
+  # Main Function ——————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Covariance Coverage ####
@@ -3572,7 +3551,7 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
 
   #_____________________________________________________________________________
   #
-  # Return Object --------------------------------------------------------------
+  # Return Object ——————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## lavaan Summary ####
@@ -6559,13 +6538,13 @@ item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
 
   #_____________________________________________________________________________
   #
-  # Write Results --------------------------------------------------------------
+  # Write Results ——————————————————————————————————————————————————————————————
 
   if (isTRUE(!is.null(write))) { .write.result(object = object, write = write, append = append) }
 
   #_____________________________________________________________________________
   #
-  # Output ---------------------------------------------------------------------
+  # Output —————————————————————————————————————————————————————————————————————
 
   if (isTRUE(output)) { print(object, check = FALSE) }
 

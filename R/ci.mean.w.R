@@ -131,40 +131,21 @@ ci.mean.w <- function(data, ..., adjust = TRUE,
 
   #_____________________________________________________________________________
   #
-  # Initial Check --------------------------------------------------------------
+  # Initial Check ——————————————————————————————————————————————————————————————
 
   # Check if input 'data' is missing or NULL
   if (isTRUE(missing(data) || is.null(data))) { stop("Please specify a data.frame for the argument 'data'", call. = FALSE) }
 
   #_____________________________________________________________________________
   #
-  # Data -----------------------------------------------------------------------
+  # Data ———————————————————————————————————————————————————————————————————————
 
-  # Global variable
-  data.id <- var.formula <- variable <- NULL
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Using the Argument '...' ####
-
-  if (isTRUE(!missing(...))) {
-
-    # Extract data and convert tibble into data frame or vector
-    x <- data[, .var.names(data = data, ...), drop = FALSE] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(y)) == 1L)) { unname(unlist(y)) } else { as.data.frame(y) } } else { y })()
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Without Using the Argument '...' ####
-
-  } else {
-
-    # Data frame
-    x <- as.data.frame(data)
-
-  }
+  .data(data, ...) |> (\(p) { assign("x", p$data, envir = parent.frame()) })()
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Convert User-Missing Values into NA ####
 
-  if (isTRUE(!is.null(as.na))) { x[, var.formula] <- .as.na(x[, var.formula], na = as.na) }
+  if (isTRUE(!is.null(as.na))) { x <- .as.na(x, na = as.na) }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Listwise Deletion ####
@@ -184,15 +165,11 @@ ci.mean.w <- function(data, ..., adjust = TRUE,
     } else {
 
       # Remove cases with NA on all variables
-      x <- data.id[which(apply(x, 1L, function(y) !all(is.na(y)))), ]
+      x <- x[which(apply(x, 1L, function(y) !all(is.na(y)))), ]
 
-      if (nrow(x) < 2L) { stop("After removing cases with NA on all variables, there are not enough cases for conducting the analysis.", call. = FALSE) }
+      if (isTRUE(nrow(x) < 2L)) { stop("After removing cases with NA on all variables, there are not enough cases for conducting the analysis.", call. = FALSE) }
 
-      if (isTRUE(any(is.na(x)))) {
-
-        warning("Confidence intervals might not be reliable due to the presence of missing data.", call. = FALSE)
-
-      }
+      if (isTRUE(any(is.na(x)))) { warning("Confidence intervals might not be reliable due to the presence of missing data.", call. = FALSE) }
 
     }
 
@@ -200,23 +177,23 @@ ci.mean.w <- function(data, ..., adjust = TRUE,
 
   #_____________________________________________________________________________
   #
-  # Input Check ----------------------------------------------------------------
+  # Input Check ————————————————————————————————————————————————————————————————
 
   # Check inputs
   .check.input(logical = c("adjust", "na.omit", "append", "output"), args = c("cof.level", "digits", "write1"), envir = environment(), input.check = check)
 
   #_____________________________________________________________________________
   #
-  # Arguments ------------------------------------------------------------------
+  # Arguments ——————————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Alternative hypothesis ####
+  ## 'alternative' Argument ####
 
   if (isTRUE(all(c("two.sided", "less", "greater") %in% alternative))) { alternative <- "two.sided" }
 
   #_____________________________________________________________________________
   #
-  # Main Function --------------------------------------------------------------
+  # Main Function ——————————————————————————————————————————————————————————————
 
   # Number of within-subject factor levels
   k <- ncol(x)
@@ -282,22 +259,18 @@ ci.mean.w <- function(data, ..., adjust = TRUE,
                  type = "ci",
                  ci = "mean.w",
                  data = x,
-                 args = list(adjust = adjust, alternative = alternative,
-                             conf.level = conf.level, na.omit = na.omit,
-                             digits = digits, as.na = as.na,
-                             write = write, append = append, check = check,
-                             output = output),
+                 args = list(adjust = adjust, alternative = alternative, conf.level = conf.level, na.omit = na.omit, digits = digits, as.na = as.na, write = write, append = append, check = check, output = output),
                  result = result)
 
   class(object) <- "misty.object"
 
   #_____________________________________________________________________________
   #
-  # Write results --------------------------------------------------------------
+  # Write results ——————————————————————————————————————————————————————————————
 
   if (isTRUE(!is.null(write))) {
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Text File ####
 
     # Send R output to text file
@@ -315,7 +288,7 @@ ci.mean.w <- function(data, ..., adjust = TRUE,
 
   #_____________________________________________________________________________
   #
-  # Output ---------------------------------------------------------------------
+  # Output —————————————————————————————————————————————————————————————————————
 
   if (isTRUE(output)) { print(object, check = FALSE) }
 

@@ -72,9 +72,9 @@
 #'                    simulated samples. Note that a \code{for} loop is used when
 #'                    \code{progress = TRUE}, while the \code{sapply} function
 #'                    is used when \code{progress = FALSE}.
-#' @param print       a character string or character vector indicating the
-#'                    output shown on the console, i.e., \code{"all"} for all
-#'                    outputs, \code{"summary"} (default) for a summary of the
+#' @param print       a character character vector indicating the output shown
+#'                    on the console, i.e., \code{"all"} for all outputs,
+#'                    \code{"summary"} (default) for a summary of the
 #'                    specification in lavaan for the simulation, \code{"model"}
 #'                    for the lavaan model syntax for the CFA measurement model
 #'                    for each misspecification level specified for the simulation,
@@ -304,7 +304,7 @@ item.dfi <- function(model, data = NULL, n = NULL,
 
   #_____________________________________________________________________________
   #
-  # Initial Check --------------------------------------------------------------
+  # Initial Check ——————————————————————————————————————————————————————————————
 
   # Check if input 'model' is missing or NULL
   if (isTRUE(missing(model) ||is.null(model))) { stop("Please specify a misty object, lavaan object, or character string for the argument 'model'", call. = FALSE) }
@@ -314,7 +314,7 @@ item.dfi <- function(model, data = NULL, n = NULL,
 
   #_____________________________________________________________________________
   #
-  # Input Check ----------------------------------------------------------------
+  # Input Check ————————————————————————————————————————————————————————————————
 
   .check.input(logical = c("seed", "progress", "plot", "append", "output"), s.character = list(type = c("norm", "nnorm", "likert", "categ"), fit.indices = c("standard", "scaled", "robust")), m.character = list(print = c("all", "summary", "model", "cutoff")), args = c("res.cor", "specific", "sensitiv", "n", "nrep", "digits", "write2"), package = "lavaan", envir = environment(), input.check = check)
 
@@ -335,7 +335,7 @@ item.dfi <- function(model, data = NULL, n = NULL,
 
   #_____________________________________________________________________________
   #
-  # Model Syntax ---------------------------------------------------------------
+  # Model Syntax ———————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## misty or lavaan Object ####
@@ -496,7 +496,7 @@ item.dfi <- function(model, data = NULL, n = NULL,
 
   #_____________________________________________________________________________
   #
-  # Arguments ------------------------------------------------------------------
+  # Arguments ——————————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data ####
@@ -691,7 +691,7 @@ item.dfi <- function(model, data = NULL, n = NULL,
 
   #_____________________________________________________________________________
   #
-  # Main Function --------------------------------------------------------------
+  # Main Function ——————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Model Specification for the True and Misspecified Models ####
@@ -892,7 +892,7 @@ item.dfi <- function(model, data = NULL, n = NULL,
 
   #_____________________________________________________________________________
   #
-  # Return Object --------------------------------------------------------------
+  # Return Object ——————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## lavaan summary ####
@@ -976,19 +976,19 @@ item.dfi <- function(model, data = NULL, n = NULL,
 
   #_____________________________________________________________________________
   #
-  # Plot and Save Plot ---------------------------------------------------------
+  # Plot and Save Plot —————————————————————————————————————————————————————————
 
   if (isTRUE(plot)) { object$plot <- plot(object, filename = filename, width = width, height = height, dpi = dpi, check = FALSE) |> (\(y) suppressMessages(suppressWarnings(print(y))))() }
 
   #_____________________________________________________________________________
   #
-  # Write Results --------------------------------------------------------------
+  # Write Results ——————————————————————————————————————————————————————————————
 
   if (isTRUE(!is.null(write))) { .write.result(object = object, write = write, append = append) }
 
   #_____________________________________________________________________________
   #
-  # Output ---------------------------------------------------------------------
+  # Output —————————————————————————————————————————————————————————————————————
 
   if (isTRUE(output)) { print(object, check = FALSE) }
 

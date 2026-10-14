@@ -21,17 +21,6 @@
 #'                 into five (total), three (within-cluster), and two (between-cluster)
 #'                 proportions is drawn. Note that the \pkg{ggplot2} package is required
 #'                 to draw the bar chart.
-#' @param gray     logical: if \code{TRUE}, graphical parameter to draw the bar chart
-#'                 in gray scale.
-#' @param start    a numeric value between 0 and 1, graphical parameter to specify
-#'                 the gray value at the low end of the palette.
-#' @param end      a numeric value between 0 and 1, graphical parameter to specify
-#'                 the gray value at the high end of the palette.
-#' @param color    a character vector, graphical parameter indicating the color of
-#'                 bars in the bar chart in the following order: Fixed slopes (Within),
-#'                 Fixed slopes (Between), Slope variation (Within), Intercept variation
-#'                 (Between), and Residual (Within). By default, colors from the
-#'                 colorblind-friendly palettes are used.
 #' @param filename a character string indicating the \code{filename}
 #'                 argument including the file extension in the \code{ggsave}
 #'                 function. Note that one of \code{".eps"}, \code{".ps"},
@@ -47,8 +36,6 @@
 #' @param height   a numeric value indicating the \code{height} argument
 #'                 (default is the size of the current graphics device)
 #'                 in the \code{ggsave} function.
-#' @param units    a character string indicating the \code{units} argument
-#'                 (default is \code{in}) in the \code{ggsave} function.
 #' @param dpi      a numeric value indicating the \code{dpi} argument
 #'                 (default is \code{600}) in the \code{ggsave} function.
 #' @param write     a character string naming a text file with file extension
@@ -60,7 +47,9 @@
 #'                  overwritten.
 #' @param check     logical: if \code{TRUE} (default), argument specification is checked.
 #' @param output    logical: if \code{TRUE} (default), output is shown on the console.
-#'
+#' @param ...        additional arguments from the \code{plot.misty.object()}
+#'                   function, see 'Details in the \code{\link{plot.misty.object}}
+#'                   function.
 #' @details
 #' A number of R-squared measures for multilevel and linear mixed effects models have
 #' been developed in the methodological literature (see Rights & Sterba, 2018).
@@ -423,14 +412,13 @@
 #' multilevel.r2(mod1a, write = "ML-R2.txt")
 #'
 #' #————————————————————————————————————————————————————————————————————————————
-#' # Bar Chart Showing the Variance Decomposition
-#'
-#' # and between-cluster outcome variance
+#' # Plot
 #'
 #' # Example 2a: Default setting
 #' multilevel.r2(mod1a, plot = TRUE)
 #'
-#' # Example 2b: Bar chart in gray scale
+#' # Example 2b: Bar chart, additional arguments
+#' # see Details in the help page of the function plot.misty.object
 #' multilevel.r2(mod1a, plot = TRUE, gray = TRUE)
 #'
 #'# Example 2c: Save bar chart
@@ -480,15 +468,12 @@
 #'   guides(fill = guide_legend(nrow = 2, reverse = TRUE))
 #' }
 multilevel.r2 <- function(model, print = c("all", "RB", "SB", "NS", "RS"), digits = 3,
-                          plot = FALSE, gray = FALSE, start = 0.15, end = 0.85,
-                          color = c("#D55E00", "#0072B2", "#CC79A7", "#009E73", "#E69F00"),
-                          filename = NULL, width = NA, height = NA,
-                          units = c("in", "cm", "mm", "px"), dpi = 600,
-                          write = NULL, append = TRUE, check = TRUE, output = TRUE) {
+                          plot = FALSE, filename = NULL, width = NA, height = NA, dpi = 600,
+                          write = NULL, append = TRUE, check = TRUE, output = TRUE, ...) {
 
   #_____________________________________________________________________________
   #
-  # Initial Check --------------------------------------------------------------
+  # Initial Check ——————————————————————————————————————————————————————————————
 
   # Check if input 'model' is missing or null
   if (isTRUE(missing(model) || is.null(model))) { stop("Please specify a fitted model of class \"lmerMod\" or \"lme\" for the argument 'model'.", call. = FALSE) }
@@ -510,18 +495,17 @@ multilevel.r2 <- function(model, print = c("all", "RB", "SB", "NS", "RS"), digit
 
   #_____________________________________________________________________________
   #
-  # Input Check ----------------------------------------------------------------
+  # Input Check ————————————————————————————————————————————————————————————————
 
   # Check inputs
-  .check.input(logical = c("plot", "gray", "append", "output"), numeric = list(start = 1L, end = 1L),
-               s.character = list(print = c("all", "RB", "SB", "NS", "RS")), args = c("write1", "start", "end"), envir = environment(), input.check = check)
+  .check.input(logical = c("plot", "append", "output"), s.character = list(print = c("all", "RB", "SB", "NS", "RS")), args = c("write1"), envir = environment(), input.check = check)
 
   # Package ggplot2
   if (isTRUE(check)) { if (isTRUE(plot)) { if (isTRUE(!nzchar(system.file(package = "ggplot2")))) { stop("Package \"ggplot2\" is needed to draw a plot, please install the package.", call. = FALSE) } } }
 
   #_____________________________________________________________________________
   #
-  # Arguments ------------------------------------------------------------------
+  # Arguments ——————————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## 'print' Argument ####
@@ -532,15 +516,9 @@ multilevel.r2 <- function(model, print = c("all", "RB", "SB", "NS", "RS"), digit
 
   if (isTRUE(plot) & isTRUE(!"RS" %in% print)) { warning("Bar char is only available when \"RS\" is specified for the argument 'print'.", call. = FALSE) }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## 'units' Argument ####
-
-  # Default setting
-  if (isTRUE(all(c("in", "cm", "mm", "px") %in% units))) { units <- "in" }
-
   #_____________________________________________________________________________
   #
-  # Main Function --------------------------------------------------------------
+  # Main Function ——————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## RB, SB, or NS R-squared measures ####
@@ -800,7 +778,7 @@ multilevel.r2 <- function(model, print = c("all", "RB", "SB", "NS", "RS"), digit
   object <- list(call = match.call(),
                  type = "multilevel.r2",
                  model = model,
-                 args = list(print = print, digits = digits, plot = plot, gray = gray, start = start, end = end, color = color, filename = filename, width = width, height = height, units = units, dpi = dpi, write = write, append = TRUE, check = check, output = output),
+                 args = list(print = print, digits = digits, plot = plot, filename = filename, width = width, height = height, dpi = dpi, write = write, append = TRUE, check = check, output = output),
                  plot = NULL,
                  result = list(rb = data.frame(rb1 = rb1, rb2 = rb2),
                                sb = data.frame(sb1 = sb1, sb2 = sb2),
@@ -823,20 +801,20 @@ multilevel.r2 <- function(model, print = c("all", "RB", "SB", "NS", "RS"), digit
 
   #_____________________________________________________________________________
   #
-  # Plot and Save Plot ---------------------------------------------------------
+  # Plot and Save Plot —————————————————————————————————————————————————————————
 
-  if (isTRUE(plot)) { object$plot <- plot(object, filename = filename, width = width, height = height, units = units, dpi = dpi, check = FALSE) |> (\(y) suppressMessages(suppressWarnings(print(y))))() }
+  if (isTRUE(plot)) { object$plot <- plot(object, filename = filename, width = width, height = height, dpi = dpi, check = FALSE, ...) |> (\(y) suppressMessages(suppressWarnings(print(y))))() }
 
   #_____________________________________________________________________________
   #
-  # Write Results --------------------------------------------------------------
+  # Write Results ——————————————————————————————————————————————————————————————
 
   if (isTRUE(!is.null(write))) {
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Text file ####
 
-    # Send R output to textfile
+    # Send R output to text file
     sink(file = write, append = ifelse(isTRUE(file.exists(write)), append, FALSE), type = "output", split = FALSE)
 
     if (isTRUE(append && file.exists(write))) { write("", file = write, append = TRUE) }
@@ -851,7 +829,7 @@ multilevel.r2 <- function(model, print = c("all", "RB", "SB", "NS", "RS"), digit
 
   #_____________________________________________________________________________
   #
-  # Output ---------------------------------------------------------------------
+  # Output —————————————————————————————————————————————————————————————————————
 
   if (isTRUE(output)) { print(object, check = FALSE) }
 

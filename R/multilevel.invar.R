@@ -103,26 +103,26 @@
 #'                      \code{estimator = "ML"}, that it takes longer to estimate
 #'                      the model  using FIML, and that FIML is prone to convergence
 #'                      issues which might be resolved by switching to listwise deletion.
-#' @param print         a character string or character vector indicating which
-#'                      results to show on the console, i.e. \code{"all"} for all
-#'                      results, \code{"summary"} for a summary of the specification
-#'                      of the estimation method and missing data handling in lavaan,
-#'                      \code{"coverage"} for the variance-covariance coverage of
-#'                      the data, \code{"descript"} for descriptive statistics,
-#'                      \code{"fit"} for model fit and  model comparison, \code{"est"}
-#'                      for parameter estimates, and \code{"modind"} for modification
-#'                      indices. By default, a summary of the specification and model fit
-#'                      and model comparison are printed.
-#' @param print.fit     a character string or character vector indicating which
-#'                      version of the CFI, TLI, and RMSEA to show on the console,
-#'                      i.e., \code{"all"} for all versions of the CFI, TLI, and
-#'                      RMSEA, \code{"standard"} (default when \code{estimator = "ML"})
-#'                      for fit indices without any non-normality correction,
-#'                      \code{"scaled"} for population-corrected robust fit indices
-#'                      with ad hoc non-normality correction, and \code{robust}
-#'                      (default when \code{estimator = "MLR"}) for sample-corrected
-#'                      robust fit indices based on formula provided by Li and Bentler
-#'                      (2006) and Brosseau-Liard and Savalei (2014).
+#' @param print         a character vector indicating which results to show on the
+#'                      console, i.e. \code{"all"} for all results, \code{"summary"}
+#'                      for a summary of the specification of the estimation method
+#'                      and missing data handling in lavaan, \code{"coverage"} for
+#'                      the variance-covariance coverage of the data, \code{"descript"}
+#'                      for descriptive statistics, \code{"fit"} for model fit and
+#'                      model comparison, \code{"est"} for parameter estimates,
+#'                      and \code{"modind"} for modification indices. By default,
+#'                      a summary of the specification and model fit and model
+#'                      comparison are printed.
+#' @param print.fit     a character vector indicating which version of the CFI,
+#'                      TLI, and RMSEA to show on the console, i.e., \code{"all"}
+#'                      for all versions of the CFI, TLI, and RMSEA, \code{"standard"}
+#'                      (default when \code{estimator = "ML"}) for fit indices
+#'                      without any non-normality correction, \code{"scaled"} for
+#'                      population-corrected robust fit indices with ad hoc
+#'                      non-normality correction, and \code{robust} (default when
+#'                      \code{estimator = "MLR"}) for sample-corrected robust fit
+#'                      indices based on formula provided by Li and Bentler (2006)
+#'                      and Brosseau-Liard and Savalei (2014).
 #' @param mod.minval    numeric value to filter modification indices and only show
 #'                      modifications with a modification index value equal or higher
 #'                      than this minimum value. By default, modification indices
@@ -159,9 +159,10 @@
 #'                      \code{"red"}, \code{"b.red"} (default), \code{"green"},
 #'                      \code{"b.green"}, \code{"blue"}, or \code{"b.blue"},
 #'                      see the help page of the \code{\link{chr.color}} function.
-#'                      Note that this option is not supported when using R
-#'                      Markdown and when writing the output into a text file
-#'                      (\code{.txt}).
+#'                      Note that this option is only supported on the RStudio
+#'                      platform, i.e., the argument switches to \code{"default"}
+#'                      when using R Markdown and when writing the output into a
+#'                      text file (\code{.txt}).
 #' @param style         a character vector indicating the font style for
 #'                      highlighting absolute residual correlation coefficients
 #'                      and standardized means equal or higher \code{resid.minval},
@@ -353,7 +354,7 @@ multilevel.invar <- function(data, ..., cluster, model = NULL, rescov = NULL,
 
   #_____________________________________________________________________________
   #
-  # Initial Check --------------------------------------------------------------
+  # Initial Check ——————————————————————————————————————————————————————————————
 
   # Check if input 'data' is missing
   if (isTRUE(missing(data) || is.null(data))) { stop("Please specify a data frame for the argument 'data'", call. = FALSE) }
@@ -363,44 +364,21 @@ multilevel.invar <- function(data, ..., cluster, model = NULL, rescov = NULL,
 
   #_____________________________________________________________________________
   #
-  # Data -----------------------------------------------------------------------
+  # Data ———————————————————————————————————————————————————————————————————————
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Using the Argument '...' ####
-
-  if (isTRUE(!missing(...))) {
-
-    # Extract data
-    x <- as.data.frame(data[, .var.names(data = data, ..., cluster = cluster), drop = FALSE])
-
-    # Cluster variable
-    cluster <- data[, cluster]
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Without Using the Argument '...' ####
-
-  } else {
-
-    # Data frame
-    x <- as.data.frame(data)
-
-    # Data and cluster
-    var.group <- .var.group(data = x, cluster = cluster)
+  .data(data, ..., cluster = cluster, drop = TRUE) |> (\(p) {
 
     # Data
-    if (isTRUE(!is.null(var.group$data)))  { x <- var.group$data }
+    assign("x", p$data, envir = parent.frame())
 
     # Cluster variable
-    if (isTRUE(!is.null(var.group$cluster))) { cluster <- var.group$cluster }
+    if (isTRUE(!is.null(p$cluster))) { assign("cluster", p$cluster, envir = parent.frame()) }
 
-  }
-
-  # Convert 'cluster' as tibble into a vector
-  if (!is.null(cluster) && isTRUE("tbl" %in% substr(class(cluster), 1L, 3L))) { cluster <- unname(unlist(cluster)) }
+  })()
 
   #_____________________________________________________________________________
   #
-  # Input Check ----------------------------------------------------------------
+  # Input Check ————————————————————————————————————————————————————————————————
 
   .check.input(logical = c("append", "output"),
                numeric = list(mod.minval = 1L, resid.minval = 1L),
@@ -458,7 +436,7 @@ multilevel.invar <- function(data, ..., cluster, model = NULL, rescov = NULL,
 
   #_____________________________________________________________________________
   #
-  # Data and Arguments ------------------------------------------------------------------
+  # Data and Arguments —————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Manifest variables ####
@@ -621,13 +599,18 @@ multilevel.invar <- function(data, ..., cluster, model = NULL, rescov = NULL,
   }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## 'color' Argument ####
+
+  if (isTRUE(color != "default" && .Platform$GUI != "RStudio")) { color <- "default" }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## 'style' Argument ####
 
   if (isTRUE(all(c("regular", "bold", "italic") %in% style))) { style <- "regular" }
 
   #_____________________________________________________________________________
   #
-  # Main Function --------------------------------------------------------------
+  # Main Function ——————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Model Estimation ####
@@ -726,7 +709,7 @@ multilevel.invar <- function(data, ..., cluster, model = NULL, rescov = NULL,
 
   #_____________________________________________________________________________
   #
-  # Return object --------------------------------------------------------------
+  # Return object ——————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## lavaan Summary ####
@@ -1166,13 +1149,13 @@ multilevel.invar <- function(data, ..., cluster, model = NULL, rescov = NULL,
 
   #_____________________________________________________________________________
   #
-  # Write Results --------------------------------------------------------------
+  # Write Results ——————————————————————————————————————————————————————————————
 
   if (isTRUE(!is.null(write))) { .write.result(object = object, write = write, append = append) }
 
   #_____________________________________________________________________________
   #
-  # Output ---------------------------------------------------------------------
+  # Output —————————————————————————————————————————————————————————————————————
 
   if (isTRUE(output)) { print(object, check = FALSE) }
 

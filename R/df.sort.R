@@ -47,14 +47,14 @@ df.sort <- function(data, ..., decreasing = FALSE, check = TRUE) {
 
   #_____________________________________________________________________________
   #
-  # Data -----------------------------------------------------------------------
+  # Data ———————————————————————————————————————————————————————————————————————
 
   # Variables specified in ...
   var.names <- misty::chr.omit(sapply(substitute(list(...)), as.character), omit = "list")
 
   #_____________________________________________________________________________
   #
-  # Initial Check --------------------------------------------------------------
+  # Initial Check ——————————————————————————————————————————————————————————————
 
   # Check if input 'data' is missing
   if (isTRUE(missing(data))) { stop("Please specify a data frame for the argument 'data'.", call. = FALSE) }
@@ -70,14 +70,14 @@ df.sort <- function(data, ..., decreasing = FALSE, check = TRUE) {
 
   #_____________________________________________________________________________
   #
-  # Input Check ----------------------------------------------------------------
+  # Input Check ————————————————————————————————————————————————————————————————
 
   # Check input
   .check.input(logical = "decreasing", envir = environment(), input.check = check)
 
   #_____________________________________________________________________________
   #
-  # Main Function --------------------------------------------------------------
+  # Main Function ——————————————————————————————————————————————————————————————
 
   object <- eval(substitute(order(..., decreasing = decreasing)), envir = data, enclos = parent.frame()) |>
     (\(y) if (isTRUE(length(y) != nrow(data))) {
@@ -94,7 +94,7 @@ df.sort <- function(data, ..., decreasing = FALSE, check = TRUE) {
 
   #_____________________________________________________________________________
   #
-  # Output ---------------------------------------------------------------------
+  # Output —————————————————————————————————————————————————————————————————————
 
   return(object)
 

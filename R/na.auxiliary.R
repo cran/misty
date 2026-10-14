@@ -180,31 +180,16 @@ na.auxiliary <- function(data, ..., model = NULL, categ = NULL, estimator = c("M
 
   #_____________________________________________________________________________
   #
-  # Initial Check --------------------------------------------------------------
+  # Initial Check ——————————————————————————————————————————————————————————————
 
   # Check if input 'data' is missing or NULL
   if (isTRUE(missing(data) || is.null(data))) { stop("Please specify a data frame for the argument 'data'", call. = FALSE) }
 
   #_____________________________________________________________________________
   #
-  # Data -----------------------------------------------------------------------
+  # Data ———————————————————————————————————————————————————————————————————————
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Using the Argument '...' ####
-
-  if (isTRUE(!missing(...))) {
-
-    # Extract data and convert tibble into data frame or vector
-    x <- as.data.frame(data[, .var.names(data = data, ...), drop = FALSE])
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Without Using the Argument '...' ####
-
-  } else {
-
-    x <- as.data.frame(data)
-
-  }
+  .data(data, ...) |> (\(p) { assign("x", p$data, envir = parent.frame()) })()
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Categorical Variables ####
@@ -251,7 +236,7 @@ na.auxiliary <- function(data, ..., model = NULL, categ = NULL, estimator = c("M
 
   #_____________________________________________________________________________
   #
-  # Input Check ----------------------------------------------------------------
+  # Input Check ————————————————————————————————————————————————————————————————
 
   # Check inputs
   .check.input(logical = c("adjust", "weighted", "correct", "append", "output"),
@@ -271,7 +256,7 @@ na.auxiliary <- function(data, ..., model = NULL, categ = NULL, estimator = c("M
 
   #_____________________________________________________________________________
   #
-  # Arguments ------------------------------------------------------------------
+  # Arguments ——————————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## 'tri' argument ####
@@ -290,7 +275,7 @@ na.auxiliary <- function(data, ..., model = NULL, categ = NULL, estimator = c("M
 
   #_____________________________________________________________________________
   #
-  # Main Function Product-Moment Correlation, Cramer's V and Cohen's d Matrix -------
+  # Main Function Product-Moment Correlation, Cramer's V and Cohen's d Matrix —————
 
   if (isTRUE(is.null(model))) {
 
@@ -421,7 +406,7 @@ na.auxiliary <- function(data, ..., model = NULL, categ = NULL, estimator = c("M
 
   #_____________________________________________________________________________
   #
-  # Main Function Semi-Partial Correlations ------------------------------------
+  # Main Function Semi-Partial Correlations ————————————————————————————————————
 
   } else {
 
@@ -530,7 +515,7 @@ na.auxiliary <- function(data, ..., model = NULL, categ = NULL, estimator = c("M
 
   #_____________________________________________________________________________
   #
-  # Return Object --------------------------------------------------------------
+  # Return Object ——————————————————————————————————————————————————————————————
 
   object <- list(call = match.call(),
                  type = "na.auxiliary",
@@ -544,13 +529,13 @@ na.auxiliary <- function(data, ..., model = NULL, categ = NULL, estimator = c("M
 
   #_____________________________________________________________________________
   #
-  # Write Results --------------------------------------------------------------
+  # Write Results ——————————————————————————————————————————————————————————————
 
   if (isTRUE(!is.null(write))) { .write.result(object = object, write = write, append = append) }
 
   #_____________________________________________________________________________
   #
-  # Output ---------------------------------------------------------------------
+  # Output —————————————————————————————————————————————————————————————————————
 
   if (isTRUE(output)) { print(object, check = FALSE) }
 

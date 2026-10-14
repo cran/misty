@@ -46,7 +46,7 @@ setsource <- function(path = TRUE, check = TRUE) {
 
   #_____________________________________________________________________________
   #
-  # Input Check ----------------------------------------------------------------
+  # Input Check ———————————————————————————————————————————————————————————————
 
   # Check inputs
   .check.input(logical = "path", package = "rstudioapi", envir = environment(), input.check = check)
@@ -56,7 +56,7 @@ setsource <- function(path = TRUE, check = TRUE) {
 
   #_____________________________________________________________________________
   #
-  # Main Function --------------------------------------------------------------
+  # Main Function ——————————————————————————————————————————————————————————————
 
   # Path of the current source file
   path.source <- try(dirname(rstudioapi::documentPath()), silent = TRUE)
@@ -72,7 +72,7 @@ setsource <- function(path = TRUE, check = TRUE) {
 
   #_____________________________________________________________________________
   #
-  # Return Object --------------------------------------------------------------
+  # Return Object ——————————————————————————————————————————————————————————————
 
   return(invisible(path.source))
 

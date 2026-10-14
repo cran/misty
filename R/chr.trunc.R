@@ -52,7 +52,7 @@ chr.trunc <- function (x, width, side = c("right", "left", "center"), ellipsis =
 
   #_____________________________________________________________________________
   #
-  # Initial Check --------------------------------------------------------------
+  # Initial Check ——————————————————————————————————————————————————————————————
 
   # Check if input 'x' is missing or NULL
   if (isTRUE(missing(x) || is.null(x) || (!is.character(x) && !is.factor(x)))) { stop("Please specify a character vector or factor for the argument 'x'", call. = FALSE) }
@@ -65,10 +65,9 @@ chr.trunc <- function (x, width, side = c("right", "left", "center"), ellipsis =
 
   #_____________________________________________________________________________
   #
-  # Input Check ----------------------------------------------------------------
+  # Input Check ————————————————————————————————————————————————————————————————
 
-  .check.input(numeric = list(width = 1L),
-               character = list(ellipsis = 1L),
+  .check.input(numeric = list(width = 1L), character = list(ellipsis = 1L),
                s.character = list(side = c("right", "left", "center")), envir = environment(), input.check = check)
 
   # Additional checks
@@ -84,7 +83,7 @@ chr.trunc <- function (x, width, side = c("right", "left", "center"), ellipsis =
 
   #_____________________________________________________________________________
   #
-  # Arguments ------------------------------------------------------------------
+  # Arguments ——————————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## 'side' Argument ####
@@ -98,19 +97,19 @@ chr.trunc <- function (x, width, side = c("right", "left", "center"), ellipsis =
 
   #_____________________________________________________________________________
   #
-  # Main Function --------------------------------------------------------------
+  # Main Function ——————————————————————————————————————————————————————————————
 
   trunc.x <- !is.na(x) & nchar(x) > width
 
   x[trunc.x] <- list(nchar.x = nchar(x), width.e = width - nchar(ellipsis)) |>
-                  (\(y) switch(side,
-                              right = paste0(substr(x[trunc.x], 1L, y$width.e), ellipsis),
-                               left = paste0(ellipsis, substr(x[trunc.x], y$nchar.x[trunc.x] - y$width.e + 1L, y$nchar.x[trunc.x])),
-                             center = paste0(substr(x[trunc.x], 1L, ceiling(y$width.e / 2L)), ellipsis, substr(x[trunc.x], y$nchar.x[trunc.x] - floor(y$width.e / 2L) + 1L, y$nchar.x[trunc.x]))))()
+                  (\(p) switch(side,
+                              right = paste0(substr(x[trunc.x], 1L, p$width.e), ellipsis),
+                               left = paste0(ellipsis, substr(x[trunc.x], p$nchar.x[trunc.x] - p$width.e + 1L, p$nchar.x[trunc.x])),
+                             center = paste0(substr(x[trunc.x], 1L, ceiling(p$width.e / 2L)), ellipsis, substr(x[trunc.x], p$nchar.x[trunc.x] - floor(p$width.e / 2L) + 1L, p$nchar.x[trunc.x]))))()
 
   #_____________________________________________________________________________
   #
-  # Output ---------------------------------------------------------------------
+  # Output —————————————————————————————————————————————————————————————————————
 
   return(x)
 

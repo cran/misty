@@ -16,10 +16,10 @@
 #'                indicating the names of the cluster variables in \code{data}
 #'                for three-level data, or a vector or data frame representing
 #'                the nested grouping structure (i.e., group or cluster variables).
-#'                Alternatively, a character string or character vector indicating
-#'                the variable name(s) of the cluster variable(s) in \code{data}.
-#'                Note that the cluster variable at Level 3 come first in a
-#'                three-level model, i.e., \code{cluster = c("level3", "level2")}.
+#'                Alternatively, a character vector indicating the variable name(s)
+#'                of the cluster variable(s) in \code{data}. Note that the cluster
+#'                variable at Level 3 come first in a three-level model, i.e.,
+#'                \code{cluster = c("level3", "level2")}.
 #' @param type    a character string indicating the type of intraclass correlation
 #'                coefficient, i.e., \code{type = "1a"} (default) for ICC(1) and
 #'                \code{type = "2"} for ICC(2) when specifying a two-level model
@@ -214,7 +214,7 @@ multilevel.icc <- function(data, ..., cluster, type = c("1a", "1b", "2"),
 
   #_____________________________________________________________________________
   #
-  # Initial Check --------------------------------------------------------------
+  # Initial Check ——————————————————————————————————————————————————————————————
 
   # Check if input 'data' is missing or NULL
   if (isTRUE(missing(data) || is.null(data))) { stop("Please specify a numeric vector or data frame for the argument 'data'", call. = FALSE) }
@@ -224,37 +224,17 @@ multilevel.icc <- function(data, ..., cluster, type = c("1a", "1b", "2"),
 
   #_____________________________________________________________________________
   #
-  # Data -----------------------------------------------------------------------
+  # Data ———————————————————————————————————————————————————————————————————————
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Using the Argument '...' ####
-
-  if (isTRUE(!missing(...))) {
-
-    # Extract data and convert tibble into data frame or vector
-    x <- data[,  .var.names(data = data, ..., cluster = cluster)] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(y)) == 1L)) { unname(unlist(y)) } else { as.data.frame(y) } } else { y })()
-
-    # Extract cluster variable and convert tibble into data frame or vector
-    cluster <- data[, cluster] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(y)) == 1L)) { unname(unlist(y)) } else { as.data.frame(y) } } else { y })()
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Without Using the Argument '...' ####
-
-  } else {
-
-    # Convert 'data' as tibble into data frame
-    x <- data |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(y)) == 1L)) { unname(unlist(y)) } else { as.data.frame(y) } } else { y })()
-
-    # Data and cluster
-    var.group <- .var.group(data = x, cluster = cluster)
+  .data(data, ..., cluster = cluster, drop = TRUE) |> (\(p) {
 
     # Data
-    if (isTRUE(!is.null(var.group$data))) { x <- var.group$data }
+    assign("x", p$data, envir = parent.frame())
 
     # Cluster variable
-    if (isTRUE(!is.null(var.group$cluster))) { cluster <- var.group$cluster }
+    if (isTRUE(!is.null(p$cluster))) { assign("cluster", p$cluster, envir = parent.frame()) }
 
-  }
+  })()
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Numeric Variables ####
@@ -286,7 +266,7 @@ multilevel.icc <- function(data, ..., cluster, type = c("1a", "1b", "2"),
 
   #_____________________________________________________________________________
   #
-  # Input Check ----------------------------------------------------------------
+  # Input Check ————————————————————————————————————————————————————————————————
 
   # Check inputs
   .check.input(logical = "REML", s.character = list(type = c("1a", "1b", "2"), method = c("lme4", "nlme")), envir = environment(), input.check = check)
@@ -299,7 +279,7 @@ multilevel.icc <- function(data, ..., cluster, type = c("1a", "1b", "2"),
 
   #_____________________________________________________________________________
   #
-  # Arguments ------------------------------------------------------------------
+  # Arguments ——————————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Type default option ####
@@ -315,7 +295,7 @@ multilevel.icc <- function(data, ..., cluster, type = c("1a", "1b", "2"),
 
   #_____________________________________________________________________________
   #
-  # Main Function --------------------------------------------------------------
+  # Main Function ——————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## One Dependent Variable ####
@@ -499,7 +479,7 @@ multilevel.icc <- function(data, ..., cluster, type = c("1a", "1b", "2"),
 
   #_____________________________________________________________________________
   #
-  # Output ---------------------------------------------------------------------
+  # Output —————————————————————————————————————————————————————————————————————
 
   return(object)
 

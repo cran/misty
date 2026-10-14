@@ -66,7 +66,7 @@ chr.omit <- function(x, omit = "", na.omit = FALSE, check = TRUE) {
 
   #_____________________________________________________________________________
   #
-  # Initial Check --------------------------------------------------------------
+  # Initial Check ——————————————————————————————————————————————————————————————
 
   # Check if input 'x' is missing or NULL
   if (isTRUE(missing(x) || is.null(x))) { stop("Please specify a numeric vector, character vector or factor for the argument 'x'", call. = FALSE) }
@@ -76,7 +76,7 @@ chr.omit <- function(x, omit = "", na.omit = FALSE, check = TRUE) {
 
   #_____________________________________________________________________________
   #
-  # Input Check ----------------------------------------------------------------
+  # Input Check ————————————————————————————————————————————————————————————————
 
   # Check input 'na.omit'
   .check.input(logical = "na.omit", envir = environment(), input.check = check)
@@ -91,7 +91,7 @@ chr.omit <- function(x, omit = "", na.omit = FALSE, check = TRUE) {
 
   #_____________________________________________________________________________
   #
-  # Main Function --------------------------------------------------------------
+  # Main Function ——————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Omit NA ####
@@ -103,7 +103,7 @@ chr.omit <- function(x, omit = "", na.omit = FALSE, check = TRUE) {
   }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Omit values or strings ####
+  ## Omit Values or Strings ####
 
   object <- x[which(!x %in% omit)]
 
@@ -116,7 +116,7 @@ chr.omit <- function(x, omit = "", na.omit = FALSE, check = TRUE) {
 
   #_____________________________________________________________________________
   #
-  # Output ---------------------------------------------------------------------
+  # Output —————————————————————————————————————————————————————————————————————
 
   return(object)
 

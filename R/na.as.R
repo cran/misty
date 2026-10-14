@@ -141,7 +141,7 @@ as.na <- function(data, ..., na, replace = TRUE, check = TRUE) {
 
   #_____________________________________________________________________________
   #
-  # Initial Check --------------------------------------------------------------
+  # Initial Check ——————————————————————————————————————————————————————————————
 
   # Check if input 'data' is missing or NULL
   if (isTRUE(missing(data) ||is.null(data))) { stop("Please specify a vector, factor, matrix, array, data frame, or list for the argument 'data'", call. = FALSE) }
@@ -151,10 +151,10 @@ as.na <- function(data, ..., na, replace = TRUE, check = TRUE) {
 
   #_____________________________________________________________________________
   #
-  # Data -----------------------------------------------------------------------
+  # Data ———————————————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data using the argument '...' ####
+  ## Using the Argument '...' ####
 
   if (isTRUE(!missing(...))) {
 
@@ -165,7 +165,7 @@ as.na <- function(data, ..., na, replace = TRUE, check = TRUE) {
     x <- data[, var.names] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(y)) == 1L)) { unname(unlist(y)) } else { as.data.frame(y) } } else { y })()
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data without using the argument '...' ####
+  ## Without Using the Argument '...' ####
 
   } else {
 
@@ -176,7 +176,7 @@ as.na <- function(data, ..., na, replace = TRUE, check = TRUE) {
 
   #_____________________________________________________________________________
   #
-  # Input Check ----------------------------------------------------------------
+  # Input Check ————————————————————————————————————————————————————————————————
 
   # Check input 'replace'
   .check.input(logical = "replace", envir = environment(), input.check = check)
@@ -205,7 +205,7 @@ as.na <- function(data, ..., na, replace = TRUE, check = TRUE) {
 
   #_____________________________________________________________________________
   #
-  # Main Function --------------------------------------------------------------
+  # Main Function ——————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Dimension of the object = NULL ####
@@ -261,7 +261,7 @@ as.na <- function(data, ..., na, replace = TRUE, check = TRUE) {
 
   #_____________________________________________________________________________
   #
-  # Return Object --------------------------------------------------------------
+  # Return Object ——————————————————————————————————————————————————————————————
 
   return(object)
 
@@ -275,7 +275,7 @@ na.as <- function(data, ..., na, replace = TRUE, as.na = NULL, check = TRUE) {
 
   #_____________________________________________________________________________
   #
-  # Initial Check --------------------------------------------------------------
+  # Initial Check ——————————————————————————————————————————————————————————————
 
   # Check if input 'data' is missing
   if (isTRUE(missing(data))) { stop("Please specify a vector, factor, matrix, array, data frame, or list for the argument 'data'", call. = FALSE) }
@@ -291,35 +291,27 @@ na.as <- function(data, ..., na, replace = TRUE, as.na = NULL, check = TRUE) {
 
   #_____________________________________________________________________________
   #
-  # Data -----------------------------------------------------------------------
+  # Data ———————————————————————————————————————————————————————————————————————
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data using the argument '...' ####
+  var.names <- NULL
+  .data(data, ..., drop = TRUE) |> (\(p) {
 
-  if (isTRUE(!missing(...))) {
+    # Data
+    assign("x", p$data, envir = parent.frame())
 
     # Variable names
-    var.names <- .var.names(..., data = data)
+    assign("var.names", p$var.names, envir = parent.frame())
 
-    # Extract data and convert tibble into data frame or vector
-    x <- data[, var.names] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(y)) == 1L)) { unname(unlist(y)) } else { as.data.frame(y) } } else { y })()
+  })()
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data without using the argument '...' ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  # Convert User-Missing Values into NA
 
-  } else {
-
-    # Extract data and convert tibble into data frame or vector
-    x <- data |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(y)) == 1L)) { unname(unlist(y)) } else { as.data.frame(y) } } else { y })()
-
-  }
-
-  # Convert user-missing values into NA
   if (isTRUE(!is.null(as.na))) { x <- misty::as.na(x, na = as.na, check = check) }
 
   #_____________________________________________________________________________
   #
-  # Input Check ----------------------------------------------------------------
+  # Input Check ————————————————————————————————————————————————————————————————
 
   # Check input 'replace'
   .check.input(logical = "replace", envir = environment(), input.check = check)
@@ -349,7 +341,7 @@ na.as <- function(data, ..., na, replace = TRUE, as.na = NULL, check = TRUE) {
 
   #_____________________________________________________________________________
   #
-  # Main Function --------------------------------------------------------------
+  # Main Function ——————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Dimension of the object = NULL ####
@@ -403,7 +395,7 @@ na.as <- function(data, ..., na, replace = TRUE, as.na = NULL, check = TRUE) {
 
   #_____________________________________________________________________________
   #
-  # Output ---------------------------------------------------------------------
+  # Output —————————————————————————————————————————————————————————————————————
 
   return(object)
 

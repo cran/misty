@@ -12,8 +12,23 @@
 #' Note that by default Cohen's d is computed without applying the correction factor
 #' for removing the small sample bias (i.e., Hedges' g).
 #'
-#' @param x           a numeric vector or data frame.
-#' @param y           a numeric vector.
+#' @param data        a data frame. Note that data are specified either by using
+#'                    the argument \code{data} or by using the arguments \code{x}
+#'                    and \code{y}.
+#' @param ...         an expression indicating the variable names in \code{data},
+#'                    e.g., \code{cohens.d
+#'                    (dat, x1, x2)}. Note that the operators
+#'                    \code{+}, \code{-}, \code{~}, \code{:}, \code{::}, and \code{!}
+#'                    can also be used to select variables, see 'Details' in the
+#'                    \code{\link{df.subset}} function.
+#' @param x           a numeric vector of data values.
+#' @param y           a numeric vector of data values.
+#' @param formula     a formula of the form \code{y ~ group} for one outcome variable
+#'                    or \code{cbind(y1, y2, y3) ~ group} for more than one outcome
+#'                    variable where \code{y} is a numeric variable giving the data
+#'                    values and \code{group} a numeric variable, character variable
+#'                    or factor with two values or factor levels giving the corresponding
+#'                    groups.
 #' @param mu          a numeric value indicating the reference mean.
 #' @param paired      logical: if \code{TRUE}, Cohen's d for a paired-sample design
 #'                    is computed.
@@ -82,7 +97,7 @@
 #'                    specifying more than one outcome variable.
 #' @param ...         further arguments to be passed to or from methods.
 #'
-#' @details#'
+#' @details
 #' Cohen (1988, p.67) proposed to compute the standardized mean difference in a
 #' two-sample design by dividing the mean difference by the unweighted pooled
 #' standard deviation (i.e., \code{weighted = FALSE}).
@@ -173,110 +188,91 @@
 #' #————————————————————————————————————————————————————————————————————————————
 #' # One-Sample Design
 #'
-#' # Example 1a: Cohen's d.z with two-sided 95% CI
-#' # population mean = 3
+#' # Example 1a: Cohen's d.z with two-sided 95% CI, population mean = 3
+#' cohens.d(mtcars, mpg, mu = 20)
+#'
+#' # Example 1b: Alternative specification without using the '...' argument
 #' cohens.d(mtcars$mpg, mu = 20)
 #'
-#' # Example 1b: Cohen's d.z (aka Hedges' g.z) with two-sided 95% CI
-#' # population mean = 3, with small sample correction factor
-#' cohens.d(mtcars$mpg, mu = 20, correct = TRUE)
+#' # Example 1c: Cohen's d.z (aka Hedges' g.z) population mean = 3,
+#' # with small sample correction factor
+#' cohens.d(mtcars, mpg, mu = 20, correct = TRUE)
 #'
-#' # Example 1c: Cohen's d.z with two-sided 95% CI
-#' # population mean = 3, by 'vs' separately
-#' cohens.d(mtcars$mpg, mu = 20, group = mtcars$vs)
+#' # Example 1d: Cohen's d.z, population mean = 3 by 'vs' separately
+#' cohens.d(mtcars, mpg, mu = 20, group = "vs")
 #'
-#' # Example 1d: Cohen's d.z with two-sided 95% CI
-#' # population mean = 20, split analysis by 'vs'
-#' cohens.d(mtcars$mpg, mu = 20, split = mtcars$vs)
+#' # Example 1e: Cohen's d.z, population mean = 20, split analysis by 'vs'
+#' cohens.d(mtcars, mpg, mu = 20, split = "vs")
 #'
-#' # Example 1e: Cohen's d.z with two-sided 95% CI
-#' # population mean = 3, by 'vs' separately, split by 'am'
-#' cohens.d(mtcars$mpg, mu = 20, group = mtcars$vs, split = mtcars$am)
+#' # Example 1f: Cohen's d.z, population mean = 3, by 'vs' separately, split by 'am'
+#' cohens.d(mtcars, mpg, mu = 20, group = "vs", split = "am")
 #'
 #' #————————————————————————————————————————————————————————————————————————————
 #' # Two-Sample Design
 #'
-#' # Example 2a: Cohen's d.s with two-sided 95% CI
-#' # weighted pooled SD
+#' # Example 2a: Cohen's d.s with two-sided 95% CI, weighted pooled SD
 #' cohens.d(mpg ~ vs, data = mtcars)
 #'
-#' # Example 2b: Cohen's d.s with two-sided 99% CI
-#' # weighted pooled SD
-#' cohens.d(mpg ~ vs, data = mtcars, conf.level = 0.99)
+#' # Example 2b: Alternative specification without using the '...' argument
+#' test.t(x = df.subset(mtcars, mpg, subset = vs == 0),
+#'        y = df.subset(mtcars, mpg, subset = vs == 1))
 #'
 #' # Example 2c: Cohen's d.s with one-sided 99% CI
-#' # weighted pooled SD
 #' cohens.d(mpg ~ vs, data = mtcars, alternative = "greater", conf.level = 0.99)
 #'
-#' # Example 2d: Cohen's d.s for more than one variable with two-sided 95% CI
-#' # weighted pooled SD
+#' # Example 2d: Cohen's d.s for more than one variable
 #' cohens.d(cbind(mpg, disp, hp) ~ vs, data = mtcars)
 #'
-#' # Example 2e: Cohen's d with two-sided 95% CI
-#' # unweighted SD
+#' # Example 2e: Cohen's d, unweighted SD
 #' cohens.d(mpg ~ vs, data = mtcars, weighted = FALSE)
 #'
-#' # Example 2f: Cohen's d.s (aka Hedges' g.s) with two-sided 95% CI
-#' # weighted pooled SD, with small sample correction factor
+#' # Example 2f: Cohen's d.s (aka Hedges' g.s), weighted pooled SD,
+#' #             with small sample correction factor
 #' cohens.d(mpg ~ vs, data = mtcars, correct = TRUE)
 #'
-#' # Example 2g: Cohen's d (aka Hedges' g) with two-sided 95% CI
-#' # Unweighted SD, with small sample correction factor
+#' # Example 2g: Cohen's d (aka Hedges' g), unweighted SD,
+#' #             with small sample correction factor
 #' cohens.d(mpg ~ vs, data = mtcars, weighted = FALSE, correct = TRUE)
 #'
-#' # Example 2h: Cohen's d (aka Glass's delta) with two-sided 95% CI
-#' # SD of reference group 1
+#' # Example 2h: Cohen's d (aka Glass's delta), SD of reference group 1
 #' cohens.d(mpg ~ vs, data = mtcars, ref = 0)
 #'
-#' # Example 2i: Cohen's d.s with two-sided 95% CI
-#' # weighted pooled SD, by 'am' separately
-#' cohens.d(mpg ~ vs, data = mtcars, group = mtcars$am)
+#' # Example 2i: Cohen's d.s,  by 'am' separately
+#' cohens.d(mpg ~ vs, data = mtcars, group = "am")
 #'
-#' # Example 2j: Cohen's d.s with two-sided 95% CI
-#' # weighted pooled SD, split analysis by 'am'
-#' cohens.d(mpg ~ vs, data = mtcars, split = mtcars$am)
+#' # Example 2j: Cohen's d.s, split analysis by 'am'
+#' cohens.d(mpg ~ vs, data = mtcars, split = "am")
 #'
 #' #————————————————————————————————————————————————————————————————————————————
 #' # Paired-Sample Design
 #'
 #' # Example 3a: Cohen's d.z with two-sided 95% CI
 #' # SD of the difference scores
-#' cohens.d(mtcars$drat, mtcars$wt, paired = TRUE)
+#' cohens.d(mtcars, drat, wt, paired = TRUE)
 #'
-#' # Example 3b: Cohen's d.z with one-sided 99% CI
-#' # SD of the difference scores
-#' cohens.d(mtcars$drat, mtcars$wt, paired = TRUE, alternative = "greater",
-#'          conf.level = 0.99)
+#' # Example 3b:  Alternative specification without using the '...' argument
+#' cohens.d(mtcars[, c("drat", "wt")], paired = TRUE)
 #'
-#' # Example 3c: Cohen's d.rm with two-sided 95% CI
-#' # controlling for the correlation between measures
-#' cohens.d(mtcars$drat, mtcars$wt, paired = TRUE, weighted = FALSE)
+#' # Example 3c: Alternative specification without using the '...' argument
+#' cohens.d(x = mtcars$drat, y = mtcars$wt, paired = TRUE)
 #'
-#' # Example 3d: Cohen's d.av with two-sided 95% CI
-#' # without controlling for the correlation between measures
-#' cohens.d(mtcars$drat, mtcars$wt, paired = TRUE, weighted = FALSE, cor = FALSE)
+#' # Example 3d: Cohen's d.rm, controlling for the correlation between measures
+#' cohens.d(mtcars, drat, wt, paired = TRUE, weighted = FALSE)
 #'
-#' # Example 3e: Cohen's d.z (aka Hedges' g.z) with two-sided 95% CI
-#' # SD of the differnece scores
-#' cohens.d(mtcars$drat, mtcars$wt, paired = TRUE, correct = TRUE)
+#' # Example 3e: Cohen's d.av, without controlling for the correlation between measures
+#' cohens.d(mtcars, drat, wt, paired = TRUE, weighted = FALSE, cor = FALSE)
 #'
-#' # Example 3f: Cohen's d.rm (aka Hedges' g.rm) with two-sided 95% CI
-#' # controlling for the correlation between measures
-#' cohens.d(mtcars$drat, mtcars$wt, paired = TRUE, weighted = FALSE, correct = TRUE)
+#' # Example 3f: Cohen's d.z (aka Hedges' g.z),# SD of the differnece scores
+#' cohens.d(mtcars, drat, wt, paired = TRUE, correct = TRUE)
 #'
-#' # Example 3g: Cohen's d.av (aka Hedges' g.av) with two-sided 95% CI
-#' # without controlling for the correlation between measures
-#' cohens.d(mtcars$drat, mtcars$wt, paired = TRUE, weighted = FALSE, cor = FALSE,
-#'          correct = TRUE)
+#' # Example 3g: Cohen's d.z with two-sided 95% CI
+#' #             SD of the difference scores, by 'vs' separately
+#' cohens.d(mtcars, drat, wt, paired = TRUE, group = "vs")
 #'
-#' # Example 3h: Cohen's d.z with two-sided 95% CI
-#' # SD of the difference scores, by 'vs' separately
-#' cohens.d(mtcars$drat, mtcars$wt, paired = TRUE, group = mtcars$vs)
-#'
-#' # Example 3i:  Cohen's d.z with two-sided 95% CI
-#' # SD of the difference scores, split analysis by 'vs'
-#' cohens.d(mtcars$drat, mtcars$wt, paired = TRUE, split = mtcars$vs)
-cohens.d <- function(x, ...) {
+#' # Example 3h:  Cohen's d.z with two-sided 95% CI
+#' #              SD of the difference scores, split analysis by 'vs'
+#' cohens.d(mtcars, drat, wt, paired = TRUE, split = "vs")
+cohens.d <- function(...) {
 
   UseMethod("cohens.d")
 
@@ -284,53 +280,95 @@ cohens.d <- function(x, ...) {
 
 #_______________________________________________________________________________
 #
-# Default S3 method ------------------------------------------------------------
+# Default S3 method ————————————————————————————————————————————————————————————
 
-cohens.d.default <- function(x, y = NULL, mu = 0, paired = FALSE, weighted = TRUE, cor = TRUE,
-                             ref = NULL, correct = FALSE, alternative = c("two.sided", "less", "greater"),
+cohens.d.default <- function(data = NULL, ..., x = NULL, y = NULL, mu = 0, paired = FALSE,
+                             weighted = TRUE, cor = TRUE, ref = NULL, correct = FALSE,
+                             alternative = c("two.sided", "less", "greater"),
                              conf.level = 0.95, group = NULL, split = NULL, sort.var = FALSE,
                              digits = 2, as.na = NULL, write = NULL, append = TRUE,
-                             check = TRUE, output = TRUE, ...) {
+                             check = TRUE, output = TRUE) {
 
   #_____________________________________________________________________________
   #
-  # Initial Check --------------------------------------------------------------
+  ## Initial Check ####
 
-  # Check if input 'x' is missing or NULL
-  if (isTRUE(missing(x) || is.null(x))) { stop("Please specify a numeric vector for the argument 'x'", call. = FALSE) }
+  # Check if input 'data' and 'x' are NULL
+  if (isTRUE(is.null(data) && is.null(x))) { stop("Please specify the argument 'data' or the argument 'x'.", call. = FALSE) }
 
-  # Convert 'x' into a vector
-  x <- unlist(x, use.names = FALSE)
+  # Check if input 'data' or 'x' is specified
+  if (isTRUE(!is.null(data) && !is.null(x))) { stop("Please specify either the argument 'data' or the argument 'x', but not both.", call. = FALSE) }
 
-  if (isTRUE(!is.null(y))) {
+  #_____________________________________________________________________________
+  #
+  # Data ———————————————————————————————————————————————————————————————————————
 
-    # Check if only one variable specified in the input 'y'
-    if (ncol(data.frame(y)) != 1L) { stop("More than one variable specified for the argument 'x'.",call. = FALSE) }
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Extract Variables ####
 
-    # Convert 'y' into a vector
-    y <- unlist(y, use.names = FALSE)
+  if (isTRUE(!is.null(data))) {
+
+    .data(data, ..., group = group, split = split, drop = TRUE, check.one.two = TRUE) |> (\(p) {
+
+      # Extract 'x'
+      assign("x", p$data, envir = parent.frame())
+
+      # Extract 'y'
+      if (isTRUE(ncol(as.data.frame(p$data)) > 1L)) {
+
+        assign("y", x[, 2L], envir = parent.frame())
+        assign("x", x[, 1L], envir = parent.frame())
+
+      } else {
+
+        assign("y", NULL, envir = parent.frame())
+
+      }
+
+      # Grouping variable
+      if (isTRUE(!is.null(p$group))) { assign("group", p$group, envir = parent.frame()) }
+
+      # Split variable
+      if (isTRUE(!is.null(p$split))) { assign("split", p$split, envir = parent.frame()) }
+
+    })()
 
   }
 
-  # Check input 'paired'
-  if (isTRUE(!is.logical(paired))) { stop("Please specify TRUE or FALSE for the argument 'paired'.", call. = FALSE) }
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Convert User-Missing Values into NA ####
 
+  if (isTRUE(!is.null(as.na))) {
 
-  if (isTRUE(paired)) {
+    # One-sample
+    if (isTRUE(is.null(y))) {
 
-    # Length of 'x' and 'y'
-    if (isTRUE(nrow(data.frame(x)) != nrow(data.frame(y)))) { stop("Length of the vector specified in 'x' does not match the length of the vector specified in 'y'.", call. = FALSE) }
+      # Replace user-specified values with missing values
+      x <- .as.na(x, na = as.na)
+
+    # Two- or paired-sample
+    } else {
+
+      # Replace user-specified values with missing values
+      x <- .as.na(x, na = as.na)
+      y <- .as.na(y, na = as.na)
+
+    }
 
   }
 
-  # Check 'group'
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Grouping Variable ####
+
   if (isTRUE(!is.null(group))) {
 
-    if (ncol(data.frame(group)) != 1L) { stop("More than one grouping variable specified for the argument 'group'.",call. = FALSE) }
+    #if (isTRUE(!paired)) { stop("Please use formula notation for using a grouping variable in independent samples.", call. = FALSE) }
+
+    if (ncol(data.frame(group)) != 1) { stop("More than one grouping variable specified for the argument 'group'.",call. = FALSE) }
 
     if (isTRUE(paired)) {
 
-      if (nrow(data.frame(group)) != nrow(data.frame(x))) { stop("Length of the vector or factor specified in the argument 'group' does not match with 'x'.", call. = FALSE) }
+      if (length(group) != nrow(data.frame(x))) { stop("Length of the vector or factor specified in the argument 'group' does not match with 'x'.", call. = FALSE) }
 
     }
 
@@ -339,16 +377,16 @@ cohens.d.default <- function(x, y = NULL, mu = 0, paired = FALSE, weighted = TRU
 
   }
 
-  # Check 'split'
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Split Variable ####
+
   if (isTRUE(!is.null(split))) {
 
-    if (ncol(data.frame(split)) != 1L) { stop("More than one split variable specified for the argument 'split'.",call. = FALSE) }
+    #if (isTRUE(!paired)) { stop("Please use formula notation for using a split variable in independent samples.", call. = FALSE) }
 
-    if (isTRUE(paired)) {
+    if (ncol(data.frame(split)) != 1) { stop("More than one split variable specified for the argument 'split'.", call. = FALSE) }
 
-      if (nrow(data.frame(split)) != nrow(data.frame(x))) { stop("Length of the vector or factor specified in the argument 'split' does not match with 'x'.", call. = FALSE) }
-
-    }
+    if (isTRUE(paired)) { if (length(split) != nrow(data.frame(x))) { stop("Length of the vector or factor specified in the argument 'split' does not match with 'x'.", call. = FALSE) } }
 
     # Convert 'split' into a vector
     split <- unlist(split, use.names = FALSE)
@@ -356,7 +394,7 @@ cohens.d.default <- function(x, y = NULL, mu = 0, paired = FALSE, weighted = TRU
   }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## List or Dataframe ####
+  ## List or Data Frame ####
 
   #—————————————————————————————————————— #
   ### One-Sample Design ####
@@ -389,26 +427,16 @@ cohens.d.default <- function(x, y = NULL, mu = 0, paired = FALSE, weighted = TRU
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Convert User-Missing Values into NA ####
-
-  if (isTRUE(!is.null(as.na))) { xy <- .as.na(xy, na = as.na) }
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Listwise Deletion ####
-
-  if (isTRUE(paired && nrow(na.omit(xy)) < 2L)) { stop("After listwise deletion, the number of pairs of observations is less than two.", call. = FALSE) }
-
   #_____________________________________________________________________________
   #
-  # Input Check ----------------------------------------------------------------
+  # Input Check ————————————————————————————————————————————————————————————————
 
-  # Check inputs
   .check.input(logical = c("weighted", "cor", "correct", "sort.var", "append", "output"),
-               numeric = list(mu = 1L),
-               args = c("alternative", "conf.level", "digits", "write1"), envir = environment(), input.check = check)
+               numeric = list(mu = 1L), args = c("xy", "alternative", "conf.level", "digits", "write1"), envir = environment(), input.check = check)
 
-  # Additional checks
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Additional Checks ####
+
   if (isTRUE(check)) {
 
     # Check input 'ref'
@@ -440,7 +468,7 @@ cohens.d.default <- function(x, y = NULL, mu = 0, paired = FALSE, weighted = TRU
 
   #_____________________________________________________________________________
   #
-  # Arguments ------------------------------------------------------------------
+  # Arguments ——————————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Type of Sample ####
@@ -463,13 +491,13 @@ cohens.d.default <- function(x, y = NULL, mu = 0, paired = FALSE, weighted = TRU
   }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Alternative hypothesis ####
+  ## Alternative Hypothesis ####
 
   if (isTRUE(all(c("two.sided", "less", "greater") %in% alternative))) { alternative <- "two.sided" }
 
   #_____________________________________________________________________________
   #
-  # Main Function --------------------------------------------------------------
+  # Main Function ——————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## No Grouping, No Split ####
@@ -620,6 +648,7 @@ cohens.d.default <- function(x, y = NULL, mu = 0, paired = FALSE, weighted = TRU
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Grouping, Split ####
+
   } else if (isTRUE(!is.null(group) && !is.null(split))) {
 
     #—————————————————————————————————————— #
@@ -651,7 +680,7 @@ cohens.d.default <- function(x, y = NULL, mu = 0, paired = FALSE, weighted = TRU
 
   #_____________________________________________________________________________
   #
-  # Return Object --------------------------------------------------------------
+  # Return Object ——————————————————————————————————————————————————————————————
 
   object <- list(call = match.call(),
                  type = "cohens.d",
@@ -668,14 +697,14 @@ cohens.d.default <- function(x, y = NULL, mu = 0, paired = FALSE, weighted = TRU
 
   #_____________________________________________________________________________
   #
-  # Write Results --------------------------------------------------------------
+  # Write Results ——————————————————————————————————————————————————————————————
 
   if (isTRUE(!is.null(write))) {
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Text file ####
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Text File ####
 
-    # Send R output to textfile
+    # Send R output to text file
     sink(file = write, append = ifelse(isTRUE(file.exists(write)), append, FALSE), type = "output", split = FALSE)
 
     if (append && isTRUE(file.exists(write))) { write("", file = write, append = TRUE) }
@@ -690,7 +719,7 @@ cohens.d.default <- function(x, y = NULL, mu = 0, paired = FALSE, weighted = TRU
 
   #_____________________________________________________________________________
   #
-  # Output ---------------------------------------------------------------------
+  # Output —————————————————————————————————————————————————————————————————————
 
   if (isTRUE(output)) { print(object, check = FALSE) }
 
@@ -700,11 +729,10 @@ cohens.d.default <- function(x, y = NULL, mu = 0, paired = FALSE, weighted = TRU
 
 #_______________________________________________________________________________
 #
-# S3 method for class 'formula' ------------------------------------------------
+# S3 method for class 'formula'  ———————————————————————————————————————————————
 
-cohens.d.formula <- function(formula, data, weighted = TRUE, cor = TRUE,
-                             ref = NULL, correct = FALSE,
-                             alternative = c("two.sided", "less", "greater"),
+cohens.d.formula <- function(formula, data, weighted = TRUE, cor = TRUE, ref = NULL,
+                             correct = FALSE, alternative = c("two.sided", "less", "greater"),
                              conf.level = 0.95, group = NULL, split = NULL,
                              sort.var = FALSE, na.omit = FALSE, digits = 2,
                              as.na = NULL, write = NULL, append = TRUE,
@@ -712,7 +740,7 @@ cohens.d.formula <- function(formula, data, weighted = TRUE, cor = TRUE,
 
   #_____________________________________________________________________________
   #
-  # Initial Check --------------------------------------------------------------
+  ## Initial Check —————————————————————————————————————————————————————————————
 
   # Check if input 'formula' is missing
   if (isTRUE(missing(formula))) { stop("Please specify a formula using the argument 'formula'", call. = FALSE) }
@@ -720,75 +748,93 @@ cohens.d.formula <- function(formula, data, weighted = TRUE, cor = TRUE,
   # Check if input 'data' is missing or NULL
   if (isTRUE(missing(data) || is.null(data))) { stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE) }
 
-  # Check 'group'
-  if (isTRUE(!is.null(group))) {
+  #_____________________________________________________________________________
+  #
+  # Variables ——————————————————————————————————————————————————————————————————
 
-    if (ncol(data.frame(group)) != 1L) { stop("More than one grouping variable specified for the argument 'group'.",call. = FALSE) }
-
-    if (nrow(data.frame(group)) != nrow(data)) { stop("Length of the vector or factor specified in the argument 'group' does not match the number of rows in 'data'.", call. = FALSE) }
-
-    # Convert 'group' into a vector
-    group <- unlist(group, use.names = FALSE)
-
-  }
-
-  # Check 'split'
-  if (isTRUE(!is.null(split))) {
-
-    if (ncol(data.frame(split)) != 1L) { stop("More than one split variable specified for the argument 'split'.",call. = FALSE) }
-
-    if (nrow(data.frame(split)) != nrow(data)) { stop("Length of the vector or factor specified in the argument 'split' does not match the number of rows in 'data'.", call. = FALSE) }
-
-    # Convert 'split' into a vector
-    split <- unlist(split, use.names = FALSE)
-
-  }
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## As data frame ####
-
-  data <- as.data.frame(data)
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Variables ####
-
+  # Extract variable names
   var.formula <- all.vars(as.formula(formula))
 
   # Grouping variable
   group.var <- attr(terms(formula[-2L]), "term.labels")
 
-  # Outcome(s)
-  y.vars <- var.formula[-grep(group.var, var.formula)]
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Check ####
+  # Outcome variables
+  y.vars <- setdiff(var.formula, group.var)
 
   # Check if variables are in the data
-  (!var.formula %in% colnames(data)) |>
-    (\(y) if (isTRUE(any(y))) { stop(paste0("Variables specified in the the formula were not found in 'data': ", paste(var.formula[which(y)], collapse = ", ")), call. = FALSE) })()
+  (!var.formula %in% colnames(data)) |> (\(p) if (isTRUE(any(p))) { stop(paste0("Variables specified in the the formula were not found in 'data': ", paste(var.formula[which(p)], collapse = ", ")), call. = FALSE)  })()
 
   # Check if input 'formula' has only one grouping variable
   if (isTRUE(length(group.var) != 1L)) { stop("Please specify a formula with only one grouping variable.", call. = FALSE) }
 
-  # Check if grouping variable has two levels
-  if (isTRUE(length(na.omit(unique(data[, group.var]))) != 2L)) { stop("Please specify a grouping variable with exactly two levels.", call. = FALSE) }
+  #—————————————————————————————————————— #
+  ### Grouping Variable ####
 
-  # Check if 'ref' is in the grouping variable
-  if (!isTRUE(is.null(ref))) { if (!isTRUE(ref %in% data[, group.var])) { stop("Reference group specified in the argument 'ref' is not represented in the grouping variable.", call. = FALSE) } }
+  if (isTRUE(!is.null(group))) {
+
+    # Grouping variable specified with variable name
+    if (isTRUE(is.character(group) && length(group) == 1L))  {
+
+      if (isTRUE(!group %in% colnames(data))) { stop("Grouping variable specified in the argument 'group' was not found in the 'data.'", call. = FALSE) }
+
+      group <- data[, group]
+
+    # Grouping variable specified as vector
+    } else {
+
+      if (nrow(data.frame(group)) != nrow(data)) { stop("Length of the vector or factor specified in the argument 'group' does not match the number of rows in 'data'.", call. = FALSE) }
+
+      # Convert 'group' into a vector
+      group <- unlist(group, use.names = FALSE)
+
+    }
+
+  }
+
+  #—————————————————————————————————————— #
+  ### Split Variable ####
+
+  if (isTRUE(!is.null(split))) {
+
+    # Split variable specified with variable name
+    if (isTRUE(is.character(split) && length(split) == 1L))  {
+
+      if (isTRUE(!split %in% colnames(data))) { stop("Split variable specified in the argument 'split' was not found in the 'data.'", call. = FALSE) }
+
+      split <- data[, split]
+
+    # Split variable specified as vector
+    } else {
+
+      if (nrow(data.frame(split)) != nrow(data)) { stop("Length of the vector or factor specified in the argument 'split' does not match the number of rows in 'data'.", call. = FALSE) }
+
+      # Convert 'split' into a vector
+      split <- unlist(split, use.names = FALSE)
+
+    }
+
+  }
+
+  #_____________________________________________________________________________
+  #
+  # Input Check ————————————————————————————————————————————————————————————————
+
+  .check.input(logical = c("weighted", "cor", "correct", "append", "output"), args = c("alternative", "conf.level", "digits", "write1"),
+               envir = environment(), input.check = check)
+
+  #_____________________________________________________________________________
+  #
+  # Data ———————————————————————————————————————————————————————————————————————
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Data Frame ####
+
+  data <- as.data.frame(data)
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Convert User-Missing Values into NA ####
 
-  if (isTRUE(!is.null(as.na))) {
-
-    # Replace user-specified values with missing values
-    data[, y.vars] <- misty::as.na(data[, y.vars], na = as.na, check = check)
-
-    # Variable with missing values only
-    vapply(data[, y.vars, drop = FALSE], function(y) all(is.na(y)), FUN.VALUE = logical(1L)) |>
-      (\(y) if (any(y)) { stop(paste0("After converting user-missing values into NA, following variables are completely missing: ", paste(names(which(y)), collapse = ", ")), call. = FALSE) })()
-
-  }
+  if (isTRUE(!is.null(as.na))) { data[, y.vars] <- .as.na(data[, y.vars], na = as.na) }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Listwise deletion ####
@@ -857,7 +903,7 @@ cohens.d.formula <- function(formula, data, weighted = TRUE, cor = TRUE,
 
   #_____________________________________________________________________________
   #
-  # Arguments ------------------------------------------------------------------
+  # Arguments ——————————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Alternative Hypothesis ####
@@ -873,7 +919,7 @@ cohens.d.formula <- function(formula, data, weighted = TRUE, cor = TRUE,
 
   #_____________________________________________________________________________
   #
-  # Main Function --------------------------------------------------------------
+  # Main Function ——————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## No Grouping, No Split ####
@@ -907,13 +953,10 @@ cohens.d.formula <- function(formula, data, weighted = TRUE, cor = TRUE,
       }
 
       result[loop.mat[i, ], ] <- data.frame(variable = y.vars[i],
-                                            cohens.d.default(x = data.split[[1L]],
-                                                             y = data.split[[2L]],
-                                                             paired = FALSE, weighted = weighted, cor = cor,
-                                                             ref = ref, correct = correct, alternative = alternative,
-                                                             conf.level = conf.level, group = NULL, split = NULL,
-                                                             sort.var = sort.var, digits = digits, as.na = NULL,
-                                                             check = check, output = FALSE)$result[, -1L])
+                                            cohens.d.default(x = data.split[[1L]], y = data.split[[2L]],
+                                                             paired = FALSE, weighted = weighted, cor = cor, ref = ref, correct = correct, alternative = alternative,
+                                                             conf.level = conf.level, group = NULL, split = NULL, sort.var = sort.var, digits = digits, as.na = NULL,
+                                                             check = FALSE, output = FALSE)$result[, -1L])
 
       result[loop.mat[i, ], "between"] <- names(data.split)
 
@@ -925,11 +968,9 @@ cohens.d.formula <- function(formula, data, weighted = TRUE, cor = TRUE,
   } else if (isTRUE(!is.null(group) && is.null(split))) {
 
     object.group <- lapply(split(data[, var.formula], f = group),
-                           function(y) cohens.d.formula(formula, data = y, weighted = weighted, cor = cor,
-                                                        ref = ref, correct = correct, alternative = alternative,
-                                                        conf.level = conf.level, group = NULL, split = NULL,
-                                                        sort.var = sort.var, digits = digits, as.na = NULL,
-                                                        check = check, output = FALSE)$result)
+                           function(y) cohens.d.formula(formula, data = y, weighted = weighted, cor = cor, ref = ref, correct = correct, alternative = alternative,
+                                                        conf.level = conf.level, group = NULL, split = NULL, sort.var = sort.var, digits = digits, as.na = NULL,
+                                                        check = FALSE, output = FALSE)$result)
 
     result <- data.frame(group = rep(names(object.group), each = length(y.vars)*2),
                          eval(parse(text = paste0("rbind(", paste0("object.group[[", seq_len(length(object.group)), "]]",
@@ -941,11 +982,9 @@ cohens.d.formula <- function(formula, data, weighted = TRUE, cor = TRUE,
   } else if (isTRUE(is.null(group) && !is.null(split))) {
 
     result <- lapply(split(data[, var.formula], f = split),
-                     function(y) cohens.d.formula(formula, data = y, weighted = weighted, cor = cor,
-                                                  ref = ref, correct = correct, alternative = alternative,
-                                                  conf.level = conf.level, group = NULL, split = NULL,
-                                                  sort.var = sort.var, digits = digits, as.na = NULL,
-                                                  check = check, output = FALSE)$result)
+                     function(y) cohens.d.formula(formula, data = y, weighted = weighted, cor = cor, ref = ref, correct = correct, alternative = alternative,
+                                                  conf.level = conf.level, group = NULL, split = NULL, sort.var = sort.var, digits = digits, as.na = NULL,
+                                                  check = FALSE, output = FALSE)$result)
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Grouping, Split ####
@@ -953,27 +992,21 @@ cohens.d.formula <- function(formula, data, weighted = TRUE, cor = TRUE,
   } else if (isTRUE(!is.null(group) && !is.null(split))) {
 
     result <- lapply(split(data.frame(data[, var.formula], .group = group), f = split),
-                     function(y) cohens.d.formula(formula, data = y, weighted = weighted, cor = cor,
-                                                  ref = ref, correct = correct, alternative = alternative,
-                                                  conf.level = conf.level, group = y$.group, split = NULL,
-                                                  sort.var = sort.var, digits = digits, as.na = NULL,
-                                                  check = check, output = FALSE)$result)
+                     function(y) cohens.d.formula(formula, data = y, weighted = weighted, cor = cor, ref = ref, correct = correct, alternative = alternative,
+                                                  conf.level = conf.level, group = y$.group, split = NULL, sort.var = sort.var, digits = digits, as.na = NULL,
+                                                  check = FALSE, output = FALSE)$result)
 
   }
 
   #_____________________________________________________________________________
   #
-  # Return Object --------------------------------------------------------------
+  # Return Object ——————————————————————————————————————————————————————————————
 
   object <- list(call = match.call(),
                  type = "cohens.d",
                  sample = "two",
                  data = list(data = data[, var.formula], group = group, split = split),
-                 args = list(formula = formula, weighted = weighted, cor = cor,
-                             ref = ref.return, correct = correct, alternative = alternative,
-                             conf.level = conf.level, sort.var = sort.var,
-                             na.omit = na.omit, digits = digits, as.na = as.na,
-                             write = write, append = append, check = check, output = output),
+                 args = list(formula = formula, weighted = weighted, cor = cor, ref = ref.return, correct = correct, alternative = alternative, conf.level = conf.level, sort.var = sort.var, na.omit = na.omit, digits = digits, as.na = as.na, write = write, append = append, check = FALSE, output = output),
                  result = result)
 
   class(object) <- "misty.object"
@@ -981,14 +1014,14 @@ cohens.d.formula <- function(formula, data, weighted = TRUE, cor = TRUE,
 
   #_____________________________________________________________________________
   #
-  # Write results --------------------------------------------------------------
+  # Write results ——————————————————————————————————————————————————————————————
 
   if (isTRUE(!is.null(write))) {
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Text file ####
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Text File ####
 
-    # Send R output to textfile
+    # Send R output to text file
     sink(file = write, append = ifelse(isTRUE(file.exists(write)), append, FALSE), type = "output", split = FALSE)
 
     if (isTRUE(append && file.exists(write))) { write("", file = write, append = TRUE) }
@@ -1003,7 +1036,7 @@ cohens.d.formula <- function(formula, data, weighted = TRUE, cor = TRUE,
 
   #_____________________________________________________________________________
   #
-  # Output ---------------------------------------------------------------------
+  # Output —————————————————————————————————————————————————————————————————————
 
   if (isTRUE(output)) { print(object, check = FALSE) }
 

@@ -56,7 +56,7 @@ df.move <- function(data, ..., before = NULL, after = NULL, first = TRUE, check 
 
   #_____________________________________________________________________________
   #
-  # Initial Check --------------------------------------------------------------
+  # Initial Check ——————————————————————————————————————————————————————————————
 
   # Check if input 'data' is missing or NULL
   if (isTRUE(missing(data) || is.null(data))) { stop("Please specify a data frame for the argument 'data'", call. = FALSE) }
@@ -66,14 +66,14 @@ df.move <- function(data, ..., before = NULL, after = NULL, first = TRUE, check 
 
   #_____________________________________________________________________________
   #
-  # Data -----------------------------------------------------------------------
+  # Data ———————————————————————————————————————————————————————————————————————
 
   # Variable names
   var.names <- .var.names(data = data, ...)
 
   #_____________________________________________________________________________
   #
-  # Input Check ----------------------------------------------------------------
+  # Input Check ————————————————————————————————————————————————————————————————
 
   # Check inputs
   .check.input(logical = "first", envir = environment(), input.check = check)
@@ -109,7 +109,7 @@ df.move <- function(data, ..., before = NULL, after = NULL, first = TRUE, check 
 
   #_____________________________________________________________________________
   #
-  # Main Function --------------------------------------------------------------
+  # Main Function ——————————————————————————————————————————————————————————————
 
   # Indices of 'var.names'
   var.names.ind <- NULL
@@ -168,7 +168,7 @@ df.move <- function(data, ..., before = NULL, after = NULL, first = TRUE, check 
 
   #_____________________________________________________________________________
   #
-  # Output ---------------------------------------------------------------------
+  # Output —————————————————————————————————————————————————————————————————————
 
   return(object)
 

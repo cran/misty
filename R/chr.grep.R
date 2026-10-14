@@ -58,7 +58,7 @@ chr.grep <- function(pattern, x, ignore.case = FALSE, perl = FALSE, value = FALS
 
   #_____________________________________________________________________________
   #
-  # Initial Check --------------------------------------------------------------
+  # Initial Check ——————————————————————————————————————————————————————————————
 
   # Check if input 'pattern' is missing or NULL
   if (isTRUE(missing(pattern) || is.null(pattern))) { stop("Please specify a character vector for the argument 'pattern'", call. = FALSE) }
@@ -68,14 +68,14 @@ chr.grep <- function(pattern, x, ignore.case = FALSE, perl = FALSE, value = FALS
 
   #_____________________________________________________________________________
   #
-  # Input Check ----------------------------------------------------------------
+  # Input Check ————————————————————————————————————————————————————————————————
 
   # Check inputs
   .check.input(logical = c("ignore.case", "perl", "value", "fixed", "useBytes", "invert"), envir = environment(), input.check = check)
 
   #_____________________________________________________________________________
   #
-  # Main Function --------------------------------------------------------------
+  # Main Function ——————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Matching Elements, invert = FALSE ####
@@ -145,7 +145,7 @@ chr.grepl <- function(pattern, x, ignore.case = FALSE, perl = FALSE, fixed = FAL
 
   #_____________________________________________________________________________
   #
-  # Initial Check --------------------------------------------------------------
+  # Initial Check ——————————————————————————————————————————————————————————————
 
   # Check if input 'pattern' is missing
   if (isTRUE(missing(pattern))) { stop("Please specify a character vector for the argument 'pattern'", call. = FALSE) }
@@ -161,14 +161,14 @@ chr.grepl <- function(pattern, x, ignore.case = FALSE, perl = FALSE, fixed = FAL
 
   #_____________________________________________________________________________
   #
-  # Input Check ----------------------------------------------------------------
+  # Input Check ————————————————————————————————————————————————————————————————
 
   # Check input 'check'
   .check.input(logical = c("ignore.case", "perl", "fixed", "useBytes"), envir = environment(), input.check = check)
 
   #_____________________________________________________________________________
   #
-  # Main Function --------------------------------------------------------------
+  # Main Function ——————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Character String to be Matched ####
@@ -196,7 +196,7 @@ chr.grepl <- function(pattern, x, ignore.case = FALSE, perl = FALSE, fixed = FAL
 
   #_____________________________________________________________________________
   #
-  # Output ---------------------------------------------------------------------
+  # Output —————————————————————————————————————————————————————————————————————
 
   return(object)
 

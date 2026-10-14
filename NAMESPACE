@@ -5,6 +5,8 @@ S3method(ci.prop.diff,default)
 S3method(ci.prop.diff,formula)
 S3method(cohens.d,default)
 S3method(cohens.d,formula)
+S3method(test.bm,default)
+S3method(test.bm,formula)
 S3method(test.t,default)
 S3method(test.t,formula)
 S3method(test.z,default)
@@ -136,7 +138,11 @@ export(size.mean)
 export(size.prop)
 export(skewness)
 export(summa)
+export(test.bm)
+export(test.homo)
 export(test.levene)
+export(test.linear)
+export(test.norm)
 export(test.t)
 export(test.welch)
 export(test.z)
@@ -149,15 +155,15 @@ export(write.mplus)
 export(write.result)
 export(write.sav)
 export(write.xlsx)
-importFrom("stats", "AIC","aov", "anova", "as.formula", "BIC", "chisq.test", "complete.cases", 
-           "contrasts", "contr.helmert", "contr.poly", "contr.sum", "contr.treatment", "coef", 
-           "coefficients", "cooks.distance", "confint", "cor", "cor.test", "cov", "cov2cor", 
+importFrom("stats", "AIC","aov", "anova", "as.formula", "BIC", "chisq.test", "complete.cases",
+           "contrasts", "contr.helmert", "contr.poly", "contr.sum", "contr.treatment", "coef",
+           "coefficients", "cooks.distance", "confint", "cor", "cor.test", "cov", "cov2cor",
            "density", "df", "dfbetas", "df.residual", "dnorm", "dt", "fft", "formula", "hatvalues",
-           "integrate", "IQR", "lag", "lm", "loess", "logLik", "mad", "mahalanobis", "median",
-           "model.frame", "model.matrix", "na.omit", "nextn", "nobs", "oneway.test", "optim",
-           "optimize", "pnorm", "predict", "resid", "residuals", "rnorm", "rstandard", "rstudent",
+           "integrate", "IQR", "lag", "lm", "lm.fit", "loess", "logLik", "mad", "mahalanobis", "median",
+           "model.frame", "model.matrix", "model.response", "na.omit", "nextn", "nobs", "oneway.test", "optim",
+           "optimize", "plnorm", "pnorm", "ppoints", "predict", "qlogis", "resid", "residuals", "rnorm", "rstandard", "rstudent",
            "runif", "setNames", "sigma", "summary.lm", "pchisq", "qbeta", "qbinom", "qchisq", "qf",
-           "qnorm", "qt", "quantile", "reshape", "sd", "terms", "time", "t.test", "p.adjust", "pf",
+           "qnorm", "qt", "quantile", "reshape", "sd", "shapiro.test", "terms", "time", "t.test", "p.adjust", "pf",
            "pt", "uniroot", "update", "var", "vcov", "weights")
 importFrom("grDevices", "hcl.colors", "hcl.pals")
 importFrom("utils", "as.relistable", "available.packages", "combn", "head",

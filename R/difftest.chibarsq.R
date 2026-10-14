@@ -281,7 +281,7 @@ difftest.chibarsq <- function(clpm, riclpm, alpha = 0.05, digits = 2, p.digits =
 
   #_____________________________________________________________________________
   #
-  # Initial Check --------------------------------------------------------------
+  # Initial Check ——————————————————————————————————————————————————————————————
 
   # Class 'lavaan'
   if (isTRUE(class(riclpm) != "lavaan")) { stop("Please specify an object of class lavaan for the argument 'riclpm'.", call. = FALSE) }
@@ -289,12 +289,13 @@ difftest.chibarsq <- function(clpm, riclpm, alpha = 0.05, digits = 2, p.digits =
 
   #_____________________________________________________________________________
   #
-  # Input Check ----------------------------------------------------------------
+  # Input Check ————————————————————————————————————————————————————————————————
 
-  # Check inputs
   .check.input(logical = c("append", "output"), args = c("alpha", "digits", "p.digits", "write2"), envir = environment(), input.check = check)
 
-  # Additional checks
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Additional checks ####
+
   if (isTRUE(check)) {
 
     # Convergence
@@ -319,7 +320,7 @@ difftest.chibarsq <- function(clpm, riclpm, alpha = 0.05, digits = 2, p.digits =
 
   #_____________________________________________________________________________
   #
-  # Main Function --------------------------------------------------------------
+  # Main Function ——————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Extract Information from Fitted Models ####
@@ -432,7 +433,7 @@ difftest.chibarsq <- function(clpm, riclpm, alpha = 0.05, digits = 2, p.digits =
 
   #_____________________________________________________________________________
   #
-  # Return Object --------------------------------------------------------------
+  # Return Object ——————————————————————————————————————————————————————————————
 
   object <- list(call = match.call(),
                  type = "difftest.chibarsq",
@@ -445,13 +446,13 @@ difftest.chibarsq <- function(clpm, riclpm, alpha = 0.05, digits = 2, p.digits =
 
   #_____________________________________________________________________________
   #
-  # Write Results --------------------------------------------------------------
+  # Write Results ——————————————————————————————————————————————————————————————
 
   if (isTRUE(!is.null(write))) { .write.result(object = object, write = write, append = append) }
 
   #_____________________________________________________________________________
   #
-  # Output ---------------------------------------------------------------------
+  # Output —————————————————————————————————————————————————————————————————————
 
   if (isTRUE(output)) { print(object, check = FALSE) }
 

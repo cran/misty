@@ -10,10 +10,10 @@
 #'               \code{+}, \code{-}, \code{~}, \code{:}, \code{::},
 #'               and \code{!} can also be used to select variables, see 'Details'
 #'               in the \code{\link{df.subset}} function.
-#' @param tri    a character string or character vector indicating which triangular
-#'               of the matrix to show on the console, i.e., \code{both} for
-#'               upper and lower triangular, \code{lower} (default) for the
-#'               lower triangular, and \code{upper} for the upper triangular.
+#' @param tri    a character vector indicating which triangular of the matrix to
+#'               show on the console, i.e., \code{both} for upper and lower
+#'               triangular, \code{lower} (default) for the lower triangular, and
+#'               \code{upper} for the upper triangular.
 #' @param digits an integer value indicating the number of decimal places to
 #'               be used for displaying proportions.
 #' @param as.na  a numeric vector indicating user-defined missing values,
@@ -75,32 +75,16 @@ na.coverage <- function(data, ..., tri = c("both", "lower", "upper"), digits = 2
 
   #_____________________________________________________________________________
   #
-  # Initial Check --------------------------------------------------------------
+  # Initial Check ——————————————————————————————————————————————————————————————
 
   # Check if input 'data' is missing or NULL
   if (isTRUE(missing(data) || is.null(data))) { stop("Please specify a data frame for the argument 'data'", call. = FALSE) }
 
   #_____________________________________________________________________________
   #
-  # Data -----------------------------------------------------------------------
+  # Data ———————————————————————————————————————————————————————————————————————
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Using the Argument '...' ####
-
-  if (isTRUE(!missing(...))) {
-
-    # Extract data and convert tibble into data frame or vector
-    x <- as.data.frame(data[, .var.names(data = data, ...), drop = FALSE])
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Without using the Argument '...' ####
-
-  } else {
-
-    # Data frame
-    x <- as.data.frame(data)
-
-  }
+  .data(data, ...) |> (\(p) { assign("x", p$data, envir = parent.frame()) })()
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Convert user-missing values into NA ####
@@ -109,14 +93,14 @@ na.coverage <- function(data, ..., tri = c("both", "lower", "upper"), digits = 2
 
   #_____________________________________________________________________________
   #
-  # Input Check ----------------------------------------------------------------
+  # Input Check ————————————————————————————————————————————————————————————————
 
   # Check inputs
   .check.input(logical = c("append", "output"), s.character = list(tri = c("both", "lower", "upper")), args = c("digits", "write2"), envir = environment(), input.check = check)
 
   #_____________________________________________________________________________
   #
-  # Arguments ------------------------------------------------------------------
+  # Arguments ——————————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Print triangular ####
@@ -125,7 +109,7 @@ na.coverage <- function(data, ..., tri = c("both", "lower", "upper"), digits = 2
 
   #_____________________________________________________________________________
   #
-  # Main Function --------------------------------------------------------------
+  # Main Function ——————————————————————————————————————————————————————————————
 
   # Compute pairwise coverage
   cov.coverage <- data.frame(combn(ncol(x), m = 2L)) |> (\(y) vapply(y, function(z) nrow(na.omit(x[, c(z[1L], z[2L])])) / nrow(x), FUN.VALUE = double(1L)))()
@@ -144,7 +128,7 @@ na.coverage <- function(data, ..., tri = c("both", "lower", "upper"), digits = 2
 
   #_____________________________________________________________________________
   #
-  # Return Object --------------------------------------------------------------
+  # Return Object ——————————————————————————————————————————————————————————————
 
   object <- list(call = match.call(),
                  type = "na.coverage",
@@ -156,13 +140,13 @@ na.coverage <- function(data, ..., tri = c("both", "lower", "upper"), digits = 2
 
   #_____________________________________________________________________________
   #
-  # Write Results --------------------------------------------------------------
+  # Write Results ——————————————————————————————————————————————————————————————
 
   if (isTRUE(!is.null(write))) { .write.result(object = object, write = write, append = append) }
 
   #_____________________________________________________________________________
   #
-  # Output ---------------------------------------------------------------------
+  # Output —————————————————————————————————————————————————————————————————————
 
   if (isTRUE(output)) { print(object, check = FALSE) }
 

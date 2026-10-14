@@ -16,12 +16,12 @@
 #'                  factor.
 #' @param append    logical: if \code{TRUE} (default), centered variable(s) are
 #'                  appended to the data frame specified in the argument \code{data}.
-#' @param name      a character string or character vector indicating the names
-#'                  of the recoded variables. By default, variables are named with
-#'                  the ending \code{".r"} resulting in e.g. \code{"x1.r"} and
-#'                  \code{"x2.r"}. Variable names can also be specified using a
-#'                  character vector matching the number of variables specified
-#'                  in \code{data} (e.g., \code{name = c("recode.x1", "recode.x2")}).
+#' @param name      a character vector indicating the names of the recoded variables.
+#'                  By default, variables are named with the ending \code{".r"}
+#'                  resulting in e.g. \code{"x1.r"} and \code{"x2.r"}. Variable
+#'                  names can also be specified using a character vector matching
+#'                  the number of variables specified in \code{data} (e.g.,
+#'                  \code{name = c("recode.x1", "recode.x2")}).
 #' @param as.na     a numeric vector indicating user-defined missing values,
 #'                  i.e. these values are converted to \code{NA} before conducting
 #'                  the analysis.
@@ -72,7 +72,7 @@
 #' @export
 #'
 #' @examples
-#' #----------------------------------------------------------------------------
+#' #————————————————————————————————————————————————————————————————————————————
 #' # Example 1: Numeric vector
 #' x.num <- c(1, 2, 4, 5, 6, 8, 12, 15, 19, 20)
 #'
@@ -88,7 +88,7 @@
 #' # Example 1d: Recode 5 = 50 and 19 = 190 and check recoding
 #' rec(x.num, spec = "5 = 50; 19 = 190", table = TRUE)
 #'
-#' #----------------------------------------------------------------------------
+#' #————————————————————————————————————————————————————————————————————————————
 #' # Example 2: Character vector
 #' x.chr <- c("a", "c", "f", "j", "k")
 #'
@@ -101,7 +101,7 @@
 #' # Example 2c: Recode a to x and coerce to a factor
 #' rec(x.chr, spec = "'a' = 'X'", as.factor = TRUE)
 #'
-#' #----------------------------------------------------------------------------
+#' #————————————————————————————————————————————————————————————————————————————
 #' # Example 3: Factor
 #' x.fac <- factor(c("a", "b", "a", "c", "d", "d", "b", "b", "a"))
 #'
@@ -111,7 +111,7 @@
 #' # Example 3b: Recode a to x, user-defined factor levels
 #' rec(x.fac, spec = "'a' = 'x'", levels = c("x", "b", "c", "d"))
 #'
-#' #----------------------------------------------------------------------------
+#' #————————————————————————————————————————————————————————————————————————————
 #' # Example 4: Multiple variables
 #' dat <- data.frame(x1.num = c(1, 2, 4, 5, 6),
 #'                   x2.num = c(5, 19, 2, 6, 3),
@@ -138,7 +138,7 @@ rec <- function(data, ..., spec, as.factor = FALSE, levels = NULL,
 
   #_____________________________________________________________________________
   #
-  # Initial Check --------------------------------------------------------------
+  # Initial Check ——————————————————————————————————————————————————————————————
 
   # Check if input 'data' is missing or NULL
   if (isTRUE(missing(data) || is.null(data))) { stop("Please specify a a numeric vector, character vector, factor, or data frame for the argument 'data'", call. = FALSE) }
@@ -148,28 +148,21 @@ rec <- function(data, ..., spec, as.factor = FALSE, levels = NULL,
 
   #_____________________________________________________________________________
   #
-  # Data -----------------------------------------------------------------------
+  # Data ———————————————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Using the Argument '...' ####
 
-  if (isTRUE(!missing(...))) {
+  var.names <- NULL
+  .data(data, ..., drop = TRUE) |> (\(p) {
+
+    # Data
+    assign("x", p$data, envir = parent.frame())
 
     # Variable names
-    var.names <- .var.names(data = data, ...)
+    assign("var.names", p$var.names, envir = parent.frame())
 
-    # Extract data and convert tibble into data frame or vector
-    x <- data[, var.names] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(y)) == 1L)) { unname(unlist(y)) } else { as.data.frame(y) } } else { y })()
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Without Using the Argument '...' ####
-
-  } else {
-
-    # Convert 'data' as tibble into data frame
-    x <- data |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(y)) == 1L)) { unname(unlist(y)) } else { as.data.frame(y) } } else { y })()
-
-  }
+  })()
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Convert User-Missing Values into NA ####
@@ -179,7 +172,7 @@ rec <- function(data, ..., spec, as.factor = FALSE, levels = NULL,
 
   #_____________________________________________________________________________
   #
-  # Input Check ----------------------------------------------------------------
+  # Input Check ————————————————————————————————————————————————————————————————
 
   # Check inputs
   .check.input(logical = c("as.factor", "table"), envir = environment(), input.check = check)
@@ -200,7 +193,7 @@ rec <- function(data, ..., spec, as.factor = FALSE, levels = NULL,
 
   #_____________________________________________________________________________
   #
-  # Arguments ------------------------------------------------------------------
+  # Arguments ——————————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Define Special Values ####
@@ -215,7 +208,7 @@ rec <- function(data, ..., spec, as.factor = FALSE, levels = NULL,
 
   #_____________________________________________________________________________
   #
-  # Main Function --------------------------------------------------------------
+  # Main Function ——————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Single Variable ####
@@ -438,7 +431,7 @@ rec <- function(data, ..., spec, as.factor = FALSE, levels = NULL,
 
   #_____________________________________________________________________________
   #
-  # Output ---------------------------------------------------------------------
+  # Output —————————————————————————————————————————————————————————————————————
 
   if (isTRUE(is.null(dim(x)) && table)) { return(invisible(object)) } else { return(object) }
 

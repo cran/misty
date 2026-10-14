@@ -2,22 +2,6 @@
 #'
 #' This function writes the results of a \code{misty.object}) into an Excel file.
 #'
-#  Currently the function supports result objects from the following functions:
-#' \code{\link{blimp.bayes}}, \code{\link{boot.bs}}, \code{\link{ci.cor}},
-#' \code{\link{ci.mean}}, \code{\link{ci.median}}, \code{\link{ci.prop}},
-#' \code{\link{ci.var}}, \code{\link{ci.sd}}, code{\link{coeff.robust}},
-#' \code{\link{coeff.std}}, \code{\link{cor.matrix}}, \code{\link{crosstab}},
-#' \code{\link{descript}}, \code{\link{difftest.chibarsq}}, \code{\link{dominance.manual}},
-#' \code{\link{dominance}}, \code{\link{effsize}}, \code{\link{freq}},
-#' \code{\link{item.alpha}}, \code{\link{item.cfa}}, \code{\link{item.dfi}},
-#' \code{\link{item.distract}}, \code{\link{item.invar}}, \code{\link{item.noninvar}},
-#' \code{\link{item.omega}}, \code{\link{item.stats}}, \code{\link{mplus.bayes}},
-#' \code{\link{multilevel.cfa}}, \code{\link{multilevel.cor}}, \code{\link{multilevel.descript}},
-#' \code{\link{multilevel.fit}}, \code{\link{multilevel.invar}}, \code{\link{multilevel.omega}},
-#' \code{\link{na.auxiliary}}, \code{\link{na.coverage}}, \code{\link{na.descript}},
-#' \code{\link{na.pattern}}, \code{\link{mplus.lca.summa}}, \
-#' \code{\link{summa}} and \code{\link{uniq}}
-#'
 #' @param x           misty object (\code{misty.object}) resulting from a misty
 #'                    function supported by the \code{write.result} function (see
 #'                    'Details').
@@ -46,44 +30,23 @@
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
 #'
 #' @export
-#'
-#' @examples
-#' #————————————————————————————————————————————————————————————————————————————
-#  # Example 1: item.cfa() function
-#'
-#' # Load data set "HolzingerSwineford1939" in the lavaan package
-#' data("HolzingerSwineford1939", package = "lavaan")
-#'
-#' result <- item.cfa(HolzingerSwineford1939[, c("x1", "x2", "x3")], output = FALSE)
-#' write.result(result, "CFA.xlsx")
-#'
-#' #————————————————————————————————————————————————————————————————————————————
-#' # Example 2: multilevel.descript() function
-#'
-#' # Load data set "Demo.twolevel" in the lavaan package
-#' data("Demo.twolevel", package = "lavaan")
-#'
-#' result <- multilevel.descript(y1:y3, data = Demo.twolevel, cluster = "cluster",
-#'                               output = FALSE)
-#' write.result(result, "Multilevel_Descript.xlsx")
-write.result <- function(x, file = "Results.xlsx", digits = x$args$digits,
-                         p.digits = x$args$p.digits, icc.digits = x$args$icc.digits,
-                         r.digits = x$args$r.digits, ess.digits = x$args$ess.digits,
-                         mcse.digits = x$args$mcse.digits, check = TRUE) {
+write.result <- function(x, file = "Results.xlsx", digits = NULL, p.digits = NULL,
+                         icc.digits = NULL, r.digits = NULL, ess.digits = NULL,
+                         mcse.digits = NULL, check = TRUE) {
 
   #_____________________________________________________________________________
   #
-  # Initial Check --------------------------------------------------------------
+  # Initial Check ——————————————————————————————————————————————————————————————
 
   # Check if input 'x' is missing, NULL, or misty object
   if (isTRUE(missing(x) || is.null(x) || !inherits(x, "misty.object"))) { stop("Please specify a misty object for the argument 'x'.", call. = FALSE) }
 
   # Check if input 'x' is supported by the function
-  if (isTRUE(!x$type %in% c("aov.b", "aov.w", "blimp.bayes", "boot.bs", "ci.cor", "ci.mean", "ci.median", "ci.prop", "ci.var", "ci.sd", "coeff.robust", "coeff.std", "cor.matrix", "crosstab", "descript", "difftest.chibarsq", "dominance.manual", "dominance", "effsize", "freq", "item.alpha", "item.cfa", "item.dfi", "item.distract", "item.invar", "item.noninvar", "item.omega", "item.stats", "modcomp", "mplus.bayes", "multilevel.alpha", "multilevel.cfa", "multilevel.cor", "multilevel.descript", "multilevel.fit", "multilevel.invar", "multilevel.omega", "na.auxiliary", "na.coverage", "na.descript", "na.pattern", "mplus.lca.summa", "robust.lmer", "summa", "test.levene", "test.t", "test.welch", "test.z", "uniq"))) { stop("This type of misty object is not supported by the write.result() function.", call. = FALSE) }
+  if (isTRUE(!x$type %in% c("aov.b", "aov.w", "blimp.bayes", "boot.bs", "ci.cor", "ci.mean", "ci.median", "ci.prop", "ci.var", "ci.sd", "coeff.robust", "coeff.std", "cor.matrix", "crosstab", "descript", "difftest.chibarsq", "dominance.manual", "dominance", "effsize", "freq", "item.alpha", "item.cfa", "item.dfi", "item.distract", "item.invar", "item.noninvar", "item.omega", "item.stats", "modcomp", "mplus.bayes", "multilevel.alpha", "multilevel.cfa", "multilevel.cor", "multilevel.descript", "multilevel.fit", "multilevel.invar", "multilevel.omega", "na.auxiliary", "na.coverage", "na.descript", "na.pattern", "mplus.lca.summa", "robust.lmer", "summa", "test.bm", "test.homo", "test.levene", "test.linear", "test.norm", "test.t", "test.welch", "test.z", "uniq"))) { stop("This type of misty object is not supported by the write.result() function.", call. = FALSE) }
 
   #_____________________________________________________________________________
   #
-  # Data and Arguments ---------------------------------------------------------
+  # Write Object ---------------------------------------------------------------
 
   # Write object
   write.object <- x$result
@@ -93,7 +56,19 @@ write.result <- function(x, file = "Results.xlsx", digits = x$args$digits,
 
   #_____________________________________________________________________________
   #
-  # Between-Subject Analysis of Variance, aov.b() ------------------------------
+  # Default Argument Specification  —————————————————————————————————————
+
+  if (isTRUE(is.null(digits))) { digits <- x$args$digits }
+  if (isTRUE(is.null(p.digits))) { p.digits <- x$args$p.digits }
+  if (isTRUE(is.null(icc.digits))) { icc.digits <- x$args$icc.digits }
+  if (isTRUE(is.null(r.digits))) { r.digits <- x$args$r.digits }
+  if (isTRUE(is.null(ess.digits))) { ess.digits <- x$args$ess.digits }
+  if (isTRUE(is.null(mcse.digits))) { mcse.digits <- x$args$mcse.digits }
+
+  #_____________________________________________________________________________
+  #
+  # Between-Subject Analysis of Variance, aov.b() ——————————————————————————————
+
   switch(x$type, aov.b = {
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -142,7 +117,8 @@ write.result <- function(x, file = "Results.xlsx", digits = x$args$digits,
 
   #_____________________________________________________________________________
   #
-  # Repeated Measures Analysis of Variance, aov.w() ----------------------------
+  # Repeated Measures Analysis of Variance, aov.w() ————————————————————————————
+
   }, aov.w = {
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -221,15 +197,16 @@ write.result <- function(x, file = "Results.xlsx", digits = x$args$digits,
 
   #_____________________________________________________________________________
   #
-  # Blimp Summary Measures, blimp.bayes() --------------------------------------
+  # Blimp Summary Measures, blimp.bayes() ——————————————————————————————————————
+
   }, blimp.bayes = {
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Round ####
 
     # digits
-    print.round <- c("m", "med", "map", "sd", "mad", "skew", "kurt", "eti.low", "eti.upp", "hdi.low", "hdi.upp")
-    write.object[, print.round] <- sapply(print.round, function(y) ifelse(!is.na(write.object[, y]), round(write.object[, y], digits = digits), NA))
+    write.round <- c("m", "med", "map", "sd", "mad", "skew", "kurt", "eti.low", "eti.upp", "hdi.low", "hdi.upp")
+    write.object[, write.round] <- sapply(write.round, function(y) ifelse(!is.na(write.object[, y]), round(write.object[, y], digits = digits), NA))
 
     # r.digits
     write.object[, "rhat"] <- ifelse(!is.na(write.object[, "rhat"]), round(write.object[, "rhat"], digits = r.digits), NA)
@@ -332,7 +309,8 @@ write.result <- function(x, file = "Results.xlsx", digits = x$args$digits,
 
   #_____________________________________________________________________________
   #
-  # Bollen-Stine Bootstrap with Incomplete Data, boot.bs() ---------------------
+  # Bollen-Stine Bootstrap with Incomplete Data, boot.bs() —————————————————————
+
   }, boot.bs = {
 
     # Round
@@ -345,7 +323,8 @@ write.result <- function(x, file = "Results.xlsx", digits = x$args$digits,
 
   #_____________________________________________________________________________
   #
-  # Confidence Interval for the Correlation Coefficient, ci.cor() --------------
+  # Confidence Interval for the Correlation Coefficient, ci.cor() ——————————————
+
   }, ci.cor = {
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -565,7 +544,8 @@ write.result <- function(x, file = "Results.xlsx", digits = x$args$digits,
 
   #_____________________________________________________________________________
   #
-  # Confidence Interval for the Mean, ci.mean() --------------------------------
+  # Confidence Interval for the Mean, ci.mean() ————————————————————————————————
+
   }, ci.mean = {
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -687,7 +667,8 @@ write.result <- function(x, file = "Results.xlsx", digits = x$args$digits,
 
   #_____________________________________________________________________________
   #
-  # Confidence Interval for the Median, ci.median() ----------------------------
+  # Confidence Interval for the Median, ci.median() ————————————————————————————
+
   }, ci.median = {
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -809,7 +790,8 @@ write.result <- function(x, file = "Results.xlsx", digits = x$args$digits,
 
   #_____________________________________________________________________________
   #
-  # Confidence Interval for the Proportion, ci.prop() --------------------------
+  # Confidence Interval for the Proportion, ci.prop() ——————————————————————————
+
   }, ci.prop = {
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -928,11 +910,12 @@ write.result <- function(x, file = "Results.xlsx", digits = x$args$digits,
 
   #_____________________________________________________________________________
   #
-  # Confidence Interval for the Variance, ci.var() -----------------------------
+  # Confidence Interval for the Variance, ci.var() —————————————————————————————
+
   }, ci.var = {
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## No grouping ####
+    ## No Grouping ####
 
     if (isTRUE(is.null(x$data$group) && is.null(x$data$split))) {
 
@@ -1048,7 +1031,8 @@ write.result <- function(x, file = "Results.xlsx", digits = x$args$digits,
 
   #_____________________________________________________________________________
   #
-  # Confidence Interval for the Standard Deviation, ci.sd() --------------------
+  # Confidence Interval for the Standard Deviation, ci.sd() ————————————————————
+
   }, ci.sd = {
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1167,7 +1151,8 @@ write.result <- function(x, file = "Results.xlsx", digits = x$args$digits,
 
   #_____________________________________________________________________________
   #
-  # Correlation Matrix, cor.matrix() -------------------------------------------
+  # Correlation Matrix, cor.matrix() ———————————————————————————————————————————
+
   }, cor.matrix = {
 
     # Round
@@ -1273,7 +1258,8 @@ write.result <- function(x, file = "Results.xlsx", digits = x$args$digits,
 
   #_____________________________________________________________________________
   #
-  # HC and CR Stadard Errors, coeff.robust() -----------------------------------
+  # HC and CR Stadard Errors, coeff.robust() ———————————————————————————————————
+
   }, coeff.robust = {
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1385,7 +1371,8 @@ write.result <- function(x, file = "Results.xlsx", digits = x$args$digits,
 
   #_____________________________________________________________________________
   #
-  # Standardized Coefficients --------------------------------------------------
+  # Standardized Coefficients ——————————————————————————————————————————————————
+
   }, coeff.std = {
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1429,7 +1416,7 @@ write.result <- function(x, file = "Results.xlsx", digits = x$args$digits,
 
   #_____________________________________________________________________________
   #
-  # Cross Tabulation, crosstab() -----------------------------------------------
+  # Cross Tabulation, crosstab() ———————————————————————————————————————————————
 
   }, crosstab = {
 
@@ -1681,7 +1668,7 @@ write.result <- function(x, file = "Results.xlsx", digits = x$args$digits,
     }
   #_____________________________________________________________________________
   #
-  # Descriptive Statistics, descript() -----------------------------------------
+  # Descriptive Statistics, descript() —————————————————————————————————————————
 
   }, descript = {
 
@@ -1745,8 +1732,7 @@ write.result <- function(x, file = "Results.xlsx", digits = x$args$digits,
       }
 
       # Convert to numeric
-      write.object$Group <- ifelse(grepl("(^(-|\\+)?((\\.?\\d+)|(\\d+\\.\\d+)|(\\d+\\.?))$)|(^(-|\\+)?((\\.?\\d+)|(\\d+\\.\\d+)|(\\d+\\.?))e(-|\\+)?(\\d+)$)",
-                                         x = write.object$Group), as.numeric(write.object$Group), write.object$Group)
+      write.object$Group <- ifelse(grepl("(^(-|\\+)?((\\.?\\d+)|(\\d+\\.\\d+)|(\\d+\\.?))$)|(^(-|\\+)?((\\.?\\d+)|(\\d+\\.\\d+)|(\\d+\\.?))e(-|\\+)?(\\d+)$)", x = write.object$Group), as.numeric(write.object$Group), write.object$Group)
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Split, without or With Grouping ####
@@ -1762,10 +1748,10 @@ write.result <- function(x, file = "Results.xlsx", digits = x$args$digits,
       if (isTRUE(is.null(x$data$group))) {
 
         # Select statistical measures
-        print <- match(write, names(write.object[[1]]))
+        print <- match(write, names(write.object[[1L]]))
 
         # Variable names
-        write.object <- lapply(write.object, function(y) misty::df.rename(y, from = names(y), to = c("Variable", "n", "nNA", "%NA", "nUQ", "M", "SE.M", "Var", "SD", "Min", "%Min", "p25", "Med", "p75", "Max", "%Max", "Range", "IQR", "Skew", "Kurt")))
+        write.object <- lapply(write.object, function(y) misty::df.rename(y, from = names(y), to = c("Variable", "n", "nNA", "%NA", "nUQ", "M", "SE.M", "Var", "SD", "Min", "%Min", "p25", "Med", "p75", "Max", "%Max", "Range", "IQR", "Skew", "Kurt"), check = FALSE))
 
         # One variable
         if (isTRUE(ncol(x$data$x) == 1L)) {
@@ -1787,10 +1773,10 @@ write.result <- function(x, file = "Results.xlsx", digits = x$args$digits,
       } else {
 
         # Select statistical measures
-        print <- match(write, names(write.object[[1]]))
+        print <- match(write, names(write.object[[1L]]))
 
         # Variable names
-        write.object <- lapply(write.object, function(y) misty::df.rename(y, from = names(y), to = c("Group", "Variable", "n", "nNA", "%NA", "M", "SE.M", "Var", "SD", "Min", "%Min", "p25", "Med", "p75", "Max", "%Max", "Range", "IQR", "Skew", "Kurt")))
+        write.object <- lapply(write.object, function(y) misty::df.rename(y, from = names(y), to = c("Group", "Variable", "n", "nNA", "%NA", "nUQ", "M", "SE.M", "Var", "SD", "Min", "%Min", "p25", "Med", "p75", "Max", "%Max", "Range", "IQR", "Skew", "Kurt"), check = FALSE))
 
         # One variable
         if (isTRUE(ncol(x$data$x) == 1L)) {
@@ -1807,8 +1793,7 @@ write.result <- function(x, file = "Results.xlsx", digits = x$args$digits,
         }
 
         # Convert to numeric
-        write.object <- lapply(write.object, function(y) within(y, assign("Group", ifelse(grepl("(^(-|\\+)?((\\.?\\d+)|(\\d+\\.\\d+)|(\\d+\\.?))$)|(^(-|\\+)?((\\.?\\d+)|(\\d+\\.\\d+)|(\\d+\\.?))e(-|\\+)?(\\d+)$)",
-                                                                          x = y$Group), as.numeric(y$Group), y$Group))))
+        write.object <- lapply(write.object, function(y) within(y, assign("Group", ifelse(grepl("(^(-|\\+)?((\\.?\\d+)|(\\d+\\.\\d+)|(\\d+\\.?))$)|(^(-|\\+)?((\\.?\\d+)|(\\d+\\.\\d+)|(\\d+\\.?))e(-|\\+)?(\\d+)$)", x = y$Group), as.numeric(y$Group), y$Group))))
 
       }
 
@@ -1816,7 +1801,7 @@ write.result <- function(x, file = "Results.xlsx", digits = x$args$digits,
 
   #_____________________________________________________________________________
   #
-  # Dominance Analysis, Manual, dominance.manual() -----------------------------
+  # Dominance Analysis, Manual, dominance.manual() —————————————————————————————
 
   }, dominance.manual = {
 
@@ -1841,7 +1826,8 @@ write.result <- function(x, file = "Results.xlsx", digits = x$args$digits,
 
   #_____________________________________________________________________________
   #
-  # Chi-Bar-Square Difference Test, difftest.chibarsq() ------------------------
+  # Chi-Bar-Square Difference Test, difftest.chibarsq()  ———————————————————————
+
   }, difftest.chibarsq = {
 
     # Write object
@@ -1867,7 +1853,7 @@ write.result <- function(x, file = "Results.xlsx", digits = x$args$digits,
 
   #_____________________________________________________________________________
   #
-  # Dominance Analysis, dominance() --------------------------------------------
+  # Dominance Analysis, dominance()  ———————————————————————————————————————————
 
   }, dominance = {
 
@@ -1934,7 +1920,7 @@ write.result <- function(x, file = "Results.xlsx", digits = x$args$digits,
 
   #_____________________________________________________________________________
   #
-  # Effect Sizes for Categorical Variables, effsize() --------------------------
+  # Effect Sizes for Categorical Variables, effsize() ——————————————————————————
 
   }, effsize = {
 
@@ -1977,11 +1963,11 @@ write.result <- function(x, file = "Results.xlsx", digits = x$args$digits,
 
   #_____________________________________________________________________________
   #
-  # Frequency Table, freq() ----------------------------------------------------
+  # Frequency Table, freq() ————————————————————————————————————————————————————
 
   }, freq = {
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## One Variable ####
 
     if (isTRUE(ncol(x$data) == 1L)) {
@@ -2058,7 +2044,7 @@ write.result <- function(x, file = "Results.xlsx", digits = x$args$digits,
       # Round digits
       write.object[, !sapply(write.object, is.character)] <- sapply(write.object[, !sapply(write.object, is.character)], round, digits = digits)
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## More Than One Variable ####
 
     } else {
@@ -2258,7 +2244,7 @@ write.result <- function(x, file = "Results.xlsx", digits = x$args$digits,
 
   #_____________________________________________________________________________
   #
-  # Coefficient Alpha and Item Statistics, item.alpha() ------------------------
+  # Coefficient Alpha and Item Statistics, item.alpha()  ———————————————————————
 
   }, item.alpha = {
 
@@ -2331,11 +2317,11 @@ write.result <- function(x, file = "Results.xlsx", digits = x$args$digits,
 
   #_____________________________________________________________________________
   #
-  # Confirmatory Factor Analysis, item.cfa() -----------------------------------
+  # Confirmatory Factor Analysis, item.cfa()  ——————————————————————————————————
 
   }, item.cfa = {
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## lavaan Summary # ####
 
     summary <- NULL
@@ -2348,7 +2334,7 @@ write.result <- function(x, file = "Results.xlsx", digits = x$args$digits,
 
     }
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Covariance Coverage # ####
 
     coverage <- NULL
@@ -2364,7 +2350,7 @@ write.result <- function(x, file = "Results.xlsx", digits = x$args$digits,
 
     }
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Univariate Sample Statistics # ####
 
     itemstat <- itemfreq <- NULL
@@ -2395,7 +2381,7 @@ write.result <- function(x, file = "Results.xlsx", digits = x$args$digits,
 
     }
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Model Fit ####
 
     fit <- NULL
@@ -2408,7 +2394,7 @@ write.result <- function(x, file = "Results.xlsx", digits = x$args$digits,
 
     }
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Parameter Estimates ####
 
     param <- NULL
@@ -2434,7 +2420,7 @@ write.result <- function(x, file = "Results.xlsx", digits = x$args$digits,
 
     }
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Modification Indices ####
 
     modind <- NULL
@@ -2453,7 +2439,7 @@ write.result <- function(x, file = "Results.xlsx", digits = x$args$digits,
 
     }
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Residual Correlation Matrix ####
 
     resid <- NULL
@@ -2493,7 +2479,7 @@ write.result <- function(x, file = "Results.xlsx", digits = x$args$digits,
 
     }
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Write Object ####
 
     write.object <- list(Summary = summary, Coverage = coverage, Itemstat = itemstat, Itemfreq = itemfreq,
@@ -2501,7 +2487,8 @@ write.result <- function(x, file = "Results.xlsx", digits = x$args$digits,
 
   #_____________________________________________________________________________
   #
-  # Dynamic Fit Index Cutoffs, item.dfi() --------------------------------------
+  # Dynamic Fit Index Cutoffs, item.dfi() ——————————————————————————————————————
+
   }, item.dfi = {
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -2611,7 +2598,8 @@ write.result <- function(x, file = "Results.xlsx", digits = x$args$digits,
 
   #_____________________________________________________________________________
   #
-  # Distractor Analysis for Multiple-Choice Items, item.distract() -------------
+  # Distractor Analysis for Multiple-Choice Items, item.distract() —————————————
+
   }, item.distract = {
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -2638,7 +2626,8 @@ write.result <- function(x, file = "Results.xlsx", digits = x$args$digits,
 
   #_____________________________________________________________________________
   #
-  # Measurement Invariance Evaluation, item.invar() ----------------------------
+  # Measurement Invariance Evaluation, item.invar()  ———————————————————————————
+
   }, item.invar = {
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -2717,7 +2706,7 @@ write.result <- function(x, file = "Results.xlsx", digits = x$args$digits,
         if (isTRUE(!x$args$long)) {
 
           # Extract result table
-          itemstat <- write.object$descript$freq |> (\(p) data.frame(Group = rep(names(p), each = unique(sapply(p, nrow))), do.call("rbind", p), row.names = NULL, check.names = FALSE))() |> (\(q) misty::df.rename(q, from = "Var", to = "Variable"))()
+          itemstat <- write.object$descript$freq |> (\(p) data.frame(Group = rep(names(p), each = unique(sapply(p, nrow))), do.call("rbind", p), row.names = NULL, check.names = FALSE))() |> (\(q) misty::df.rename(q, from = "Var", to = "Variable", check = FALSE))()
 
         #### Longitudinal Measurement Invariance ####
         } else {
@@ -3211,7 +3200,7 @@ write.result <- function(x, file = "Results.xlsx", digits = x$args$digits,
 
   #_____________________________________________________________________________
   #
-  # Effect Size Measure of Measurement Non-Invariance, item.noninvar() ---------
+  # Effect Size Measure of Measurement Non-Invariance, item.noninvar()  ————————
 
   }, item.noninvar = {
 
@@ -3460,7 +3449,8 @@ write.result <- function(x, file = "Results.xlsx", digits = x$args$digits,
 
   #_____________________________________________________________________________
   #
-  # Coefficient Omega, item.omega() --------------------------------------------
+  # Coefficient Omega, item.omega()  ———————————————————————————————————————————
+
   }, item.omega = {
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -3514,7 +3504,8 @@ write.result <- function(x, file = "Results.xlsx", digits = x$args$digits,
 
   #_____________________________________________________________________________
   #
-  # Item Analysis, item.stats() ------------------------------------------------
+  # Item Analysis, item.stats()  ———————————————————————————————————————————————
+
   }, item.stats = {
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -3552,7 +3543,8 @@ write.result <- function(x, file = "Results.xlsx", digits = x$args$digits,
 
   #_____________________________________________________________________________
   #
-  # Summary Measures, Convergence and Efficiency Diagnostics, mplus.bayes() ----
+  # Summary Measures, Convergence and Efficiency Diagnostics, mplus.bayes() ————
+
   }, mplus.bayes = {
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -3663,7 +3655,8 @@ write.result <- function(x, file = "Results.xlsx", digits = x$args$digits,
 
   #_____________________________________________________________________________
   #
-  #  Multilevel Coefficient Alpha, multilevel.alpha() --------------------------
+  #  Multilevel Coefficient Alpha, multilevel.alpha() ——————————————————————————
+
   }, multilevel.alpha = {
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -3730,11 +3723,11 @@ write.result <- function(x, file = "Results.xlsx", digits = x$args$digits,
 
   #_____________________________________________________________________________
   #
-  # Multilevel Confirmatory Factor Analysis, multilevel.cfa() ------------------
+  # Multilevel Confirmatory Factor Analysis, multilevel.cfa()  —————————————————
 
   }, multilevel.cfa = {
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## lavaan Summary ####
 
     summary <- NULL
@@ -3929,11 +3922,11 @@ write.result <- function(x, file = "Results.xlsx", digits = x$args$digits,
 
   #_____________________________________________________________________________
   #
-  # Within- and Between-Group Correlation Matrix, multilevel.cor() -------------
+  # Within- and Between-Group Correlation Matrix, multilevel.cor()  ————————————
 
   }, multilevel.cor = {
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Split Results ####
 
     if (isTRUE(x$args$split)) {
@@ -3990,7 +3983,7 @@ write.result <- function(x, file = "Results.xlsx", digits = x$args$digits,
                                                c("Lower triangular: Within-Group, Upper triangular: Between-Group", NA, NA)),
                                          row.names = NULL, check.rows = FALSE, check.names = FALSE, fix.empty.names = FALSE)
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Combined Results ####
 
     } else {
@@ -4014,7 +4007,7 @@ write.result <- function(x, file = "Results.xlsx", digits = x$args$digits,
 
     }
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Add Variable Names in the Rows ####
 
     write.object[-1L] <- lapply(write.object[-1L], function(y) data.frame(colnames(y), y,
@@ -4023,7 +4016,7 @@ write.result <- function(x, file = "Results.xlsx", digits = x$args$digits,
 
   #_____________________________________________________________________________
   #
-  # Multilevel Descriptive Statistics, multilevel.descript() -------------------
+  # Multilevel Descriptive Statistics, multilevel.descript()  ——————————————————
 
   }, multilevel.descript = {
 
@@ -4091,7 +4084,7 @@ write.result <- function(x, file = "Results.xlsx", digits = x$args$digits,
 
   #_____________________________________________________________________________
   #
-  # Simultaneous and Level-Specific Multilevel Model Fit Information, multievel.fit() ----
+  # Simultaneous and Level-Specific Multilevel Model Fit Information, multievel.fit() ————
 
   }, multilevel.fit = {
 
@@ -4140,7 +4133,7 @@ write.result <- function(x, file = "Results.xlsx", digits = x$args$digits,
 
   #_____________________________________________________________________________
   #
-  # Cross-Level Measurement Invariance Evaluation, multievel.invar() ----
+  # Cross-Level Measurement Invariance Evaluation, multievel.invar()  ——————————
 
   }, multilevel.invar = {
 
@@ -4379,7 +4372,7 @@ write.result <- function(x, file = "Results.xlsx", digits = x$args$digits,
 
   #_____________________________________________________________________________
   #
-  # Multilevel Composite Reliability, multilevel.omega() -----------------------
+  # Multilevel Composite Reliability, multilevel.omega() ———————————————————————
 
   }, multilevel.omega = {
 
@@ -4453,7 +4446,7 @@ write.result <- function(x, file = "Results.xlsx", digits = x$args$digits,
 
   #_____________________________________________________________________________
   #
-  # Auxiliary Variables Analysis, na.auxiliary() --------------------------------
+  # Auxiliary Variables Analysis, na.auxiliary() ———————————————————————————————
 
   }, na.auxiliary = {
 
@@ -4522,7 +4515,7 @@ write.result <- function(x, file = "Results.xlsx", digits = x$args$digits,
 
   #_____________________________________________________________________________
   #
-  # Variance-Covariance Coverage, na.coverage() --------------------------------
+  # Variance-Covariance Coverage, na.coverage()  ———————————————————————————————
 
   }, na.coverage = {
 
@@ -4535,11 +4528,11 @@ write.result <- function(x, file = "Results.xlsx", digits = x$args$digits,
 
   #_____________________________________________________________________________
   #
-  # Descriptive Statistics for Missing Data, na.descript() ---------------------
+  # Descriptive Statistics for Missing Data, na.descript()  ————————————————————
 
   }, na.descript = {
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Level-1 Variables ####
 
     # At least one Level-1 variable
@@ -4687,7 +4680,8 @@ write.result <- function(x, file = "Results.xlsx", digits = x$args$digits,
 
   #_____________________________________________________________________________
   #
-  # Missing Data Pattern, na.pattern() -----------------------------------------
+  # Missing Data Pattern, na.pattern() —————————————————————————————————————————
+
   }, na.pattern = {
 
     # Round
@@ -4698,7 +4692,8 @@ write.result <- function(x, file = "Results.xlsx", digits = x$args$digits,
 
   #_____________________________________________________________________________
   #
-  # Model Comparison, modcomp() ------------------------------------------------
+  # Model Comparison, modcomp() ————————————————————————————————————————————————
+
   }, modcomp = {
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -4720,7 +4715,8 @@ write.result <- function(x, file = "Results.xlsx", digits = x$args$digits,
 
   #_____________________________________________________________________________
   #
-  # Result Table for LCA Estimated in Mplus, mplus.lca.summa() -----------------
+  # Result Table for LCA Estimated in Mplus, mplus.lca.summa() —————————————————
+
   }, mplus.lca.summa = {
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -4916,15 +4912,16 @@ write.result <- function(x, file = "Results.xlsx", digits = x$args$digits,
 
   #_____________________________________________________________________________
   #
-  # Robust Estimation of MLM and LMM, robust.lmer() ----------------------------
+  # Robust Estimation of MLM and LMM, robust.lmer() ————————————————————————————
+
   }, robust.lmer = {
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Call ####
 
     write.object$call <- data.frame(c("Formula", "Data"), c(write.object$call$formula, write.object$call$data), fix.empty.names = FALSE)
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Random Effects ####
 
     # Round variables
@@ -4937,7 +4934,7 @@ write.result <- function(x, file = "Results.xlsx", digits = x$args$digits,
     # Columns
     colnames(write.object$randeff) <- c("Groups", "Name", "Var", "SD", "Intercept", setdiff(colnames(write.object$randeff), c("groups", "name", "var", "sd", "cor")))
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Coefficients ####
 
     if (isTRUE(!"p" %in% colnames(write.object$coef))) {
@@ -4959,7 +4956,7 @@ write.result <- function(x, file = "Results.xlsx", digits = x$args$digits,
     # Row names
     write.object$coef <- data.frame(row.names(write.object$coef), write.object$coef, fix.empty.names = FALSE, row.names = NULL)
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Weights ####
 
     # Two-level model
@@ -4978,19 +4975,20 @@ write.result <- function(x, file = "Results.xlsx", digits = x$args$digits,
 
     }
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Model Convergence ####
 
     if (isTRUE(!is.null(write.object$converg))) { write.object$converg <- data.frame(switch(as.character(write.object$converg), "1" = "Model converged", "0" = "Model singular", "-1" = "Model not converged"), fix.empty.names = FALSE) }
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Write Object ####
 
     write.object <- list(Call = write.object$call, Randeff = write.object$randeff, Coef = write.object$coef, Weight = write.object$weight, Conv = write.object$converg)
 
   #_____________________________________________________________________________
   #
-  # Print Summary Output -------------------------------------------------------
+  # Print Summary Output  ——————————————————————————————————————————————————————
+
   }, summa = {
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -5407,7 +5405,121 @@ write.result <- function(x, file = "Results.xlsx", digits = x$args$digits,
 
   #_____________________________________________________________________________
   #
-  # Levene's Test for Homogeneity of Variance ----------------------------------
+  # Brunner-Munzel Test for Stochastic Equality, test.bm()  ————————————————————
+
+  }, test.bm = {
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Two-Sample Brunner-Munzel Test ####
+
+    switch(x$sample, "two" = {
+
+      #—————————————————————————————————————— #
+      ### Round ####
+
+      write.object[, setdiff(colnames(write.object), c("variable", "group", "n", "nNA", "nperm", "t", "df", "p"))] <- round(write.object[, setdiff(colnames(write.object), c("variable", "group", "n", "nNA", "nperm", "t", "df", "p"))], digits = digits)
+
+      write.object[, c("t", "df")] <- round(write.object[, c("t", "df")], digits = digits - 1L)
+
+      write.object[, "p"] <- round(write.object[, "p"], digits = p.digits)
+
+      #—————————————————————————————————————— #
+      ### Variable Names ####
+
+      colnames(write.object) <- misty::rec(colnames(write.object), spec = "'variable' = 'Variable'; 'group' = 'Group'; 'est' = 'Est';  'low' = 'Low'; 'upp' = 'Upp'; 'nperm' = 'nPerm'")
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Paired-Sample Brunner-Munzel Test ####
+
+    }, paired = {
+
+      #—————————————————————————————————————— #
+      ### Round ####
+
+      write.object[, setdiff(colnames(write.object), c("n", "nNA", "nperm", "t", "df", "p"))] <- round(write.object[, setdiff(colnames(write.object), c("n", "nNA", "nperm", "t", "df", "p"))], digits = digits)
+
+      write.object[, "t"] <- round(write.object[, "t"], digits = digits - 1L)
+
+      write.object[, "p"] <- round(write.object[, "p"], digits = p.digits)
+
+      #—————————————————————————————————————— #
+      ### Variable Names ####
+
+      colnames(write.object) <- misty::rec(colnames(write.object), spec = "'est' = 'Est';  'low' = 'Low'; 'upp' = 'Upp'; 'nperm' = 'nPerm'")
+
+    })
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Note ####
+
+
+    if (isTRUE(!"variable" %in% colnames(x$result))) {
+
+      note <- data.frame(Method = switch(x$args$method,
+                                         "t" = "t-distribution with Satterthwaite-Welch degrees of freedom approximation",
+                                         "logit" = "t-distribution with Satterthwaite-Welch degrees of freedom approximation and logit transformation",
+                                         "perm" = if (isTRUE(na.omit(x$result$nperm) != x$args$nperm)) { "Studentized permutation test" } else { "Studentized randomization test" }))
+
+    } else {
+
+      note <- data.frame(c(switch(x$args$method,
+                                  "t" = "Method: t-distribution with Satterthwaite-Welch degrees of freedom approximation",
+                                  "logit" = "Method: t-distribution with Satterthwaite-Welch degrees of freedom approximation and logit transformation",
+                                  "perm" = if (isTRUE(na.omit(x$result$nperm) != x$args$nperm)) { "Method: Studentized permutation test" } else { "Method: Studentized randomization test" }),
+                                   paste0("Adjustment for multiple testing: ", x$args$p.adj)), fix.empty.names = FALSE)
+
+    }
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Write Object ####
+
+    write.object <- list(Test = write.object, Note = note)
+
+  #_____________________________________________________________________________
+  #
+  # Tests for Homoscedasticity in a Linear Model  ——————————————————————————————
+
+  }, test.homo = {
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Round ####
+
+    write.object[, setdiff(colnames(write.object), c("n", "nNA", "df", "p"))] <- round(write.object[, setdiff(colnames(write.object), c("n", "nNA", "df", "p")), drop = FALSE], digits = digits)
+    write.object[, "p"] <- round(write.object[, "p"], digits = p.digits)
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Variable Names ####
+
+    if (isTRUE(x$args$method != "evansking")) {
+
+      colnames(write.object) <- c("n", "nNA", "Chisq", "df", "p")
+
+    } else {
+
+      colnames(write.object) <- c("n", "nNA", "T", "Parm", "p")
+
+    }
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Note ####
+
+    note <- data.frame(Method = switch(x$args$method,
+                                      "bp" = "Breusch-Pagan Test",
+                                      "sbp" = "Koenker's Studentized Breusch-Pagan Test",
+                                      "white1" = "White's Test: Squared Terms",
+                                      "white2" = "White's Test: Squared and Interaction Terms",
+                                      "evansking" = "Evans-King Generalized Least Squares Test",
+                                       "verbyla" = "Verbyla's Residual Maximum Likelihood Test"))
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Write Object ####
+
+    write.object <- list(Test = write.object, Note = note)
+
+  #_____________________________________________________________________________
+  #
+  # Levene's Test for Homogeneity of Variance  —————————————————————————————————
+
   }, test.levene = {
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -5440,7 +5552,207 @@ write.result <- function(x, file = "Results.xlsx", digits = x$args$digits,
 
   #_____________________________________________________________________________
   #
-  # Welch's Test ---------------------------------------------------------------
+  # Tests for Linearity in a Linear Model, test.linear() ———————————————————————
+
+  }, "test.linear" = {
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## RESET Test #####
+
+    switch(x$args$method, "reset"= {
+
+      #—————————————————————————————————————— #
+      ### Round ####
+
+      write.object[, setdiff(colnames(write.object), c("n", "nNA", "df1", "df2"))] <- round(write.object[, setdiff(colnames(write.object), c("n", "nNA", "df1", "df2"))], digits = digits)
+
+      write.object[, "pval"] <- round(write.object[, "pval"], digits = p.digits)
+
+      #—————————————————————————————————————— #
+      ### Variable Names ####
+
+      colnames(write.object) <- c("n", "nNA", "F", "df1", "df2", "p")
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Harvey-Collier Test #####
+
+    }, "harv" = {
+
+      #—————————————————————————————————————— #
+      ### Round ####
+
+      write.object[, setdiff(colnames(write.object), c("order", "n", "nNA", "df"))] <- round(write.object[, setdiff(colnames(write.object), c("order", "n", "nNA", "df"))], digits = digits)
+
+      write.object[, "pval"] <- round(write.object[, "pval"], digits = p.digits)
+
+      #—————————————————————————————————————— #
+      ### Variable Names ####
+
+      colnames(write.object) <- c("Order", "n", "nNA", "t", "df", "p")
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Rainbow Test #####
+
+    }, "rain" = {
+
+      #—————————————————————————————————————— #
+      ### Round ####
+
+      write.object[, setdiff(colnames(write.object), c("order", "n", "n.sub", "nNA", "df1", "df2"))] <- round(write.object[, setdiff(colnames(write.object), c("order", "n", "nNA", "n.sub", "df1", "df2"))], digits = digits)
+
+      write.object[, "pval"] <- round(write.object[, "pval"], digits = p.digits)
+
+      #—————————————————————————————————————— #
+      ### Variable Names ####
+
+      colnames(write.object) <- c("Order", "n", "nNA", "nSub", "F", "df1", "df2", "p")
+
+    })
+
+  #_____________________________________________________________________________
+  #
+  # Tests for Univariate and Multivariate Normality, test.norm() ———————————————
+
+  }, "test.norm" = {
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Multivariate Normality #####
+
+    if (isTRUE(!is.null(write.object$multi))) {
+
+      #—————————————————————————————————————— #
+      ### Round ####
+
+      write.object$multi[, setdiff(colnames(write.object$multi), c("n", "nNA", "pval"))] <- round(write.object$multi[, setdiff(colnames(write.object$multi), c("n", "nNA", "pval"))], digits = digits)
+
+      write.object$multi[, "pval"] <- round(write.object$multi[, "pval"], digits = p.digits)
+
+      #—————————————————————————————————————— #
+      ### Variable Names ####
+
+      colnames(write.object$multi) <- c("n", "nNA", "Skew", "Kurt", switch(x$args$method.multi, "hz" = "Stat", "hw" = "Stat", "royston" = "H"), "p")
+
+    }
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Univariate Normality #####
+
+    if (isTRUE(!is.null(write.object$uni))) {
+
+      #—————————————————————————————————————— #
+      ### Round ####
+
+      write.object$uni[, setdiff(colnames(write.object$uni), c("variable", "n", "nNA", "pval"))] <- round(write.object$uni[, setdiff(colnames(write.object$uni), c("variable", "n", "nNA", "pval"))], digits = digits)
+
+      write.object$uni[, "pval"] <- round(write.object$uni[, "pval"], digits = p.digits)
+
+      #—————————————————————————————————————— #
+      ### Variable Names ####
+
+      if (isTRUE("variable" %in% colnames(write.object$uni))) {
+
+        colnames(write.object$uni) <- c("Variable", "n", "nNA", "Skew", "Kurt", switch(x$args$method.uni, "lillie" = "D", "sw" = "W", "ad" = "A", "cm" = "W"), "p")
+
+      } else {
+
+        colnames(write.object$uni) <- c("n", "nNA", "Skew", "Kurt", switch(x$args$method.uni, "lillie" = "D", "sw" = "W", "ad" = "A", "cm" = "W"), "p")
+
+      }
+
+    }
+
+    #...................
+    ### Write Object  ####
+
+    write.object <- list(Multi = write.object$mult, Uni = write.object$uni)
+
+  #_____________________________________________________________________________
+  #
+  # t-test, test.t() ———————————————————————————————————————————————————————————
+
+  }, test.t = {
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## One sample t-Test ####
+
+    switch(x$sample, "one" = {
+
+      #—————————————————————————————————————— #
+      ### Round ####
+
+      write.object[, c("m", "sd", "m.diff", "se", "m.low", "m.upp", "t", "d", "d.low", "d.upp")] <- round(write.object[, c("m", "sd", "m.diff", "se", "m.low", "m.upp", "t", "d", "d.low", "d.upp")], digits = digits)
+      write.object[, "p"] <- formatC(write.object[, "p"], digits = p.digits)
+
+      #—————————————————————————————————————— #
+      ### Remove Columns ####
+
+      # Cohen's d
+      if (isTRUE(!x$args$effsize)) { write.object <- write.object[, -which(colnames(write.object) %in% c("d", "d.low", "d.upp"))] }
+
+      # Descriptive statistics
+      if (isTRUE(!x$args$descript)) { write.object <- na.omit(write.object[, -which(colnames(write.object) %in% c("n", "nNA", "m", "sd", "m.diff", "se", "m.low", "m.upp"))]) }
+
+      #—————————————————————————————————————— #
+      ### Column Names ####
+
+      colnames(write.object) <- misty::rec(colnames(write.object), spec = "'m' = 'M';  'sd' = 'SD'; 'm.diff' = 'M.Diff'; 'se' = 'SE'; 'm.low' = 'Low'; 'm.upp' = 'Upp'; 'd.low' = 'dLow'; 'd.upp' = 'dUpp'")
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Two-Sample t-Test ####
+
+    }, "two" = {
+
+      #—————————————————————————————————————— #
+      ### Round ####
+
+      write.object[, c("m", "sd", "m.diff", "se", "m.low", "m.upp", "t", "d", "d.low", "d.upp")] <- round(write.object[, c("m", "sd", "m.diff", "se", "m.low", "m.upp", "t", "d", "d.low", "d.upp")], digits = digits)
+      write.object[, "p"] <- round(write.object[, "p"], digits = p.digits)
+
+      #—————————————————————————————————————— #
+      ### Remove Columns ####
+
+      # Cohen's d
+      if (isTRUE(!x$args$effsize)) { write.object <- write.object[, -which(colnames(write.object) %in% c("d", "d.low", "d.upp"))] }
+
+      # Descriptive statistics
+      if (isTRUE(!x$args$descript)) { write.object <- write.object[, -which(colnames(write.object) %in% c("n", "nNA", "m", "sd", "m.diff", "se", "m.low", "m.upp"))] }
+
+      #—————————————————————————————————————— #
+      ### Column Names ####
+
+      colnames(write.object) <- misty::rec(colnames(write.object), spec = "'variable' = 'Variable'; 'group' = 'Group'; 'm' = 'M';  'sd' = 'SD'; 'm.diff' = 'M.Diff'; 'se' = 'SE'; 'm.low' = 'Low'; 'm.upp' = 'Upp'; 'd.low' = 'dLow'; 'd.upp' = 'dUpp'")
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Paired-Sample t-Test ####
+
+    }, "paired" = {
+
+      #—————————————————————————————————————— #
+      ### Round ####
+
+      write.object[, c("m1", "m2", "m.diff", "sd.diff", "se", "m.low", "m.upp", "t", "d", "d.low", "d.upp")] <- round(write.object[, c("m1", "m2", "m.diff", "sd.diff", "se", "m.low", "m.upp", "t", "d", "d.low", "d.upp")], digits = digits)
+      write.object[, "p"] <- round(write.object[, "p"], digits = p.digits)
+
+      #—————————————————————————————————————— #
+      ### Remove Columns ####
+
+      # Cohen's d
+      if (isTRUE(!x$args$effsize)) { write.object <- write.object[, -which(colnames(write.object) %in% c("d", "d.low", "d.upp"))] }
+
+      # Descriptive statistics
+      if (isTRUE(!x$args$descript)) { write.object <- write.object[, -which(colnames(write.object) %in% c("n", "nNA", "m1", "m2", "m.diff", "sd.diff", "se", "m.low", "m.upp"))] }
+
+      #—————————————————————————————————————— #
+      ### Column Names ####
+
+      colnames(write.object) <- misty::rec(colnames(write.object), spec = "'m1' = 'M1'; 'm2' = 'M3'; 'm.diff' = 'M.Diff'; 'sd.diff' = 'Sd.Diff'; 'se' = 'SE'; 'm.low' = 'Low'; 'm.upp' = 'Upp'; 'd.low' = 'dLow'; 'd.upp' = 'dUpp'")
+
+    })
+
+  #_____________________________________________________________________________
+  #
+  # Welch's Test  ——————————————————————————————————————————————————————————————
+
   }, test.welch = {
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -5513,7 +5825,8 @@ write.result <- function(x, file = "Results.xlsx", digits = x$args$digits,
 
   #_____________________________________________________________________________
   #
-  # z-Test ---------------------------------------------------------------------
+  # z-Test  ————————————————————————————————————————————————————————————————————
+
   }, test.z = {
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -5595,89 +5908,8 @@ write.result <- function(x, file = "Results.xlsx", digits = x$args$digits,
 
   #_____________________________________________________________________________
   #
-  # t-Test ---------------------------------------------------------------------
-  }, test.t = {
+  # Extract Unique Elements and Count Number of Unique Elements—————————————————
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## One sample t-Test ####
-
-    switch(x$sample, "one" = {
-
-      #—————————————————————————————————————— #
-      ### Round ####
-
-      write.object[, c("m", "sd", "m.diff", "se", "m.low", "m.upp", "z", "d")] <- round(write.object[, c("m", "sd", "m.diff", "se", "m.low", "m.upp", "z", "d")], digits = digits)
-      write.object[, "p"] <- formatC(write.object[, "p"], digits = p.digits)
-
-      #—————————————————————————————————————— #
-      ### Column Names ####
-
-      colnames(write.object) <- c("n", "nNA", "M", "SD", "M.Diff", "SE", "Low", "Upp", "z", "p", "d")
-
-      #—————————————————————————————————————— #
-      ### Remove Columns ####
-
-      # Cohen's d
-      if (isTRUE(!x$args$effsize)) { write.object <- write.object[, -which(colnames(write.object) %in% c("d"))] }
-
-      # Descriptive statistics
-      if (isTRUE(!x$args$descript)) { write.object <- na.omit(write.object[, -which(colnames(write.object) %in% c("n", "Group", "nNA", "M", "SD", "M.Diff", "SE", "Low", "Upp"))]) }
-
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Two-Sample t-Test ####
-
-    }, "two" = {
-
-      #—————————————————————————————————————— #
-      ### Round ####
-
-      write.object[, c("m", "sd", "m.diff", "se", "m.low", "m.upp", "z", "d")] <- round(write.object[, c("m", "sd", "m.diff", "se", "m.low", "m.upp", "z", "d")], digits = digits)
-      write.object[, "p"] <- round(write.object[, "p"], digits = p.digits)
-
-      #—————————————————————————————————————— #
-      ### Column Names ####
-
-      colnames(write.object) <- c("Group", "n", "nNA", "M", "SD", "M.Diff", "SE", "Low", "Upp", "z", "p", "d")
-
-      #—————————————————————————————————————— #
-      ### Remove Columns ####
-
-      # Cohen's d
-      if (isTRUE(!x$args$effsize)) { write.object <- write.object[, -which(colnames(write.object) %in% c("d"))] }
-
-      # Descriptive statistics
-      if (isTRUE(!x$args$descript)) { write.object <- write.object[, -which(colnames(write.object) %in% c("n", "nNA", "M", "SD", "M.Diff", "SE", "Low", "Upp"))] }
-
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Paired-Sample t-Test ####
-
-    }, "paired" = {
-
-      #—————————————————————————————————————— #
-      ### Round ####
-
-      write.object[, c("m1", "m2", "m.diff", "sd.diff", "se", "m.low", "m.upp", "z", "d")] <- round(write.object[, c("m1", "m2", "m.diff", "sd.diff", "se", "m.low", "m.upp", "z", "d")], digits = digits)
-      write.object[, "p"] <- round(write.object[, "p"], digits = p.digits)
-
-      #—————————————————————————————————————— #
-      ### Column Names ####
-
-      colnames(write.object) <- c("n", "nNA", "M1", "M2", "M.Diff", "SD.Diff", "SE", "Low", "Upp", "z", "p", "d")
-
-      #—————————————————————————————————————— #
-      ### Remove Columns ####
-
-      # Cohen's d
-      if (isTRUE(!x$args$effsize)) { write.object <- write.object[, -which(colnames(write.object) %in% c("d"))] }
-
-      # Descriptive statistics
-      if (isTRUE(!x$args$descript)) { write.object <- write.object[, -which(colnames(write.object) %in% c("n", "nNA", "M1", "M2", "M.Diff", "SD.Diff", "SE", "Low", "Upp"))] }
-
-    })
-
-  #_____________________________________________________________________________
-  #
-  # Extract Unique Elements and Count Number of Unique Elements ----------------
   }, uniq = {
 
     # Convert into data frame
@@ -5687,7 +5919,7 @@ write.result <- function(x, file = "Results.xlsx", digits = x$args$digits,
 
   #_____________________________________________________________________________
   #
-  # Write Excel file -----------------------------------------------------------
+  # Write Excel file  ——————————————————————————————————————————————————————————
 
   # Exclude NULL elements
   write.object <- write.object[!sapply(write.object, is.null)]

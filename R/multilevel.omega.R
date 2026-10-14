@@ -322,7 +322,7 @@ multilevel.omega <- function(data, ..., cluster, rescov = NULL,
 
   #_____________________________________________________________________________
   #
-  # Initial Check --------------------------------------------------------------
+  # Initial Check ——————————————————————————————————————————————————————————————
 
   # Check if input 'data' is missing or NULL
   if (isTRUE(missing(data) || is.null(data))) { stop("Please specify a data frame for the argument 'data'", call. = FALSE) }
@@ -332,41 +332,21 @@ multilevel.omega <- function(data, ..., cluster, rescov = NULL,
 
   #_____________________________________________________________________________
   #
-  # Data -----------------------------------------------------------------------
+  # Data ———————————————————————————————————————————————————————————————————————
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Using the Argument '...' ####
-
-  if (isTRUE(!missing(...))) {
-
-    # Extract data
-    x <- as.data.frame(data[, .var.names(data = data, ..., cluster = cluster), drop = FALSE])
-
-    # Extract cluster variable and convert tibble into data frame or vector
-    cluster <- data[, cluster] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { unname(unlist(y)) } else { return(y) })()
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Without Using the Argument '...' ####
-
-  } else {
-
-    # Data frame
-    x <- as.data.frame(data)
-
-    # Data and cluster
-    var.group <- .var.group(data = x, cluster = cluster)
+  .data(data, ..., cluster = cluster) |> (\(p) {
 
     # Data
-    if (isTRUE(!is.null(var.group$data)))  { x <- var.group$data }
+    assign("x", p$data, envir = parent.frame())
 
     # Cluster variable
-    if (isTRUE(!is.null(var.group$cluster))) { cluster <- var.group$cluster }
+    if (isTRUE(!is.null(p$cluster))) { assign("cluster", p$cluster, envir = parent.frame()) }
 
-  }
+  })()
 
   #_____________________________________________________________________________
   #
-  # Input Check ----------------------------------------------------------------
+  # Input Check ————————————————————————————————————————————————————————————————
 
   # Check inputs
   .check.input(logical =  c("append", "output"),
@@ -403,7 +383,7 @@ multilevel.omega <- function(data, ..., cluster, rescov = NULL,
 
   #_____________________________________________________________________________
   #
-  # Data and Arguments ---------------------------------------------------------
+  # Data and Arguments —————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Manifest Variables ####
@@ -490,7 +470,7 @@ multilevel.omega <- function(data, ..., cluster, rescov = NULL,
 
   #_____________________________________________________________________________
   #
-  # Main Function --------------------------------------------------------------
+  # Main Function ——————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Model Estimation ####
@@ -943,7 +923,7 @@ multilevel.omega <- function(data, ..., cluster, rescov = NULL,
 
   #_____________________________________________________________________________
   #
-  # Return object --------------------------------------------------------------
+  # Return object ——————————————————————————————————————————————————————————————
 
   object <- list(call = match.call(),
                  type = "multilevel.omega",
@@ -957,13 +937,13 @@ multilevel.omega <- function(data, ..., cluster, rescov = NULL,
 
   #_____________________________________________________________________________
   #
-  # Write Results --------------------------------------------------------------
+  # Write Results ——————————————————————————————————————————————————————————————
 
   if (isTRUE(!is.null(write))) { .write.result(object = object, write = write, append = append) }
 
   #_____________________________________________________________________________
   #
-  # Output ---------------------------------------------------------------------
+  # Output —————————————————————————————————————————————————————————————————————
 
   if (isTRUE(output)) { print(object, check = FALSE) }
 

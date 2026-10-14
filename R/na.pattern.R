@@ -26,27 +26,12 @@
 #'                          conducting the analysis.
 #' @param plot              logical: if \code{TRUE}, missing data pattern is
 #'                          plotted.
-#' @param square            logical: if \code{TRUE} (default), the plot tiles
-#'                          are squares to mimic the \code{md.pattern} function
-#'                          in the package \pkg{mice}.
-#' @param rotate            logical: if \code{TRUE}, the variable name labels
-#'                          are rotated 90 degrees.
-#' @param color             a character string indicating the color for the
-#'                          \code{"fill"} argument. Note that the first color
-#'                          represents missing values and the second color
-#'                          represent observed values.
-#' @param tile.alpha        a numeric value between 0 and 1 for the \code{alpha}
-#'                          argument (default is \code{0.1}).
-#' @param plot.margin       a numeric vector indicating the \code{plot.margin}
-#'                          argument for the \code{theme} function.
-#' @param legend.box.margin a numeric vector indicating the \code{legend.box.margin}
-#'                          argument for the \code{theme} function.
-#' @param legend.key.size   a numeric value indicating the \code{legend.key}
-#'                          argument (default is \code{unit(12, "pt")})
-#'                          for the \code{theme} function.
-#' @param legend.text.size  a numeric value indicating the \code{legend.text}
-#'                          argument (default is \code{element_text(size = 10)})
-#'                          for the \code{theme} function.
+#' @param geom              a character vector indicating which plot elements to
+#'                          draw, i.e.,  \code{"all"} for drawing all plot elements,
+#'                          \code{"square"} the plot tiles are squares to mimic
+#'                          the \code{md.pattern} function in the package \pkg{mice},
+#'                          and \code{"rotate"} for rotating variable name labels
+#'                          90 degrees.
 #' @param filename          a character string indicating the \code{filename}
 #'                          argument including the file extension in the \code{ggsave}
 #'                          function. Note that one of \code{".eps"}, \code{".ps"},
@@ -62,8 +47,6 @@
 #' @param height            a numeric value indicating the \code{height} argument
 #'                          (default is the size of the current graphics device)
 #'                          for the \code{ggsave} function.
-#' @param units             a character string indicating the \code{units} argument
-#'                          (default is \code{in}) for the \code{ggsave} function.
 #' @param dpi               a numeric value indicating the \code{dpi} argument
 #'                          (default is \code{600}) for the \code{ggsave} function.
 #' @param write             a character string naming a file for writing the output
@@ -118,77 +101,72 @@
 #' @export
 #'
 #' @examples
-#' # Example 1: Compute a summary of missing data patterns
+#' #————————————————————————————————————————————————————————————————————————————
+#' # Missing Data Pattern
+#'
+#' # Example 1a: Compute a summary of missing data patterns
 #' dat.pattern <- na.pattern(airquality)
 #'
-#' # Example 2a: Compute and plot a summary of missing data patterns
-#' na.pattern(airquality, plot = TRUE)
-#'
-#' # Example 2b: Exclude missing data patterns with less than 3 cases
+#' # Example 1b: Exclude missing data patterns with less than 3 cases
 #' na.pattern(airquality, plot = TRUE, n.pattern = 3)
 #'
-#' # Example 3: Vector of missing data pattern for each case
+#' # Example 1c: Vector of missing data pattern for each case
 #' dat.pattern$pattern
 #'
-#' # Data frame without cases with missing data pattern 2 and 4
-#' airquality[!dat.pattern$pattern == 2, ]
+#' # Example 1d: Data frame without cases with missing data pattern 2
+#' airquality[dat.pattern$pattern != 2, ]
 #'
-#' # Example 4a: Write Results into a text file
+#' #————————————————————————————————————————————————————————————————————————————
+#' # Plot
+#'
+#' # Example 2a: Plot a summary of missing data patterns
+#' na.pattern(airquality, plot = TRUE)
+#'
+#' # Example 2b: Plot results using the plot() function, use additional arguments
+#' # see Details in the help page of the function plot.misty.object
+#' object <- na.pattern(airquality)
+#' plot(object, tile.alpha = 0.8, scale.fill.col = c("red2", "darkgreen"))
+#'
+#' #————————————————————————————————————————————————————————————————————————————
+#' # Write Results
+#'
+#' # Example 3a: Write Results into a text file
 #' na.pattern(airquality, write = "NA_Pattern.xlsx")
 #'
-#' # Example 4b: Write Results into a Excel file
+#' # Example 3b: Write Results into a Excel file
 #' na.pattern(airquality, write = "NA_Pattern.xlsx")
+#'
+#' # Example 3c: Write Results into a text file
+#' na.pattern(airquality, plot = TRUE, filename = "NA_Pattern.png", width = 8, height = 7)
 na.pattern <- function(data, ..., order = FALSE, n.pattern = NULL, digits = 2,
-                       as.na = NULL,plot = FALSE, square = TRUE, rotate = FALSE,
-                       color = c("#B61A51B3", "#006CC2B3"), tile.alpha = 0.6,
-                       plot.margin = c(4, 16, 0, 4), legend.box.margin = c(-8, 6, 6, 6),
-                       legend.key.size = 12, legend.text.size = 9, filename = NULL,
-                       width = NA, height = NA, units = c("in", "cm", "mm", "px"),
-                       dpi = 600, write = NULL, append = TRUE, check = TRUE,
-                       output = TRUE) {
+                       as.na = NULL, plot = FALSE, geom = c("all", "square", "rotate"),
+                       filename = NULL, width = NA, height = NA,  dpi = 600,
+                       write = NULL, append = TRUE, check = TRUE, output = TRUE) {
 
   #_____________________________________________________________________________
   #
-  # Initial Check --------------------------------------------------------------
+  # Initial Check ——————————————————————————————————————————————————————————————
 
   # Check if input 'data' is missing or NULL
   if (isTRUE(missing(data) ||is.null(data))) { stop("Please specify a data frame for the argument 'data'", call. = FALSE) }
 
   #_____________________________________________________________________________
   #
-  # Data -----------------------------------------------------------------------
+  # Data ———————————————————————————————————————————————————————————————————————
+
+  .data(data, ...) |> (\(p) { assign("x", p$data, envir = parent.frame()) })()
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data using the argument '...' ####
-
-  if (isTRUE(!missing(...))) {
-
-    # Extract data and convert tibble into data frame or vector
-    x <- as.data.frame(data[, .var.names(data = data, ...), drop = FALSE])
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data without using the argument '...' ####
-
-  } else {
-
-    # Data frame
-    x <- as.data.frame(data)
-
-  }
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Convert user-missing values into NA ####
+  ## Convert User-Missing Values into NA ####
 
   if (isTRUE(!is.null(as.na))) { x <- .as.na(x, na = as.na) }
 
   #_____________________________________________________________________________
   #
-  # Input Check ----------------------------------------------------------------
+  # Input Check ————————————————————————————————————————————————————————————————
 
   # Check inputs
-  .check.input(logical = c("order", "plot", "rotate", "square", "append", "output"),
-               numeric = list(n.pattern = 1L, plot.margin = 4L, legend.box.margin = 4L, legend.key.size = 1L, legend.text.size = 1L, dpi = 1L),
-               character = list(filename = 1L), args = c("tile.alpha", "units", "digits", "write2"), envir = environment(), input.check = check)
+  .check.input(logical = c("order", "plot", "append", "output"), numeric = list(n.pattern = 1L, dpi = 1L), character = list(filename = 1L), m.character = list(geom = c("all", "square", "rotate")), args = c("digits", "filename", "write2"), envir = environment(), input.check = check)
 
   # Additional checks
   if (isTRUE(check)) {
@@ -199,27 +177,28 @@ na.pattern <- function(data, ..., order = FALSE, n.pattern = NULL, digits = 2,
     # Check input 'n.pattern'
     if (isTRUE(n.pattern %% 1L != 0L || n.pattern < 0L)) { stop("Please specify a positive integer value for the argument 'n.pattern'.", call. = FALSE) }
 
-    # Check input 'color'
-    if (isTRUE(length(color) != 2L)) { stop("Please specify character vector with two elements for the argument 'color'.", call. = FALSE) }
+  }
 
-    # Check input 'filename'
-    if (isTRUE(!is.null(filename))) { if (isTRUE(!grepl(".", filename) || !rev(unlist(strsplit(filename, "\\.")))[1L] %in% c("eps", "ps", "tex", "pdf", "jpeg", "tiff", "png", "bmp", "svg", "wmf"))) { stop("Please specify a character string including the file extension (e.g., \".pdf\" or \".png\") for the argument 'filename'.", call. = FALSE) } }
+  #_____________________________________________________________________________
+  #
+  # Arguments ——————————————————————————————————————————————————————————————————
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## 'geom' Argument ####
+
+  if (isTRUE(all(c("all", "square", "rotate") %in% geom))) {
+
+    geom <- "square"
+
+  } else if (all(geom == "all")) {
+
+    geom <- c("square", "rotate")
 
   }
 
   #_____________________________________________________________________________
   #
-  # Arguments ------------------------------------------------------------------
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## 'units' Argument ####
-
-  # Default setting
-  if (isTRUE(all(c("in", "cm", "mm", "px") %in% units))) { units <- "in" }
-
-  #_____________________________________________________________________________
-  #
-  # Main Function --------------------------------------------------------------
+  # Main Function ——————————————————————————————————————————————————————————————
 
   # Missing data TRUE/FALSE matrix
   x.na <- is.na(x)
@@ -299,30 +278,27 @@ na.pattern <- function(data, ..., order = FALSE, n.pattern = NULL, digits = 2,
 
   #_____________________________________________________________________________
   #
-  # Return Object --------------------------------------------------------------
+  # Return Object ——————————————————————————————————————————————————————————————
 
   object <- list(call = match.call(),
                  type = "na.pattern",
                  data = x,
-                 args = list(order = order, n.pattern = NULL, digits = digits, as.na = as.na,
-                             plot = plot, square = square, rotate = rotate, color = color,
-                             tile.alpha = tile.alpha, plot.margin = plot.margin, legend.box.margin = legend.box.margin,
-                             legend.key.size = legend.key.size, legend.text.size = legend.text.size,
-                             filename = filename, width = width, height = height, units = units, dpi = dpi,
-                             write = write, append = append, check = check, output = output),
-                 plot = NULL, result = restab, pattern = pattern)
+                 args = list(order = order, n.pattern = NULL, digits = digits, as.na = as.na, plot = plot, geom = geom, filename = filename, width = width, height = height, dpi = dpi, write = write, append = append, check = check, output = output),
+                 plot = NULL,
+                 result = restab,
+                 pattern = pattern)
 
   class(object) <- "misty.object"
 
   #_____________________________________________________________________________
   #
-  # Plot and Save Plot ---------------------------------------------------------
+  # Plot and Save Plot —————————————————————————————————————————————————————————
 
-  if (isTRUE(plot)) { object$plot <- plot(object, filename = filename, width = width, height = height, units = units, dpi = dpi, check = FALSE) |> (\(y) suppressMessages(suppressWarnings(print(y))))() }
+  if (isTRUE(plot)) { object$plot <- plot(object, filename = filename, width = width, height = height, dpi = dpi, check = FALSE) |> (\(y) suppressMessages(suppressWarnings(print(y))))() }
 
   #_____________________________________________________________________________
   #
-  # Write Results --------------------------------------------------------------
+  # Write Results ——————————————————————————————————————————————————————————————
 
   if (isTRUE(!is.null(write))) { .write.result(object = object, write = write, append = append) }
 

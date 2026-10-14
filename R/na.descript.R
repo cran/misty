@@ -17,10 +17,10 @@
 #'                indicating the names of the cluster variables in \code{data}
 #'                for three-level data, or a vector or data frame representing
 #'                the nested grouping structure (i.e., group or cluster variables).
-#'                Alternatively, a character string or character vector indicating
-#'                the variable name(s) of the cluster variable(s) in \code{data}.
-#'                Note that the cluster variable at Level 3 come first in a
-#'                three-level model, i.e., \code{cluster = c("level3", "level2")}.
+#'                Alternatively, a character vector indicating the variable name(s)
+#'                of the cluster variable(s) in \code{data}. Note that the cluster
+#'                variable at Level 3 come first in a three-level model, i.e.,
+#'                \code{cluster = c("level3", "level2")}.
 #' @param table   logical: if \code{TRUE}, a frequency table with number of
 #'                observed values (\code{"nOb"}), percent of observed values
 #'                (\code{"pOb"}), number of missing values (\code{"nNA"}),
@@ -119,45 +119,24 @@ na.descript <- function(data, ..., cluster = NULL, table = FALSE, digits = 2,
 
   #_____________________________________________________________________________
   #
-  # Initial Check --------------------------------------------------------------
+  # Initial Check ——————————————————————————————————————————————————————————————
 
   # Check if input 'data' is missing or NULL
   if (isTRUE(missing(data) || is.null(data))) { stop("Please specify a data frame for the argument 'data'", call. = FALSE) }
 
   #_____________________________________________________________________________
   #
-  # Data -----------------------------------------------------------------------
+  # Data ———————————————————————————————————————————————————————————————————————
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Using the Argument '...' ####
-
-  if (isTRUE(!missing(...))) {
-
-    # Extract data
-    x <- as.data.frame(data[, .var.names(data = data, ..., cluster = cluster), drop = FALSE])
-
-    # Cluster variable
-    if (isTRUE(!is.null(cluster))) { cluster <- data[, cluster] |>  (\(p) if (isTRUE(!is.null(dim(p)))) { setNames(p, nm = c("cluster3", "cluster2")) } else { return(p) })() }
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Without Using the Argument '...' ####
-
-  } else {
-
-    # Data frame
-    x <- as.data.frame(data) |> (\(y) if (isTRUE(ncol(y) == 1L)) { unname(y) } else { y })()
-
-    # Data and cluster
-    var.group <- .var.group(data = x, cluster = cluster, drop = FALSE)
+  .data(data, ..., cluster = cluster) |> (\(p) {
 
     # Data
-    if (isTRUE(!is.null(var.group$data)))  { x <- var.group$data }
+    assign("x", p$data, envir = parent.frame())
 
     # Cluster variable
-    if (isTRUE(!is.null(var.group$cluster))) { cluster <- var.group$cluster }
+    if (isTRUE(!is.null(p$cluster))) { assign("cluster", p$cluster, envir = parent.frame()) }
 
-
-  }
+  })()
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Convert User-Missing Values into NA ####
@@ -189,14 +168,14 @@ na.descript <- function(data, ..., cluster = NULL, table = FALSE, digits = 2,
 
   #_____________________________________________________________________________
   #
-  # Input Check ----------------------------------------------------------------
+  # Input Check ————————————————————————————————————————————————————————————————
 
   # Check inputs
   .check.input(logical = c("table", "append", "output"), args = c("digits", "write2"), envir = environment(), input.check = check)
 
   #_____________________________________________________________________________
   #
-  # Main Function --------------------------------------------------------------
+  # Main Function ——————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Variable ####
@@ -506,7 +485,7 @@ na.descript <- function(data, ..., cluster = NULL, table = FALSE, digits = 2,
 
   #_____________________________________________________________________________
   #
-  # Return Object --------------------------------------------------------------
+  # Return Object ——————————————————————————————————————————————————————————————
 
   object <- list(call = match.call(),
                  type = "na.descript",
@@ -591,13 +570,13 @@ na.descript <- function(data, ..., cluster = NULL, table = FALSE, digits = 2,
 
   #_____________________________________________________________________________
   #
-  # Write Results --------------------------------------------------------------
+  # Write Results ——————————————————————————————————————————————————————————————
 
   if (isTRUE(!is.null(write))) { .write.result(object = object, write = write, append = append) }
 
   #_____________________________________________________________________________
   #
-  # Output ---------------------------------------------------------------------
+  # Output —————————————————————————————————————————————————————————————————————
 
   if (isTRUE(output)) { print(object) }
 

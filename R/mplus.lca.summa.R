@@ -317,7 +317,7 @@
 #' mplus.lca(HolzingerSwineford1939, ind = c("x1", "x2", "x3", "x4"),
 #'           mplus.run = TRUE)
 #'
-#' #—————————————————————————————————————— #——————————————————————————————————————
+#' #————————————————————————————————————————————————————————————————————————————
 #' # Example 1: Summary Result Tables and Grouped Bar Charts
 #'
 #' # Example 1a: Read Mplus output files, create result table, write table, and save plots
@@ -326,7 +326,7 @@
 #' # Example 1b: Write results into a text file
 #' mplus.lca.summa(write = "Results_LCA.txt")
 #'
-#' #—————————————————————————————————————— #——————————————————————————————————————
+#' #————————————————————————————————————————————————————————————————————————————
 #' # Example 2: Draw bar chart manually
 #'
 #' library(ggplot2)
@@ -376,7 +376,7 @@ mplus.lca.summa <- function(folder = getwd(), exclude = NULL, sort.n = TRUE, sor
 
   #_____________________________________________________________________________
   #
-  # Input Check ----------------------------------------------------------------
+  # Input Check ————————————————————————————————————————————————————————————————
 
   # Check inputs
   .check.input(logical = c("sort.p", "bf.trunc", "plot", "group.ind", "ci", "gray", "append", "output"),
@@ -385,7 +385,7 @@ mplus.lca.summa <- function(folder = getwd(), exclude = NULL, sort.n = TRUE, sor
 
   #_____________________________________________________________________________
   #
-  # Main Function --------------------------------------------------------------
+  # Main Function ——————————————————————————————————————————————————————————————
 
   occmin <- ind <- est <- low <- upp <- categ <- NULL
 
@@ -592,7 +592,7 @@ mplus.lca.summa <- function(folder = getwd(), exclude = NULL, sort.n = TRUE, sor
 
   #_____________________________________________________________________________
   #
-  # Return Object --------------------------------------------------------------
+  # Return Object ——————————————————————————————————————————————————————————————
 
   object <- list(call = match.call(),
                  type = "mplus.lca.summa",
@@ -606,7 +606,7 @@ mplus.lca.summa <- function(folder = getwd(), exclude = NULL, sort.n = TRUE, sor
 
   #_____________________________________________________________________________
   #
-  # Plot Object ----------------------------------------------------------------
+  # Plot Object ————————————————————————————————————————————————————————————————
 
   if (isTRUE(plot && (!is.null(lca.mean.var) || !is.null(lca.prob)))) {
 
@@ -917,13 +917,13 @@ mplus.lca.summa <- function(folder = getwd(), exclude = NULL, sort.n = TRUE, sor
 
   #_____________________________________________________________________________
   #
-  # Write Results --------------------------------------------------------------
+  # Write Results ——————————————————————————————————————————————————————————————
 
   if (isTRUE(!is.null(write))) { .write.result(object = object, write = write, append = append) }
 
   #_____________________________________________________________________________
   #
-  # Output ---------------------------------------------------------------------
+  # Output —————————————————————————————————————————————————————————————————————
 
   if (isTRUE(output)) { print(object, check = FALSE) }
 

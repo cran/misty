@@ -40,15 +40,14 @@
 #'                     to Expectation Maximization (EM) algorithm (\code{"em"})
 #'                     if the quasi-Newton optimization (\code{"nlminb"})
 #'                     does not converge.
-#' @param print        a character string or character vector indicating which
-#'                     results to show on the console, i.e. \code{"all"} for all
-#'                     results, \code{"summary"} for a summary of the specification
-#'                     of the estimation method and missing data handling in lavaan,
-#'                     \code{"cor"} (default) for correlation coefficients, \code{"se"}
-#'                     for standard errors, \code{"stat"} for z test statistics,
-#'                     and \code{"p"} for \emph{p}-values. By default, the function
-#'                     only prints the within-group and between-group correlation
-#'                     matrix.
+#' @param print        a character vector indicating which results to show on the
+#'                     console, i.e. \code{"all"} for all results, \code{"summary"}
+#'                     for a summary of the specification of the estimation method
+#'                     and missing data handling in lavaan, \code{"cor"} (default)
+#'                     for correlation coefficients, \code{"se"} for standard errors,
+#'                     \code{"stat"} for z test statistics, and \code{"p"} for
+#'                     \emph{p}-values. By default, the function only prints the
+#'                     within-group and between-group correlation matrix.
 #' @param split        logical: if \code{TRUE}, output table is split in
 #'                     within-group and between-group correlation matrix.
 #' @param order        logical: if \code{TRUE}, variables in the output table are
@@ -79,8 +78,9 @@
 #'                     \code{"red"}, \code{"b.red"}, \code{"green"}, \code{"b.green"},
 #'                     \code{"blue"}, or \code{"b.blue"}, see the help page of the
 #'                     \code{\link{chr.color}} function. Note that this option is
-#'                     not supported when using R Markdown and when writing the output
-#'                     into a text file (\code{.txt}).
+#'                     only supported on the RStudio platform, i.e., the argument
+#'                     switches to \code{"default"} when using R Markdown and when
+#'                     writing the output into a text file (\code{.txt}).
 #' @param style        a character vector indicating the font style for
 #'                     statistically significant correlation coefficients, i.e.,
 #'                     \code{"regular"} (default) for regular text, \code{"bold"}
@@ -95,7 +95,8 @@
 #'                     multiple testing based on \code{\link{p.adjust}}, i.e.,
 #'                     \code{none} (default), \code{bonferroni}, \code{holm},
 #'                     \code{hochberg}, \code{hommel}, \code{BH}, \code{BY}, or
-#'                     \code{fdr}.
+#'                     \code{fdr}. See help page of the \code{\link{p.adjust}}
+#'                     function.
 #' @param digits       an integer value indicating the number of decimal places
 #'                     to be used for displaying correlation coefficients.
 #' @param p.digits     an integer value indicating the number of decimal places
@@ -104,6 +105,30 @@
 #'                     i.e. these values are converted to \code{NA} before
 #'                     conducting the analysis. Note that \code{as.na()} function
 #'                     is only applied to \code{data} but not to \code{cluster}.
+#' @param plot         logical: if \code{TRUE}, correlation heat map is drawn. For
+#'                     additional plotting arguments, see \code{Details} in the help
+#'                     page of the function \code{plot.misty.object}.
+#' @param geom         character vector indicating which plot elements to draw,
+#'                     i.e., \code{"none"} for not printing correlation coefficients
+#'                     inside every tile, \code{"label"} for printing correlation
+#'                     coefficients inside every tile.
+#' @param filename     a character string indicating the \code{filename}
+#'                     argument including the file extension in the \code{ggsave}
+#'                     function. Note that one of \code{".eps"}, \code{".ps"},
+#'                     \code{".tex"}, \code{".pdf"} (default),
+#'                     \code{".jpeg"}, \code{".tiff"}, \code{".png"},
+#'                     \code{".bmp"}, \code{".svg"} or \code{".wmf"} needs
+#'                     to be specified as file extension in the \code{file}
+#'                     argument. Note that plots can only be saved when
+#'                     \code{plot = TRUE}.
+#' @param width        a numeric value indicating the \code{width} argument
+#'                     (default is the size of the current graphics device)
+#'                     for the \code{ggsave} function.
+#' @param height       a numeric value indicating the \code{height} argument
+#'                     (default is the size of the current graphics device)
+#'                     or the \code{ggsave} function.
+#' @param dpi          a numeric value indicating the \code{dpi} argument
+#'                     (default is \code{600}) for the \code{ggsave} function.
 #' @param write        a character string naming a file for writing the output into
 #'                     either a text file with file extension \code{".txt"} (e.g.,
 #'                     \code{"Output.txt"}) or Excel file with file extension
@@ -269,15 +294,43 @@
 #' lavaan::summary(mod$model.fit, standardized = TRUE)
 #'
 #' #————————————————————————————————————————————————————————————————————————————
+#' # Plot
+#'
+#' # Example 8a: Correlation heat map
+#' multilevel.cor(Demo.twolevel, y1, y2, y3, w1, w2, cluster = "cluster", plot = TRUE)
+#'
+#' # Example 8b: Split correlation heat map in within-p and between-group
+#' multilevel.cor(Demo.twolevel, y1, y2, y3, w1, w2, cluster = "cluster",
+#'                split = TRUE, plot = TRUE)
+#'
+#' # Example 8c: Highlight statistically significant result in blue
+#' multilevel.cor(Demo.twolevel, y1, y2, y3, w1, w2, cluster = "cluster",
+#'                color = "blue", plot = TRUE)
+#'
+#' # Example 8d: Highlight statistically significant result in boldface
+#' multilevel.cor(Demo.twolevel, y1, y2, y3, w1, w2, cluster = "cluster",
+#'                 color = "black", style = "bold", plot = TRUE)
+#'
+#' # Example 8e: Plot results using the plot() function, use additional arguments
+#' # see Details in the help page of the function plot.misty.object
+#' object <-  multilevel.cor(Demo.twolevel, y1, y2, y3, w1, w2, cluster = "cluster")
+#' plot(object, scale.fill.low = "#DC267F", scale.fill.high = "#009E73",
+#'      text.col = c("gray80", "red"), text.size = 4.5, axis.text.size = 13)
+#'
+#' #————————————————————————————————————————————————————————————————————————————
 #' # Write Results
 #'
-#' # Example 8a: Write Results into a text file
+#' # Example 9a: Write Results into a text file
 #' multilevel.cor(Demo.twolevel, y1, y2, y3, cluster = "cluster",
 #'                write = "Multilevel_Correlation.txt")
 #'
-#' # Example 8b: Write Results into a Excel file
+#' # Example 9b: Write Results into a Excel file
 #' multilevel.cor(Demo.twolevel, y1, y2, y3, cluster = "cluster",
 #'                write = "Multilevel_Correlation.xlsx")
+#'
+#' # Example 9c: Save plot as PNG fine
+#' multilevel.cor(Demo.twolevel, y1, y2, y3, cluster = "cluster", plot = TRUE,
+#'                filename = "Multilevel_Correlation.png", width = 8, height = 7)
 #' }
 multilevel.cor <- function(data, ..., cluster, estimator = c("ML", "MLR"), constr.var = FALSE,
                            optim.method = c("nlminb", "em"), optim.switch = TRUE,
@@ -285,13 +338,14 @@ multilevel.cor <- function(data, ..., cluster, estimator = c("ML", "MLR"), const
                            order = FALSE, tri = c("both", "lower", "upper"), tri.lower = TRUE,
                            missing = c("listwise", "fiml"), alpha = 0.05,
                            color = "default", style = c("regular", "bold", "italic"),
-                           p.adj = c("none", "bonferroni", "holm", "hochberg", "hommel", "BH", "BY", "fdr"),
-                           digits = 2, p.digits = 3, as.na = NULL, write = NULL,
-                           append = TRUE, check = TRUE, output = TRUE) {
+                           p.adj = "none", digits = 2, p.digits = 3, as.na = NULL,
+                           plot = FALSE, geom = c("none", "label"), filename = NULL,
+                           width = NA, height = NA, dpi = 600, write = NULL, append = TRUE,
+                           check = TRUE, output = TRUE) {
 
   #_____________________________________________________________________________
   #
-  # Initial Check --------------------------------------------------------------
+  # Initial Check ——————————————————————————————————————————————————————————————
 
   # Check if input 'data' is missing or NULL
   if (isTRUE(missing(data) || is.null(data))) { stop("Please specify a data frame for the argument 'data'", call. = FALSE) }
@@ -301,37 +355,17 @@ multilevel.cor <- function(data, ..., cluster, estimator = c("ML", "MLR"), const
 
   #_____________________________________________________________________________
   #
-  # Data -----------------------------------------------------------------------
+  # Data ———————————————————————————————————————————————————————————————————————
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Using the Argument '...' ####
-
-  if (isTRUE(!missing(...))) {
-
-    # Extract data
-    x <- as.data.frame(data[, .var.names(data = data, ..., cluster = cluster), drop = FALSE])
-
-    # Extract cluster variable and convert tibble into data frame or vector
-    cluster <- data[, cluster] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { unname(unlist(y)) } else { return(y) })()
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Without Using the Argument '...' ####
-
-  } else {
-
-    # Data frame
-    x <- as.data.frame(data)
-
-    # Data and cluster
-    var.group <- .var.group(data = x, cluster = cluster)
+  .data(data, ..., cluster = cluster) |> (\(p) {
 
     # Data
-    if (isTRUE(!is.null(var.group$data))) { x <- var.group$data }
+    assign("x", p$data, envir = parent.frame())
 
     # Cluster variable
-    if (isTRUE(!is.null(var.group$cluster))) { cluster <- var.group$cluster }
+    if (isTRUE(!is.null(p$cluster))) { assign("cluster", p$cluster, envir = parent.frame()) }
 
-  }
+  })()
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Numeric Variables ####
@@ -339,7 +373,7 @@ multilevel.cor <- function(data, ..., cluster, estimator = c("ML", "MLR"), const
   x <- .exclude.non.numeric(x, func = "multilevel.cor")
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Convert user-missing values into NA ####
+  ## Convert User-Missing Values into NA ####
 
   if (isTRUE(!is.null(as.na))) { x <- .as.na(x, na = as.na) }
 
@@ -355,9 +389,9 @@ multilevel.cor <- function(data, ..., cluster, estimator = c("ML", "MLR"), const
 
   #_____________________________________________________________________________
   #
-  # Input Check ----------------------------------------------------------------
+  # Input Check ————————————————————————————————————————————————————————————————
 
-  .check.input(logical = c("optim.switch", "split", "order", "tri.lower", "append", "output"),
+  .check.input(logical = c("optim.switch", "split", "order", "tri.lower", "plot", "append", "output"),
                s.character = list(estimator = c("ML", "MLR"), optim.method = c("nlminb", "em"), missing = c("listwise", "fiml"), tri = c("both", "lower", "upper"), style = c("regular", "bold", "italic")),
                m.character = list(print = c("all", "summary", "cor", "se", "stat", "p")),
                args = c("color", "alpha", "p.adj", "digits", "p.digits", "write2"),
@@ -365,7 +399,7 @@ multilevel.cor <- function(data, ..., cluster, estimator = c("ML", "MLR"), const
 
   #_____________________________________________________________________________
   #
-  # Data -----------------------------------------------------------------------
+  # Data ———————————————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Within-Group and Between Variables ####
@@ -402,7 +436,7 @@ multilevel.cor <- function(data, ..., cluster, estimator = c("ML", "MLR"), const
 
   #_____________________________________________________________________________
   #
-  # Arguments ------------------------------------------------------------------
+  # Arguments ——————————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## 'print' Argument ####
@@ -494,18 +528,29 @@ multilevel.cor <- function(data, ..., cluster, estimator = c("ML", "MLR"), const
   tri <- ifelse(all(c("both", "lower", "upper") %in% tri), "lower", tri)
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## 'color' Argument ####
+
+  if (isTRUE(color != "default" && .Platform$GUI != "RStudio")) {
+
+    warning("The argument 'color' is only available on the RStudio platform, argument switched to \"default\".", call. = FALSE)
+
+    color <- "default"
+
+  }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## 'style' Argument ####
 
   if (isTRUE(all(c("regular", "bold", "italic") %in% style))) { style <- "regular" }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## 'p.adj' Argument ####
+  ## 'geom' Argument ####
 
-  p.adj <- ifelse(all(c("none", "bonferroni", "holm", "hochberg", "hommel", "BH", "BY", "fdr") %in% p.adj), "none", p.adj)
+  if (isTRUE(all(c("none", "label") %in% geom))) { geom <- "label" }
 
   #_____________________________________________________________________________
   #
-  # Main Function --------------------------------------------------------------
+  # Main Function ——————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Model Specification ####
@@ -922,7 +967,7 @@ multilevel.cor <- function(data, ..., cluster, estimator = c("ML", "MLR"), const
 
   #_____________________________________________________________________________
   #
-  # Return Object --------------------------------------------------------------
+  # Return Object ——————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## lavaan Summary ####
@@ -957,10 +1002,11 @@ multilevel.cor <- function(data, ..., cluster, estimator = c("ML", "MLR"), const
   object <- list(call = match.call(),
                  type = "multilevel.cor",
                  data = x,
-                 args = list(within = within, between = between, estimator = estimator, constr.var = constr.var, optim.method = optim.method, se = se, optim.switch = optim.switch, print = print, split = split, order = order, tri = tri, tri.lower = tri.lower ,missing = missing, alpha = alpha, color = color, style = style, p.adj = p.adj, digits = digits, p.digits = p.digits, as.na = as.na, write = write, append = append, check = check, output = output),
+                 args = list(within = within, between = between, estimator = estimator, constr.var = constr.var, optim.method = optim.method, se = se, optim.switch = optim.switch, print = print, split = split, order = order, tri = tri, tri.lower = tri.lower, missing = missing, alpha = alpha, color = color, style = style, p.adj = p.adj, digits = digits, p.digits = p.digits, as.na = as.na, plot = plot, geom = geom, filename = filename, width = width, height = height, dpi = dpi, write = write, append = append, check = check, output = output),
                  model = mod,
                  model.fit = model.fit,
                  check = list(vcov = check.vcov, theta.w = check.theta.w, theta.b = check.theta.b),
+                 plot = NULL,
                  result = list(summary = lavaan.summary,
                                wb.cor = wb.cor, wb.se = wb.se, wb.stat = wb.stat, wb.p = wb.p,
                                with.cor = with.cor, with.se = with.se, with.stat = with.stat, with.p = with.p,
@@ -970,13 +1016,19 @@ multilevel.cor <- function(data, ..., cluster, estimator = c("ML", "MLR"), const
 
   #_____________________________________________________________________________
   #
-  # Write Results --------------------------------------------------------------
+  # Plot and Save Plot —————————————————————————————————————————————————————————
+
+  if (isTRUE(plot)) { object$plot <- plot(object, filename = filename, width = width, height = height, dpi = dpi, check = FALSE) |> (\(y) suppressMessages(suppressWarnings(print(y))))() }
+
+  #_____________________________________________________________________________
+  #
+  # Write Results ——————————————————————————————————————————————————————————————
 
   if (isTRUE(!is.null(write))) { .write.result(object = object, write = write, append = append) }
 
   #_____________________________________________________________________________
   #
-  # Output ---------------------------------------------------------------------
+  # Output —————————————————————————————————————————————————————————————————————
 
   if (isTRUE(output)) { print(object, check = FALSE) }
 

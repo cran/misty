@@ -99,7 +99,7 @@
 #'                   y1 = c(2, 7, 4, 4, 7, 8, 4, 2, 5, 1, 3, 8),
 #'                   y2 = c(0, 1, 0, 1, 1, 1, 0, 0, 0, 1, 0, 1), stringsAsFactors = TRUE)
 #'
-#' #----------------------------------------------------------------------------
+#' #————————————————————————————————————————————————————————————————————————————
 #' # Linear model
 #'
 #' # Estimate linear model with continuous predictors
@@ -118,7 +118,7 @@
 #' # Example 3: Tolerance, generalized std. error, and variance inflation factor
 #' check.collin(mod.lm2)
 #'
-#' #----------------------------------------------------------------------------
+#' #————————————————————————————————————————————————————————————————————————————
 #' # Generalized linear model
 #'
 #' # Estimate logistic regression model with continuous predictors
@@ -128,7 +128,7 @@
 #' check.collin(mod.glm)
 #'
 #' \dontrun{
-#' #----------------------------------------------------------------------------
+#' #————————————————————————————————————————————————————————————————————————————
 #' # Linear mixed-effects model
 #'
 #' # Load lme4, nlme, and glmmTMB package
@@ -152,7 +152,7 @@
 #' # Example 7: Tolerance, std. error, and variance inflation factor
 #' check.collin(mod.glmmTMB1)
 #'
-#' #----------------------------------------------------------------------------
+#' #————————————————————————————————————————————————————————————————————————————
 #' # Generalized linear mixed-effects model
 #'
 #' # Estimate mixed-effects logistic regression model using lme4 package
@@ -167,7 +167,7 @@
 #' # Example 9: Tolerance, std. error, and variance inflation factor
 #' check.collin(mod.glmmTMB2)
 #'
-#' #----------------------------------------------------------------------------
+#' #————————————————————————————————————————————————————————————————————————————
 #' # Write Results
 #'
 #' # Example 10: Write Results into a text file
@@ -179,7 +179,7 @@ check.collin  <- function(model, print = c("all", "vif", "eigen"),
 
   #_____________________________________________________________________________
   #
-  # Initial Check --------------------------------------------------------------
+  # Initial Check ——————————————————————————————————————————————————————————————
 
   # Check if input 'model' is missing or NULL
   if (isTRUE(missing(model) || is.null(model))) { stop("Please specify a fitted model for the argument 'model'.", call. = FALSE) }
@@ -192,14 +192,14 @@ check.collin  <- function(model, print = c("all", "vif", "eigen"),
 
   #_____________________________________________________________________________
   #
-  # Input Check ----------------------------------------------------------------
+  # Input Check ————————————————————————————————————————————————————————————————
 
   # Check inputs
   .check.input(logical = c("append", "output"), m.character = list(print = c("all", "vif", "eigen")), args = c("digits", "p.digits", "write1"), envir = environment(), input.check = check)
 
   #_____________________________________________________________________________
   #
-  # Arguments ------------------------------------------------------------------
+  # Arguments ——————————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Print variance inflation factor and/or eigenvalues ####
@@ -210,7 +210,7 @@ check.collin  <- function(model, print = c("all", "vif", "eigen"),
 
   #_____________________________________________________________________________
   #
-  # Main Function --------------------------------------------------------------
+  # Main Function ——————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Variance inflation factor ####
@@ -352,7 +352,7 @@ check.collin  <- function(model, print = c("all", "vif", "eigen"),
 
   #_____________________________________________________________________________
   #
-  # Return Object --------------------------------------------------------------
+  # Return Object ——————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Regression coefficients with VIF ####
@@ -411,11 +411,11 @@ check.collin  <- function(model, print = c("all", "vif", "eigen"),
 
   #_____________________________________________________________________________
   #
-  # Write results --------------------------------------------------------------
+  # Write results ——————————————————————————————————————————————————————————————
 
   if (isTRUE(!is.null(write))) {
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Text file ####
 
     # Send R output to textfile
@@ -433,7 +433,7 @@ check.collin  <- function(model, print = c("all", "vif", "eigen"),
 
   #_____________________________________________________________________________
   #
-  # Output ---------------------------------------------------------------------
+  # Output —————————————————————————————————————————————————————————————————————
 
   if (isTRUE(output)) { print(object, check = FALSE) }
 

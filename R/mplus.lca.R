@@ -48,15 +48,14 @@
 #'                        or character string will be specified in the Mplus input
 #'                        file as \code{MISSING IS ALL(missing)}. By default,
 #'                        \code{-99} is used to represent missing values.
-#' @param write           a character string or character vector indicating whether
-#'                        to create the six folders specified in the argument
-#'                        \code{folder} (\code{"folder"}), to write the matrix or
-#'                        data frame specified in \code{x} into a Mplus data file
-#'                        (\code{"data"}), and write the Mplus input files into
-#'                        the six folders specified in the argument \code{folder}
-#'                        (\code{"input"}). By default, the function creates the
-#'                        folders, writes the Mplus data file, and writes the Mplus
-#'                        input files into the folders.
+#' @param write           a character vector indicating whether to create the six
+#'                        folders specified in the argument \code{folder} (\code{"folder"}),
+#'                        to write the matrix or data frame specified in \code{x}
+#'                        into a Mplus data file (\code{"data"}), and write the
+#'                        Mplus input files into the six folders specified in the
+#'                        argument \code{folder} (\code{"input"}). By default,
+#'                        the function creates the folders, writes the Mplus data
+#'                        file, and writes the Mplus input files into the folders.
 #' @param useobservations a character string indicating the conditional statement
 #'                        to select observations.
 #' @param estimator       a character string for specifying the \code{ESTIMATOR}
@@ -108,20 +107,20 @@
 #'                        \code{k - 1} classes model and 100 random sets of starting
 #'                        values in the initial stage and 50 optimizations in the
 #'                        final stage are used for the \code{k} class model.
-#' @param output          a character string or character vector specifying the
-#'                        \code{TECH} options in the \code{OUTPUT} section in Mplus,
-#'                        i.e., \code{SVALUES} to request input statements that
-#'                        contain parameter estimates from the analysis, \code{CINTERVAL}
-#'                        to request confidence intervals, \code{TECH7} to request
-#'                        sample statistics for each class using raw data weighted
-#'                        by the estimated posterior probabilities for each class,
-#'                        \code{TECH8} to request the optimization history in
-#'                        estimating the model, \code{TECH11} to request the
-#'                        Lo-Mendell-Rubin likelihood ratio test of model fit,
-#'                        and \code{TECH14} to request a parametric bootstrapped
-#'                        likelihood ratio test. By default, \code{SVALUES},
-#'                        \code{CINTERVAL}, and \code{TECH11} are requested.
-#'                        Note that \code{TECH11} is only available for the \code{MLR} estimator.
+#' @param output          a character vector specifying the \code{TECH} options
+#'                        in the \code{OUTPUT} section in Mplus, i.e., \code{SVALUES}
+#'                        to request input statements that contain parameter estimates
+#'                        from the analysis, \code{CINTERVAL} to request confidence
+#'                        intervals, \code{TECH7} to request sample statistics
+#'                        for each class using raw data weighted by the estimated
+#'                        posterior probabilities for each class, \code{TECH8}
+#'                        to request the optimization history in estimating the
+#'                        model, \code{TECH11} to request the Lo-Mendell-Rubin
+#'                        likelihood ratio test of model fit, and \code{TECH14}
+#'                        to request a parametric bootstrapped likelihood ratio
+#'                        test. By default, \code{SVALUES}, \code{CINTERVAL}, and
+#'                        \code{TECH11} are requested. Note that \code{TECH11}
+#'                        is only available for the \code{MLR} estimator.
 #' @param replace.inp     logical: if \code{TRUE}, all existing input files in the
 #'                        folder specified in the argument \code{folder} are replaced.
 #' @param mplus.run       logical: if \code{TRUE}, all models in the folders specified
@@ -219,14 +218,14 @@
 #' # Load data set "HolzingerSwineford1939" in the lavaan package
 #' data("HolzingerSwineford1939", package = "lavaan")
 #'
-#' #----------------------------------------------------------------------------
+#' # ———————————————————————————————————————————————————————————————————————————
 #' # Example 1: LCA with k = 1 to k = 8 profiles, continuous indicators
 #' # Input statements that contain parameter estimates
 #' # Vuong-Lo-Mendell-Rubin LRT and bootstrapped LRT
 #' mplus.lca(HolzingerSwineford1939, ind = c("x1", "x2", "x3", "x4"),
 #'           classes = 8, output = c("SVALUES", "TECH11", "TECH14"))
 #'
-#' #----------------------------------------------------------------------------
+#' #————————————————————————————————————————————————————————————————————————————
 #' # Example 2: LCA with k = 1 to k = 6 profiles, ordered categorical indicators
 #' # Select observations with ageyr <= 13
 #' # Estimate all models in Mplus
@@ -255,14 +254,14 @@ mplus.lca <- function(x, ind = NULL,
 
   #_____________________________________________________________________________
   #
-  # Initial Check --------------------------------------------------------------
+  # Initial Check ——————————————————————————————————————————————————————————————
 
   # Check if input 'x' is missing or NULL
   if (isTRUE(missing(x) || is.null(x))) { stop("Please specify a matrix or data frame for the argument 'x' is missing.", call. = FALSE) }
 
   #_____________________________________________________________________________
   #
-  # Input Check ----------------------------------------------------------------
+  # Input Check ————————————————————————————————————————————————————————————————
 
   # Check inputs
   .check.input(logical = c("replace.inp", "mplus.run"),
@@ -293,7 +292,7 @@ mplus.lca <- function(x, ind = NULL,
 
   #_____________________________________________________________________________
   #
-  # Data and Arguments ---------------------------------------------------------
+  # Data and Arguments —————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## 'type' ####
@@ -369,7 +368,7 @@ mplus.lca <- function(x, ind = NULL,
 
   #_____________________________________________________________________________
   #
-  # Main Function --------------------------------------------------------------
+  # Main Function ——————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Write Data ####
@@ -803,7 +802,7 @@ mplus.lca <- function(x, ind = NULL,
 
   #_____________________________________________________________________________
   #
-  # Return object --------------------------------------------------------------
+  # Return object ——————————————————————————————————————————————————————————————
 
   object <- list(call = match.call(),
                  type = "mplus.lca",

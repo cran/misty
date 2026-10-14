@@ -65,7 +65,7 @@ read.dta <- function(file, use.value.labels = FALSE, formats = FALSE, label = FA
 
   #_____________________________________________________________________________
   #
-  # Initial Check --------------------------------------------------------------
+  # Initial Check ——————————————————————————————————————————————————————————————
 
   # Check input 'file'
   if (isTRUE(missing(file))) { stop("Please specify a character string indicating the name of the Stata data file for the argument 'file'", call. = FALSE) }
@@ -78,7 +78,7 @@ read.dta <- function(file, use.value.labels = FALSE, formats = FALSE, label = FA
 
   #_____________________________________________________________________________
   #
-  # Input Check ----------------------------------------------------------------
+  # Input Check ————————————————————————————————————————————————————————————————
 
   # Check inputs
   .check.input(logical = c("use.value.labels", "formats", "label", "labels", "missing", "widths", "as.data.frame"),
@@ -86,14 +86,14 @@ read.dta <- function(file, use.value.labels = FALSE, formats = FALSE, label = FA
 
   #_____________________________________________________________________________
   #
-  # Data and Arguments ---------------------------------------------------------
+  # Data and Arguments —————————————————————————————————————————————————————————
 
   # Value labels
   labels <- ifelse(isTRUE(use.value.labels), TRUE, labels)
 
   #_____________________________________________________________________________
   #
-  # Main Function --------------------------------------------------------------
+  # Main Function ——————————————————————————————————————————————————————————————
 
   # Read Stata data
   object <- haven::read_dta(file)
@@ -213,7 +213,7 @@ read.dta <- function(file, use.value.labels = FALSE, formats = FALSE, label = FA
 
   #_____________________________________________________________________________
   #
-  # Output ---------------------------------------------------------------------
+  # Output —————————————————————————————————————————————————————————————————————
 
   return(object)
 

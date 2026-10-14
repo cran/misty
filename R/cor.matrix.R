@@ -41,11 +41,11 @@
 #'                   for Spearman's rank-order correlation coefficient and Kendall's
 #'                   Kendall's Tau-b correlation coefficient. Note that the exact
 #'                   p-value is not available in the presence of ties.
-#' @param print      a character string or character vector indicating which results
-#'                   to show on the console, i.e. \code{"all"} for all results,
-#'                   \code{"cor"} for correlation coefficients, \code{"n"} for the
-#'                   sample sizes, \code{"stat"} for the test statistic, \code{"df"}
-#'                   for the degrees of freedom, and \code{"p"} for \emph{p}-values.
+#' @param print      a character vector indicating which results to show on the
+#'                   console, i.e. \code{"all"} for all results, \code{"cor"} for
+#'                   correlation coefficients, \code{"n"} for the sample sizes,
+#'                   \code{"stat"} for the test statistic, \code{"df"} for the
+#'                   degrees of freedom, and \code{"p"} for \emph{p}-values.
 #' @param tri        a character string indicating which triangular of the matrix
 #'                   to show on the console, i.e., \code{both} for upper and lower
 #'                   triangular, \code{lower} (default) for the lower triangular,
@@ -60,8 +60,9 @@
 #'                   \code{"red"}, \code{"b.red"}, \code{"green"}, \code{"b.green"},
 #'                   \code{"blue"}, or \code{"b.blue"}, see the help page of the
 #'                   \code{\link{chr.color}} function. Note that this option is
-#'                   not supported when using R Markdown and when writing the output
-#'                   into a text file (\code{.txt}).
+#'                   only supported on the RStudio platform, i.e., the argument
+#'                   switches to \code{"default"} when using R Markdown and when
+#'                   writing the output into a text file (\code{.txt}).
 #' @param style      a character vector indicating the font style for
 #'                   statistically significant correlation coefficients, i.e.,
 #'                   \code{"regular"} (default) for regular text, \code{"bold"}
@@ -73,9 +74,10 @@
 #'                   \code{color = "black"} and \code{style = "bold"} to for
 #'                   bold text.
 #' @param p.adj      a character string indicating an adjustment method for multiple
-#'                   testing based on \code{\link{p.adjust}}, i.e., \code{none} ,
-#'                   \code{bonferroni}, \code{holm} (default), \code{hochberg},
+#'                   testing based on \code{\link{p.adjust}}, i.e., \code{none}
+#'                   (default), \code{bonferroni}, \code{holm}, \code{hochberg},
 #'                   \code{hommel}, \code{BH}, \code{BY}, or \code{fdr}.
+#'                   See help page of the \code{\link{p.adjust}} function.
 #' @param na.omit    logical: if \code{TRUE}, incomplete cases are removed before
 #'                   conducting the analysis (i.e., listwise deletion); if
 #'                   \code{FALSE} (default), pairwise deletion is used.
@@ -86,6 +88,30 @@
 #' @param as.na      a numeric vector indicating user-defined missing values,
 #'                   i.e. these values are converted to \code{NA} before conducting
 #'                   the analysis.
+#' @param plot       logical: if \code{TRUE}, correlation heat map is drawn. For
+#'                   additional plotting arguments, see \code{Details} in the help
+#'                   page of the function \code{plot.misty.object}.
+#' @param geom       character vector indicating which plot elements to draw,
+#'                   i.e., \code{"none"} for not printing correlation coefficients
+#'                   inside every tile, \code{"label"} for printing correlation
+#'                   coefficients inside every tile.
+#' @param filename   a character string indicating the \code{filename}
+#'                   argument including the file extension in the \code{ggsave}
+#'                   function. Note that one of \code{".eps"}, \code{".ps"},
+#'                   \code{".tex"}, \code{".pdf"} (default),
+#'                   \code{".jpeg"}, \code{".tiff"}, \code{".png"},
+#'                   \code{".bmp"}, \code{".svg"} or \code{".wmf"} needs
+#'                   to be specified as file extension in the \code{file}
+#'                   argument. Note that plots can only be saved when
+#'                   \code{plot = TRUE}.
+#' @param width      a numeric value indicating the \code{width} argument
+#'                   (default is the size of the current graphics device)
+#'                   for the \code{ggsave} function.
+#' @param height     a numeric value indicating the \code{height} argument
+#'                   (default is the size of the current graphics device)
+#'                   or the \code{ggsave} function.
+#' @param dpi        a numeric value indicating the \code{dpi} argument
+#'                   (default is \code{600}) for the \code{ggsave} function.
 #' @param write      a character string naming a file for writing the output into
 #'                   either a text file with file extension \code{".txt"} (e.g.,
 #'                   \code{"Output.txt"}) or Excel file with file extension
@@ -192,13 +218,37 @@
 #' cor.matrix(mtcars[, c("mpg", "cyl", "disp")], group = mtcars$vs)
 #'
 #' #————————————————————————————————————————————————————————————————————————————
+#' # Plot
+#'
+#' # Example 7a: Correlation heat map
+#' cor.matrix(mtcars, plot = TRUE)
+#'
+#' # Example 7b: Correlation heat map or group 'vs' = "0" and "1" separately
+#' cor.matrix(mtcars, group = "vs", plot = TRUE)
+#'
+#' # Example 7c: Highlight statistically significant result in blue
+#' cor.matrix(mtcars, color = "blue", plot = TRUE)
+#'
+#' # Example 7d: Highlight statistically significant result in boldface
+#' cor.matrix(mtcars, color = "black", style = "bold", plot = TRUE)
+#'
+#' # Example 7e: Plot results using the plot() function, use additional arguments
+#' # see Details in the help page of the function plot.misty.object
+#' object <- cor.matrix(mtcars)
+#' plot(object, scale.fill.low = "#DC267F", scale.fill.high = "#009E73",
+#'      text.col = c("gray80", "red"), text.size = 4.5, axis.text.size = 13)
+#'
+#' #————————————————————————————————————————————————————————————————————————————
 #' # Write Results
 #'
-#' # Example 7a: Write Results into a text file
+#' # Example 8a: Write Results into a text file
 #' cor.matrix(airquality, Ozone, Solar.R, Wind, print = "all", write = "Correlation.txt")
 #'
-#' # Example 7b: Write Results into an Excel file
+#' # Example 8b: Write Results into an Excel file
 #' cor.matrix(airquality, Ozone, Solar.R, Wind, print = "all", write = "Correlation.xlsx")
+#'
+#' # Example 8c: Save plot as PNG fine
+#' cor.matrix(mtcars, plot = TRUE, filename = "Correlation.png", width = 8, height = 7)
 #' }
 cor.matrix <- function(data, ...,
                        method = c("pearson", "spearman", "kendall-b", "kendall-c", "tetra", "poly"),
@@ -206,53 +256,32 @@ cor.matrix <- function(data, ...,
                        print = c("all", "cor", "n", "stat", "df", "p"),
                        tri = c("both", "lower", "upper"), alpha = 0.05,
                        color = "default", style = c("regular", "bold", "italic"),
-                       p.adj = c("none", "bonferroni", "holm", "hochberg", "hommel", "BH", "BY", "fdr"),
-                       na.omit = FALSE, digits = 2, p.digits = 3, as.na = NULL,
+                       p.adj = "none", na.omit = FALSE, digits = 2, p.digits = 3,
+                       as.na = NULL, plot = FALSE, geom = c("none", "label"),
+                       filename = NULL, width = NA, height = NA, dpi = 600,
                        write = NULL, append = TRUE, check = TRUE, output = TRUE) {
 
   #_____________________________________________________________________________
   #
-  # Initial Check --------------------------------------------------------------
+  # Initial Check ——————————————————————————————————————————————————————————————
 
   # Check if input 'data' is missing or NULL
   if (isTRUE(missing(data) || is.null(data))) { stop("Please specify a data frame for the argument 'data'", call. = FALSE) }
 
   #_____________________________________________________________________________
   #
-  # Data -----------------------------------------------------------------------
+  # Data ———————————————————————————————————————————————————————————————————————
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Using the Argument '...' ####
-
-  if (isTRUE(!missing(...))) {
-
-    # Extract data and convert tibble into data frame or vector
-    x <- data[, .var.names(data = data, ..., group = group), drop = FALSE] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(y)) == 1L)) { unname(unlist(y)) } else { as.data.frame(y) } } else { y })()
-
-    # Grouping variable
-    if (isTRUE(!is.null(group))) { group <- data[, group] }
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Without Using the Argument '...' ####
-
-  } else {
-
-    # Data frame
-    x <- as.data.frame(data)
-
-    # Data and cluster
-    var.group <- .var.group(data = x, group = group)
+  .data(data, ..., group = group) |> (\(p) {
 
     # Data
-    if (isTRUE(!is.null(var.group$data)))  { x <- var.group$data }
+    assign("x", p$data, envir = parent.frame())
 
     # Grouping variable
-    if (isTRUE(!is.null(var.group$group))) { group <- var.group$group }
+    if (isTRUE(!is.null(p$group))) { assign("group", p$group, envir = parent.frame()) }
 
-  }
+  })()
 
-  # Convert 'group' as tibble into a vector
-  if (!is.null(group) && isTRUE("tbl" %in% substr(class(group), 1L, 3L))) { group <- unname(unlist(group)) }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Non-Numeric Variables ####
@@ -261,12 +290,12 @@ cor.matrix <- function(data, ...,
 
   #_____________________________________________________________________________
   #
-  # Input Check ----------------------------------------------------------------
+  # Input Check ————————————————————————————————————————————————————————————————
 
   # Check inputs
-  .check.input(logical = c("ml", "na.omit", "continuity", "append", "output"),
+  .check.input(logical = c("plot", "ml", "na.omit", "continuity", "append", "output"),
                s.character = list(method = c("pearson", "spearman", "kendall-b", "kendall-c", "tetra", "poly"), tri = c("both", "lower", "upper"), style = c("regular", "bold", "italic")),
-               m.character = list(print = c("all", "cor", "n", "stat", "df", "p")),
+               m.character = list(print = c("all", "cor", "n", "stat", "df", "p"), geom = c("none", "label")),
                args = c("color", "alpha", "p.adj", "digits", "p.digits"), envir = environment(), input.check = check)
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -306,7 +335,7 @@ cor.matrix <- function(data, ...,
 
   #_____________________________________________________________________________
   #
-  # Data  ----------------------------------------------------------------------
+  # Data ———————————————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Convert User-missing Values into NA ####
@@ -320,7 +349,7 @@ cor.matrix <- function(data, ...,
 
   #_____________________________________________________________________________
   #
-  # Arguments ------------------------------------------------------------------
+  # Arguments ——————————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## 'na.omit' Argument ####
@@ -410,18 +439,29 @@ cor.matrix <- function(data, ...,
   }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## 'color' Argument ####
+
+  if (isTRUE(color != "default" && .Platform$GUI != "RStudio")) {
+
+    warning("The argument 'color' is only available on the RStudio platform, argument switched to \"default\".", call. = FALSE)
+
+    color <- "default"
+
+  }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## 'style' Argument ####
 
   if (isTRUE(all(c("regular", "bold", "italic") %in% style))) { style <- "regular" }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## 'p.adj' Argument ####
+  ## 'geom' Argument ####
 
-  p.adj <- ifelse(all(c("none", "bonferroni", "holm", "hochberg", "hommel", "BH", "BY", "fdr") %in% p.adj), "none", p.adj)
+  if (isTRUE(all(c("none", "label") %in% geom))) { geom <- "label" }
 
   #_____________________________________________________________________________
   #
-  # Main Function --------------------------------------------------------------
+  # Main Function ——————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Pairwise Combination of Columns ####
@@ -551,25 +591,32 @@ cor.matrix <- function(data, ...,
 
   #_____________________________________________________________________________
   #
-  # Return Object --------------------------------------------------------------
+  # Return Object ——————————————————————————————————————————————————————————————
 
   object <- list(call = match.call(),
                  type = "cor.matrix",
                  data = x,
-                 args = list(method = method, exact = exact, continuity = continuity, ml = ml, print = print, tri = tri, alpha = alpha, color = color, style = style, p.adj = p.adj, na.omit = na.omit, digits = digits, p.digits = p.digits, as.na = as.na, write = write, append = append, check = check, output = output),
+                 args = list(method = method, exact = exact, continuity = continuity, ml = ml, print = print, tri = tri, alpha = alpha, color = color, style = style, p.adj = p.adj, na.omit = na.omit, digits = digits, p.digits = p.digits, as.na = as.na, plot = plot, geom = geom, filename = filename, width = width, height = height, dpi = dpi, write = write, append = append, check = check, output = output),
+                 plot = NULL,
                  result = list(cor = cor.mat, n = n.mat, stat = stat.mat, df = df.mat, p = p.mat) |> (\(p) p[sapply(p, function(y) any(!is.na(y)))])())
 
   class(object) <- "misty.object"
 
   #_____________________________________________________________________________
   #
-  # Write Results --------------------------------------------------------------
+  # Plot and Save Plot —————————————————————————————————————————————————————————
+
+  if (isTRUE(plot)) { object$plot <- plot(object, filename = filename, width = width, height = height, dpi = dpi, check = FALSE) |> (\(y) suppressMessages(suppressWarnings(print(y))))() }
+
+  #_____________________________________________________________________________
+  #
+  # Write Results ——————————————————————————————————————————————————————————————
 
   if (isTRUE(!is.null(write))) { .write.result(object = object, write = write, append = append) }
 
   #_____________________________________________________________________________
   #
-  # Output ---------------------------------------------------------------------
+  # Output —————————————————————————————————————————————————————————————————————
 
   if (isTRUE(output)) { print(object, check = FALSE) }
 

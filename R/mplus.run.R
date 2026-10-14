@@ -90,7 +90,7 @@ mplus.run <- function(target = getwd(), recursive = FALSE, filefilter = NULL, sh
 
   #_____________________________________________________________________________
   #
-  # Input Check ----------------------------------------------------------------
+  # Input Check ————————————————————————————————————————————————————————————————
 
   # Check inputs
   .check.input(logical = c("recursive", "show.out", "message", "killOnFail", "local_tmpdir"),
@@ -98,14 +98,14 @@ mplus.run <- function(target = getwd(), recursive = FALSE, filefilter = NULL, sh
 
   #_____________________________________________________________________________
   #
-  # Arguments ------------------------------------------------------------------
+  # Arguments ——————————————————————————————————————————————————————————————————
 
   # Argument replace.out
   if (isTRUE(all(c("always", "never", "modified") %in% replace.out))) { replace.out <- "always" }
 
   #_____________________________________________________________________________
   #
-  # Additional Functions -------------------------------------------------------
+  # Additional Functions ———————————————————————————————————————————————————————
 
   isLogOpen <- function() {
 
@@ -207,7 +207,7 @@ mplus.run <- function(target = getwd(), recursive = FALSE, filefilter = NULL, sh
 
   #_____________________________________________________________________________
   #
-  # Main Function --------------------------------------------------------------
+  # Main Function ——————————————————————————————————————————————————————————————
 
   if (isTRUE(grepl("^~/", Mplus, perl = TRUE))) { Mplus <- normalizePath(Mplus) }
 

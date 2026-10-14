@@ -55,7 +55,7 @@
 #' # Load lavaan package
 #' library(lavaan)
 #'
-#' #----------------------------------------------------------------------------
+#' #————————————————————————————————————————————————————————————————————————————
 #' # Example 1: Saturated correlates model for the sem function
 #'
 #' # Model specification
@@ -75,7 +75,7 @@ na.satcor <- function(model, data, aux, fun = c("cfa", "sem", "growth", "lavaan"
 
   #_____________________________________________________________________________
   #
-  # Initial Check --------------------------------------------------------------
+  # Initial Check ——————————————————————————————————————————————————————————————
 
   # Check if input 'model' is a character string
   if (isTRUE(missing(model) || is.null(model) || !is.character(model) || !length(model) == 1L)) { stop("Please specify a character string for the argument 'model'.", call. = FALSE) }
@@ -88,7 +88,7 @@ na.satcor <- function(model, data, aux, fun = c("cfa", "sem", "growth", "lavaan"
 
   #_____________________________________________________________________________
   #
-  # Input Check ----------------------------------------------------------------
+  # Input Check ————————————————————————————————————————————————————————————————
 
   # Check inputs
   .check.input(s.character = list(fun = c("cfa", "sem", "growth", "lavaan")), package = "lavaan", envir = environment(), input.check = check)
@@ -109,7 +109,7 @@ na.satcor <- function(model, data, aux, fun = c("cfa", "sem", "growth", "lavaan"
 
   #_____________________________________________________________________________
   #
-  # Arguments ------------------------------------------------------------------
+  # Arguments ——————————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## fun Argument ####
@@ -157,7 +157,7 @@ na.satcor <- function(model, data, aux, fun = c("cfa", "sem", "growth", "lavaan"
 
   #_____________________________________________________________________________
   #
-  # Model specification --------------------------------------------------------
+  # Model specification ————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Specify Saturated Correlates Model ####
@@ -181,7 +181,7 @@ na.satcor <- function(model, data, aux, fun = c("cfa", "sem", "growth", "lavaan"
 
   #_____________________________________________________________________________
   #
-  # Model Estimation -----------------------------------------------------------
+  # Model Estimation ———————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Main Model ####
@@ -215,7 +215,7 @@ na.satcor <- function(model, data, aux, fun = c("cfa", "sem", "growth", "lavaan"
 
   #_____________________________________________________________________________
   #
-  # Return object --------------------------------------------------------------
+  # Return object ——————————————————————————————————————————————————————————————
 
   return(model.fit)
 
@@ -271,6 +271,5 @@ lavaan.satcor <- function(model, data, aux, check = TRUE, ...) {
   eval(mc, parent.frame())
 
 }
-
 
 #_______________________________________________________________________________

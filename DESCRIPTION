@@ -1,8 +1,8 @@
 Package: misty
 Type: Package
 Title: Miscellaneous Functions 'T. Yanagida'
-Version: 0.8.3
-Date: 2026-08-02
+Version: 0.8.4
+Date: 2026-10-14
 Authors@R: person(given = "Takuya", family = "Yanagida", email="takuya.yanagida@univie.ac.at", role = c("aut","cre"))
 Author: Takuya Yanagida [aut, cre]
 Maintainer: Takuya Yanagida <takuya.yanagida@univie.ac.at>
@@ -17,6 +17,6 @@ Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.3.1
 NeedsCompilation: no
-Packaged: 2026-08-02 00:40:46 UTC; takuy
+Packaged: 2026-10-14 09:38:00 UTC; takuy
 Repository: CRAN
-Date/Publication: 2026-08-02 05:10:13 UTC
+Date/Publication: 2026-10-14 10:20:02 UTC

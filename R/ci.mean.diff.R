@@ -1,83 +1,88 @@
 #' Confidence Interval for the Difference in Arithmetic Means
 #'
-#' This function computes a confidence interval for the difference in arithmetic
+#' This function computes confidence intervals for the difference in arithmetic
 #' means in a one-sample, two-sample and paired-sample design with known or unknown
 #' population standard deviation or population variance for one or more variables,
 #' optionally by a grouping and/or split variable.
 #'
-#' @param x              a numeric vector of data values.
-#' @param y              a numeric vector of data values.
-#' @param mu             a numeric value indicating the population mean under the
-#'                       null hypothesis. Note that the argument \code{mu} is only
-#'                       used when \code{y = NULL}.
-#' @param sigma          a numeric vector indicating the population standard deviation(s)
-#'                       when computing confidence intervals for the difference in
-#'                       arithmetic means with known standard deviation(s). In case
-#'                       of independent samples, equal standard deviations are assumed
-#'                       when specifying one value for the argument \code{sigma}; when
-#'                       specifying two values for the argument \code{sigma}, unequal
-#'                       standard deviations are assumed. Note that either argument
-#'                       \code{sigma} or argument \code{sigma2} is specified and it
-#'                       is only possible to specify one value (i.e., equal variance
-#'                       assumption) or two values (i.e., unequal variance assumption)
-#'                       for the argument \code{sigma} even though multiple variables
-#'                       are specified in \code{x}.
-#' @param sigma2         a numeric vector indicating the population variance(s) when
-#'                       computing confidence intervals for the difference in arithmetic
-#'                       means with known variance(s). In case of independent samples,
-#'                       equal variances are assumed when specifying one value for the
-#'                       argument \code{sigma2}; when specifying two values for the
-#'                       argument \code{sigma}, unequal variances are assumed. Note
-#'                       that either argument \code{sigma} or argument \code{sigma2}
-#'                       is specified and it is only possible to specify one value
-#'                       (i.e., equal variance assumption) or two values (i.e., unequal
-#'                       variance assumption) for the argument \code{sigma} even though
-#'                       multiple variables are specified in \code{x}.
-#' @param var.equal      logical: if \code{TRUE}, the population variance in the
-#'                       independent samples are assumed to be equal.
-#' @param paired         logical: if \code{TRUE}, confidence interval for the difference
-#'                       of arithmetic means in paired samples is computed.
-#' @param alternative    a character string specifying the alternative hypothesis,
-#'                       must be one of \code{"two.sided"} (default), \code{"greater"}
-#'                       or \code{"less"}.
-#' @param conf.level     a numeric value between 0 and 1 indicating the confidence
-#'                       level of the interval.
-#' @param group          a numeric vector, character vector or factor as grouping
-#'                       variable. Note that a grouping variable can only be used
-#'                       when computing confidence intervals with unknown population
-#'                       standard deviation and population variance.
-#' @param split          a numeric vector, character vector or factor as split variable.
-#'                       Note that a split variable can only be used when computing
-#'                       confidence intervals with unknown population
-#' @param sort.var       logical: if \code{TRUE}, output table is sorted by variables
-#'                       when specifying \code{group}.
-#' @param digits         an integer value indicating the number of decimal places to
-#'                       be used.
-#' @param as.na          a numeric vector indicating user-defined missing values,
-#'                       i.e. these values are converted to \code{NA} before conducting
-#'                       the analysis. Note that \code{as.na()} function is only applied
-#'                       to \code{x}, but not to \code{group} or \code{split}.
-#' @param write          a character string naming a text file with file extension
-#'                       \code{".txt"} (e.g., \code{"Output.txt"}) for writing the
-#'                       output into a text file.
-#' @param append         logical: if \code{TRUE} (default), output will be appended
-#'                       to an existing text file with extension \code{.txt} specified
-#'                       in \code{write}, if \code{FALSE} existing text file will be
-#'                       overwritten.
-#' @param check          logical: if \code{TRUE} (default), argument specification is checked.
-#' @param output         logical: if \code{TRUE} (default), output is shown on the console.
-#' @param formula        a formula of the form \code{y ~ group} for one outcome variable
-#'                       or \code{cbind(y1, y2, y3) ~ group} for more than one outcome
-#'                       variable where \code{y} is a numeric variable giving the data
-#'                       values and \code{group} a numeric variable, character variable
-#'                       or factor with two values or factor levels giving the corresponding
-#'                       groups.
-#' @param data           a matrix or data frame containing the variables in the formula
-#'                       \code{formula}.
-#' @param na.omit        logical: if \code{TRUE}, incomplete cases are removed before
-#'                       conducting the analysis (i.e., listwise deletion) when specifying
-#'                       more than one outcome variable.
-#' @param ...            further arguments to be passed to or from methods.
+#' @param data        a data frame. Note that data are specified either by using
+#'                    the argument \code{data} or by using the arguments \code{x}
+#'                    and \code{y}.
+#' @param ...         an expression indicating the variable names in \code{data},
+#'                    e.g., \code{ci.mean.diff(dat, x1, x2)}. Note that the operators
+#'                    \code{+}, \code{-}, \code{~}, \code{:}, \code{::}, and \code{!}
+#'                    can also be used to select variables, see 'Details' in the
+#'                    \code{\link{df.subset}} function.
+#' @param x           a numeric vector of data values.
+#' @param y           a numeric vector of data values.
+#' @param formula     a formula of the form \code{y ~ group} for one outcome variable
+#'                    or \code{cbind(y1, y2, y3) ~ group} for more than one outcome
+#'                    variable where \code{y} is a numeric variable giving the data
+#'                    values and \code{group} a numeric variable, character variable
+#'                    or factor with two values or factor levels giving the corresponding
+#'                    groups.
+#' @param mu          a numeric value indicating the population mean under the
+#'                    null hypothesis. Note that the argument \code{mu} is only
+#'                    used when \code{y = NULL}.
+#' @param sigma       a numeric vector indicating the population standard deviation(s)
+#'                    when computing confidence intervals for the difference in
+#'                    arithmetic means with known standard deviation(s). In case
+#'                    of independent samples, equal standard deviations are assumed
+#'                    when specifying one value for the argument \code{sigma}; when
+#'                    specifying two values for the argument \code{sigma}, unequal
+#'                    standard deviations are assumed. Note that either argument
+#'                    \code{sigma} or argument \code{sigma2} is specified and it
+#'                    is only possible to specify one value (i.e., equal variance
+#'                    assumption) or two values (i.e., unequal variance assumption)
+#'                    for the argument \code{sigma} even though multiple variables
+#'                    are specified in \code{x}.
+#' @param sigma2      a numeric vector indicating the population variance(s) when
+#'                    computing confidence intervals for the difference in arithmetic
+#'                    means with known variance(s). In case of independent samples,
+#'                    equal variances are assumed when specifying one value for the
+#'                    argument \code{sigma2}; when specifying two values for the
+#'                    argument \code{sigma}, unequal variances are assumed. Note
+#'                    that either argument \code{sigma} or argument \code{sigma2}
+#'                    is specified and it is only possible to specify one value
+#'                    (i.e., equal variance assumption) or two values (i.e., unequal
+#'                    variance assumption) for the argument \code{sigma} even though
+#'                    multiple variables are specified in \code{x}.
+#' @param var.equal   logical: if \code{TRUE}, the population variance in the
+#'                    independent samples are assumed to be equal.
+#' @param paired      logical: if \code{TRUE}, confidence interval for the difference
+#'                    of arithmetic means in paired samples is computed.
+#' @param alternative a character string specifying the alternative hypothesis,
+#'                    must be one of \code{"two.sided"} (default), \code{"greater"}
+#'                    or \code{"less"}.
+#' @param na.omit     logical: if \code{TRUE}, incomplete cases are removed before
+#'                    conducting the analysis (i.e., listwise deletion) when specifying
+#'                    more than one outcome variable.
+#' @param conf.level  a numeric value between 0 and 1 indicating the confidence
+#'                    level of the interval.
+#' @param group       a numeric vector, character vector or factor as grouping
+#'                    variable. Note that a grouping variable can only be used
+#'                    when computing confidence intervals with unknown population
+#'                    standard deviation and population variance.
+#' @param split       a numeric vector, character vector or factor as split variable.
+#'                    Note that a split variable can only be used when computing
+#'                    confidence intervals with unknown population
+#' @param sort.var    logical: if \code{TRUE}, output table is sorted by variables
+#'                    when specifying \code{group}.
+#' @param digits      an integer value indicating the number of decimal places to
+#'                    be used.
+#' @param as.na       a numeric vector indicating user-defined missing values,
+#'                    i.e. these values are converted to \code{NA} before conducting
+#'                    the analysis. Note that \code{as.na()} function is only applied
+#'                    to \code{x}, but not to \code{group} or \code{split}.
+#' @param write       a character string naming a text file with file extension
+#'                    \code{".txt"} (e.g., \code{"Output.txt"}) for writing the
+#'                    output into a text file.
+#' @param append      logical: if \code{TRUE} (default), output will be appended
+#'                    to an existing text file with extension \code{.txt} specified
+#'                    in \code{write}, if \code{FALSE} existing text file will be
+#'                    overwritten.
+#' @param check       logical: if \code{TRUE} (default), argument specification is checked.
+#' @param output      logical: if \code{TRUE} (default), output is shown on the console.
 #'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
@@ -106,78 +111,58 @@
 #' #————————————————————————————————————————————————————————————————————————————
 #' # One-Sample Design
 #'
-#' # Example 1a: Two-Sided 95% CI for 'mpg'
-#' # population mean = 20
-#' ci.mean.diff(mtcars$mpg, mu = 20)
+#' # Example 1a: Two-Sided 95% CI for 'mpg', population mean = 20
+#' ci.mean.diff(mtcars, mpg, mu = 20)
 #'
-#' # Example 1a: One-Sided 95% CI for 'mpg'
-#' # population mean = 20
-#' ci.mean.diff(mtcars$mpg, mu = 20, alternative = "greater")
+#' # Example 1b: Alternative specification without using the '...' argument
+#' ci.mean.diff(mtcars$mpg, mu = 20)
 #'
 #' #————————————————————————————————————————————————————————————————————————————
 #' # Two-Sample Design
 #'
 #' # Example 2a: Two-Sided 95% CI for 'mpg' by 'vs'
-#' # unknown population variances, unequal variance assumption
 #' ci.mean.diff(mpg ~ vs, data = mtcars)
 #'
-#' # Example 2b: Two-Sided 95% CI for 'mpg' by 'vs'
-#' # unknown population variances, equal variance assumption
+#' # Example 2b: Alternative specification without using the '...' argument
+#' ci.mean.diff(x = df.subset(mtcars, mpg, subset = vs == 0),
+#'              y = df.subset(mtcars, mpg, subset = vs == 1))
+#'
+#' # Example 2c: Equal variance assumption
 #' ci.mean.diff(mpg ~ vs, data = mtcars, var.equal = TRUE)
 #'
-#' # Example 2c: Two-Sided 95% CI for 'mpg' by 'vs'
-#' # known population standard deviations, equal standard deviation assumption
+#' # Example 2d: Known equal population standard deviations
 #' ci.mean.diff(mpg ~ vs, data = mtcars, sigma = 4)
 #'
-#' # Example 2d: Two-Sided 95% CI for 'mpg' by 'vs'
-#' # known population standard deviations, unequal standard deviation assumption
+#' # Example 2e: Known unequal population standard deviations
 #' ci.mean.diff(mpg ~ vs, data = mtcars, sigma = c(4, 5))
 #'
-#' # Example 2e: Two-Sided 95% CI for 'mpg', 'cyl', and 'disp' by 'vs'
-#' # unknown population variances, unequal variance assumption
+#' # Example 2f: Two-Sided 95% CI for 'mpg', 'cyl', and 'disp' by 'vs'
 #' ci.mean.diff(cbind(mpg, cyl, disp) ~ vs, data = mtcars)
 #'
-#' # Example 2f: Two-Sided 95% CI for 'mpg', 'cyl', and 'disp' by 'vs'
-#' # unknown population variances, unequal variance assumption,
-#' # analysis by am separately
-#' ci.mean.diff(cbind(mpg, cyl, disp) ~ vs, data = mtcars, group = mtcars$am)
+#' # Example 2g: Analysis by group separately
+#' ci.mean.diff(cbind(mpg, cyl, disp) ~ vs, data = mtcars, group = "am")
 #'
-#' # Example 2g: Two-Sided 95% CI for 'mpg', 'cyl', and 'disp' by 'vs'
-#' # unknown population variances, unequal variance assumption,
-#' # split analysis by am
-#' ci.mean.diff(cbind(mpg, cyl, disp) ~ vs, data = mtcars, split = mtcars$am)
-#'
-#' # Example 2h: Two-Sided 95% CI for the mean difference between 'group1' and 'group2'
-#' # unknown population variances, unequal variance assumption
-#' group1 <- c(3, 1, 4, 2, 5, 3, 6, 7)
-#' group2 <- c(5, 2, 4, 3, 1)
-#'
-#' ci.mean.diff(group1, group2)
+#' # Example 2h: Analysis split by group
+#' ci.mean.diff(cbind(mpg, cyl, disp) ~ vs, data = mtcars, split = "am")
 #'
 #' #————————————————————————————————————————————————————————————————————————————
 #' # Paired-Sample Design
 #'
-#' dat.p <- data.frame(pre = c(1, 3, 2, 5, 7, 6), post = c(2, 2, 1, 6, 8, 9),
-#'                     group = c(1, 1, 1, 2, 2, 2))
-#'
 #' # Example 3a: Two-Sided 95% CI for the mean difference in 'pre' and 'post'
-#' # unknown poulation variance of difference scores
-#' ci.mean.diff(dat.p$pre, dat.p$post, paired = TRUE)
+#' ci.mean.diff(mtcars, drat, wt, paired = TRUE)
 #'
-#' # Example 21: Two-Sided 95% CI for the mean difference in 'pre' and 'post'
-#' # unknown poulation variance of difference scores
-#' # analysis by group separately
-#' ci.mean.diff(dat.p$pre, dat.p$post, paired = TRUE, group = dat.p$group)
+#' # Example 3a: Alternative specification without using the '...' argument
+#' ci.mean.diff(x = mtcars$drat, y = mtcars$wt, paired = TRUE)
 #'
-#' # Example 22: Two-Sided 95% CI for the mean difference in 'pre' and 'post'
-#' # unknown poulation variance of difference scores
-#' # analysis by group separately
-#' ci.mean.diff(dat.p$pre, dat.p$post, paired = TRUE, split = dat.p$group)
+#' # Example 3b: Analysis by group separately
+#' ci.mean.diff(mtcars, drat, wt, paired = TRUE, group = "vs")
 #'
-#' # Example 23: Two-Sided 95% CI for the mean difference in 'pre' and 'post'
-#' # known population standard deviation of difference scores
-#' ci.mean.diff(dat.p$pre, dat.p$post, sigma = 2, paired = TRUE)
-ci.mean.diff <- function(x, ...) {
+#' # Example 3c: Analysis split by group
+#' ci.mean.diff(mtcars, drat, wt, paired = TRUE, split = "vs")
+#'
+#' # Example 3e: Known population standard deviation of difference scores
+#' ci.mean.diff(mtcars, drat, wt, sigma = 1, paired = TRUE)
+ci.mean.diff <- function(...) {
 
   UseMethod("ci.mean.diff")
 
@@ -185,57 +170,85 @@ ci.mean.diff <- function(x, ...) {
 
 #_______________________________________________________________________________
 #
-# Default S3 method ------------------------------------------------------------
+# Default S3 method ————————————————————————————————————————————————————————————
 
-ci.mean.diff.default <- function(x, y = NULL, mu = 0, sigma = NULL, sigma2 = NULL, var.equal = FALSE,
-                                 paired = FALSE, alternative = c("two.sided", "less", "greater"),
+ci.mean.diff.default <- function(data = NULL, ..., x = NULL, y = NULL, mu = 0, sigma = NULL, sigma2 = NULL,
+                                 var.equal = FALSE, paired = FALSE, alternative = c("two.sided", "less", "greater"),
                                  conf.level = 0.95, group = NULL, split = NULL, sort.var = FALSE,
                                  digits = 2, as.na = NULL, write = NULL, append = TRUE,
-                                 check = TRUE, output = TRUE, ...) {
+                                 check = TRUE, output = TRUE) {
 
   #_____________________________________________________________________________
   #
-  # Initial Check --------------------------------------------------------------
+  ## Initial Check ####
 
-  # Check if input 'x' is missing or NULL
-  if (isTRUE(missing(x) || is.null(x))) { stop("Please specify a numeric vector for the argument 'x'", call. = FALSE) }
+  # Check if input 'data' and 'x' are NULL
+  if (isTRUE(is.null(data) && is.null(x))) { stop("Please specify the argument 'data' or the argument 'x'.", call. = FALSE) }
 
-  # Check if only one variable specified in the input 'x'
-  if (ncol(data.frame(x)) != 1L) { stop("More than one variable specified for the argument 'x'.",call. = FALSE) }
+  # Check if input 'data' or 'x' is specified
+  if (isTRUE(!is.null(data) && !is.null(x))) { stop("Please specify either the argument 'data' or the argument 'x', but not both.", call. = FALSE) }
 
-  # Convert 'x' into a vector
-  x <- unlist(x, use.names = FALSE)
+  #_____________________________________________________________________________
+  #
+  # Data ———————————————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Check 'y' ####
+  ## Extract Variables ####
 
-  if (isTRUE(!is.null(y))) {
+  if (isTRUE(!is.null(data))) {
 
-    # Check if input 'y' is missing
-    if (isTRUE(missing(y))) { stop("Please specify a numeric vector for the argument 'y'", call. = FALSE) }
+    .data(data, ..., group = group, split = split, drop = TRUE, check.one.two = TRUE) |> (\(p) {
 
-    # Check if only one variable specified in the input 'y'
-    if (ncol(data.frame(y)) != 1L) { stop("More than one variable specified for the argument 'y'.",call. = FALSE) }
+      # Extract 'x'
+      assign("x", p$data, envir = parent.frame())
 
-    # Convert 'y' into a vector
-    y <- unlist(y, use.names = FALSE)
+      # Extract 'y'
+      if (isTRUE(ncol(as.data.frame(p$data)) > 1L)) {
+
+        assign("y", x[, 2L], envir = parent.frame())
+        assign("x", x[, 1L] , envir = parent.frame())
+
+      } else {
+
+        assign("y", NULL, envir = parent.frame())
+
+      }
+
+      # Grouping variable
+      if (isTRUE(!is.null(p$group))) { assign("group", p$group, envir = parent.frame()) }
+
+      # Split variable
+      if (isTRUE(!is.null(p$split))) { assign("split", p$split, envir = parent.frame()) }
+
+    })()
+
+  }
+
+  #_____________________________________________________________________________
+  #
+  ## Convert User-Missing Values into NA ####
+
+  if (isTRUE(!is.null(as.na))) {
+
+    # One-sample
+    if (isTRUE(is.null(y))) {
+
+      # Replace user-specified values with missing values
+      x <- .as.na(x, na = as.na)
+
+    # Two- or paired-sample
+    } else {
+
+      # Replace user-specified values with missing values
+      x <- .as.na(x, na = as.na)
+      y <- .as.na(y, na = as.na)
+
+    }
 
   }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Check 'paired' ####
-
-  if (isTRUE(!is.logical(paired))) { stop("Please specify TRUE or FALSE for the argument 'paired'.", call. = FALSE) }
-
-  if (isTRUE(paired)) {
-
-    # Length of 'x' and 'y'
-    if (isTRUE(nrow(data.frame(x)) != nrow(data.frame(y)))) { stop("Length of the vector specified in 'x' does not match the length of the vector specified in 'y'.", call. = FALSE) }
-
-  }
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Check 'group' ####
+  ## Grouping Variable ####
 
   if (isTRUE(!is.null(group))) {
 
@@ -259,7 +272,7 @@ ci.mean.diff.default <- function(x, y = NULL, mu = 0, sigma = NULL, sigma2 = NUL
   }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Check 'split' ####
+  ## Split Variable ####
 
   if (isTRUE(!is.null(split))) {
 
@@ -284,7 +297,7 @@ ci.mean.diff.default <- function(x, y = NULL, mu = 0, sigma = NULL, sigma2 = NUL
   # One sample
   if (isTRUE(is.null(y))) {
 
-    xy <- data.frame(x = x, stringsAsFactors = FALSE)
+    xy <- data.frame(x = x)
 
   # Independent samples
   } else if (!isTRUE(paired)) {
@@ -294,36 +307,25 @@ ci.mean.diff.default <- function(x, y = NULL, mu = 0, sigma = NULL, sigma2 = NUL
   # Paired samples
   } else {
 
-    xy <- data.frame(x = x, y = y, stringsAsFactors = FALSE)
-
-  }
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Replace user-specified values with missing values ####
-
-  if (isTRUE(!is.null(as.na))) {  xy <- .as.na(xy, na = as.na) }
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Listwise deletion ####
-
-  if (isTRUE(paired && nrow(na.omit(xy)) < 2L)) {
-
-    stop("After listwise deletion, the number of pairs of observations is less than two.", call. = FALSE)
+    xy <- data.frame(x = x, y = y)
 
   }
 
   #_____________________________________________________________________________
   #
-  # Input Check ----------------------------------------------------------------
+  # Input Check ————————————————————————————————————————————————————————————————
 
   # Check inputs
-  .check.input(logical = c("var.equal", "paired", "sort.var", "append", "output"),
-               numeric = list(mu = 1L),
-               args = c("digts", "alternative", "conf.level", "write1"), envir = environment(), input.check = check)
+  .check.input(logical = c("var.equal", "paired", "sort.var", "append", "output"), numeric = list(mu = 1L), args = c("xy", "digts", "alternative", "conf.level", "write1"), envir = environment(), input.check = check)
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Additional Checks ####
 
   if (isTRUE(check)) {
 
-    # Check input 'sigma' and 'sigma2'
+    #—————————————————————————————————————— #
+    ### 'sigma' and 'sigma2' Arguments ####
+
     if (isTRUE(!is.null(sigma) && !is.null(sigma2))) { if (isTRUE(!identical(sigma^2, sigma2))) { stop("Arguments 'sigma' and 'sigma2' do not match.", call. = FALSE) } }
 
     # Check input 'sigma'
@@ -366,6 +368,9 @@ ci.mean.diff.default <- function(x, y = NULL, mu = 0, sigma = NULL, sigma2 = NUL
 
     }
 
+    #—————————————————————————————————————— #
+    ### 'group' Arguments ####
+
     # Check input 'group'
     if (isTRUE(!is.null(group))) {
 
@@ -383,7 +388,9 @@ ci.mean.diff.default <- function(x, y = NULL, mu = 0, sigma = NULL, sigma2 = NUL
 
     }
 
-    # Check input 'split'
+    #—————————————————————————————————————— #
+    ### 'split' Arguments ####
+
     if (isTRUE(!is.null(split))) {
 
       # Independent samples
@@ -407,10 +414,10 @@ ci.mean.diff.default <- function(x, y = NULL, mu = 0, sigma = NULL, sigma2 = NUL
 
   #_____________________________________________________________________________
   #
-  # Arguments ------------------------------------------------------------------
+  # Arguments ——————————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Population standard deviation and variance ####
+  ## 'sigma' and 'sigma2' Argument ####
 
   if (isTRUE(is.null(sigma) && !is.null(sigma2))) { sigma <- sqrt(sigma2) }
 
@@ -425,13 +432,13 @@ ci.mean.diff.default <- function(x, y = NULL, mu = 0, sigma = NULL, sigma2 = NUL
   }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Alternative hypothesis ####
+  ## 'alternative' Argument ####
 
   if (isTRUE(all(c("two.sided", "less", "greater") %in% alternative))) { alternative <- "two.sided" }
 
   #_____________________________________________________________________________
   #
-  # Main Function --------------------------------------------------------------
+  # Main Function ——————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## No Grouping, No Split ####
@@ -443,19 +450,10 @@ ci.mean.diff.default <- function(x, y = NULL, mu = 0, sigma = NULL, sigma2 = NUL
 
     if (isTRUE(is.null(y))) {
 
-      result <- data.frame(variable = "y",
-                           n = length(na.omit(xy$x)),
-                           nNA = length(attributes(na.omit(xy))$na.action),
-                           m = mean(xy$x, na.rm = TRUE), sd = sd(xy$x, na.rm = TRUE),
-                           mu = mu,
+      result <- data.frame(variable = "y", n = length(na.omit(xy$x)), nNA = length(attributes(na.omit(xy))$na.action), m = mean(xy$x, na.rm = TRUE), sd = sd(xy$x, na.rm = TRUE), mu = mu,
                            m.diff = mean(xy$x - mu, na.rm = TRUE),
-                           low = .m.diff.conf(x = mu, y = xy$x, sigma = sigma,
-                                              var.equal = var.equal, alternative = alternative,
-                                              paired = TRUE, conf.level = conf.level, side = "low"),
-                           upp = .m.diff.conf(x = mu, y = xy$x, sigma = sigma,
-                                              var.equal = var.equal, alternative = alternative,
-                                              paired = TRUE, conf.level = conf.level, side = "upp"),
-                           stringsAsFactors = FALSE, row.names = NULL)
+                           low = .m.diff.conf(x = mu, y = xy$x, sigma = sigma, var.equal = var.equal, alternative = alternative, paired = TRUE, conf.level = conf.level, side = "low"),
+                           upp = .m.diff.conf(x = mu, y = xy$x, sigma = sigma, var.equal = var.equal, alternative = alternative, paired = TRUE, conf.level = conf.level, side = "upp"), row.names = NULL)
 
 
     #—————————————————————————————————————— #
@@ -463,47 +461,24 @@ ci.mean.diff.default <- function(x, y = NULL, mu = 0, sigma = NULL, sigma2 = NUL
 
     } else if (isTRUE(!is.null(y) && !isTRUE(paired))) {
 
-    result <- misty::df.rbind(data.frame(variable = "y",
-                                         between = 1,
-                                         n = length(na.omit(xy$x)),
-                                         nNA = sum(is.na(xy$x)),
-                                         m = mean(xy$x, na.rm = TRUE),
-                                         sd = sd(xy$x, na.rm = TRUE),
-                                         stringsAsFactors = FALSE),
-                              data.frame(variable = "y",
-                                         n = length(na.omit(xy$y)),
-                                         between = 2,
-                                         nNA = sum(is.na(xy$y)),
-                                         m = mean(xy$y, na.rm = TRUE),
-                                         sd = sd(xy$y, na.rm = TRUE),
+    result <- misty::df.rbind(data.frame(variable = "y", between = 1, n = length(na.omit(xy$x)), nNA = sum(is.na(xy$x)), m = mean(xy$x, na.rm = TRUE), sd = sd(xy$x, na.rm = TRUE)),
+                              data.frame(variable = "y", n = length(na.omit(xy$y)), between = 2, nNA = sum(is.na(xy$y)), m = mean(xy$y, na.rm = TRUE), sd = sd(xy$y, na.rm = TRUE),
                                          m.diff = mean(xy$y, na.rm = TRUE) - mean(xy$x, na.rm = TRUE),
-                                         low = .m.diff.conf(x = xy$x, y = xy$y, sigma = sigma,
-                                                           var.equal = var.equal, alternative = alternative,
-                                                           paired = FALSE, conf.level = conf.level, side = "low"),
-                                         upp = .m.diff.conf(x = xy$x, y = xy$y, sigma = sigma,
-                                                           var.equal = var.equal, alternative = alternative,
-                                                            paired = FALSE, conf.level = conf.level, side = "upp"),
-                                         stringsAsFactors = FALSE, row.names = NULL))
+                                         low = .m.diff.conf(x = xy$x, y = xy$y, sigma = sigma, var.equal = var.equal, alternative = alternative, paired = FALSE, conf.level = conf.level, side = "low"),
+                                         upp = .m.diff.conf(x = xy$x, y = xy$y, sigma = sigma, var.equal = var.equal, alternative = alternative, paired = FALSE, conf.level = conf.level, side = "upp"),
+                                         row.names = NULL))
 
     #—————————————————————————————————————— #
     ### Paired-Samples ####
 
     } else if (isTRUE(!is.null(y) && isTRUE(paired))) {
 
-      result <- data.frame(variable = "y",
-                           n = nrow(na.omit(xy)),
-                           nNA = length(attributes(na.omit(xy))$na.action),
-                           m1 = mean(xy$x, na.rm = TRUE), sd1 = sd(xy$x, na.rm = TRUE),
-                           m2 = mean(xy$y, na.rm = TRUE), sd2 = sd(xy$y, na.rm = TRUE),
-                           m.diff = mean(xy$y - xy$x, na.rm = TRUE),
-                           sd.diff = sd(xy$y - xy$x, na.rm = TRUE),
-                           low = .m.diff.conf(x = xy$x, y = xy$y, sigma = sigma,
-                                             var.equal = var.equal, alternative = alternative,
-                                             paired = TRUE, conf.level = conf.level, side = "low"),
-                           upp = .m.diff.conf(x = xy$x, y = xy$y, sigma = sigma,
-                                             var.equal = var.equal, alternative = alternative,
-                                             paired = TRUE, conf.level = conf.level, side = "upp"),
-                           stringsAsFactors = FALSE, row.names = NULL)
+      result <- data.frame(variable = "y", n = nrow(na.omit(xy)), nNA = length(attributes(na.omit(xy))$na.action),
+                           m1 = mean(xy$x, na.rm = TRUE), sd1 = sd(xy$x, na.rm = TRUE), m2 = mean(xy$y, na.rm = TRUE), sd2 = sd(xy$y, na.rm = TRUE),
+                           m.diff = mean(xy$y - xy$x, na.rm = TRUE), sd.diff = sd(xy$y - xy$x, na.rm = TRUE),
+                           low = .m.diff.conf(x = xy$x, y = xy$y, sigma = sigma, var.equal = var.equal, alternative = alternative, paired = TRUE, conf.level = conf.level, side = "low"),
+                           upp = .m.diff.conf(x = xy$x, y = xy$y, sigma = sigma, var.equal = var.equal, alternative = alternative, paired = TRUE, conf.level = conf.level, side = "upp"),
+                           row.names = NULL)
 
     }
 
@@ -520,61 +495,49 @@ ci.mean.diff.default <- function(x, y = NULL, mu = 0, sigma = NULL, sigma2 = NUL
                                                             na.omit = na.omit, as.na = as.na, check = FALSE,
                                                             output = FALSE)$result)
 
-    result <- data.frame(group = names(object.group),
-                         eval(parse(text = paste0("rbind(", paste0("object.group[[", seq_len(length(object.group)), "]]",
-                                                                   collapse = ", "), ")"))), stringsAsFactors = FALSE)
+    result <- data.frame(group = names(object.group), eval(parse(text = paste0("rbind(", paste0("object.group[[", seq_len(length(object.group)), "]]", collapse = ", "), ")"))))
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ##  No Grouping, Split ####
+  ## No Grouping, Split ####
 
   } else if (isTRUE(is.null(group) && !is.null(split))) {
 
-    result <- lapply(split(data.frame(xy, stringsAsFactors = FALSE), f = split),
-                     function(y) ci.mean.diff.default(x = y$x, y = y$y, sigma = NULL, sigma2 = NULL,
-                                                      var.equal = var.equal, alternative = alternative,
-                                                      conf.level = conf.level, paired = paired,
-                                                      group = NULL, split = NULL, sort.var = sort.var,
-                                                      na.omit = na.omit, as.na = as.na, check = FALSE,
-                                                      output = FALSE)$result)
+    result <- lapply(split(data.frame(xy), f = split),
+                     function(y) ci.mean.diff.default(x = y$x, y = y$y, sigma = NULL, sigma2 = NULL, var.equal = var.equal, alternative = alternative,
+                                                      conf.level = conf.level, paired = paired, group = NULL, split = NULL, sort.var = sort.var,
+                                                      na.omit = na.omit, as.na = as.na, check = FALSE, output = FALSE)$result)
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ##  Grouping, Split ####
+  ## Grouping, Split ####
 
   } else if (isTRUE(!is.null(group) && !is.null(split))) {
 
-    result <- lapply(split(data.frame(xy, .group = group, stringsAsFactors = FALSE, row.names = NULL), f = split),
-                     function(y) ci.mean.diff.default(x = y$x, y = y$y, sigma = NULL, sigma2 = NULL,
-                                                      var.equal = var.equal, alternative = alternative,
-                                                      conf.level = conf.level, paired = paired,
-                                                      group = y$.group, split = NULL, sort.var = sort.var,
-                                                      na.omit = na.omit, as.na = as.na, check = FALSE,
-                                                      output = FALSE)$result)
+    result <- lapply(split(data.frame(xy, .group = group, row.names = NULL), f = split),
+                     function(y) ci.mean.diff.default(x = y$x, y = y$y, sigma = NULL, sigma2 = NULL, var.equal = var.equal, alternative = alternative,
+                                                      conf.level = conf.level, paired = paired, group = y$.group, split = NULL, sort.var = sort.var,
+                                                      na.omit = na.omit, as.na = as.na, check = FALSE, output = FALSE)$result)
 
   }
 
   #_____________________________________________________________________________
   #
-  # Return Object --------------------------------------------------------------
+  # Return Object ——————————————————————————————————————————————————————————————
 
   object <- list(call = match.call(),
                  type = "ci", ci = ifelse(isTRUE(is.null(y)), "mean.diff.o", ifelse(!isTRUE(paired), "mean.diff.i", "mean.diff.p")),
                  data = list(x = x, y = y, group = group, split = split),
-                 args = list(sigma = sigma, sigma2 = sigma2,
-                             var.equal = var.equal, alternative = alternative,
-                             conf.level = conf.level, paired = paired,
-                             sort.var = sort.var, na.omit = na.omit, digits = digits,
-                             as.na = as.na, check = check, output = output),
+                 args = list(sigma = sigma, sigma2 = sigma2, var.equal = var.equal, alternative = alternative, conf.level = conf.level, paired = paired, sort.var = sort.var, na.omit = na.omit, digits = digits, as.na = as.na, check = check, output = output),
                  result = result)
 
   class(object) <- "misty.object"
 
   #_____________________________________________________________________________
   #
-  # Write Results --------------------------------------------------------------
+  # Write Results ——————————————————————————————————————————————————————————————
 
   if (isTRUE(!is.null(write))) {
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Text file ####
 
     # Send R output to text file
@@ -592,7 +555,7 @@ ci.mean.diff.default <- function(x, y = NULL, mu = 0, sigma = NULL, sigma2 = NUL
 
   #_____________________________________________________________________________
   #
-  # Output ---------------------------------------------------------------------
+  # Output —————————————————————————————————————————————————————————————————————
 
   if (isTRUE(output)) { print(object, check = FALSE) }
 
@@ -615,44 +578,17 @@ ci.mean.diff.formula <- function(formula, data, sigma = NULL, sigma2 = NULL, var
   # Initial Check --------------------------------------------------------------
 
   # Check if input 'formula' is missing
-  if (isTRUE(missing(formula))) { stop("Please specify a formula using the argument 'formula'.", call. = FALSE) }
+  if (isTRUE(missing(formula))) { stop("Please specify a formula using the argument 'formula'", call. = FALSE) }
 
-  # Check if input 'data' is missing
-  if (isTRUE(missing(data))) { stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE) }
-
-  # Check if input 'data' is NULL
-  if (isTRUE(is.null(data))) { stop("Input specified for the argument 'data' is NULL.", call. = FALSE) }
-
-  # Check 'group'
-  if (isTRUE(!is.null(group))) {
-
-    if (ncol(data.frame(group)) != 1) { stop("More than one grouping variable specified for the argument 'group'.",call. = FALSE) }
-
-    if (nrow(data.frame(group)) != nrow(data)) { stop("Length of the vector or factor specified in the argument 'group' does not match the number of rows in 'data'.", call. = FALSE) }
-
-    # Convert 'group' into a vector
-    group <- unlist(group, use.names = FALSE)
-
-  }
-
-  # Check 'split'
-  if (isTRUE(!is.null(split))) {
-
-    if (ncol(data.frame(split)) != 1L) { stop("More than one split variable specified for the argument 'split'.",call. = FALSE) }
-
-    if (nrow(data.frame(split)) != nrow(data)) { stop("Length of the vector or factor specified in the argument 'split' does not match the number of rows in 'data'.", call. = FALSE)}
-
-    # Convert 'split' into a vector
-    split <- unlist(split, use.names = FALSE)
-
-  }
+  # Check if input 'data' is missing or NULL
+  if (isTRUE(missing(data) ||is.null(data))) { stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE) }
 
   #_____________________________________________________________________________
   #
   # Data and Variables ---------------------------------------------------------
 
-  # Dataframe
-  data <- as.data.frame(data, stringsAsFactors = FALSE)
+  # Data frame
+  data <- as.data.frame(data)
 
   # Variables
   var.formula <- all.vars(as.formula(formula))
@@ -663,23 +599,62 @@ ci.mean.diff.formula <- function(formula, data, sigma = NULL, sigma2 = NULL, var
   # Outcome(s)
   y.vars <- var.formula[-grep(group.var, var.formula)]
 
-  #_____________________________________________________________________________
-  #
-  # Input Check ----------------------------------------------------------------
-
   # Check if variables are in the data
-  var.data <- !var.formula %in% colnames(data)
-  if (isTRUE(any(var.data))) {
-
-    stop(paste0("Variables specified in the the formula were not found in 'data': ", paste(var.formula[which(var.data)], collapse = ", ")), call. = FALSE)
-
-  }
+  (!var.formula %in% colnames(data)) |> (\(p) if (isTRUE(any(p))) { stop(paste0("Variables specified in the the formula were not found in 'data': ", paste(var.formula[which(p)], collapse = ", ")), call. = FALSE)  })()
 
   # Check if input 'formula' has only one grouping variable
   if (isTRUE(length(group.var) != 1L)) { stop("Please specify a formula with only one grouping variable.", call. = FALSE) }
 
+  #—————————————————————————————————————— #
+  ### Grouping Variable ####
+
+  if (isTRUE(!is.null(group))) {
+
+    # Grouping variable specified with variable name
+    if (isTRUE(is.character(group) && length(group) == 1L))  {
+
+      if (isTRUE(!group %in% colnames(data))) { stop("Grouping variable specified in the argument 'group' was not found in the 'data.'", call. = FALSE) }
+
+      group <- data[, group]
+
+    # Grouping variable specified as vector
+    } else {
+
+      if (nrow(data.frame(group)) != nrow(data)) { stop("Length of the vector or factor specified in the argument 'group' does not match the number of rows in 'data'.", call. = FALSE) }
+
+      # Convert 'group' into a vector
+      group <- unlist(group, use.names = FALSE)
+
+    }
+
+  }
+
+  #—————————————————————————————————————— #
+  ### Split Variable ####
+
+  if (isTRUE(!is.null(split))) {
+
+    # Split variable specified with variable name
+    if (isTRUE(is.character(split) && length(split) == 1L))  {
+
+      if (isTRUE(!split %in% colnames(data))) { stop("Split variable specified in the argument 'split' was not found in the 'data.'", call. = FALSE) }
+
+      split <- data[, split]
+
+    # Split variable specified as vector
+    } else {
+
+      if (nrow(data.frame(split)) != nrow(data)) { stop("Length of the vector or factor specified in the argument 'split' does not match the number of rows in 'data'.", call. = FALSE) }
+
+      # Convert 'split' into a vector
+      split <- unlist(split, use.names = FALSE)
+
+    }
+
+  }
+
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Convert User-Missing values into NA ####
+  ## Convert User-Missing Values into NA ####
 
   if (isTRUE(!is.null(as.na))) {
 
@@ -730,7 +705,7 @@ ci.mean.diff.formula <- function(formula, data, sigma = NULL, sigma2 = NULL, var
     # No group and split variable
     if (isTRUE(is.null(group) && is.null(split))) {
 
-      x <- na.omit(as.data.frame(data[, var.formula], stringsAsFactors = FALSE))
+      x <- na.omit(as.data.frame(data[, var.formula]))
 
       warning(paste0("Listwise deletion of incomplete data, number of cases removed from the analysis: ", length(attributes(x)$na.action)), call. = FALSE)
 
@@ -739,7 +714,7 @@ ci.mean.diff.formula <- function(formula, data, sigma = NULL, sigma2 = NULL, var
     # Group variable, no split variable
     if (isTRUE(!is.null(group) && is.null(split))) {
 
-      data.group <- na.omit(data.frame(data[, var.formula], group = group, stringsAsFactors = FALSE))
+      data.group <- na.omit(data.frame(data[, var.formula], group = group))
 
       data <- data.group[, -grep("group", names(data.group)), drop = FALSE]
       group <- data.group$group
@@ -751,7 +726,7 @@ ci.mean.diff.formula <- function(formula, data, sigma = NULL, sigma2 = NULL, var
     # No group variable, split variable
     if (isTRUE(is.null(group) && !is.null(split))) {
 
-      data.split <- na.omit(data.frame(data[, var.formula], split = split, stringsAsFactors = FALSE))
+      data.split <- na.omit(data.frame(data[, var.formula], split = split))
 
       data <- data.split[, -grep("split", names(data.split)), drop = FALSE]
       split <- data.split$split
@@ -763,8 +738,7 @@ ci.mean.diff.formula <- function(formula, data, sigma = NULL, sigma2 = NULL, var
     # Group variable, split variable
     if (isTRUE(!is.null(group) && !is.null(split))) {
 
-      data.group.split <- na.omit(data.frame(data[, var.formula], group = group, split = split,
-                                             stringsAsFactors = FALSE))
+      data.group.split <- na.omit(data.frame(data[, var.formula], group = group, split = split))
 
       data <- data.group.split[,  !names(data.group.split) %in% c("group", "split"), drop = FALSE]
       group <- data.group.split$group
@@ -785,18 +759,14 @@ ci.mean.diff.formula <- function(formula, data, sigma = NULL, sigma2 = NULL, var
   }
 
   # Check if grouping variable has two levels
-  if (isTRUE(length(na.omit(unique(unlist(data[, group.var])))) != 2L)) {
-
-    stop("Please specify a grouping variable with exactly two levels.", call. = FALSE)
-
-  }
+  if (isTRUE(length(na.omit(unique(unlist(data[, group.var])))) != 2L)) { stop("Please specify a grouping variable with exactly two levels.", call. = FALSE) }
 
   #_____________________________________________________________________________
   #
   # Arguments ------------------------------------------------------------------
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Population Standard Deviation and Variance ####
+  ## 'sigma' and 'sigma2' Arguments ####
 
   if (isTRUE(is.null(sigma) && !is.null(sigma2))) { sigma <- sqrt(sigma2) }
 
@@ -807,7 +777,7 @@ ci.mean.diff.formula <- function(formula, data, sigma = NULL, sigma2 = NULL, var
   if (isTRUE(!is.null(sigma2) && length(sigma2) == 1L)) { sigma2 <- c(sigma2, sigma2) }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Alternative Hypothesis ####
+  ## 'alternative' Argument ####
 
   if (isTRUE(all(c("two.sided", "less", "greater") %in% alternative))) { alternative <- "two.sided" }
 
@@ -820,9 +790,7 @@ ci.mean.diff.formula <- function(formula, data, sigma = NULL, sigma2 = NULL, var
 
   if (isTRUE(is.null(group) && is.null(split))) {
 
-    result <- data.frame(matrix(NA, ncol = 9L, nrow = length(y.vars)*2,
-                                dimnames = list(NULL, c("variable", "between", "n", "nNA", "m", "sd", "m.diff", "low", "upp"))),
-                         stringsAsFactors = FALSE)
+    result <- data.frame(matrix(NA, ncol = 9L, nrow = length(y.vars)*2L, dimnames = list(NULL, c("variable", "between", "n", "nNA", "m", "sd", "m.diff", "low", "upp"))))
 
     loop.mat <- matrix(1:(length(y.vars)*2L), ncol = 2L, byrow = TRUE)
 
@@ -831,12 +799,9 @@ ci.mean.diff.formula <- function(formula, data, sigma = NULL, sigma2 = NULL, var
       data.split <- split(unlist(data[, y.vars[i]]), f = unlist(data[, group.var]))
 
       result[loop.mat[i, ], ] <- data.frame(variable = y.vars[i],
-                                            ci.mean.diff.default(x = data.split[[1L]], y = data.split[[2L]],
-                                                                 sigma = sigma, sigma2 = sigma2, var.equal = var.equal,
-                                                                 paired = FALSE, alternative = alternative,
-                                                                 conf.level = conf.level, group = NULL, split = NULL, sort.var = sort.var,
-                                                                 digits = digits, as.na = NULL, check = check, output = FALSE)$result[, -1L],
-                                            stringsAsFactors = FALSE)
+                                            ci.mean.diff.default(x = data.split[[1L]], y = data.split[[2L]], sigma = sigma, sigma2 = sigma2, var.equal = var.equal,
+                                                                 paired = FALSE, alternative = alternative, conf.level = conf.level, group = NULL, split = NULL, sort.var = sort.var,
+                                                                 digits = digits, as.na = NULL, check = check, output = FALSE)$result[, -1L])
 
       result[loop.mat[i, ], "between"] <- names(data.split)
 
@@ -848,22 +813,19 @@ ci.mean.diff.formula <- function(formula, data, sigma = NULL, sigma2 = NULL, var
   } else if (isTRUE(!is.null(group) && is.null(split))) {
 
     object.group <- lapply(split(data[, var.formula], f = group),
-                           function(y) misty::ci.mean.diff(formula, data = y, sigma = NULL, sigma2 = NULL,
-                                                           var.equal = var.equal, alternative = alternative,
-                                                           conf.level = conf.level, group = NULL, split = NULL,
-                                                           sort.var = sort.var, na.omit = na.omit,
+                           function(y) misty::ci.mean.diff(formula, data = y, sigma = NULL, sigma2 = NULL, var.equal = var.equal, alternative = alternative,
+                                                           conf.level = conf.level, group = NULL, split = NULL, sort.var = sort.var, na.omit = na.omit,
                                                            as.na = as.na, check = FALSE, output = FALSE)$result)
 
-    result <- data.frame(group = rep(names(object.group), each = length(y.vars)*2),
-                         eval(parse(text = paste0("rbind(", paste0("object.group[[", seq_len(length(object.group)), "]]",
-                                                                   collapse = ", "), ")"))), stringsAsFactors = FALSE)
+    result <- data.frame(group = rep(names(object.group), each = length(y.vars)*2L), eval(parse(text = paste0("rbind(", paste0("object.group[[", seq_len(length(object.group)), "]]", collapse = ", "), ")")))) |> (\(p) if (isTRUE(sort.var)) { data.frame(p[order(p[, "variable"]), ], row.names = NULL) } else { return(p) })()
 
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## No Grouping, Split ####
 
   } else if (isTRUE(is.null(group) && !is.null(split))) {
 
-    result <- lapply(split(data.frame(data[, var.formula], stringsAsFactors = FALSE), f = split),
-                     function(y) misty::ci.mean.diff(formula, data = y, sigma = NULL, sigma2 = NULL, var.equal = var.equal,
-                                                     alternative = alternative, conf.level = conf.level,
+    result <- lapply(split(data.frame(data[, var.formula]), f = split),
+                     function(y) misty::ci.mean.diff(formula, data = y, sigma = NULL, sigma2 = NULL, var.equal = var.equal, alternative = alternative, conf.level = conf.level,
                                                      group = NULL, split = NULL, sort.var = sort.var, na.omit = na.omit,
                                                      as.na = as.na, check = FALSE, output = FALSE)$result)
 
@@ -872,11 +834,10 @@ ci.mean.diff.formula <- function(formula, data, sigma = NULL, sigma2 = NULL, var
 
   } else if (isTRUE(!is.null(group) && !is.null(split))) {
 
-    result <- lapply(split(data.frame(data[, var.formula], .group = group, stringsAsFactors = FALSE), f = split),
-                     function(y) misty::ci.mean.diff(formula, data = y, sigma = NULL, sigma2 = NULL,
-                                                     var.equal = var.equal, alternative = alternative, conf.level = conf.level,
+    result <- lapply(split(data.frame(data[, var.formula], .group = group), f = split),
+                     function(y) misty::ci.mean.diff(formula, data = y, sigma = NULL, sigma2 = NULL, var.equal = var.equal, alternative = alternative, conf.level = conf.level,
                                                      group = y$.group, split = NULL, sort.var = sort.var, na.omit = na.omit,
-                                                     as.na = as.na, check = FALSE, output = FALSE)$result)
+                                                     as.na = as.na, check = FALSE, output = FALSE)$result) |> (\(p) if (isTRUE(sort.var)) { lapply(p, function(y) data.frame(y[order(y[, "variable"]), ], row.names = NULL)) } else { return(p) })()
 
   }
 
@@ -887,11 +848,7 @@ ci.mean.diff.formula <- function(formula, data, sigma = NULL, sigma2 = NULL, var
   object <- list(call = match.call(),
                  type = "ci", ci = "mean.diff.i",
                  data = list(data = data[, var.formula], group = group, split = split),
-                 args = list(formula = formula, sigma = sigma, sigma2 = sigma2,
-                             var.equal = var.equal, alternative = alternative,
-                             conf.level = conf.level, sort.var = sort.var,
-                             na.omit = na.omit, digits = digits, as.na = as.na,
-                             write = write, append = append, check = check, output = output),
+                 args = list(formula = formula, sigma = sigma, sigma2 = sigma2, var.equal = var.equal, alternative = alternative, conf.level = conf.level, sort.var = sort.var, na.omit = na.omit, digits = digits, as.na = as.na, write = write, append = append, check = check, output = output),
                  result = result)
 
   class(object) <- "misty.object"

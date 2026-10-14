@@ -393,7 +393,7 @@ modcomp <- function(..., difftest = FALSE, print.fit = c("none", "deviance", "ch
 
   #_____________________________________________________________________________
   #
-  # Initial Check --------------------------------------------------------------
+  # Initial Check ——————————————————————————————————————————————————————————————
 
   # Extract list of models
   mod <- list(...) |> (\(p) p[sapply(p, function(y) !is.null(y))])()
@@ -412,7 +412,7 @@ modcomp <- function(..., difftest = FALSE, print.fit = c("none", "deviance", "ch
 
   #_____________________________________________________________________________
   #
-  # Input Check ----------------------------------------------------------------
+  # Input Check ————————————————————————————————————————————————————————————————
 
   .check.input(logical = c("difftest", "output"), m.character = list(print.fit = c("none", "deviance", "chisq", "cfi", "tli", "rmsea", "srmr"), print.ic = c("all", "default", "none" ,"aic", "caic", "bic", "sabic", "aicc", "hqc", "hbic", "spbic", "ibic", "sic", "icomp")),
                 s.character = list(fit.robust = c("standard", "scaled", "robust")), args = c("fit.digits", "ic.digits", "p.digits", "write2"), envir = environment(), input.check = check)
@@ -438,7 +438,7 @@ modcomp <- function(..., difftest = FALSE, print.fit = c("none", "deviance", "ch
 
   #_____________________________________________________________________________
   #
-  # Arguments ------------------------------------------------------------------
+  # Arguments ——————————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Difference Test ####
@@ -535,7 +535,7 @@ modcomp <- function(..., difftest = FALSE, print.fit = c("none", "deviance", "ch
 
   #_____________________________________________________________________________
   #
-  # Main Function --------------------------------------------------------------
+  # Main Function ——————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Model Fit and Information Criteria ####
@@ -764,7 +764,7 @@ modcomp <- function(..., difftest = FALSE, print.fit = c("none", "deviance", "ch
 
   #_____________________________________________________________________________
   #
-  # Return Object --------------------------------------------------------------
+  # Return Object ——————————————————————————————————————————————————————————————
 
   object <- list(call = match.call(),
                  type = "modcomp",
@@ -777,13 +777,13 @@ modcomp <- function(..., difftest = FALSE, print.fit = c("none", "deviance", "ch
 
   #_____________________________________________________________________________
   #
-  # Write Results --------------------------------------------------------------
+  # Write Results ——————————————————————————————————————————————————————————————
 
   if (isTRUE(!is.null(write))) { .write.result(object = object, write = write, append = append) }
 
   #_____________________________________________________________________________
   #
-  # Output ---------------------------------------------------------------------
+  # Output —————————————————————————————————————————————————————————————————————
 
   if (isTRUE(output)) { print(object, check = FALSE) }
 

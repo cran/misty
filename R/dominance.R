@@ -7,10 +7,10 @@
 #' specifying the argument \code{print}.
 #'
 #' @param model  a fitted model of class \code{lm}.
-#' @param print  a character string or character vector indicating which results
-#'               to show on the console, i.e. \code{"all"} for all results, \code{"gen"}
-#'               for general dominance, \code{"cond"} for conditional dominance,
-#'               and \code{"comp"} for complete dominance.
+#' @param print  a character vector indicating which results to show on the console,
+#'               i.e. \code{"all"} for all results, \code{"gen"} for general dominance,
+#'               \code{"cond"} for conditional dominance, and \code{"comp"} for
+#'               complete dominance.
 #' @param digits an integer value indicating the number of decimal places to be
 #'               used for displaying results. Note that the percentage relative
 #'               importance of predictors are printed with \code{digits} minus 1
@@ -130,7 +130,7 @@ dominance <- function(model, print = c("all", "gen", "cond", "comp"), digits = 3
 
   #_____________________________________________________________________________
   #
-  # Initial Check --------------------------------------------------------------
+  # Initial Check ——————————————————————————————————————————————————————————————
 
   # Check if input 'model' is missing or NULL
   if (isTRUE(missing(model) || is.null(model))) { stop("Please specify a fitted model for the argument 'model'.", call. = FALSE) }
@@ -140,14 +140,14 @@ dominance <- function(model, print = c("all", "gen", "cond", "comp"), digits = 3
 
   #_____________________________________________________________________________
   #
-  # Input Check ----------------------------------------------------------------
+  # Input Check ————————————————————————————————————————————————————————————————
 
   # Check inputs
   .check.input(logical = c("append", "output"), m.character = list(print = c("all", "gen", "cond", "comp")), args = c("digts", "write2"), envir = environment(), input.check = check)
 
   #_____________________________________________________________________________
   #
-  # Data and Arguments ---------------------------------------------------------
+  # Data and Arguments —————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Print ####
@@ -172,7 +172,7 @@ dominance <- function(model, print = c("all", "gen", "cond", "comp"), digits = 3
 
   #_____________________________________________________________________________
   #
-  # Main Function --------------------------------------------------------------
+  # Main Function ——————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Dominance Analysis ####
@@ -181,7 +181,7 @@ dominance <- function(model, print = c("all", "gen", "cond", "comp"), digits = 3
 
   #_____________________________________________________________________________
   #
-  # Return object --------------------------------------------------------------
+  # Return object ——————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## General Dominance ####
@@ -234,13 +234,13 @@ dominance <- function(model, print = c("all", "gen", "cond", "comp"), digits = 3
 
   #_____________________________________________________________________________
   #
-  # Write Results --------------------------------------------------------------
+  # Write Results ——————————————————————————————————————————————————————————————
 
   if (isTRUE(!is.null(write))) { .write.result(object = object, write = write, append = append) }
 
   #_____________________________________________________________________________
   #
-  # Output ---------------------------------------------------------------------
+  # Output —————————————————————————————————————————————————————————————————————
 
   if (isTRUE(output)) { print(object, check = FALSE) }
 

@@ -216,7 +216,7 @@
 #'
 #' @examples
 #' \dontrun{
-#' #----------------------------------------------------------------------------
+#' #————————————————————————————————————————————————————————————————————————————
 #' # Blimp Example 4.3: Linear Regression
 #'
 #' #..........
@@ -268,7 +268,7 @@
 #' blimp.plot("Posterior_Ex4.3", plot = "none", saveplot = "post",
 #'            width = 7.5, height = 7)
 #'
-#' #----------------------------------------------------------------------------
+#' #————————————————————————————————————————————————————————————————————————————
 #' # Plot from misty.object
 #'
 #' # Create misty.object
@@ -280,7 +280,7 @@
 #' # Posterior distribution plot
 #' blimp.plot(object, plot = "post")
 #'
-#' #----------------------------------------------------------------------------
+#' #————————————————————————————————————————————————————————————————————————————
 #' # Create Plots Manually
 #'
 #' # Load ggplot2 package
@@ -372,7 +372,7 @@ blimp.plot <- function(x, plot = c("none", "trace", "post"), param = NULL, label
 
   #_____________________________________________________________________________
   #
-  # Initial Check --------------------------------------------------------------
+  # Initial Check ——————————————————————————————————————————————————————————————
 
   # Check if input 'x' is missing or NULL
   if (isTRUE(missing(x) || is.null(x))) { stop("Please specify a character string indicating the name of folder or name of the posterior data file for the argument 'x'", call. = FALSE) }
@@ -424,7 +424,7 @@ blimp.plot <- function(x, plot = c("none", "trace", "post"), param = NULL, label
 
   #_____________________________________________________________________________
   #
-  # Input Check ----------------------------------------------------------------
+  # Input Check ————————————————————————————————————————————————————————————————
 
   # Check inputs
   .check.input(logical = c("labels", "burnin", "hist", "density", "area"), numeric = list(facet.nrow = 1L, facet.ncol = 1L, xlim = 2L, ylim = 2L, xexpand = 2L, yexpand = 2L, binwidth = 1L, bins = 1L, shape = 1L, linewidth = 1L, plot.margin = 4L, legend.title.size = 1L, legend.text.size = 1L, legend.box.margin = 4L, width = 1L, height = 1L, dpi = 1L),
@@ -436,7 +436,7 @@ blimp.plot <- function(x, plot = c("none", "trace", "post"), param = NULL, label
 
   #_____________________________________________________________________________
   #
-  # Arguments ------------------------------------------------------------------
+  # Arguments ——————————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## 'plot' Argument ####
@@ -513,7 +513,7 @@ blimp.plot <- function(x, plot = c("none", "trace", "post"), param = NULL, label
 
   #_____________________________________________________________________________
   #
-  # Main Function --------------------------------------------------------------
+  # Main Function ——————————————————————————————————————————————————————————————
 
   posterior <- iter <- value <- chain <- stat <- low <- upp <- NULL
 
@@ -892,9 +892,9 @@ blimp.plot <- function(x, plot = c("none", "trace", "post"), param = NULL, label
 
     }
 
-    #_____________________________________________________________________________
+    #___________________________________________________________________________
     #
-    # Return Object --------------------------------------------------------------
+    # Return Object ————————————————————————————————————————————————————————————
 
     object <- list(call = match.call(),
                    type = "blimp",
@@ -931,7 +931,7 @@ blimp.plot <- function(x, plot = c("none", "trace", "post"), param = NULL, label
 
   #_____________________________________________________________________________
   #
-  # Plot -----------------------------------------------------------------------
+  # Plot ———————————————————————————————————————————————————————————————————————
 
   if (isTRUE(all(plot != "none"))) {
 
@@ -945,7 +945,7 @@ blimp.plot <- function(x, plot = c("none", "trace", "post"), param = NULL, label
 
   #_____________________________________________________________________________
   #
-  # Save ggplot ----------------------------------------------------------------
+  # Save ggplot ————————————————————————————————————————————————————————————————
 
   if (isTRUE(all(saveplot != "none"))) {
 
@@ -986,7 +986,7 @@ blimp.plot <- function(x, plot = c("none", "trace", "post"), param = NULL, label
 
   #_____________________________________________________________________________
   #
-  # Output ---------------------------------------------------------------------
+  # Output —————————————————————————————————————————————————————————————————————
 
   return(invisible(object))
 

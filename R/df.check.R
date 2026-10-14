@@ -5,12 +5,11 @@
 #' first rows, and \code{df.tail} for the last rows of a data frame.
 #'
 #' @param data          a data frame.
-#' @param print         a character string or character vector indicating which
-#'                      results to show on the console, i.e., \code{"dim"}, for
-#'                      the number of rows and number of columns, \code{"names"}
-#'                      for the variable names, \code{"head"} for the first rows
-#'                      of the data frame, and \code{"tail"} for the last rows
-#'                      of the data frame.
+#' @param print         a character vector indicating which results to show on
+#'                      the console, i.e., \code{"dim"}, for the number of rows
+#'                      and number of columns, \code{"names"} for the variable
+#'                      names, \code{"head"} for the first rows of the data frame,
+#'                      and \code{"tail"} for the last rows of the data frame.
 #' @param n             a numeric value indicating the number of rows to be
 #'                      printed on the console.
 #' @param digits        a numeric value indicating the maximum number of decimal
@@ -59,14 +58,14 @@ df.check <- function(data, print = c("dim", "names", "head", "tail"),
 
   #_____________________________________________________________________________
   #
-  # Initial Check --------------------------------------------------------------
+  # Initial Check ——————————————————————————————————————————————————————————————
 
   # Check if input 'data' is missing or NULL
   if (isTRUE(missing(data) || is.null(data))) { stop("Please specify a data frame for the argument 'data'", call. = FALSE) }
 
   #_____________________________________________________________________________
   #
-  # Input Check ----------------------------------------------------------------
+  # Input Check ————————————————————————————————————————————————————————————————
 
   # Check inputs
   .check.input(logical = c("row.names", "message"), numeric = list(n = 1L, width = 1L), m.character = list(print = c("dim", "names", "head", "tail")), args = "digits", envir = environment(), input.check = check)
@@ -84,13 +83,13 @@ df.check <- function(data, print = c("dim", "names", "head", "tail"),
 
   #_____________________________________________________________________________
   #
-  # Arguments ------------------------------------------------------------------
+  # Arguments ——————————————————————————————————————————————————————————————————
 
   n.print <- switch(as.character(n), "2" = " two ", "3" = " three ", "4" = " four ", "5" = " five ", "6" = " six ", "7" = " seven ", "8" = " eight ", "9" = " nine ",  "10" = " ten ")
 
   #_____________________________________________________________________________
   #
-  # Main Function --------------------------------------------------------------
+  # Main Function ——————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Dimensions ####
@@ -144,7 +143,7 @@ df.check <- function(data, print = c("dim", "names", "head", "tail"),
 
   #_____________________________________________________________________________
   #
-  # Print ----------------------------------------------------------------------
+  # Print ——————————————————————————————————————————————————————————————————————
 
   cat(" Data Check\n\n")
 

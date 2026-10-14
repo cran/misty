@@ -188,7 +188,7 @@ boot.bs <- function(object = NULL, data = NULL, model = NULL, sigma = NULL, mu =
 
   #_____________________________________________________________________________
   #
-  # Input Check ----------------------------------------------------------------
+  # Input Check ————————————————————————————————————————————————————————————————
 
   .check.input(logical = c("progress", "plot"), numeric = list(seed = 1L), s.character = list(return = c("transdat", "bootsamp", "output")),  args = "nrep", envir = environment(), input.check = check)
 
@@ -197,7 +197,7 @@ boot.bs <- function(object = NULL, data = NULL, model = NULL, sigma = NULL, mu =
 
   #_____________________________________________________________________________
   #
-  # Arguments ------------------------------------------------------------------
+  # Arguments ——————————————————————————————————————————————————————————————————
 
   # 'trans' Argument
   if (isTRUE(all(c(1L, 2L) %in% trans))) { trans <- 2 }
@@ -207,7 +207,7 @@ boot.bs <- function(object = NULL, data = NULL, model = NULL, sigma = NULL, mu =
 
   #_____________________________________________________________________________
   #
-  # Main Function --------------------------------------------------------------
+  # Main Function ——————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data Preparation ####
@@ -489,7 +489,7 @@ boot.bs <- function(object = NULL, data = NULL, model = NULL, sigma = NULL, mu =
 
   #_____________________________________________________________________________
   #
-  # Return Object --------------------------------------------------------------
+  # Return Object ——————————————————————————————————————————————————————————————
 
   #—————————————————————————————————————— #
   ### Transformed Data ####
@@ -515,7 +515,7 @@ boot.bs <- function(object = NULL, data = NULL, model = NULL, sigma = NULL, mu =
 
   #_____________________________________________________________________________
   #
-  # Return Object --------------------------------------------------------------
+  # Return Object ——————————————————————————————————————————————————————————————
 
   object <- list(call = match.call(),
                  type = "boot.bs",
@@ -530,19 +530,19 @@ boot.bs <- function(object = NULL, data = NULL, model = NULL, sigma = NULL, mu =
 
   #_____________________________________________________________________________
   #
-  # Plot and Save Plot ---------------------------------------------------------
+  # Plot and Save Plot —————————————————————————————————————————————————————————
 
   if (isTRUE(plot)) { object$plot <- plot(object, filename = filename, width = width, height = height, dpi = dpi, check = FALSE) |> (\(y) suppressMessages(suppressWarnings(print(y))))() }
 
   #_____________________________________________________________________________
   #
-  # Write Results --------------------------------------------------------------
+  # Write Results ——————————————————————————————————————————————————————————————
 
   if (isTRUE(!is.null(write))) { .write.result(object = object, write = write, append = append) }
 
   #_____________________________________________________________________________
   #
-  # Output ---------------------------------------------------------------------
+  # Output —————————————————————————————————————————————————————————————————————
 
   if (isTRUE(output)) { print(object, check = FALSE) }
 

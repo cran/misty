@@ -188,14 +188,14 @@ dominance.manual <- function(x, out = NULL, digits = 3, write = NULL, append = T
 
   #_____________________________________________________________________________
   #
-  # Initial Check --------------------------------------------------------------
+  # Initial Check ——————————————————————————————————————————————————————————————
 
   # Check if input 'x' is missing or NULL
   if (isTRUE(missing(x) || is.null(x))) { stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE) }
 
   #_____________________________________________________________________________
   #
-  # Input Check ----------------------------------------------------------------
+  # Input Check ————————————————————————————————————————————————————————————————
 
   # Check inputs
   .check.input(logical = c("append", "output"), character = list(out = 1L), args = c("digits", "write2"), envir = environment(), input.check = check)
@@ -219,7 +219,7 @@ dominance.manual <- function(x, out = NULL, digits = 3, write = NULL, append = T
 
   #_____________________________________________________________________________
   #
-  # Data and Arguments ---------------------------------------------------------
+  # Data and Arguments —————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Correlation Matrix ####
@@ -245,7 +245,7 @@ dominance.manual <- function(x, out = NULL, digits = 3, write = NULL, append = T
 
   #_____________________________________________________________________________
   #
-  # Main Function --------------------------------------------------------------
+  # Main Function ——————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Dominance analysis ####
@@ -254,18 +254,17 @@ dominance.manual <- function(x, out = NULL, digits = 3, write = NULL, append = T
 
   #_____________________________________________________________________________
   #
-  # Return object --------------------------------------------------------------
+  # Return Object ——————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## General dominance ####
+  ## General Dominance ####
 
-  gen.res <- data.frame(r2 = domin.res, perc = domin.res / sum(domin.res)  * 100, rank = rank(-domin.res)) |>
-    (\(y) rbind(y, c(sum(y[, "r2"]), sum(y[, "perc"]), NA)))()
+  gen.res <- data.frame(r2 = domin.res, perc = domin.res / sum(domin.res)  * 100, rank = rank(-domin.res)) |> (\(p) rbind(p, c(sum(p[, "r2"]), sum(p[, "perc"]), NA)))()
 
   row.names(gen.res) <- c(colnames(x)[-1L], "Total")
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Return object ####
+  ## Return Object ####
 
   object <- list(call = match.call(),
                  type = "dominance.manual",
@@ -277,13 +276,13 @@ dominance.manual <- function(x, out = NULL, digits = 3, write = NULL, append = T
 
   #_____________________________________________________________________________
   #
-  # Write Results --------------------------------------------------------------
+  # Write Results ——————————————————————————————————————————————————————————————
 
   if (isTRUE(!is.null(write))) { .write.result(object = object, write = write, append = append) }
 
   #_____________________________________________________________________________
   #
-  # Output ---------------------------------------------------------------------
+  # Output —————————————————————————————————————————————————————————————————————
 
   if (isTRUE(output)) { print(object, check = FALSE) }
 

@@ -39,12 +39,12 @@
 #' @param value    a numeric value for centering on a specific user-defined value.
 #'                 Note that this option is only available when specifying predictor
 #'                 variables in single-level data i.e., \code{cluster = NULL}.
-#' @param name     a character string or character vector indicating the names of
-#'                 the centered predictor variables. By default, centered predictor
-#'                 variables are named with the ending \code{".c"} resulting in
-#'                 e.g. \code{"x1.c"} and \code{"x2.c"}. Variable names can also
-#'                 be specified by using a character vector matching the number
-#'                 of variables specified in \code{...} (e.g., \code{name = c("center.x1", "center.x2")}).
+#' @param name     a character vector indicating the names of the centered predictor
+#'                 variables. By default, centered predictor variables are named
+#'                 with the ending \code{".c"} resulting in e.g. \code{"x1.c"}
+#'                 and \code{"x2.c"}. Variable names can also be specified by
+#'                 using a character vector matching the number of variables
+#'                 specified in \code{...} (e.g., \code{name = c("center.x1", "center.x2")}).
 #'                 Note that when specifying \code{type = "latent"}, centered
 #'                 predictor variables in a two-level model are named with the
 #'                 endings \code{".l1"} and \code{".l2"} (e.g., \code{name = c("x.l1", "x.l2")}),
@@ -300,19 +300,19 @@
 #' # Example 1a: Center predictor 'disp' at the grand mean
 #' center(mtcars, disp, append = FALSE)
 #'
-#' # Alternative specification without using the '...' argument
+#' # Example 1b: Alternative specification without using the '...' argument
 #' center(mtcars$disp)
 #'
-#' # Example 1b: Center predictors 'disp' and 'hp' at the grand mean and append to 'mtcars'
+#' # Example 1c: Center predictors 'disp' and 'hp' at the grand mean and append to 'mtcars'
 #' center(mtcars, disp, hp)
 #'
-#' # Alternative specification without using the '...' argument
+#' # Example 1d: Alternative specification without using the '...' argument
 #' cbind(mtcars, center(mtcars[, c("disp", "hp")]))
 #'
-#' # Example 1c: Center predictor 'disp' at the value 3
+#' # Example 1e: Center predictor 'disp' at the value 3
 #' center(mtcars, disp, value = 3)
 #'
-#' # Example 1d: Center predictors 'disp' and 'hp' and label with the suffix ".v"
+#' # Example 1f: Center predictors 'disp' and 'hp' and label with the suffix ".v"
 #' center(mtcars, disp, hp, name = ".v")
 #'
 #' #————————————————————————————————————————————————————————————————————————————
@@ -327,37 +327,37 @@
 #' # Example 2a: Center L1 predictor 'y1' within L2 clusters
 #' center(Demo.twolevel, y1, cluster = "cluster", append = FALSE)
 #'
-#' # Alternative specification without using the '...' argument
+#' # Example 2b: Alternative specification without using the '...' argument
 #' center(Demo.twolevel$y1, cluster = Demo.twolevel$cluster)
 #'
-#' # Example 2b: Center L1 predictor 'y1' at the grand-mean
+#' # Example 2c: Center L1 predictor 'y1' at the grand-mean
 #' #             Note that cluster ID is ignored when type = "CGM"
 #' center(Demo.twolevel, y1, cluster = "cluster", type = "CGM")
 #'
-#' # Alternative specification
+#' # Example 2d: Alternative specification
 #' center(Demo.twolevel, y1)
 #'
 #' #——————————————————————————————————————
 #' ## Level-2 (L2) Predictor
 #'
-#' # Example 2c: Center L2 predictor 'w2' at the average L2 cluster scores
+#' # Example 2e: Center L2 predictor 'w2' at the average L2 cluster scores
 #' #             Note that cluster ID is needed
 #' center(Demo.twolevel, w1, cluster = "cluster")
 #'
 #' #——————————————————————————————————————
 #' ## L1 and L2 Predictors
 #'
-#' # Example 2d: Center L1 predictor 'y1' within L2 clusters
+#' # Example 2f: Center L1 predictor 'y1' within L2 clusters
 #' #             and L2 predictor 'w1' at the average L2 cluster scores
 #' center(Demo.twolevel, y1, w1, cluster = "cluster")
 #'
 #' #——————————————————————————————————————
 #' ## Twp-Step Latent Mean Centering
 #'
-#' # Example 2e: Decompose L1 predictor 'y1' as within-between components
+#' # Example 2g: Decompose L1 predictor 'y1' as within-between components
 #' center(Demo.twolevel, y1, cluster = "cluster", type = "latent")
 #'
-#' # Example 2d: Decompose L1 predictor 'y1' as within-between components
+#' # Example 2h: Decompose L1 predictor 'y1' as within-between components
 #' #             label variables as 'l1.y1' and 'l2.y1'
 #' center(Demo.twolevel, y1, cluster = "cluster", type = "latent", name = c("l1.y1", "l2.y1"))
 #'
@@ -382,46 +382,46 @@
 #' #             Note that L3 cluster IDs are ignored when type = "CWC"
 #' center(Demo.threelevel, y1, cluster = c("cluster3", "cluster2"))
 #'
-#' # Alternative specification when L2 cluster IDs are unique across L3 clusters
+#' # Example 3b: Alternative specification when L2 cluster IDs are unique across L3 clusters
 #' center(Demo.threelevel, y1, cluster = "cluster2")
 #'
-#' # Example 3b: Center L1 predictor 'y1' within L3 clusters (CWC L3)
+#' # Example 3c: Center L1 predictor 'y1' within L3 clusters (CWC L3)
 #' #             Note that both L3 and L2 cluster IDs are needed
 #' center(Demo.threelevel, y1, cluster = c("cluster3", "cluster2"), cwc.mean = "L3")
 #'
-#' # Example 3c: Center L1 predictor 'y1' at the grand-mean (CGM)
+#' # Example 3d: Center L1 predictor 'y1' at the grand-mean (CGM)
 #' #             Note that the cluster argument is ignored when type = "CGM",
 #' center(Demo.threelevel, y1, cluster = c("cluster3", "cluster2"), type = "CGM")
 #'
-#' # Alternative specification
+#' # Example 3e:  Alternative specification
 #' center(Demo.threelevel, y1)
 #'
 #' #——————————————————————————————————————
 #' ## Level-2 (L2) Predictor
 #'
-#' # Example 3d: Center L2 predictor 'w1' within L3 cluster
+#' # Example 3f: Center L2 predictor 'w1' within L3 cluster
 #' #             Note that both L3 and L2 cluster IDs are needed
 #' center(Demo.threelevel, w1, cluster = c("cluster3", "cluster2"))
 #'
-#' # Example 3e: Center L2 predictor 'w1' at the grand-mean (CGM)
+#' # Example 3g: Center L2 predictor 'w1' at the grand-mean (CGM)
 #' #             Note that both L3 and L2 cluster IDs are needed
 #' center(Demo.threelevel, y1, cluster = c("cluster3", "cluster2"), type = "CGM")
 #'
 #' #——————————————————————————————————————
 #' ## Level-3 (L3) Predictor
 #'
-#' # Example 3f: Center L3 predictor 'w1.l3' at the average L3 cluster scores
+#' # Example 3h: Center L3 predictor 'w1.l3' at the average L3 cluster scores
 #' #             Note that L2 cluster ID is ignored
 #' center(Demo.threelevel, w1.l3, cluster = c("cluster3", "cluster2"))
 #'
-#' # Alternative specification
+#' # Example 3i: Alternative specification
 #' center(Demo.threelevel, w1.l3, cluster = "cluster3")
 #'
 #' #——————————————————————————————————————
 #' ## L1, L2, and L3 Predictors
 #'
-#' # Example 3g: Center L1 predictor 'y1' within L2 cluster, L2 predictor 'w1' within
-#' #            L3 clusters, and L3 predictor 'w1.l3' at the average L3 cluster scores
+#' # Example 3j: Center L1 predictor 'y1' within L2 cluster, L2 predictor 'w1' within
+#' #             L3 clusters, and L3 predictor 'w1.l3' at the average L3 cluster scores
 #' center(Demo.threelevel, y1, w1, w1.l3, cluster = c("cluster3", "cluster2"))
 #'
 #' #——————————————————————————————————————
@@ -434,18 +434,18 @@
 #' Demo.threelevel <- data.frame(Demo.twolevel, cluster2 = Demo.twolevel$cluster,
 #'                                              cluster3 = rep(1:10, each = 250))
 #'
-#' # Example 3h: Decompose L1 predictor 'y1' as within-between components
+#' # Example 3k: Decompose L1 predictor 'y1' as within-between components
 #' center(Demo.threelevel, y1, cluster = "cluster2", type = "latent")
 #'
-#' # Example 3i: Decompose L1 predictor 'y1' as within-between components
+#' # Example 3l: Decompose L1 predictor 'y1' as within-between components
 #' #             label variables as 'l1.y1' and 'l2.y1'
 #' center(Demo.threelevel, y1, cluster = "cluster2", type = "latent",
 #'        name = c("l1.y1", "l2.y2"))
 #'
-#' # Example 3j: Decompose L1 predictor 'y1' as within-between components
+#' # Example 3m: Decompose L1 predictor 'y1' as within-between components
 #' center(Demo.threelevel, y1, cluster = c("cluster3", "cluster2"), type = "latent")
 #'
-#' # Example 3k: Decompose L1 predictor 'y1' as within-between components
+#' # Example 3n: Decompose L1 predictor 'y1' as within-between components
 #' #             label variables as 'l1.y1', 'l2.y1', and 'l3.y1'
 #' center(Demo.threelevel, y1, cluster = c("cluster3", "cluster2"), type = "latent",
 #'        name = c("l1.y1", "l2.y1", "l3.y1"))
@@ -456,50 +456,31 @@ center <- function(data, ..., cluster = NULL, type = c("CGM", "CWC", "latent"),
 
   #_____________________________________________________________________________
   #
-  # Initial Check --------------------------------------------------------------
+  # Initial Check ——————————————————————————————————————————————————————————————
 
   # Check if input 'data' is missing or NULL
   if (isTRUE(missing(data) || is.null(data))) { stop("Please specify a numeric vector or data frame for the argument 'data'", call. = FALSE) }
 
   #_____________________________________________________________________________
   #
-  # Data -----------------------------------------------------------------------
+  # Data ———————————————————————————————————————————————————————————————————————
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data using the argument '...' ####
-
-  if (isTRUE(!missing(...))) {
-
-    # Variable names
-    var.names <- .var.names(data = data, ..., cluster = cluster)
-
-    # Extract data and convert tibble into data frame or vector
-    x <- data[, var.names] |> (\(p) if (isTRUE("tbl" %in% substr(class(p), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(p)) == 1L)) { unname(unlist(p)) } else { as.data.frame(p) } } else { return(p) })()
-
-    # Cluster variable
-    if (isTRUE(!is.null(cluster))) { cluster <- data[, cluster] |>  (\(p) if (isTRUE(!is.null(dim(p)))) { setNames(p, nm = c("cluster3", "cluster2")) } else { return(p) })() }
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data without using the argument '...' ####
-
-  } else {
-
-    # Convert 'data' as tibble into a data frame
-    x <- data |> (\(p) if (isTRUE("tbl" %in% substr(class(p), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(p)) == 1L)) { unname(unlist(p)) } else { as.data.frame(p) } } else { return(p) })()
-
-    # Data and cluster
-    var.group <- .var.group(data = x, cluster = cluster)
+  var.names <- NULL
+  .data(data, ..., cluster = cluster, drop = TRUE) |> (\(p) {
 
     # Data
-    if (isTRUE(!is.null(var.group$data))) { x <- var.group$data }
+    assign("x", p$data, envir = parent.frame())
+
+    # Variable names
+    assign("var.names", p$var.names, envir = parent.frame())
 
     # Cluster variable
-    if (isTRUE(!is.null(var.group$cluster))) { cluster <- var.group$cluster }
+    if (isTRUE(!is.null(p$cluster))) { assign("cluster", p$cluster, envir = parent.frame()) }
 
-  }
+  })()
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Cluster variables ####
+  ## Cluster Variables ####
 
   if (isTRUE(!is.null(cluster))) {
 
@@ -521,13 +502,13 @@ center <- function(data, ..., cluster = NULL, type = c("CGM", "CWC", "latent"),
   }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Convert user-missing values into NA ####
+  ## Convert User-Missing Values into NA ####
 
   if (isTRUE(!is.null(as.na))) { x <- .as.na(x, na = as.na) }
 
   #_____________________________________________________________________________
   #
-  # Input Check ----------------------------------------------------------------
+  # Input Check ————————————————————————————————————————————————————————————————
 
   # Check inputs
   .check.input(logical = "append", numeric = list(value = 1L), s.character = list(type = c("CGM", "CWC", "latent"), cwc.mean = c("L2", "L3")), envir = environment(), input.check = check)
@@ -575,7 +556,7 @@ center <- function(data, ..., cluster = NULL, type = c("CGM", "CWC", "latent"),
 
   #_____________________________________________________________________________
   #
-  # Main Function: Single Variable Centering -----------------------------------
+  # Main Function: Single Variable Centering ———————————————————————————————————
 
   if (isTRUE(is.null(dim(x)))) {
 
@@ -682,13 +663,15 @@ center <- function(data, ..., cluster = NULL, type = c("CGM", "CWC", "latent"),
       if (isTRUE(is.null(cluster))) {
 
         #...................
-        #### Mean centering ####
+        #### Mean Centering ####
+
         if (isTRUE(is.null(value))) {
 
           object <- as.numeric(scale(x, scale = FALSE))
 
         #...................
-        #### Centering on a user-defined value ####
+        #### Centering on a User-Defined Value ####
+
         } else {
 
           object <- x - mean(x, na.rm = TRUE) + value
@@ -701,7 +684,7 @@ center <- function(data, ..., cluster = NULL, type = c("CGM", "CWC", "latent"),
       } else if (isTRUE(no.clust == "one")) {
 
         #...................
-        #### Centering at the grand mean (CGM) ####
+        #### Centering at the Grand Mean (CGM) ####
 
         if (isTRUE(type == "CGM")) {
 
@@ -719,7 +702,7 @@ center <- function(data, ..., cluster = NULL, type = c("CGM", "CWC", "latent"),
                  })
 
         #...................
-        #### Centering within cluster (CWC) ####
+        #### Centering within Cluster (CWC) ####
 
         } else if (isTRUE(type == "CWC")) {
 
@@ -745,7 +728,7 @@ center <- function(data, ..., cluster = NULL, type = c("CGM", "CWC", "latent"),
       } else if (isTRUE(no.clust == "two")) {
 
         #...................
-        #### Centering at the grand mean (CGM) ####
+        #### Centering at the Grand Mean (CGM) ####
 
         if (isTRUE(type == "CGM")) {
 
@@ -768,7 +751,7 @@ center <- function(data, ..., cluster = NULL, type = c("CGM", "CWC", "latent"),
                  })
 
         #...................
-        #### Centering within cluster (CWC) ####
+        #### Centering Within Cluster (CWC) ####
 
         } else if (isTRUE(type == "CWC")) {
 
@@ -919,14 +902,14 @@ center <- function(data, ..., cluster = NULL, type = c("CGM", "CWC", "latent"),
         if (isTRUE(name == ".c")) {
 
           #...................
-          #### Two-Level Data: One cluster variable ####
+          #### Two-Level Data: One Cluster Variable ####
 
           if (isTRUE(no.clust == "one")) {
 
             object <- setNames(as.data.frame(object), nm = c(paste0(var.names, ".l1"), paste0(var.names, ".l2")))
 
           #...................
-          #### Three-Level Data: Two cluster variables ####
+          #### Three-Level Data: Two Cluster Variables ####
 
           } else if (isTRUE(no.clust == "two")) {
 
@@ -960,7 +943,7 @@ center <- function(data, ..., cluster = NULL, type = c("CGM", "CWC", "latent"),
 
   #_____________________________________________________________________________
   #
-  # Main Function: Multiple Variable Centering ---------------------------------
+  # Main Function: Multiple Variable Centering —————————————————————————————————
 
   } else {
 

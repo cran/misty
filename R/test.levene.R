@@ -31,10 +31,11 @@
 #'                    conducting the analysis.
 #' @param plot        logical: if \code{TRUE}, a plot showing violins with
 #'                    boxplots is drawn.
-#' @param violin      logical: if \code{TRUE} (default), violins are drawn.
-#' @param box         logical: if \code{TRUE} (default), boxplots are drawn.
-#' @param jitter      logical: if \code{TRUE} (default), jittered data points
-#'                    are drawn.
+#' @param geom        a character string or character vector indicating which
+#'                    plot elements to draw, i.e., \code{"all"} for drawing
+#'                    all plot elements, \code{"violin"} for drawing violins,
+#'                    \code{"box"} for drawing boxplots, and \code{"jitter"}
+#'                    for drawing jittered data points.
 #' @param gray        logical: if \code{TRUE}, the plot is drawn in gray scale.
 #' @param filename    a character string indicating the \code{filename}
 #'                    argument including the file extension in the \code{ggsave}
@@ -65,6 +66,9 @@
 #' @param check       logical: if \code{TRUE} (default), argument specification
 #'                    is checked.
 #' @param output      logical: if \code{TRUE} (default), output is shown.
+#' @param ...         additional plotting arguments from the \code{plot.misty.object()}
+#'                    function, see 'Details in the \code{\link{plot.misty.object}}
+#'                    function.
 #'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
@@ -112,9 +116,14 @@
 #' test.levene(mpg ~ gear, data = mtcars, plot = TRUE)
 #'
 #' # Example 2b: Plot results, no violin plots, draw jittered data points
-#' test.levene(mpg ~ gear, data = mtcars, plot = TRUE, violin = FALSE, jitter = TRUE)
+#' test.levene(mpg ~ gear, data = mtcars, plot = TRUE, geom = "jitter")
 #'
-#' # Example 2c: Plot results using the plot() function, use additional arguments
+#' # Example 2c: Plot results, additional arguments
+#' # see Details in the help page of the function plot.misty.object
+#' test.levene(mpg ~ gear, data = mtcars, plot = TRUE, violin.alpha = 0.1,
+#'             box.width = 0.1, title = "Levene's Test")
+#'
+#' # Example 2d: Plot results using the plot() function, additional arguments
 #' # see Details in the help page of the function plot.misty.object
 #' object <- test.levene(mpg ~ gear, data = mtcars)
 #' plot(object, violin.alpha = 0.1, box.width = 0.1, title = "Levene's Test")
@@ -134,12 +143,11 @@
 #'   geom_boxplot(alpha = 0.2, width = 0.2) +
 #'   geom_jitter(alpha = 0.2, width = 0.05, height = 0, size = 1.25) +
 #'   theme_bw() +
-#'    ggplot2::guides(fill = "none")
-#'
-#' #————————————————————————————————————————————————————————————————————————————
-#' # Write Results and Save Plot
+#'   guides(fill = "none")
 #'
 #' \dontrun{
+#' #————————————————————————————————————————————————————————————————————————————
+#' # Write Results and Save Plot
 #'
 #' # Example 4a: Write results into a text file
 #' test.levene(mpg ~ gear, data = mtcars, write = "Levene.txt")
@@ -154,13 +162,13 @@
 test.levene <- function(formula, data, method = c("median", "mean"),
                         hypo = FALSE, descript = FALSE, conf.level = 0.95,
                         digits = 2, p.digits = 3, as.na = NULL, plot = FALSE,
-                        violin = TRUE, box = TRUE, jitter = FALSE, gray = FALSE,
+                        geom = c("all", "violin", "box", "jitter"), gray = FALSE,
                         filename = NULL, width = NA, height = NA, dpi = 600,
-                        write = NULL, append = TRUE, check = TRUE, output = TRUE) {
+                        write = NULL, append = TRUE, check = TRUE, output = TRUE, ...) {
 
   #_____________________________________________________________________________
   #
-  # Initial Check --------------------------------------------------------------
+  # Initial Check ——————————————————————————————————————————————————————————————
 
   # Check if input 'formula' is missing
   if (isTRUE(missing(formula))) { stop("Please specify a formula using the argument 'formula'", call. = FALSE) }
@@ -170,11 +178,9 @@ test.levene <- function(formula, data, method = c("median", "mean"),
 
   #_____________________________________________________________________________
   #
-  # Formula and Data Frame -----------------------------------------------------
+  # Variables ——————————————————————————————————————————————————————————————————
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Variables ####
-
+  # Extract variable names
   var.formula <- all.vars(as.formula(formula))
 
   # Grouping variable
@@ -183,58 +189,94 @@ test.levene <- function(formula, data, method = c("median", "mean"),
   # Outcome
   y.var <- setdiff(var.formula, group.var)
 
+  #_____________________________________________________________________________
+  #
+  # Input Check ————————————————————————————————————————————————————————————————
+
+  .check.input(logical = c("hypo", "descript", "plot", "append", "output"), s.character = list(method = c("median", "mean")), m.character = list(geom = c("all", "violin", "box", "jitter")),
+               args = c("conf.level", "digits", "p.digits", "write2"), envir = environment(), input.check = check)
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Additional Checks ####
+
+  if (isTRUE(check)) {
+
+    # Check if variables are available in the data
+    (!var.formula %in% colnames(data)) |> (\(y) if (isTRUE(any(y))) { stop(paste0("Variables specified in the the formula were not found in 'data': ", paste(var.formula[which(y)], collapse = ", ")), call. = FALSE) })()
+
+    # Check if variables are in the data
+    (!var.formula %in% colnames(data)) |> (\(y) if (isTRUE(any(y))) { stop(paste0("Variables specified in the the formula were not found in 'data': ", paste(var.formula[which(y)], collapse = ", ")), call. = FALSE) })()
+
+    # Check if input 'formula' has only one outcome variable
+    if (isTRUE(length(y.var) != 1L)) { stop("Please specify a formula with only one outcome variable.", call. = FALSE) }
+
+    # Check if input 'formula' has only one grouping variable
+    if (isTRUE(length(group.var) != 1L)) { stop("Please specify a formula with only one grouping variable.", call. = FALSE) }
+
+    # Check if variance is zero
+    (tapply(data[, y.var], data[, group.var], var, na.rm = TRUE) == 0L) |> (\(y) if (isTRUE(any(y))) { stop(paste0("There are groups with 0 variance: Group ", paste(which(y), collapse = ", ")), call. = FALSE) })()
+
+  }
+
+  #_____________________________________________________________________________
+  #
+  # Data ———————————————————————————————————————————————————————————————————————
+
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data Frame ####
 
-  # As data frame
-  data <- as.data.frame(data)
-
-  # Check if variables are in the data
-  (!var.formula %in% colnames(data)) |> (\(y) if (isTRUE(any(y))) { stop(paste0("Variables specified in the the formula were not found in 'data': ", paste(var.formula[which(y)], collapse = ", ")), call. = FALSE) })()
-
-  # Check if input 'formula' has only one outcome variable
-  if (isTRUE(length(y.var) != 1L)) { stop("Please specify a formula with only one outcome variable.", call. = FALSE) }
-
-  # Check if input 'formula' has only one grouping variable
-  if (isTRUE(length(group.var) != 1L)) { stop("Please specify a formula with only one grouping variable.", call. = FALSE) }
+  x <- as.data.frame(data)
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Convert User-Missing Values into NA ####
 
-  if (isTRUE(!is.null(as.na))) { data[, y.var] <- .as.na(data[, y.var], na = as.na) }
+  if (isTRUE(!is.null(as.na))) { x[, y.var] <- .as.na(x[, y.var], na = as.na) }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Listwise Deletion ####
+  ## Missing Data in the Grouping Variable ####
 
-  data <- na.omit(data[, var.formula])
+  if (isTRUE(any(is.na(x[, group.var])))) {
 
-  #_____________________________________________________________________________
-  #
-  # Input Check ----------------------------------------------------------------
+    (!is.na(x[, group.var])) |> (\(p) { x <<- x[p, ]
 
-  # Check inputs
-  .check.input(logical = c("hypo", "descript", "plot", "violin", "box", "jitter", "append", "output"), s.character = list(method = c("median", "mean")),
-               args = c("conf.level", "digits", "p.digits", "write2"), envir = environment(), input.check = check)
+    warning(paste0("Listwise deletion of missing values in the grouping variable, number of cases removed from the analysis: ", sum(!p)), call. = FALSE)
 
-  # Check if variance is zero
-  if (isTRUE(check)) { (tapply(data[, y.var], data[, group.var], var, na.rm = TRUE) == 0L) |> (\(y) if (isTRUE(any(y))) { stop(paste0("There are groups with 0 variance: Group ", paste(which(y), collapse = ", ")), call. = FALSE) })() }
+    })()
+
+  }
+
 
   #_____________________________________________________________________________
   #
-  # Arguments ------------------------------------------------------------------
+  # Arguments ——————————————————————————————————————————————————————————————————
 
-  # 'method' Argument
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## 'method' Argument ####
+
   if (isTRUE(all(c("median", "mean") %in% method))) { method <- "median" }
 
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## 'geom' Argument ####
+
+  if (isTRUE(all(c("all", "violin", "box", "jitter") %in% geom))) {
+
+    geom <- c("violin", "box")
+
+  } else if (all(geom == "all")) {
+
+    geom <- c("violin", "box", "jitter")
+
+  }
+
   #_____________________________________________________________________________
   #
-  # Main Function --------------------------------------------------------------
+  # Main Function ——————————————————————————————————————————————————————————————
 
   # Outcome
-  y <- data[, y.var]
+  y <- x[, y.var]
 
   # Grouping variable
-  group <- data[, group.var]
+  group <- x[, group.var]
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Descriptive Statistics ####
@@ -266,13 +308,13 @@ test.levene <- function(formula, data, method = c("median", "mean"),
 
   #_____________________________________________________________________________
   #
-  # Return Object --------------------------------------------------------------
+  # Return Object ——————————————————————————————————————————————————————————————
 
   object <- list(call = match.call(),
                  type = "test.levene",
                  data = data.frame(y, group = factor(group)),
                  formula = formula,
-                 args = list(method = method, conf.level = conf.level, hypo = hypo, descript = descript, digits = digits, p.digits = p.digits, as.na = as.na, plot = plot, violin = violin, box = box, jitter = jitter, filename = filename, width = width, height = height, dpi = dpi, write = write, append = append, check = check, output = output),
+                 args = list(method = method, conf.level = conf.level, hypo = hypo, descript = descript, digits = digits, p.digits = p.digits, as.na = as.na, plot = plot, geom = geom, filename = filename, width = width, height = height, dpi = dpi, write = write, append = append, check = check, output = output),
                  plot = NULL,
                  result = list(descript = result.descript, test = result.aov))
 
@@ -280,9 +322,9 @@ test.levene <- function(formula, data, method = c("median", "mean"),
 
   #_____________________________________________________________________________
   #
-  # Plot and Save Plot ---------------------------------------------------------
+  # Plot and Save Plot —————————————————————————————————————————————————————————
 
-  if (isTRUE(plot)) { object$plot <- plot(object, filename = filename, width = width, height = height, dpi = dpi, check = FALSE) |> (\(y) suppressMessages(suppressWarnings(print(y))))() }
+  if (isTRUE(plot)) { object$plot <- plot(object, filename = filename, width = width, height = height, dpi = dpi, check = FALSE, ...) |> (\(y) suppressMessages(suppressWarnings(print(y))))() }
 
   #_____________________________________________________________________________
   #
@@ -292,7 +334,7 @@ test.levene <- function(formula, data, method = c("median", "mean"),
 
   #_____________________________________________________________________________
   #
-  # Output ---------------------------------------------------------------------
+  # Output —————————————————————————————————————————————————————————————————————
 
   if (isTRUE(output)) { print(object, check = FALSE) }
 

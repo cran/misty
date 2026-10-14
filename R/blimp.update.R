@@ -152,7 +152,7 @@
 #'
 #' @examples
 #' \dontrun{
-#' #----------------------------------------------------------------------------
+#' #————————————————————————————————————————————————————————————————————————————
 #' # Example 1a: Update BURN and ITERATIONS section
 #'
 #' # Specify Blimp input
@@ -180,7 +180,7 @@
 #' # Run updated Blimp input
 #' mod1 <- blimp.update(mod0, update1, file = "Ex4.3_update1.imp")
 #'
-#' #----------------------------------------------------------------------------
+#' #————————————————————————————————————————————————————————————————————————————
 #' # Example 1b: Remove CENTER section
 #'
 #' # Remove section
@@ -203,7 +203,7 @@ blimp.update <- function(x, update, file = "Blimp_Input_Update.imp", comment = F
 
   #_____________________________________________________________________________
   #
-  # Initial Check --------------------------------------------------------------
+  # Initial Check ——————————————————————————————————————————————————————————————
 
   # Check if input 'x' is a misty.object
   if (isTRUE(!inherits(x, "misty.object"))) { stop("Please specify a misty.object for the argument 'x'", call. = FALSE) }
@@ -216,14 +216,14 @@ blimp.update <- function(x, update, file = "Blimp_Input_Update.imp", comment = F
 
   #_____________________________________________________________________________
   #
-  # Result Argument ------------------------------------------------------------
+  # Result Argument ————————————————————————————————————————————————————————————
 
   # All result options
   result.all <- c("algo.options", "simdat.summary", "simdat.summary", "order.simdat", "burnin.psr", "mh.accept", "data.info", "var.imp", "model.info", "param.label", "warn.mess", "fit", "cor.resid", "out.model", "pred.model", "gen.param", "order.impdat")
 
   #_____________________________________________________________________________
   #
-  # Input Check ----------------------------------------------------------------
+  # Input Check ————————————————————————————————————————————————————————————————
 
   # Check inputs
   .check.input(logical = c("comment", "replace.inp", "blimp.run", "posterior", "clear", "not.result", "append", "output"),
@@ -266,7 +266,7 @@ blimp.update <- function(x, update, file = "Blimp_Input_Update.imp", comment = F
 
   #_____________________________________________________________________________
   #
-  # Arguments ------------------------------------------------------------------
+  # Arguments ——————————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## update Argument ####
@@ -315,7 +315,7 @@ blimp.update <- function(x, update, file = "Blimp_Input_Update.imp", comment = F
 
   #_____________________________________________________________________________
   #
-  # Main Function --------------------------------------------------------------
+  # Main Function ——————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Remove Comments ####
@@ -678,7 +678,7 @@ blimp.update <- function(x, update, file = "Blimp_Input_Update.imp", comment = F
 
   #_____________________________________________________________________________
   #
-  # Return Object --------------------------------------------------------------
+  # Return Object ——————————————————————————————————————————————————————————————
 
   object <- list(call = match.call(),
                  type = "blimp",
@@ -694,7 +694,7 @@ blimp.update <- function(x, update, file = "Blimp_Input_Update.imp", comment = F
 
   #_____________________________________________________________________________
   #
-  # Output ---------------------------------------------------------------------
+  # Output —————————————————————————————————————————————————————————————————————
 
   return(invisible(object))
 

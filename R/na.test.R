@@ -272,32 +272,19 @@ na.test <- function(data, ..., print = c("all", "little", "jamjal"),
 
   #_____________________________________________________________________________
   #
-  # Initial Check --------------------------------------------------------------
+  # Initial Check ——————————————————————————————————————————————————————————————
 
   # Check if input 'data' is missing or NULL
   if (isTRUE(missing(data) || is.null(data))) { stop("Please specify a data frame for the argument 'data'", call. = FALSE) }
 
   #_____________________________________________________________________________
   #
-  # Data -----------------------------------------------------------------------
+  # Data ———————————————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data using the argument '...' ####
 
-  if (isTRUE(!missing(...))) {
-
-    # Extract data and convert tibble into data frame or vector
-    x <- as.data.frame(data[, .var.names(data = data, ...), drop = FALSE])
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data without using the argument '...' ####
-
-  } else {
-
-    # Data frame
-    x <- as.data.frame(data)
-
-  }
+  .data(data, ...) |> (\(p) { assign("x", p$data, envir = parent.frame()) })()
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Convert user-missing values into NA ####
@@ -328,7 +315,7 @@ na.test <- function(data, ..., print = c("all", "little", "jamjal"),
 
   #_____________________________________________________________________________
   #
-  # Input Check ----------------------------------------------------------------
+  # Input Check ————————————————————————————————————————————————————————————————
 
   # Check inputs
   .check.input(logical = c("append", "output"),
@@ -380,7 +367,7 @@ na.test <- function(data, ..., print = c("all", "little", "jamjal"),
 
   #_____________________________________________________________________________
   #
-  # Arguments ------------------------------------------------------------------
+  # Arguments ——————————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## 'print' Argument ####
@@ -407,22 +394,22 @@ na.test <- function(data, ..., print = c("all", "little", "jamjal"),
 
   #_____________________________________________________________________________
   #
-  # Main Function: Little's MCAR Test ------------------------------------------
+  # Main Function: Little's MCAR Test ——————————————————————————————————————————
 
   if (isTRUE("little" %in% print)) {
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Check ####
 
     # More than 50 variables
     if (isTRUE(ncol(x.matrix) > 50L)) { stop("The mlest function from the mvnmle package used to perform Little's MCAR test cannot handle more than 50 variables.", call. = FALSE) }
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Little's MCAR Test ####
 
     restab.LittleMCAR <- .LittleMCAR(x.matrix)
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Result table ####
 
     restab.little <- data.frame(no.cases = nrow(x), no.incomplete = misty::na.descript(x, output = FALSE)$result$L1$no.incomplete.l1, no.pattern = restab.LittleMCAR$missing.patterns,
@@ -436,7 +423,7 @@ na.test <- function(data, ..., print = c("all", "little", "jamjal"),
 
   #_____________________________________________________________________________
   #
-  # Main Function: Jamshidian and Jalalꞌs Approach -----------------------------
+  # Main Function: Jamshidian and Jalalꞌs Approach —————————————————————————————
 
   if (isTRUE("jamjal" %in% print)) {
 
@@ -459,7 +446,7 @@ na.test <- function(data, ..., print = c("all", "little", "jamjal"),
 
   #_____________________________________________________________________________
   #
-  # Return Object --------------------------------------------------------------
+  # Return Object ——————————————————————————————————————————————————————————————
 
   object <- list(call = match.call(),
                  type = "na.test",
@@ -471,11 +458,11 @@ na.test <- function(data, ..., print = c("all", "little", "jamjal"),
 
   #_____________________________________________________________________________
   #
-  # Write Results --------------------------------------------------------------
+  # Write Results ——————————————————————————————————————————————————————————————
 
   if (isTRUE(!is.null(write))) {
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Text File ####
 
     # Send R output to text file
@@ -493,7 +480,7 @@ na.test <- function(data, ..., print = c("all", "little", "jamjal"),
 
   #_____________________________________________________________________________
   #
-  # Output ---------------------------------------------------------------------
+  # Output —————————————————————————————————————————————————————————————————————
 
   if (isTRUE(output)) { print(object, check = FALSE) }
 

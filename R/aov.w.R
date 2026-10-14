@@ -6,94 +6,99 @@
 #' bars for difference-adjusted Cousineau-Morey within-subject confidence intervals
 #' with jittered data points including subject-specific lines.
 #'
-#' @param formula        a formula of the form \code{cbind(time1, time2, time3) ~ 1}
-#'                       where \code{time1}, \code{time2}, and \code{time3} are
-#'                       numeric variables representing the levels of the within-
-#'                       subject factor, i.e., data are specified in wide-format
-#'                       (i.e., multivariate person level format).
-#' @param data           a matrix or data frame containing the variables in the
-#'                       formula \code{formula}.
-#' @param print          a character vector indicating which sphericity correction
-#'                       to use, i.e., \code{all} for all corrections, \code{none}
-#'                       for no correction, \code{GG} for Greenhouse-Geisser correction,
-#'                       \code{HF} for Huynh-Feldt correction, and \code{LB} for
-#'                       lower bound correction.
-#' @param hypo           logical: if \code{TRUE} (default), null and alternative
-#'                       hypothesis are shown on the console.
-#' @param descript       logical: if \code{TRUE} (default), descriptive statistics
-#'                       are shown on the console.
-#' @param epsilon        logical: if \code{TRUE} (default), box indices of sphericity
-#'                       (epsilon) are shown on the console, i.e., lower bound,
-#'                       Greenhouse and Geiser (GG), Huynh and Feldt (HF) and average
-#'                       of GG and HF.
-#' @param effsize        logical: if \code{TRUE}, effect size measures eta-squared
-#'                       (\eqn{\eta^2}), partial eta-squared (\eqn{\eta^2_p}),
-#'                       omega-squared (\eqn{\omega^2}), and partial omega-squared
-#'                       (\eqn{\omega^2_p}) for the repeated measures ANOVA and
-#'                       Cohen's \emph{d} for the post hoc tests are shown on
-#'                       the console.
-#' @param posthoc        logical: if \code{TRUE}, paired-samples t-tests for
-#'                       multiple comparison are conducted.
-#' @param na.omit        logical: if \code{TRUE} (default), incomplete cases are
-#'                       removed before conducting the analysis (i.e., listwise
-#'                       deletion).
-#' @param conf.level     a numeric value between 0 and 1 indicating the confidence
-#'                       level of the interval.
-#' @param p.adj          a character string indicating an adjustment method for
-#'                       multiple testing based on \code{\link{p.adjust}}, i.e.,
-#'                       \code{none}, \code{bonferroni}, \code{holm} (default),
-#'                       \code{h ochberg}, \code{hommel}, \code{BH}, \code{BY}, or
-#'                       \code{fdr}.
-#' @param digits         an integer value indicating the number of decimal places
-#'                       to be used for displaying descriptive statistics and
-#'                       confidence interval.
-#' @param p.digits       an integer value indicating the number of decimal places
-#'                       to be used for displaying the \emph{p}-value.
-#' @param as.na          a numeric vector indicating user-defined missing values,
-#'                       i.e. these values are converted to \code{NA} before
-#'                       conducting the analysis.
-#' @param plot           logical: if \code{TRUE}, a plot showing error bars for
-#'                       confidence intervals is drawn.
-#' @param point          logical: if \code{TRUE} (default), points representing
-#'                       means for each groups are drawn.
-#' @param line           logical: if \code{TRUE} (default), a line connecting means
-#'                       of each groups and lines connecting data points are drawn
-#'                       when \code{jitter = TRUE}.
-#' @param ci             logical: if \code{TRUE} (default), error bars representing
-#'                       confidence intervals are drawn.
-#' @param jitter         logical: if \code{TRUE}, jittered data points with
-#'                       subject-specific lines are drawn.
-#' @param adjust         logical: if \code{TRUE} (default), difference-adjustment
-#'                       for the Cousineau-Morey within-subject confidence
-#'                       intervals is applied.
-#' @param filename       a character string indicating the \code{filename}
-#'                       argument including the file extension in the \code{ggsave}
-#'                       function. Note that one of \code{".eps"}, \code{".ps"},
-#'                       \code{".tex"}, \code{".pdf"} (default),
-#'                       \code{".jpeg"}, \code{".tiff"}, \code{".png"},
-#'                       \code{".bmp"}, \code{".svg"} or \code{".wmf"} needs
-#'                       to be specified as file extension in the \code{filename}
-#'                       argument. Note that plots can only be saved when
-#'                       \code{plot = TRUE}.
-#' @param width          a numeric value indicating the \code{width} argument
-#'                       (default is the size of the current graphics device)
-#'                       in the \code{ggsave} function.
-#' @param height         a numeric value indicating the \code{height} argument
-#'                       (default is the size of the current graphics device)
-#'                       in the \code{ggsave} function.
-#' @param dpi            a numeric value indicating the \code{dpi} argument
-#'                       (default is \code{600}) in the \code{ggsave} function.
-#' @param write          a character string naming a text file with file extension
-#'                       \code{".txt"} (e.g., \code{"Output.txt"}) for writing the
-#'                       output into a text file.
-#' @param append         logical: if \code{TRUE} (default), output will be appended
-#'                       to an existing text file with extension \code{.txt} specified
-#'                       in \code{write}, if \code{FALSE} existing text file will be
-#'                       overwritten.
-#' @param check          logical: if \code{TRUE} (default), argument specification
-#'                       is checked.
-#' @param output         logical: if \code{TRUE} (default), output is shown on the
-#'                       console.
+#' @param formula    a formula of the form \code{cbind(time1, time2, time3) ~ 1}
+#'                   where \code{time1}, \code{time2}, and \code{time3} are
+#'                   numeric variables representing the levels of the within-
+#'                   subject factor, i.e., data are specified in wide-format
+#'                   (i.e., multivariate person level format).
+#' @param data       a matrix or data frame containing the variables in the
+#'                   formula \code{formula}.
+#' @param print      a character vector indicating which sphericity correction
+#'                   to use, i.e., \code{all} for all corrections, \code{none}
+#'                   for no correction, \code{GG} for Greenhouse-Geisser correction,
+#'                   \code{HF} for Huynh-Feldt correction, and \code{LB} for
+#'                   lower bound correction.
+#' @param hypo       logical: if \code{TRUE} (default), null and alternative
+#'                   hypothesis are shown on the console.
+#' @param descript   logical: if \code{TRUE} (default), descriptive statistics
+#'                   are shown on the console.
+#' @param epsilon    logical: if \code{TRUE} (default), box indices of sphericity
+#'                   (epsilon) are shown on the console, i.e., lower bound,
+#'                   Greenhouse and Geiser (GG), Huynh and Feldt (HF) and average
+#'                   of GG and HF.
+#' @param effsize    logical: if \code{TRUE}, effect size measures eta-squared
+#'                   (\eqn{\eta^2}), partial eta-squared (\eqn{\eta^2_p}),
+#'                   omega-squared (\eqn{\omega^2}), and partial omega-squared
+#'                   (\eqn{\omega^2_p}) for the repeated measures ANOVA and
+#'                   Cohen's \emph{d} for the post hoc tests are shown on
+#'                   the console.
+#' @param posthoc    logical: if \code{TRUE}, paired-samples t-tests for
+#'                   multiple comparison are conducted.
+#' @param na.omit    logical: if \code{TRUE} (default), incomplete cases are
+#'                   removed before conducting the analysis (i.e., listwise
+#'                   deletion).
+#' @param adjust     logical: if \code{TRUE} (default), difference-adjustment
+#'                   for the Cousineau-Morey within-subject confidence
+#'                   intervals is applied.
+#' @param conf.level a numeric value between 0 and 1 indicating the confidence
+#'                   level of the interval.
+#' @param p.adj      a character string indicating an adjustment method for
+#'                   multiple testing based on \code{\link{p.adjust}}, i.e.,
+#'                   \code{none}, \code{bonferroni}, \code{holm} (default),
+#'                   \code{h ochberg}, \code{hommel}, \code{BH}, \code{BY}, or
+#'                   \code{fdr}. See help page of the \code{\link{p.adjust}}
+#'                   function.
+#' @param digits     an integer value indicating the number of decimal places
+#'                   to be used for displaying descriptive statistics and
+#'                   confidence interval.
+#' @param p.digits   an integer value indicating the number of decimal places
+#'                   to be used for displaying the \emph{p}-value.
+#' @param as.na      a numeric vector indicating user-defined missing values,
+#'                   i.e. these values are converted to \code{NA} before
+#'                   conducting the analysis.
+#' @param plot       logical: if \code{TRUE}, a plot showing error bars for
+#'                   confidence intervals is drawn. For additional
+#'                   plotting arguments, see \code{Details} in the help page of
+#'                   the function \code{plot.misty.object}
+#' @param geom       a character vector indicating which plot elements to draw,
+#'                   i.e.,  \code{"all"} for drawing all plot elements, \code{"point"}
+#'                   for drawing points representing means for each group, \code{"line"}
+#'                   for drawing a line connecting means of each group and lines
+#'                   connecting data points when requesting \code{"jitter"},
+#'                   \code{"ci"} for drawing error bars representing confidence
+#'                   intervals, and \code{"jitter"} for drawing jittered data
+#'                   points with subject-specific lines when requesting \code{"ci"}.
+#' @param filename   a character string indicating the \code{filename}
+#'                   argument including the file extension in the \code{ggsave}
+#'                   function. Note that one of \code{".eps"}, \code{".ps"},
+#'                   \code{".tex"}, \code{".pdf"} (default),
+#'                   \code{".jpeg"}, \code{".tiff"}, \code{".png"},
+#'                   \code{".bmp"}, \code{".svg"} or \code{".wmf"} needs
+#'                   to be specified as file extension in the \code{filename}
+#'                   argument. Note that plots can only be saved when
+#'                   \code{plot = TRUE}.
+#' @param width      a numeric value indicating the \code{width} argument
+#'                   (default is the size of the current graphics device)
+#'                   in the \code{ggsave} function.
+#' @param height     a numeric value indicating the \code{height} argument
+#'                   (default is the size of the current graphics device)
+#'                   in the \code{ggsave} function.
+#' @param dpi        a numeric value indicating the \code{dpi} argument
+#'                   (default is \code{600}) in the \code{ggsave} function.
+#' @param write      a character string naming a text file with file extension
+#'                   \code{".txt"} (e.g., \code{"Output.txt"}) for writing the
+#'                   output into a text file.
+#' @param append     logical: if \code{TRUE} (default), output will be appended
+#'                   to an existing text file with extension \code{.txt} specified
+#'                   in \code{write}, if \code{FALSE} existing text file will be
+#'                   overwritten.
+#' @param check      logical: if \code{TRUE} (default), argument specification
+#'                   is checked.
+#' @param output     logical: if \code{TRUE} (default), output is shown on the
+#'                   console.
+#' @param ...        additional plotting arguments from the \code{plot.misty.object()}
+#'                   function, see 'Details in the \code{\link{plot.misty.object}}
+#'                   function.
 #'
 #' @details
 #' \describe{
@@ -231,14 +236,13 @@
 #'                   time2 = c(4, 3, 6, 5, 8, 6, 7, 3, 4, 5),
 #'                   time3 = c(1, 2, 2, 3, 6, 5, 1, 2, 4, 6))
 #'
-#' # Example 1a: Within-Subject ANOVA
+#' # Example 1a: Within-Subject ANOVA, default setting
 #' aov.w(cbind(time1, time2, time3) ~ 1, data = dat)
 #'
-#' # Example 1b: Within-Subject ANOVA
-#' # Print descriptive statistics and Paired-samples t-tests
+#' # Example 1b: Print descriptive statistics and Paired-samples t-tests
 #' aov.w(cbind(time1, time2, time3) ~ 1, data = dat, descript = TRUE, posthoc = TRUE)
 #'
-#' # Example 1c: Within-Subject ANOVA, print eta-squared and omega-squared
+#' # Example 1c: Print eta-squared and omega-squared
 #' aov.w(cbind(time1, time2, time3) ~ 1, data = dat, effsize = TRUE)
 #'
 #' #————————————————————————————————————————————————————————————————————————————
@@ -247,15 +251,19 @@
 #' # Example 2a: Plot results, default setting
 #' aov.w(cbind(time1, time2, time3) ~ 1, data = dat, plot = TRUE)
 #'
-#' # Example 2b: Plot results
-#' # No bars, jittered data points without subject-specific lines
-#' aov.w(cbind(time1, time2, time3) ~ 1, data = dat, plot = TRUE,
-#'       line = FALSE, jitter = TRUE)
+#' # Example 2b: No bars, jittered data points without subject-specific lines
+#' aov.w(cbind(time1, time2, time3) ~ 1, data = dat, plot = TRUE, geom = "jitter")
 #'
-#' # Example 2c: Plot results using the plot() function, use additional arguments
+#' # Example 2c: Plot results, additional arguments
+#' # see Details in the help page of the function plot.misty.object
+#' aov.w(cbind(time1, time2, time3) ~ 1, data = dat, geom = "all", plot = TRUE,
+#'       jitter.alpha = 0.4, title = "Within-Subject ANOVA")
+#'
+#' # Example 2d: Plot results using the plot() function, use additional arguments
 #' # see Details in the help page of the function plot.misty.object
 #' object <- aov.w(cbind(time1, time2, time3) ~ 1, data = dat)
-#' plot(object, jitter = TRUE, jitter.alpha = 0.4, title = "Within-Subject ANOVA")
+#' plot(object, geom = c("point", "line", "jitter"), jitter.alpha = 0.4,
+#'      title = "Within-Subject ANOVA")
 #'
 #' #————————————————————————————————————————————————————————————————————————————
 #' # Create Plot Manually
@@ -278,10 +286,9 @@
 #'   geom_jitter(alpha = 0.2, width = 0.05, height = 0, size = 1.25) +
 #'   theme_bw()
 #'
+#' \dontrun{
 #' #————————————————————————————————————————————————————————————————————————————
 #' # Write Results and Save Plot
-#'
-#' \dontrun{
 #'
 #' # Example 4a: Write results into a text file
 #' aov.w(cbind(time1, time2, time3) ~ 1, data = dat, write = "RM-ANOVA.txt")
@@ -295,16 +302,15 @@
 #' }
 aov.w <- function(formula, data, print = c("all", "none", "GG", "HF", "LB"),
                   hypo = FALSE, epsilon = FALSE, descript = FALSE, effsize = FALSE,
-                  posthoc = FALSE, na.omit = TRUE, conf.level = 0.95,
-                  p.adj = c("none", "bonferroni", "holm", "hochberg", "hommel", "BH", "BY", "fdr"),
-                  digits = 2, p.digits = 3, as.na = NULL, plot = FALSE, point = TRUE,
-                  line = TRUE, ci = TRUE, jitter = FALSE, adjust = TRUE,
-                  filename = NULL, width = NA, height = NA, dpi = 600, write = NULL,
-                  append = TRUE, check = TRUE, output = TRUE) {
+                  posthoc = FALSE, na.omit = TRUE, adjust = TRUE, conf.level = 0.95,
+                  p.adj = "holm", digits = 2, p.digits = 3, as.na = NULL,
+                  plot = FALSE, geom = c("all", "point", "line", "ci", "jitter"),
+                  filename = NULL, width = NA, height = NA, dpi = 600,
+                  write = NULL, append = TRUE, check = TRUE, output = TRUE, ...) {
 
   #_____________________________________________________________________________
   #
-  # Initial Check --------------------------------------------------------------
+  # Initial Check ——————————————————————————————————————————————————————————————
 
   # Check if input 'formula' is missing
   if (isTRUE(missing(formula))) { stop("Please specify a formula using the argument 'formula'", call. = FALSE) }
@@ -314,35 +320,38 @@ aov.w <- function(formula, data, print = c("all", "none", "GG", "HF", "LB"),
 
   #_____________________________________________________________________________
   #
-  # Formula --------------------------------------------------------------------
+  # Variables ——————————————————————————————————————————————————————————————————
 
-  # Variables
   var.formula <- all.vars(as.formula(formula))
 
   #_____________________________________________________________________________
   #
-  # Input Check ----------------------------------------------------------------
+  # Input Check ————————————————————————————————————————————————————————————————
 
   # Check inputs and R package
-  .check.input(logical = c("posthoc", "hypo", "descript", "effsize", "na.omit", "plot", "point", "line", "ci", "jitter", "adjust", "append", "output"),
-               m.character = list(print = c("all", "none", "LB",  "GG", "HF")), args = c("digts", "p.digits", "conf.level", "p.adj", "write2"), envir = environment(), input.check = check)
+  .check.input(logical = c("posthoc", "hypo", "descript", "effsize", "na.omit", "plot", "adjust", "append", "output"), m.character = list(print = c("all", "none", "LB",  "GG", "HF"), geom = c("all", "point", "line", "ci", "jitter")),
+               args = c("digts", "p.digits", "conf.level", "p.adj", "write2"), envir = environment(), input.check = check)
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Additional Checks ####
+
+  # Check if variables are in the data
+
+  if (isTRUE(check)) { (!var.formula %in% colnames(data)) |> (\(p) if (isTRUE(any(p))) { stop(paste0("Variables specified in the the formula were not found in 'data': ", paste(var.formula[which(p)], collapse = ", ")), call. = FALSE) })() }
 
   #_____________________________________________________________________________
   #
-  # Data -----------------------------------------------------------------------
+  # Data ———————————————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data frame ####
+  ## Data Frame ####
 
-  data <- data.frame(data[, var.formula])
-
-  # Check if variables are in the data
-  (!var.formula %in% colnames(data)) |> (\(y) if (isTRUE(any(y))) { stop(paste0("Variables specified in the the formula were not found in 'data': ", paste(var.formula[which(y)], collapse = ", ")), call. = FALSE) })()
+  x <- data.frame(data[, var.formula])
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Attach ID variable ####
 
-  data.id <- data.frame(data, id = factor(seq_len(nrow(data))))
+  data.id <- data.frame(x, id = factor(seq_len(nrow(x))))
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Convert User-Missing Values into NA ####
@@ -415,14 +424,24 @@ aov.w <- function(formula, data, print = c("all", "none", "GG", "HF", "LB"),
 
   #_____________________________________________________________________________
   #
-  # Arguments ------------------------------------------------------------------
+  # Arguments ——————————————————————————————————————————————————————————————————
 
-  # 'p.adj' Argument
-  p.adj <- ifelse(all(c("none", "bonferroni", "holm", "hochberg", "hommel", "BH", "BY", "fdr") %in% p.adj), "holm", p.adj)
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## 'geom' Argument ####
+
+  if (isTRUE(all(c("all", "point", "line", "ci", "jitter") %in% geom))) {
+
+    geom <- c("point", "line", "ci")
+
+  } else if (all(geom == "all")) {
+
+    geom <- c("point", "line", "ci", "jitter")
+
+  }
 
   #_____________________________________________________________________________
   #
-  # Main Function --------------------------------------------------------------
+  # Main Function ——————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Descriptive Statistics ####
@@ -445,6 +464,7 @@ aov.w <- function(formula, data, print = c("all", "none", "GG", "HF", "LB"),
   # Number of subjects
   n <- nrow(data.id)
 
+  # Covariance matrix
   dc.matrix <- cov(data.id[, var.formula], use = "pairwise.complete.obs") |> (\(y) y - (y*0L + colMeans(y)) - (t(y*0L + rowMeans(y))) + mean(y))()
 
   #—————————————————————————————————————— #
@@ -604,37 +624,31 @@ aov.w <- function(formula, data, print = c("all", "none", "GG", "HF", "LB"),
   ## Post-Hoc Test ####
 
   result.ph <- combn(var.formula, m = 2L) |>
-    (\(y) apply(y, 2L, function(y) misty::test.t(data.id[, y[1L]], data.id[, y[2L]], paired = TRUE, conf.level = conf.level, output = FALSE)$result[c("m.diff", "t", "df", "p", "d", "d.low", "d.upp")]) |>
-       (\(z) data.frame(var1 = t(y)[, 1L], var2 = t(y)[, 2L], eval(parse(text = paste0("rbind(", paste0("z[[", seq_len(length(z)), "]]", collapse = ", "), ")"))), stringsAsFactors = FALSE))())()
+    (\(p) apply(p, 2L, function(y) misty::test.t(x = data.id[, y[1L]], y = data.id[, y[2L]], paired = TRUE, conf.level = conf.level, output = FALSE)$result[c("m.diff", "t", "df", "p", "d", "d.low", "d.upp")]) |>
+       (\(z) data.frame(var1 = t(p)[, 1L], var2 = t(p)[, 2L], eval(parse(text = paste0("rbind(", paste0("z[[", seq_len(length(z)), "]]", collapse = ", "), ")"))), stringsAsFactors = FALSE))())()
 
   # Adjust p-values for multiple comparisons
   if (isTRUE(p.adj != "none")) { result.ph$p <- p.adjust(result.ph$p, method = p.adj) }
 
   #_____________________________________________________________________________
   #
-  # Return Object --------------------------------------------------------------
+  # Return Object ——————————————————————————————————————————————————————————————
 
   object <- list(call = match.call(),
                  type = "aov.w",
                  data = list(wide = data, long = data.l),
                  formula = formula,
-                 args = list(print = print, p.adjust = p.adj, hypo = hypo, descript = descript,epsilon = epsilon, effsize = effsize, posthoc = posthoc,
-                             na.omit = na.omit, conf.level = conf.level, digits = digits, p.digits = p.digits, as.na = as.na,
-                             plot = plot, point = point, line = line, ci = ci, jitter = jitter, adjust = adjust, filename = filename,
-                             width = width, height = height, dpi = dpi, check = check, write = write, append = append, output = output),
+                 args = list(print = print, p.adjust = p.adj, hypo = hypo, descript = descript,epsilon = epsilon, effsize = effsize, posthoc = posthoc, na.omit = na.omit, adjust = adjust, conf.level = conf.level, digits = digits, p.digits = p.digits, as.na = as.na, plot = plot, geom = geom, filename = filename, width = width, height = height, dpi = dpi, check = check, write = write, append = append, output = output),
                  plot = NULL,
-                 result = list(descript = ci.table, epsilon = epsilon.table,
-                               test = list(none = test.none, gg = test.gg, hf = test.hf, lb = test.lb),
-                               posthoc = result.ph,
-                               aov = aov.res))
+                 result = list(descript = ci.table, epsilon = epsilon.table, test = list(none = test.none, gg = test.gg, hf = test.hf, lb = test.lb), posthoc = result.ph, aov = aov.res))
 
   class(object) <- "misty.object"
 
   #_____________________________________________________________________________
   #
-  # Plot and Save Plot ---------------------------------------------------------
+  # Plot and Save Plot —————————————————————————————————————————————————————————
 
-  if (isTRUE(plot)) { object$plot <- plot(object, filename = filename, width = width, height = height, dpi = dpi, check = FALSE) |> (\(y) suppressMessages(suppressWarnings(print(y))))() }
+  if (isTRUE(plot)) { object$plot <- plot(object, filename = filename, width = width, height = height, dpi = dpi, check = FALSE, ...) |> (\(y) suppressMessages(suppressWarnings(print(y))))() }
 
   #_____________________________________________________________________________
   #
@@ -644,7 +658,7 @@ aov.w <- function(formula, data, print = c("all", "none", "GG", "HF", "LB"),
 
   #_____________________________________________________________________________
   #
-  # Output ---------------------------------------------------------------------
+  # Output —————————————————————————————————————————————————————————————————————
 
   if (isTRUE(output)) { print(object, check = FALSE) }
 

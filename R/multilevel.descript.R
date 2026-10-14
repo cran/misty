@@ -15,10 +15,10 @@
 #'                    vector indicating the names of the cluster variables in
 #'                    \code{data} for three-level data, or a vector or data frame
 #'                    representing the nested grouping structure (i.e., group or
-#'                    cluster variables). Alternatively, a character string or
-#'                    character vector indicating the variable name(s) of the
-#'                    cluster variable(s) in \code{data}. Note that the cluster
-#'                    variable at Level 3 come first in a three-level model, i.e.,
+#'                    cluster variables). Alternatively, a character vector
+#'                    indicating the variable name(s) of the cluster variable(s)
+#'                    in \code{data}. Note that the cluster variable at Level 3
+#'                    come first in a three-level model, i.e.,
 #'                    \code{cluster = c("level3", "level2")}.
 #' @param type        a character string indicating the type of intraclass
 #'                    correlation coefficient, i.e., \code{type = "1a"} (default)
@@ -34,11 +34,10 @@
 #'                    (default) ICC estimated using the \code{lmer} function in
 #'                    the \pkg{lme4} package, \code{"nlme"} ICC estimated using
 #'                    the \code{lme} function in the \pkg{nlme} package.
-#' @param print       a character string or character vector indicating which
-#'                    results to show on the console, i.e. \code{"all"} for
-#'                    variances and standard deviations, \code{"var"} (default)
-#'                    for variances, or \code{"sd"} for standard deviations within
-#'                    and between clusters.
+#' @param print       a character vector indicating which results to show on the
+#'                    console, i.e. \code{"all"} for variances and standard
+#'                    deviations, \code{"var"} (default) for variances, or
+#'                    \code{"sd"} for standard deviations within and between clusters.
 #' @param REML        logical: if \code{TRUE} (default), restricted maximum likelihood
 #'                    is used to estimate the null model when using the \code{lmer()}
 #'                    function in the \pkg{lme4} package or the \code{lme()} function in
@@ -243,7 +242,7 @@ multilevel.descript <- function(data, ..., cluster, type = c("1a", "1b"),
 
   #_____________________________________________________________________________
   #
-  # Initial Check --------------------------------------------------------------
+  # Initial Check ——————————————————————————————————————————————————————————————
 
   # Check if input 'data' is missing or NULL
   if (isTRUE(missing(data) ||is.null(data))) { stop("Please specify a numeric vector or data frame for the argument 'data'", call. = FALSE) }
@@ -253,37 +252,17 @@ multilevel.descript <- function(data, ..., cluster, type = c("1a", "1b"),
 
   #_____________________________________________________________________________
   #
-  # Data -----------------------------------------------------------------------
+  # Data ———————————————————————————————————————————————————————————————————————
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Using the Argument '...' ####
-
-  if (isTRUE(!missing(...))) {
-
-    # Extract data and convert tibble into data frame or vector
-    x <- data[,  .var.names(data = data, ..., cluster = cluster)] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(y)) == 1L)) { unname(unlist(y)) } else { as.data.frame(y) } } else { y })()
-
-    # Extract cluster variable and convert tibble into data frame or vector
-    cluster <- data[, cluster] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(y)) == 1L)) { unname(unlist(y)) } else { as.data.frame(y) } } else { y })()
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data Without Using the Argument '...' ####
-
-  } else {
-
-    # Convert 'data' as tibble into data frame
-    x <- data |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(y)) == 1L)) { unname(unlist(y)) } else { as.data.frame(y) } } else { y })()
-
-    # Data and cluster
-    var.group <- .var.group(data = x, cluster = cluster)
+  .data(data, ..., cluster = cluster, drop = TRUE) |> (\(p) {
 
     # Data
-    if (isTRUE(!is.null(var.group$data))) { x <- var.group$data }
+    assign("x", p$data, envir = parent.frame())
 
     # Cluster variable
-    if (isTRUE(!is.null(var.group$cluster))) { cluster <- var.group$cluster }
+    assign("cluster", p$cluster, envir = parent.frame())
 
-  }
+  })()
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Cluster Variables ####
@@ -323,28 +302,27 @@ multilevel.descript <- function(data, ..., cluster, type = c("1a", "1b"),
 
   #_____________________________________________________________________________
   #
-  # Input Check ----------------------------------------------------------------
+  # Input Check ————————————————————————————————————————————————————————————————
 
-  # Check inputs
-  .check.input(logical = c("REML", "append", "output"),
-               s.character = list(type = c("1a", "1b"), method = c("lme4", "nlme")),
-               m.character = list(print = c("all", "var", "sd")),
+  .check.input(logical = c("REML", "append", "output"), s.character = list(type = c("1a", "1b"), method = c("lme4", "nlme")), m.character = list(print = c("all", "var", "sd")),
                args = c("digits", "icc.digits", "write2"), envir = environment(), input.check = check)
 
-  # Additional checks
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Additional Checks ####
+
   if (isTRUE(check)) {
 
     # Package lme4 installed?
-    if (isTRUE(method == "lme4")) { if (isTRUE(!nzchar(system.file(package = "lme4")))) { stop("Package \"lme4\" is needed for method = \"lme4\", please install the package or switch to a different method.", call. = FALSE) } }
+    if (isTRUE(method == "lme4")) { if (isTRUE(!nzchar(system.file(package = "lme4")))) { stop("Package \"lme4\" is needed for method = \"lme4\", please install the package.", call. = FALSE) } }
 
     # Package nlme installed?
-    if (isTRUE(method == "nlme")) { if (isTRUE(!nzchar(system.file(package = "nlme")))) { stop("Package \"nlme\" is needed for method = \"nlme\", please install the package or switch to a different method.", call. = FALSE) } }
+    if (isTRUE(method == "nlme")) { if (isTRUE(!nzchar(system.file(package = "nlme")))) { stop("Package \"nlme\" is needed for method = \"nlme\", please install the package.", call. = FALSE) } }
 
   }
 
   #_____________________________________________________________________________
   #
-  # Data and Arguments ---------------------------------------------------------
+  # Data and Arguments —————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Argument 'type' ####
@@ -359,13 +337,19 @@ multilevel.descript <- function(data, ..., cluster, type = c("1a", "1b"),
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Print ####
 
-  if (isTRUE(all(c("all", "var", "sd") %in% print))) { print <- "var" }
+  if (isTRUE(all(c("all", "var", "sd") %in% print))) {
 
-  if (isTRUE(length(print) == 1L && "all" %in% print)) { print <- c("var", "sd") }
+    print <- "var"
+
+  } else if (isTRUE(all(print == "all"))) {
+
+    print <- c("var", "sd")
+
+  }
 
   #_____________________________________________________________________________
   #
-  # Main Function --------------------------------------------------------------
+  # Main Function ——————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## One Variable ####
@@ -882,9 +866,7 @@ multilevel.descript <- function(data, ..., cluster, type = c("1a", "1b"),
 
   } else {
 
-    object <- apply(x, 2L, function(y) misty::multilevel.descript(y, cluster = cluster, method = method,
-                                                                  REML = REML, digits = digits, icc.digits = icc.digits,
-                                                                  as.na = NULL, check = FALSE, output = FALSE))
+    object <- apply(x, 2L, function(y) misty::multilevel.descript(y, cluster = cluster, method = method, REML = REML, as.na = NULL, check = FALSE, output = FALSE))
 
     # Extract variable names
     outcome.names <- names(object)
@@ -899,7 +881,7 @@ multilevel.descript <- function(data, ..., cluster, type = c("1a", "1b"),
 
   #_____________________________________________________________________________
   #
-  # Return Object --------------------------------------------------------------
+  # Return Object ——————————————————————————————————————————————————————————————
 
   object <- list(call = match.call(),
                  type = "multilevel.descript",
@@ -920,13 +902,13 @@ multilevel.descript <- function(data, ..., cluster, type = c("1a", "1b"),
 
   #_____________________________________________________________________________
   #
-  # Write Results --------------------------------------------------------------
+  # Write Results ——————————————————————————————————————————————————————————————
 
   if (isTRUE(!is.null(write))) { .write.result(object = object, write = write, append = append) }
 
   #_____________________________________________________________________________
   #
-  # Output ---------------------------------------------------------------------
+  # Output —————————————————————————————————————————————————————————————————————
 
   if (isTRUE(output)) { print(object, check = FALSE) }
 

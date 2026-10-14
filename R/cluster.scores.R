@@ -18,12 +18,12 @@
 #'                expanded to match the input vector \code{data}.
 #' @param append  logical: if \code{TRUE} (default), cluster scores are appended
 #'                to the data frame specified in the argument \code{data}.
-#' @param name    a character string or character vector indicating the names
-#'                of the computed variables. By default, variables are named with
-#'                the ending \code{".a"} resulting in e.g. \code{"x1.a"} and
-#'                \code{"x2.a"}. Variable names can also be specified using a
-#'                character vector matching the number of variables specified in
-#'                \code{data} (e.g., \code{name = c("cluster.x1", "cluster.x2")}).
+#' @param name    a character vector indicating the names of the computed variables.
+#'                By default, variables are named with the ending \code{".a"}
+#'                resulting in e.g. \code{"x1.a"} and \code{"x2.a"}. Variable names
+#'                can also be specified using a character vector matching the
+#'                number of variables specified in \code{data} (e.g.,
+#'                \code{name = c("cluster.x1", "cluster.x2")}).
 #' @param as.na   a numeric vector indicating user-defined missing values, i.e.
 #'                these values are converted to \code{NA} before conducting the
 #'                analysis. Note that \code{as.na()} function is only applied to
@@ -82,7 +82,7 @@ cluster.scores <- function(data, ..., cluster,
 
   #_____________________________________________________________________________
   #
-  # Initial Check --------------------------------------------------------------
+  # Initial Check ——————————————————————————————————————————————————————————————
 
   # Check if input 'data' is missing
   if (isTRUE(missing(data) || is.null(data))) { stop("Please specify a numeric vector or data frame for the argument 'data'", call. = FALSE) }
@@ -92,40 +92,21 @@ cluster.scores <- function(data, ..., cluster,
 
   #_____________________________________________________________________________
   #
-  # Data -----------------------------------------------------------------------
+  # Data ———————————————————————————————————————————————————————————————————————
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Using the Argument '...' ####
-
-  if (isTRUE(!missing(...))) {
-
-    # Variable names
-    var.names <- .var.names(data = data, ..., cluster = cluster)
-
-    # Extract data and convert tibble into data frame or vector
-    x <- data[, var.names] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(y)) == 1L)) { unname(unlist(y)) } else { as.data.frame(y) } } else { return(y) })()
-
-    # Extract cluster variable and convert tibble into data frame or vector
-    cluster <- data[, cluster] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { unname(unlist(y)) } else { return(y) })()
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Without Using the Argument '...' ####
-
-  } else {
-
-    # Convert 'data' as tibble into data frame
-    x <- data |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(y)) == 1L)) { unname(unlist(y)) } else { as.data.frame(y) } } else { y })()
-
-    # Data and cluster
-    var.group <- .var.group(data = x, cluster = cluster)
+  var.names <- NULL
+  .data(data, ..., cluster = cluster, drop = TRUE) |> (\(p) {
 
     # Data
-    if (isTRUE(!is.null(var.group$data))) { x <- var.group$data }
+    assign("x", p$data, envir = parent.frame())
+
+    # Variable names
+    assign("var.names", p$var.names, envir = parent.frame())
 
     # Cluster variable
-    if (isTRUE(!is.null(var.group$cluster))) { cluster <- var.group$cluster }
+    if (isTRUE(!is.null(p$cluster))) { assign("cluster", p$cluster, envir = parent.frame()) }
 
-  }
+  })()
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Convert user-missing values into NA ####
@@ -134,7 +115,7 @@ cluster.scores <- function(data, ..., cluster,
 
   #_____________________________________________________________________________
   #
-  # Input Check ----------------------------------------------------------------
+  # Input Check ————————————————————————————————————————————————————————————————
 
   .check.input(logical = c("expand", "append"), m.character = list(fun = c("mean", "sum", "median", "var", "sd", "min", "max")), envir = environment(), input.check = check)
 
@@ -175,7 +156,7 @@ cluster.scores <- function(data, ..., cluster,
 
   #_____________________________________________________________________________
   #
-  # Arguments ------------------------------------------------------------------
+  # Arguments ——————————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Function for computing cluster scores ####
@@ -184,7 +165,7 @@ cluster.scores <- function(data, ..., cluster,
 
   #_____________________________________________________________________________
   #
-  # Main Function --------------------------------------------------------------
+  # Main Function ——————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Single Variable ####
@@ -290,7 +271,7 @@ cluster.scores <- function(data, ..., cluster,
 
   #_____________________________________________________________________________
   #
-  # Return Object --------------------------------------------------------------
+  # Return Object ——————————————————————————————————————————————————————————————
 
   return(object)
 

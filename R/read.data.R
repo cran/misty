@@ -112,7 +112,7 @@ read.data <- function(file, sheet = NULL, header = TRUE, select = NULL, drop = N
 
   #_____________________________________________________________________________
   #
-  # Initial Check --------------------------------------------------------------
+  # Initial Check ——————————————————————————————————————————————————————————————
 
   # Check input 'file'
   if (isTRUE(missing(file))) { stop("Please specify a character string indicating the name of the data file for the argument 'file'", call. = FALSE) }
@@ -127,7 +127,7 @@ read.data <- function(file, sheet = NULL, header = TRUE, select = NULL, drop = N
 
   #_____________________________________________________________________________
   #
-  # Input Check ----------------------------------------------------------------
+  # Input Check ————————————————————————————————————————————————————————————————
 
   # Check inputs
   .check.input(logical = c("header", "use.value.labels", "use.missings", "stringsAsFactors", "formats", "label", "labels", "missing", "widths", "as.data.frame"),
@@ -153,7 +153,7 @@ read.data <- function(file, sheet = NULL, header = TRUE, select = NULL, drop = N
 
   #_____________________________________________________________________________
   #
-  # Arguments ------------------------------------------------------------------
+  # Arguments ——————————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## encoding Argument ####
@@ -162,7 +162,7 @@ read.data <- function(file, sheet = NULL, header = TRUE, select = NULL, drop = N
 
   #_____________________________________________________________________________
   #
-  # Main Function --------------------------------------------------------------
+  # Main Function ——————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## CSV, DAT, or TXT File ####
@@ -226,7 +226,7 @@ read.data <- function(file, sheet = NULL, header = TRUE, select = NULL, drop = N
 
   #_____________________________________________________________________________
   #
-  # Output ---------------------------------------------------------------------
+  # Output —————————————————————————————————————————————————————————————————————
 
   return(object)
 

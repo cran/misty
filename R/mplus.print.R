@@ -136,15 +136,21 @@
 #'       \item{\code{"mod.est"}} for the \code{THE MODEL ESTIMATION TERMINATED NORMALLY} message and warning messages from the model estimation.
 #'       \item{\code{"fit"}} for the \code{MODEL FIT INFORMATION} section.
 #'       \item{\code{"class.count"}} for the \code{FINAL CLASS COUNTS AND PROPORTIONS FOR THE LATENT CLASSES} section.
-#'       \item{\code{"ind.means"}} for the \code{LATENT CLASS INDICATOR MEANS AND PROBABILITIES} section.
+#'       \item{\code{"ind.means"}} for the \code{LATENT CLASS INDICATOR MEANS AND PROBABILITIES FOR EACH LATENT CLASS} section.
+#'       \item{\code{"equal.mean"}} for the \code{EQUALITY TESTS OF MEANS ACROSS THE LATENT CLASSES} section.
 #'       \item{\code{"trans.prob"}} for the \code{LATENT TRANSITION PROBABILITIES BASED ON THE ESTIMATED MODEL} section.
 #'       \item{\code{"classif"}} for the \code{CLASSIFICATION QUALITY} section.
 #'       \item{\code{"mod.result"}} for the \code{MODEL RESULTS} and \code{RESULTS FOR EXPLORATORY FACTOR ANALYSIS} section.
 #'       \item{\code{"odds.ratio"}} for the \code{LOGISTIC REGRESSION ODDS RATIO RESULTS} section.
+#'       \item{\code{"odds.ratio.class"}} for the \code{LOGISTIC REGRESSION ODDS RATIO RESULTS FOR LATENT CLASS VARIABLES} section.#'
 #'       \item{\code{"prob.scale"}} for the \code{RESULTS IN PROBABILITY SCALE} section.
+#'       \item{\code{"multinom"}} for the \code{CATEGORICAL LATENT VARIABLE MULTINOMIAL LOGISTIC REGRESSIONS USING THE 3-STEP (FIXED LOGITS) PROCEDURE} section.
+#'       \item{\code{"odds.ratio.multinom"}} for the \code{ODDS RATIOS FOR CATEGORICAL LATENT VARIABLE MULTINOMIAL LOGISTIC REGRESSIONS USING THE 3-STEP (FIXED LOGITS) PROCEDURE} section.
 #'       \item{\code{"ind.odds.ratio"}} for the \code{LATENT CLASS INDICATOR ODDS RATIOS FOR THE LATENT CLASSES} section.
 #'       \item{\code{"alt.param"}} for the \code{ALTERNATIVE PARAMETERIZATIONS FOR THE CATEGORICAL LATENT VARIABLE REGRESSION} section.
+#'       \item{\code{"alt.param.odds.ratio"}} for the \code{ODDS RATIOS FOR THE ALTERNATIVE PARAMETERIZATIONS FOR THE CATEGORICAL LATENT VARIABLE REGRESSIO} section.
 #'       \item{\code{"irt.param"}} for the \code{IRT PARAMETERIZATION} section.
+#'       \item{\code{"equal.mean.bch"}} for the \code{EQUALITY TESTS OF MEANS/PROBABILITIES ACROSS CLASSES} section.
 #'       \item{\code{"brant.wald"}} for the \code{BRANT WALD TEST FOR PROPORTIONAL ODDS} section.
 #'       \item{\code{"std.mod.result"}} for the \code{STANDARDIZED MODEL RESULTS} section.
 #'       \item{\code{"rsquare"}} for the \code{R-SQUARE} section.
@@ -221,7 +227,7 @@
 #'
 #' @examples
 #' \dontrun{
-#' #—————————————————————————————————————— #———————————————————————————————————————
+#' #————————————————————————————————————————————————————————————————————————————
 #' # Mplus Example 3.1: Linear Regression
 #'
 #' # Example 1a: Default setting
@@ -245,7 +251,7 @@
 #' Example 1g: Print result section in a different order
 #' mplus.print("ex3.1.out", result  = c("mod.result", "fit", "summary.analysis"))
 #'
-#' #—————————————————————————————————————— #———————————————————————————————————————
+#' #————————————————————————————————————————————————————————————————————————————
 #' # misty.object of type 'mplus.print'
 #'
 #' # Example 2
@@ -255,7 +261,7 @@
 #' # Print misty.object
 #' mplus.print(object)
 #'
-#' #—————————————————————————————————————— #———————————————————————————————————————
+#' #————————————————————————————————————————————————————————————————————————————
 #' # Write Results
 #'
 #' # Example 3: Write Results into a text file
@@ -272,7 +278,7 @@ mplus.print <- function(x, print = c("all", "input", "result"),
 
   #_____________________________________________________________________________
   #
-  # Initial Check --------------------------------------------------------------
+  # Initial Check ——————————————————————————————————————————————————————————————
 
   # Check if input 'x' is missing or NULL
   if (isTRUE(missing(x) ||is.null(x))) { stop("Please specify a 'mplus' object or a character string indicating the name of a Mplus output file for the argument 'x'", call. = FALSE) }
@@ -306,42 +312,39 @@ mplus.print <- function(x, print = c("all", "input", "result"),
 
   #_____________________________________________________________________________
   #
-  # Input and Result Arguments -------------------------------------------------
+  # Input and Result Arguments —————————————————————————————————————————————————
 
   # All input options
   input.all <- c("title", "data", "data.imp", "data.wl", "data.lw", "data.tp", "data.miss", "data.surv", "data.coh", "variable", "define", "analysis", "model", "mod.ind", "mod.test", "mod.prior", "montecarlo", "mod.pop", "mod.cov", "mod.miss", "inpoutput", "savedata", "plot", "output", "message")
 
   # All result options
-  result.all <- c("summary.analysis", "summary.analysis.short", "summary.data", "summary.data.short", "prop.count", "summary.censor", "prop.zero", "crosstab", "summary.miss", "coverage", "basic", "sample.stat", "uni.sample.stat", "random.starts", "summary.fit", "mod.est", "fit", "class.count", "ind.means", "trans.prob", "classif", "mod.result", "odds.ratio", "prob.scale", "ind.odds.ratio", "alt.param", "irt.param", "brant.wald", "std.mod.result", "rsquare", "total.indirect", "std.total.indirect", "std.mod.result.cluster", "fs.comparison", "conf.mod.result", "conf.std.conf", "conf.total.indirect", "conf.odds.ratio", "modind", "resid", "logrank", "tech1", "tech2", "tech3", "h1.tech3", "tech4", "tech5", "tech6", "tech7", "tech8", "tech9", "tech10", "tech11", "tech12", "tech13", "tech14", "tech15", "tech16", "svalues", "stat.fscores", "summary.fscores", "pv", "plotinfo", "saveinfo")
+  result.all <- c("summary.analysis", "summary.analysis.short", "summary.data", "summary.data.short", "prop.count", "summary.censor", "prop.zero", "crosstab", "summary.miss", "coverage", "basic", "sample.stat", "uni.sample.stat", "random.starts", "summary.fit", "mod.est", "fit", "class.count", "ind.means", "equal.mean", "trans.prob", "classif", "mod.result", "odds.ratio", "odds.ratio.class", "prob.scale", "multinom", "odds.ratio.multinom", "ind.odds.ratio", "alt.param", "alt.param.odds.ratio", "irt.param", "equal.mean.bch", "brant.wald", "std.mod.result", "rsquare", "total.indirect", "std.total.indirect", "std.mod.result.cluster", "fs.comparison", "conf.mod.result", "conf.std.conf", "conf.total.indirect", "conf.odds.ratio", "modind", "resid", "logrank", "tech1", "tech2", "tech3", "h1.tech3", "tech4", "tech5", "tech6", "tech7", "tech8", "tech9", "tech10", "tech11", "tech12", "tech13", "tech14", "tech15", "tech16", "svalues", "stat.fscores", "summary.fscores", "pv", "plotinfo", "saveinfo")
 
   #_____________________________________________________________________________
   #
-  # Input Check ----------------------------------------------------------------
+  # Input Check ————————————————————————————————————————————————————————————————
 
-  # Check inputs
-  .check.input(logical = c("variable", "not.input", "not.result", "append", "output"),
-               s.character = list(print = c("all", "input", "result")),
-               args = "write1", envir = environment(), input.check = check)
+  .check.input(logical = c("variable", "not.input", "not.result", "append", "output"), s.character = list(print = c("all", "input", "result")), args = "write1", envir = environment(), input.check = check)
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Additional Checks ####
 
   if (isTRUE(check)) {
 
     # Check input 'input'
-    input[which(!input %in% c("all", "default", input.all))] |>
-      (\(y) if (isTRUE(length(y) != 0L)) { stop(paste0(if (isTRUE(length(y) == 1L)) { "Character string " } else { "Character vector " }, "specified in the argument 'input' is not permissible: ", paste(dQuote(y), collapse = ", ")), call. = FALSE) })()
+    input[which(!input %in% c("all", "default", input.all))] |> (\(y) if (isTRUE(length(y) != 0L)) { stop(paste0(if (isTRUE(length(y) == 1L)) { "Character string " } else { "Character vector " }, "specified in the argument 'input' is not permissible: ", paste(dQuote(y), collapse = ", ")), call. = FALSE) })()
 
     # Check input 'result'
-    result.check <- result[which(!result %in% c("all", "default", result.all))] |>
-      (\(y) if (isTRUE(length(y) != 0L)) { stop(paste0(if (isTRUE(length(y) == 1L)) { "Character string " } else { "Character vector " }, "specified in the argument 'result' is not permissible: ", paste(dQuote(y), collapse = ", ")), call. = FALSE) })()
+    result.check <- result[which(!result %in% c("all", "default", result.all))] |> (\(y) if (isTRUE(length(y) != 0L)) { stop(paste0(if (isTRUE(length(y) == 1L)) { "Character string " } else { "Character vector " }, "specified in the argument 'result' is not permissible: ", paste(dQuote(y), collapse = ", ")), call. = FALSE) })()
 
     # Check input 'exclude'
-    exclude.check <- exclude[which(!exclude %in% c(input.all, result.all))] |>
-      (\(y) if (isTRUE(length(y) != 0L)) { stop(paste0(if (isTRUE(length(y) == 1L)) { "Character string " } else { "Character vector " }, "specified in the argument 'exclude' is not permissible: ", paste(dQuote(y), collapse = ", ")), call. = FALSE) })()
+    exclude.check <- exclude[which(!exclude %in% c(input.all, result.all))] |> (\(y) if (isTRUE(length(y) != 0L)) { stop(paste0(if (isTRUE(length(y) == 1L)) { "Character string " } else { "Character vector " }, "specified in the argument 'exclude' is not permissible: ", paste(dQuote(y), collapse = ", ")), call. = FALSE) })()
 
   }
 
   #_____________________________________________________________________________
   #
-  # Arguments ------------------------------------------------------------------
+  # Arguments ——————————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## 'print' Argument ####
@@ -427,24 +430,24 @@ mplus.print <- function(x, print = c("all", "input", "result"),
 
   #_____________________________________________________________________________
   #
-  # Main Function --------------------------------------------------------------
+  # Main Function ——————————————————————————————————————————————————————————————
 
-  #—————————————————————————————————————— # #
+  #—————————————————————————————————————— #
   # Mplus Output in Text File
 
   if (isTRUE(!inherits(x, "misty.object"))) {
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Read Output ####
 
     out <- suppressWarnings(readLines(x))
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Check if file is a Mplus output ####
 
     if (isTRUE(all(!misty::chr.grepl(c("Mplus VERSION", "Mplus DEVELOPMENT"), out)))) { stop("Output file specified in the argument 'x' is not a Mplus output file.", call. = FALSE) }
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Default Setting for the Result Argument ####
 
     # Do not print model fit information when df = 0
@@ -458,7 +461,7 @@ mplus.print <- function(x, print = c("all", "input", "result"),
 
     }
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Exclude Output ####
 
     #—————————————————————————————————————— #
@@ -500,14 +503,12 @@ mplus.print <- function(x, print = c("all", "input", "result"),
     #—————————————————————————————————————— #
     ### Chi-Square Test of Model Fit for the Baseline Model ####
 
-    grep("Chi-Square Test of Model Fit for the Baseline Model", out) |>
-      (\(y) if (isTRUE(length(y) >= 1L)) { assign("out", out[-as.vector(sapply(y, function(y) y:(y + 4L)))]) })()
+    grep("Chi-Square Test of Model Fit for the Baseline Model", out) |> (\(y) if (isTRUE(length(y) >= 1L)) { assign("out", out[-as.vector(sapply(y, function(y) y:(y + 4L)))]) })()
 
     #—————————————————————————————————————— #
     ### Sample-Size Adjusted BIC ####
 
-    grep("\\(n \\+ 2\\) / 24", out) |>
-      (\(y) if (isTRUE(length(y) >= 1L)) { assign("out", out[-y]) })()
+    grep("\\(n \\+ 2\\) / 24", out) |> (\(y) if (isTRUE(length(y) >= 1L)) { assign("out", out[-y]) })()
 
     #—————————————————————————————————————— #
     ### The chi-square value for MLM, MLMV, MLR, ULSMV, WLSM and WLSMV ####
@@ -534,39 +535,34 @@ mplus.print <- function(x, print = c("all", "input", "result"),
     #—————————————————————————————————————— #
     ### QUALITY OF NUMERICAL RESULTS ####
 
-    grep("QUALITY OF NUMERICAL RESULTS", out) |>
-      (\(y) if (isTRUE(length(y) != 0L)) { assign("out", out[-as.vector(sapply(y, function(y) y:(y + 3L)))]) })()
+    grep("QUALITY OF NUMERICAL RESULTS", out) |> (\(y) if (isTRUE(length(y) != 0L)) { assign("out", out[-as.vector(sapply(y, function(y) y:(y + 3L)))]) })()
 
     #—————————————————————————————————————— #
     ### MAXIMUM LOG-LIKELIHOOD VALUE FOR THE UNRESTRICTED ####
 
-    grep("MAXIMUM LOG-LIKELIHOOD VALUE FOR THE UNRESTRICTED", out) |>
-      (\(y) if (isTRUE(length(y) != 0L)) { assign("out", out[-y]) })()
+    grep("MAXIMUM LOG-LIKELIHOOD VALUE FOR THE UNRESTRICTED", out) |> (\(y) if (isTRUE(length(y) != 0L)) { assign("out", out[-y]) })()
 
     #—————————————————————————————————————— #
     ### Minimum Rotation Function Value ####
 
-    grep("MINIMUM ROTATION FUNCTION VALUE", out) |>
-      (\(y) if (isTRUE(length(y) != 0L)) { assign("out", out[-y]) })()
+    grep("MINIMUM ROTATION FUNCTION VALUE", out) |> (\(y) if (isTRUE(length(y) != 0L)) { assign("out", out[-y]) })()
 
     #—————————————————————————————————————— #
     ### Optimum Function Value ####
 
-    grep("Optimum Function Value", out) |>
-      (\(y) if (isTRUE(length(y) != 0L)) { assign("out", out[-c(y:(y + 3L))]) })()
+    grep("Optimum Function Value", out) |> (\(y) if (isTRUE(length(y) != 0L)) { assign("out", out[-c(y:(y + 3L))]) })()
 
     #—————————————————————————————————————— #
     ### DIAGRAM INFORMATION ####
 
-    grep("DIAGRAM INFORMATION", out) |>
-      (\(y) if (isTRUE(length(y) != 0L)) { assign("out", out[-c(y:(y + 6L))]) })()
+    grep("DIAGRAM INFORMATION", out) |> (\(y) if (isTRUE(length(y) != 0L)) { assign("out", out[-c(y:(y + 6L))]) })()
 
     #—————————————————————————————————————— #
     ### Mplus Information ####
 
     out <- unlist(out)[-c(3L, unlist(sapply(c("MUTHEN & MUTHEN", "Beginning Time:", "Ending Time:", "Elapsed Time:", "3463 Stoner Ave.", "Los Angeles, CA  90066", "Tel: (310) 391-9971", "Fax: (310) 391-8971", "Web: www.StatModel.com", "Support: Support@StatModel.com", "Copyright (c)"), function(z) grep(z, unlist(out), fixed = TRUE))))]
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Run Length Encoding, Sections, Warnings, and Internal Function ####
 
     #—————————————————————————————————————— #
@@ -584,7 +580,7 @@ mplus.print <- function(x, print = c("all", "input", "result"),
     # Run length 2
     run.length2 <- which(rle(out)$lengths >= 2L)
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Extract Input Commands ####
 
     if (isTRUE(any(run.val == "INPUT INSTRUCTIONS"))) {
@@ -764,7 +760,7 @@ mplus.print <- function(x, print = c("all", "input", "result"),
 
     }
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Extract Output Sections ####
 
     #—————————————————————————————————————— #
@@ -783,7 +779,7 @@ mplus.print <- function(x, print = c("all", "input", "result"),
                  "SAMPLE STATISTICS", "SAMPLE STATISTICS FOR THE FIRST REPLICATION", "SAMPLE STATISTICS FOR THE FIRST DATA SET", "RESULTS FOR BASIC ANALYSIS", "UNIVARIATE SAMPLE STATISTICS",
                  "RANDOM STARTS RESULTS RANKED FROM THE BEST TO THE WORST FIT FUNCTION VALUES", "RANDOM STARTS RESULTS RANKED FROM THE BEST TO THE WORST LOGLIKELIHOOD VALUES",
                  "SUMMARY OF MODEL FIT INFORMATION", "MODEL FIT INFORMATION", "FINAL CLASS COUNTS AND PROPORTIONS FOR THE LATENT CLASSES", "FINAL CLASS COUNTS AND PROPORTIONS FOR THE LATENT CLASS PATTERNS", "TRANSITION PROBABILITIES", "CLASSIFICATION QUALITY", "C-SPECIFIC CLASSIFICATION RESULTS",
-                 "LATENT CLASS INDICATOR MEANS AND PROBABILITIES", "MODEL RESULTS", "MODEL RESULTS FOR THE CONFIGURAL MODEL", "MODEL RESULTS FOR THE METRIC MODEL", "MODEL RESULTS FOR THE SCALAR MODEL",
+                 "LATENT CLASS INDICATOR MEANS AND PROBABILITIES FOR EACH LATENT CLASS", "EQUALITY TESTS OF MEANS ACROSS THE LATENT CLASSES", "MODEL RESULTS", "MODEL RESULTS FOR THE CONFIGURAL MODEL", "MODEL RESULTS FOR THE METRIC MODEL", "MODEL RESULTS FOR THE SCALAR MODEL",
                  "MODEL RESULTS USE THE LATENT CLASS VARIABLE ORDER", "FACTOR SCORE COMPARISON", "TOTAL, TOTAL INDIRECT, SPECIFIC INDIRECT, AND DIRECT EFFECTS", "TOTAL, TOTAL INDIRECT, SPECIFIC INDIRECT, AND DIRECT EFFECTS FOR LATENT RESPONSE VARIABLES",
                  "TOTAL, INDIRECT, AND DIRECT EFFECTS BASED ON COUNTERFACTUALS (CAUSALLY-DEFINED EFFECTS)", "STANDARDIZED TOTAL, TOTAL INDIRECT, SPECIFIC INDIRECT, AND DIRECT EFFECTS",
                  "STANDARDIZED TOTAL, TOTAL INDIRECT, SPECIFIC INDIRECT, AND DIRECT EFFECTS FOR LATENT RESPONSE VARIABLES", "STANDARDIZED TOTAL, INDIRECT, AND DIRECT EFFECTS BASED ON COUNTERFACTUALS (CAUSALLY-DEFINED EFFECTS)",
@@ -791,7 +787,8 @@ mplus.print <- function(x, print = c("all", "input", "result"),
                  "CREDIBILITY INTERVALS OF STANDARDIZED MODEL RESULTS", "CONFIDENCE INTERVALS OF TOTAL, TOTAL INDIRECT, SPECIFIC INDIRECT, AND DIRECT EFFECTS", "CREDIBILITY INTERVALS OF TOTAL, TOTAL INDIRECT, SPECIFIC INDIRECT, AND DIRECT EFFECTS",
                  "CONFIDENCE INTERVALS OF TOTAL, INDIRECT, AND DIRECT EFFECTS BASED ON COUNTERFACTUALS (CAUSALLY-DEFINED EFFECTS)", "CREDIBILITY INTERVALS OF TOTAL, INDIRECT, AND DIRECT EFFECTS BASED ON COUNTERFACTUALS (CAUSALLY-DEFINED EFFECTS)",
                  "CONFIDENCE INTERVALS OF TOTAL, TOTAL INDIRECT, SPECIFIC INDIRECT, AND DIRECT EFFECTS FOR LATENT RESPONSE VARIABLES", "CREDIBILITY INTERVALS OF TOTAL, TOTAL INDIRECT, SPECIFIC INDIRECT, AND DIRECT EFFECTS FOR LATENT RESPONSE VARIABLES",
-                 "CONFIDENCE INTERVALS FOR THE LOGISTIC REGRESSION ODDS RATIO RESULTS", "CREDIBILITY INTERVALS FOR THE LOGISTIC REGRESSION ODDS RATIO RESULTS", "LOGISTIC REGRESSION ODDS RATIO RESULTS", "RESULTS IN PROBABILITY SCALE",
+                 "CONFIDENCE INTERVALS FOR THE LOGISTIC REGRESSION ODDS RATIO RESULTS", "CREDIBILITY INTERVALS FOR THE LOGISTIC REGRESSION ODDS RATIO RESULTS", "LOGISTIC REGRESSION ODDS RATIO RESULTS", "LOGISTIC REGRESSION ODDS RATIO RESULTS FOR LATENT CLASS VARIABLES",
+                 "CATEGORICAL LATENT VARIABLE MULTINOMIAL LOGISTIC REGRESSIONS USING", "ODDS RATIOS FOR CATEGORICAL LATENT VARIABLE MULTINOMIAL LOGISTIC REGRESSIONS", "RESULTS IN PROBABILITY SCALE", "EQUALITY TESTS OF MEANS/PROBABILITIES ACROSS CLASSES",
                  "LATENT CLASS INDICATOR ODDS RATIOS FOR THE LATENT CLASSES", "ALTERNATIVE PARAMETERIZATIONS FOR THE CATEGORICAL LATENT VARIABLE REGRESSION", "IRT PARAMETERIZATION", "STANDARDIZED MODEL RESULTS",
                  "WITHIN-LEVEL STANDARDIZED MODEL RESULTS FOR CLUSTER 1", "R-SQUARE", "MODEL MODIFICATION INDICES", "MODEL COMMAND WITH FINAL ESTIMATES USED AS STARTING VALUES", "RESIDUAL OUTPUT", "SAMPLE STATISTICS FOR ESTIMATED FACTOR SCORES",
                  "LOGRANK OUTPUT", "BRANT WALD TEST FOR PROPORTIONAL ODDS", "TECHNICAL OUTPUT", "TECHNICAL 1 OUTPUT", "TECHNICAL 2 OUTPUT", "TECHNICAL 3 OUTPUT", "H1 TECHNICAL 3 OUTPUT", "TECHNICAL 4 OUTPUT", "TECHNICAL 5/6 OUTPUT", "TECHNICAL 7 OUTPUT",
@@ -820,7 +817,7 @@ mplus.print <- function(x, print = c("all", "input", "result"),
               "THE MODEL ESTIMATION HAS REACHED A SADDLE POINT", "THE MISSING DATA EM ALGORITHM FOR THE H1 MODEL")
 
     # Output objects
-    summary.analysis <- summary.analysis.short <- summary.data <- summary.data.short <- prop.count <- summary.censor <- prop.zero <- crosstab <- summary.miss <- coverage <- basic <- sample.stat <- uni.sample.stat <- random.starts <- summary.fit <- mod.est <- fit <- class.count <- ind.means <- trans.prob <- classif <- mod.result <- odds.ratio <- prob.scale <- ind.odds.ratio <- alt.param <- irt.param <- brant.wald <- std.mod.result <- rsquare <- total.indirect <- std.total.indirect <- std.mod.result.cluster <- fs.comparison <- conf.mod.result <- conf.std.conf <- conf.total.indirect <- conf.odds.ratio <- modind <- resid <- logrank <- tech1 <- tech2 <- tech3 <- h1.tech3 <- tech4 <- tech5 <- tech6 <- tech7 <- tech8 <- tech9 <- tech10 <- tech11 <- tech12 <- tech13 <- tech14 <- tech15 <- tech16 <- svalues <- stat.fscores <- summary.fscores <- pv <- plotinfo <- saveinfo <- NULL
+    summary.analysis <- summary.analysis.short <- summary.data <- summary.data.short <- prop.count <- summary.censor <- prop.zero <- crosstab <- summary.miss <- coverage <- basic <- sample.stat <- uni.sample.stat <- random.starts <- summary.fit <- mod.est <- fit <- class.count <- ind.means <- equal.mean <- trans.prob <- classif <- mod.result <- odds.ratio <- odds.ratio.class <- prob.scale <- multinom <- odds.ratio.multinom <- ind.odds.ratio <- alt.param <- alt.param.odds.ratio <- irt.param <- equal.mean.bch <- brant.wald <- std.mod.result <- rsquare <- total.indirect <- std.total.indirect <- std.mod.result.cluster <- fs.comparison <- conf.mod.result <- conf.std.conf <- conf.total.indirect <- conf.odds.ratio <- modind <- resid <- logrank <- tech1 <- tech2 <- tech3 <- h1.tech3 <- tech4 <- tech5 <- tech6 <- tech7 <- tech8 <- tech9 <- tech10 <- tech11 <- tech12 <- tech13 <- tech14 <- tech15 <- tech16 <- svalues <- stat.fscores <- summary.fscores <- pv <- plotinfo <- saveinfo <- NULL
 
     #—————————————————————————————————————— #
     ### SUMMARY OF ANALYSIS ####
@@ -828,7 +825,7 @@ mplus.print <- function(x, print = c("all", "input", "result"),
     if (isTRUE(any(run.val.tech == "SUMMARY OF ANALYSIS"))) {
 
       #### Long SUMMARY OF ANALYSIS
-      summary.analysis <- which(run.val.tech == "SUMMARY OF ANALYSIS"):(.section.ind.from.to(section, "SUMMARY OF ANALYSIS", run = run.val.tech))
+      "SUMMARY OF ANALYSIS" |> (\(p) summary.analysis <<- which(run.val.tech == p):(.section.ind.from.to(section, p, run = run.val.tech)))()
 
       #### Short SUMMARY OF ANALYSIS
       summary.analysis.short <- which(run.val.tech == "SUMMARY OF ANALYSIS"):(grep("Number of dependent variables", run.val.tech) - 1L)
@@ -930,17 +927,17 @@ mplus.print <- function(x, print = c("all", "input", "result"),
     #—————————————————————————————————————— #
     ### SUMMARY OF CENSORED LIMITS ####
 
-    if (isTRUE(any(run.val.tech == "SUMMARY OF CENSORED LIMITS"))) { summary.censor <- which(run.val.tech == "SUMMARY OF CENSORED LIMITS"):(.section.ind.from.to(section, "SUMMARY OF CENSORED LIMITS", run = run.val.tech)) }
+    "SUMMARY OF CENSORED LIMITS" |> (\(p) if (isTRUE(any(run.val.tech == p))) { summary.censor <<- which(run.val.tech == p):(.section.ind.from.to(section, p, run = run.val.tech)) })()
 
     #—————————————————————————————————————— #
     ### COUNT PROPORTION OF ZERO, MINIMUM AND MAXIMUM VALUES ####
 
-    if (isTRUE(any(run.val.tech == "COUNT PROPORTION OF ZERO, MINIMUM AND MAXIMUM VALUES"))) { prop.zero <- which(run.val.tech == "COUNT PROPORTION OF ZERO, MINIMUM AND MAXIMUM VALUES"):(.section.ind.from.to(section, "COUNT PROPORTION OF ZERO, MINIMUM AND MAXIMUM VALUES", run = run.val.tech)) }
+    "COUNT PROPORTION OF ZERO, MINIMUM AND MAXIMUM VALUES" |> (\(p) if (isTRUE(any(run.val.tech == p))) { prop.zero <<- which(run.val.tech == p):(.section.ind.from.to(section, p, run = run.val.tech)) })()
 
     #—————————————————————————————————————— #
     ### CROSSTABS FOR CATEGORICAL VARIABLES ####
 
-    if (isTRUE(any(run.val.tech == "CROSSTABS FOR CATEGORICAL VARIABLES"))) { crosstab <- min(which(run.val.tech == "CROSSTABS FOR CATEGORICAL VARIABLES")):(.section.ind.from.to(section, "CROSSTABS FOR CATEGORICAL VARIABLES", run = run.val.tech)) }
+    "CROSSTABS FOR CATEGORICAL VARIABLES" |> (\(p) if (isTRUE(any(run.val.tech == p))) { crosstab <<- min(which(run.val.tech == p)):(.section.ind.from.to(section, p, run = run.val.tech)) } )()
 
     #—————————————————————————————————————— #
     ### SUMMARY OF MISSING DATA PATTERNS ####
@@ -959,7 +956,7 @@ mplus.print <- function(x, print = c("all", "input", "result"),
     #—————————————————————————————————————— #
     ### RESULTS FOR BASIC ANALYSIS ####
 
-    if (isTRUE(any(run.val.tech == "RESULTS FOR BASIC ANALYSIS"))) { basic <- which(run.val.tech == "RESULTS FOR BASIC ANALYSIS"):(.section.ind.from.to(section, "RESULTS FOR BASIC ANALYSIS", run = run.val.tech)) }
+    "RESULTS FOR BASIC ANALYSIS" |> (\(p) if (isTRUE(any(run.val.tech == p))) { basic <<- which(run.val.tech == p):(.section.ind.from.to(section, p, run = run.val.tech)) } )()
 
     #—————————————————————————————————————— #
     ### SAMPLE STATISTICS ####
@@ -995,26 +992,17 @@ mplus.print <- function(x, print = c("all", "input", "result"),
     #—————————————————————————————————————— #
     ### SUMMARY OF MODEL FIT INFORMATION ####
 
-    if (isTRUE(any(run.val.tech == "SUMMARY OF MODEL FIT INFORMATION"))) { summary.fit <- which(run.val.tech == "SUMMARY OF MODEL FIT INFORMATION"):(.section.ind.from.to(section, "SUMMARY OF MODEL FIT INFORMATION", run = run.val.tech)) }
+    "SUMMARY OF MODEL FIT INFORMATION" |> (\(p) if (isTRUE(any(run.val.tech == p))) { summary.fit <<- which(run.val.tech == p):(.section.ind.from.to(section, p, run = run.val.tech)) } )()
 
     #—————————————————————————————————————— #
     ### MODEL ESTIMATION ####
 
-    if (isTRUE(any(c(sapply(warn, grepl, run.val.tech))))) {
-
-      mod.est <- unlist(sapply(warn, function(y) which(grepl(y, run.val.tech)))) |>
-        (\(y) min(y):(run.length2[which(run.length2 > max(y))[1L]]))()
-
-    }
+    if (isTRUE(any(c(sapply(warn, grepl, run.val.tech))))) { mod.est <- unlist(sapply(warn, function(y) which(grepl(y, run.val.tech)))) |> (\(y) min(y):(run.length2[which(run.length2 > max(y))[1L]]))() }
 
     #—————————————————————————————————————— #
     ### MODEL FIT INFORMATION ####
 
-    if (isTRUE(any(run.val.tech == "MODEL FIT INFORMATION") && all(!grepl("RESULTS FOR EXPLORATORY FACTOR ANALYSIS", run.val.tech)))) {
-
-      fit <- which(run.val.tech == "MODEL FIT INFORMATION"):(.section.ind.from.to(section, "MODEL FIT INFORMATION", run = run.val.tech))
-
-    }
+    if (isTRUE(any(run.val.tech == "MODEL FIT INFORMATION") && all(!grepl("RESULTS FOR EXPLORATORY FACTOR ANALYSIS", run.val.tech)))) { fit <- which(run.val.tech == "MODEL FIT INFORMATION"):(.section.ind.from.to(section, "MODEL FIT INFORMATION", run = run.val.tech)) }
 
     #—————————————————————————————————————— #
     ### FINAL CLASS COUNTS AND PROPORTIONS ####
@@ -1036,21 +1024,30 @@ mplus.print <- function(x, print = c("all", "input", "result"),
     }
 
     #—————————————————————————————————————— #
-    ### LATENT CLASS INDICATOR MEANS AND PROBABILITIES ####
+    ### LATENT CLASS INDICATOR MEANS AND PROBABILITIES FOR EACH LATENT CLASS ####
 
-    if (isTRUE(any(run.val.tech == "LATENT CLASS INDICATOR MEANS AND PROBABILITIES"))) { ind.means <- which(run.val.tech == "LATENT CLASS INDICATOR MEANS AND PROBABILITIES"):(.section.ind.from.to(section, "LATENT CLASS INDICATOR MEANS AND PROBABILITIES", run = run.val.tech)) }
+    "LATENT CLASS INDICATOR MEANS AND PROBABILITIES FOR EACH LATENT CLASS" |> (\(p) if (isTRUE(any(run.val.tech == p))) { ind.means <<- which(run.val.tech == p):(.section.ind.from.to(section, p, run = run.val.tech)) } )()
+
+    #—————————————————————————————————————— #
+    ### EQUALITY TESTS OF MEANS ACROSS THE LATENT CLASSES ####
+
+    "EQUALITY TESTS OF MEANS ACROSS THE LATENT CLASSES" |> (\(p) if (isTRUE(any(run.val.tech == p))) { equal.mean <<- which(run.val.tech == p):(.section.ind.from.to(section, p, run = run.val.tech)) } )()
 
     #—————————————————————————————————————— #
     ### TRANSITION PROBABILITIES ####
 
-    if (isTRUE(any(run.val.tech == "LATENT TRANSITION PROBABILITIES BASED ON THE ESTIMATED MODEL"))) {
+    "LATENT TRANSITION PROBABILITIES BASED ON THE ESTIMATED MODEL" |> (\(p) {
 
-      trans.prob <- which(run.val.tech == "LATENT TRANSITION PROBABILITIES BASED ON THE ESTIMATED MODEL"):(.section.ind.from.to(section, "LATENT TRANSITION PROBABILITIES BASED ON THE ESTIMATED MODEL", run = run.val.tech))
+      if (isTRUE(any(run.val.tech == p))) {
 
-      # Remove TRANSITION PROBABILITIES from FINAL CLASS COUNTS AND PROPORTIONS
-      class.count <- setdiff(class.count, trans.prob)
+        trans.prob <<- which(run.val.tech == p):(.section.ind.from.to(section, p, run = run.val.tech))
 
-    }
+        # Remove TRANSITION PROBABILITIES from FINAL CLASS COUNTS AND PROPORTIONS
+        class.count <<- setdiff(class.count, trans.prob)
+
+      }
+
+    })()
 
     #—————————————————————————————————————— #
     ### CLASSIFICATION QUALITY ####
@@ -1141,42 +1138,67 @@ mplus.print <- function(x, print = c("all", "input", "result"),
     #—————————————————————————————————————— #
     ### LOGISTIC REGRESSION ODDS RATIO RESULTS ####
 
-    if (isTRUE(any(run.val.tech == "LOGISTIC REGRESSION ODDS RATIO RESULTS"))) { odds.ratio <- which(run.val.tech == "LOGISTIC REGRESSION ODDS RATIO RESULTS"):(.section.ind.from.to(section, "LOGISTIC REGRESSION ODDS RATIO RESULTS", run = run.val.tech)) }
+    "LOGISTIC REGRESSION ODDS RATIO RESULTS" |> (\(p) if (isTRUE(any(run.val.tech == p))) { odds.ratio <<- which(run.val.tech == p):(.section.ind.from.to(section, p, run = run.val.tech)) } )()
+
+    #—————————————————————————————————————— #
+    ### LOGISTIC REGRESSION ODDS RATIO RESULTS FOR LATENT CLASS VARIABLES  ####
+
+    "LOGISTIC REGRESSION ODDS RATIO RESULTS FOR LATENT CLASS VARIABLES" |> (\(p) if (isTRUE(any(run.val.tech == p))) { odds.ratio.class <<- which(run.val.tech == p):(.section.ind.from.to(section, p, run = run.val.tech)) })()
+
+    #—————————————————————————————————————— #
+    ### CATEGORICAL LATENT VARIABLE MULTINOMIAL LOGISTIC REGRESSIONS USING THE 3-STEP (FIXED LOGITS) PROCEDURE ####
+
+    "CATEGORICAL LATENT VARIABLE MULTINOMIAL LOGISTIC REGRESSIONS USING" |> (\(p) if (isTRUE(any(run.val.tech == p))) { multinom <<- which(run.val.tech == p):(.section.ind.from.to(section, p, run = run.val.tech)) } )()
+
+    #—————————————————————————————————————— #
+    ### ODDS RATIOS FOR CATEGORICAL LATENT VARIABLE MULTINOMIAL LOGISTIC REGRESSIONS USING THE 3-STEP (FIXED LOGITS) PROCEDURE ####
+
+    "ODDS RATIOS FOR CATEGORICAL LATENT VARIABLE MULTINOMIAL LOGISTIC REGRESSIONS" |> (\(p) if (isTRUE(any(run.val.tech == p))) { odds.ratio.multinom <<- which(run.val.tech == p):(.section.ind.from.to(section, p, run = run.val.tech)) } )()
 
     #—————————————————————————————————————— #
     ### RESULTS IN PROBABILITY SCALE ####
 
-    if (isTRUE(any(run.val.tech == "RESULTS IN PROBABILITY SCALE"))) { prob.scale <- which(run.val.tech == "RESULTS IN PROBABILITY SCALE"):(.section.ind.from.to(section, "RESULTS IN PROBABILITY SCALE", run = run.val.tech)) }
+    "RESULTS IN PROBABILITY SCALE" |> (\(p) if (isTRUE(any(run.val.tech == p))) { prob.scale <<- which(run.val.tech == p):(.section.ind.from.to(section, p, run = run.val.tech)) })()
 
     #—————————————————————————————————————— #
     ### LATENT CLASS INDICATOR ODDS RATIOS FOR THE LATENT CLASSES ####
 
-    if (isTRUE(any(run.val.tech == "LATENT CLASS INDICATOR ODDS RATIOS FOR THE LATENT CLASSES"))) { ind.odds.ratio <- which(run.val.tech == "LATENT CLASS INDICATOR ODDS RATIOS FOR THE LATENT CLASSES"):(.section.ind.from.to(section, "LATENT CLASS INDICATOR ODDS RATIOS FOR THE LATENT CLASSES", run = run.val.tech)) }
+    "LATENT CLASS INDICATOR ODDS RATIOS FOR THE LATENT CLASSES" |> (\(p) if (isTRUE(any(run.val.tech == "LATENT CLASS INDICATOR ODDS RATIOS FOR THE LATENT CLASSES"))) { ind.odds.ratio <<- which(run.val.tech == p):(.section.ind.from.to(section, p, run = run.val.tech)) } )()
 
     #—————————————————————————————————————— #
     ### ALTERNATIVE PARAMETERIZATIONS FOR THE CATEGORICAL LATENT VARIABLE REGRESSION ####
 
-    if (isTRUE(any(run.val.tech == "ALTERNATIVE PARAMETERIZATIONS FOR THE CATEGORICAL LATENT VARIABLE REGRESSION"))) { alt.param <- min(which(run.val.tech == "ALTERNATIVE PARAMETERIZATIONS FOR THE CATEGORICAL LATENT VARIABLE REGRESSION")):(.section.ind.from.to(section, "ALTERNATIVE PARAMETERIZATIONS FOR THE CATEGORICAL LATENT VARIABLE REGRESSION", run = run.val.tech)) }
+    "ALTERNATIVE PARAMETERIZATIONS FOR THE CATEGORICAL LATENT VARIABLE REGRESSION" |> (\(p) if (isTRUE(any(run.val.tech == p))) { alt.param <<- min(which(run.val.tech == p)):(.section.ind.from.to(section, p, run = run.val.tech)) } )()
+
+    #—————————————————————————————————————— #
+    ### ODDS RATIOS FOR THE ALTERNATIVE PARAMETERIZATIONS FOR THE CATEGORICAL LATENT VARIABLE REGRESSION ####
+
+    "ODDS RATIOS FOR THE ALTERNATIVE PARAMETERIZATIONS FOR THE CATEGORICAL LATENT VARIABLE REGRESSION" |> (\(p) if (isTRUE(any(run.val.tech == p))) { alt.param.odds.ratio <<- min(which(run.val.tech == p)):(.section.ind.from.to(section, p, run = run.val.tech)) })()
 
     #—————————————————————————————————————— #
     ### IRT PARAMETERIZATION ####
 
-    if (isTRUE(any(grepl("IRT PARAMETERIZATION", run.val.tech)))) { irt.param <- which(run.val.tech == "IRT PARAMETERIZATION"):(.section.ind.from.to(section, "IRT PARAMETERIZATION", run = run.val.tech)) }
+    "IRT PARAMETERIZATION" |> (\(p) if (isTRUE(any(grepl(p, run.val.tech)))) { irt.param <<- which(run.val.tech == p):(.section.ind.from.to(section, p, run = run.val.tech)) })()
+
+    #—————————————————————————————————————— #
+    ### EQUALITY TESTS OF MEANS/PROBABILITIES ACROSS CLASSES ####
+
+    "EQUALITY TESTS OF MEANS/PROBABILITIES ACROSS CLASSES" |> (\(p) if (isTRUE(any(run.val.tech == p))) { equal.mean.bch <<- which(run.val.tech == p):(.section.ind.from.to(section, p, run = run.val.tech)) })()
 
     #—————————————————————————————————————— #
     ### BRANT WALD TEST FOR PROPORTIONAL ODDS ####
 
-    if (isTRUE(any(run.val.tech == "BRANT WALD TEST FOR PROPORTIONAL ODDS"))) { brant.wald <- which(run.val.tech == "BRANT WALD TEST FOR PROPORTIONAL ODDS"):(.section.ind.from.to(section, "BRANT WALD TEST FOR PROPORTIONAL ODDS", run = run.val.tech)) }
+    "BRANT WALD TEST FOR PROPORTIONAL ODDS" |> (\(p) if (isTRUE(any(run.val.tech == p))) { brant.wald <<- which(run.val.tech == p):(.section.ind.from.to(section, p, run = run.val.tech)) })()
 
     #—————————————————————————————————————— #
     ### STANDARDIZED MODEL RESULTS ####
 
-    if (isTRUE(any(run.val.tech == "STANDARDIZED MODEL RESULTS"))) { std.mod.result <- which(run.val.tech == "STANDARDIZED MODEL RESULTS"):(.section.ind.from.to(section, "STANDARDIZED MODEL RESULTS", run = run.val.tech)) }
+    "STANDARDIZED MODEL RESULTS" |> (\(p) if (isTRUE(any(run.val.tech == p))) { std.mod.result <<- which(run.val.tech == p):(.section.ind.from.to(section, p, run = run.val.tech)) })()
 
     #—————————————————————————————————————— #
     ### R-SQUARE ####
 
-    if (isTRUE(any(run.val.tech == "R-SQUARE"))) { rsquare <- which(run.val.tech == "R-SQUARE"):(.section.ind.from.to(section, "R-SQUARE", run = run.val.tech)) }
+    "R-SQUARE" |> (\(p) if (isTRUE(any(run.val.tech == p))) { rsquare <<- which(run.val.tech == p):(.section.ind.from.to(section, p, run = run.val.tech)) } )()
 
     #—————————————————————————————————————— #
     ### TOTAL, TOTAL INDIRECT, SPECIFIC INDIRECT, AND DIRECT EFFECTS ####
@@ -1195,22 +1217,22 @@ mplus.print <- function(x, print = c("all", "input", "result"),
     #—————————————————————————————————————— #
     ### WITHIN-LEVEL STANDARDIZED MODEL RESULTS FOR CLUSTER ####
 
-    if (isTRUE(any(run.val.tech == "WITHIN-LEVEL STANDARDIZED MODEL RESULTS FOR CLUSTER 1"))) { std.mod.result.cluster <- which(run.val.tech == "WITHIN-LEVEL STANDARDIZED MODEL RESULTS FOR CLUSTER 1", run.val.tech):(.section.ind.from.to(section, "WITHIN-LEVEL STANDARDIZED MODEL RESULTS FOR CLUSTER 1", run = run.val.tech)) }
+    "WITHIN-LEVEL STANDARDIZED MODEL RESULTS FOR CLUSTER 1" |> (\(p) if (isTRUE(any(run.val.tech == p))) { std.mod.result.cluster <<- which(run.val.tech == p, run.val.tech):(.section.ind.from.to(section, p, run = run.val.tech)) } )()
 
     #—————————————————————————————————————— #
     ### BETWEEN-LEVEL FACTOR SCORE COMPARISONS ####
 
-    if (isTRUE(any(run.val.tech == "BETWEEN-LEVEL FACTOR SCORE COMPARISONS"))) { fs.comparison <- which(run.val.tech == "BETWEEN-LEVEL FACTOR SCORE COMPARISONS"):(.section.ind.from.to(section, "BETWEEN-LEVEL FACTOR SCORE COMPARISONS", run = run.val.tech)) }
+    "BETWEEN-LEVEL FACTOR SCORE COMPARISONS" |> (\(p) if (isTRUE(any(run.val.tech == p))) { fs.comparison <<- which(run.val.tech == p):(.section.ind.from.to(section, p, run = run.val.tech)) } )()
 
     #—————————————————————————————————————— #
     ### CONFIDENCE INTERVALS OF MODEL RESULTS ####
 
-    if (isTRUE(any(run.val.tech == "CONFIDENCE INTERVALS OF MODEL RESULTS"))) { conf.mod.result <- which(run.val.tech == "CONFIDENCE INTERVALS OF MODEL RESULTS"):(.section.ind.from.to(section, "CONFIDENCE INTERVALS OF MODEL RESULTS", run = run.val.tech)) }
+    "CONFIDENCE INTERVALS OF MODEL RESULTS" |> (\(p) if (isTRUE(any(run.val.tech == p))) { conf.mod.result <<- which(run.val.tech == p):(.section.ind.from.to(section, p, run = run.val.tech)) } )()
 
     #—————————————————————————————————————— #
     ### CONFIDENCE INTERVALS OF STANDARDIZED MODEL RESULTS ####
 
-    if (isTRUE(any(run.val.tech == "CONFIDENCE INTERVALS OF STANDARDIZED MODEL RESULTS"))) { conf.std.conf <- which(run.val.tech == "CONFIDENCE INTERVALS OF STANDARDIZED MODEL RESULTS"):(.section.ind.from.to(section, "CONFIDENCE INTERVALS OF STANDARDIZED MODEL RESULTS", run = run.val.tech)) }
+    "CONFIDENCE INTERVALS OF STANDARDIZED MODEL RESULTS" |> (\(p) if (isTRUE(any(run.val.tech == p))) { conf.std.conf <<- which(run.val.tech == p):(.section.ind.from.to(section, p, run = run.val.tech)) })()
 
     #—————————————————————————————————————— #
     ### CONFIDENCE INTERVALS OF TOTAL, INDIRECT, AND DIRECT EFFECTS ####
@@ -1222,22 +1244,22 @@ mplus.print <- function(x, print = c("all", "input", "result"),
     #—————————————————————————————————————— #
     ### CONFIDENCE INTERVALS FOR THE LOGISTIC REGRESSION ODDS RATIO RESULTS ####
 
-    if (isTRUE(any(run.val.tech == "CONFIDENCE INTERVALS FOR THE LOGISTIC REGRESSION ODDS RATIO RESULTS"))) { conf.odds.ratio <- c(which(run.val.tech == "CONFIDENCE INTERVALS FOR THE LOGISTIC REGRESSION ODDS RATIO RESULTS"), which(run.val.tech == "CONFIDENCE INTERVALS FOR THE LOGISTIC REGRESSION ODDS RATIO RESULTS") + 1L, min(which(run.val.tech == "                  Lower .5%  Lower 2.5%    Lower 5%    Estimate    Upper 5%  Upper 2.5%   Upper .5%")), (which(run.val.tech == "CONFIDENCE INTERVALS FOR THE LOGISTIC REGRESSION ODDS RATIO RESULTS") + 1L):(.section.ind.from.to(section, "CONFIDENCE INTERVALS FOR THE LOGISTIC REGRESSION ODDS RATIO RESULTS", run = run.val.tech))) }
+    "CONFIDENCE INTERVALS FOR THE LOGISTIC REGRESSION ODDS RATIO RESULTS" |> (\(p) if (isTRUE(any(run.val.tech == p))) { conf.odds.ratio <<- c(which(run.val.tech == p), which(run.val.tech == p) + 1L, min(which(run.val.tech == "                  Lower .5%  Lower 2.5%    Lower 5%    Estimate    Upper 5%  Upper 2.5%   Upper .5%")), (which(run.val.tech == p) + 1L):(.section.ind.from.to(section, p, run = run.val.tech))) } )()
 
     #—————————————————————————————————————— #
     ### MODEL MODIFICATION INDICES ####
 
-    if (isTRUE(any(run.val.tech == "MODEL MODIFICATION INDICES"))) { modind <- which(run.val.tech == "MODEL MODIFICATION INDICES"):(.section.ind.from.to(section, "MODEL MODIFICATION INDICES", run = run.val.tech)) }
+    "MODEL MODIFICATION INDICES" |> (\(p) if (isTRUE(any(run.val.tech == p))) { modind <<- which(run.val.tech == p):(.section.ind.from.to(section, p, run = run.val.tech)) })()
 
     #—————————————————————————————————————— #
     ### RESIDUAL OUTPUT ####
 
-    if (isTRUE(any(run.val.tech == "RESIDUAL OUTPUT"))) { resid <- which(run.val.tech == "RESIDUAL OUTPUT"):(.section.ind.from.to(section, "RESIDUAL OUTPUT", run = run.val.tech)) }
+    "RESIDUAL OUTPUT" |> (\(p) if (isTRUE(any(run.val.tech == p))) { resid <<- which(run.val.tech == p):(.section.ind.from.to(section, p, run = run.val.tech)) } )()
 
     #—————————————————————————————————————— #
     ### LOGRANK OUTPUT ####
 
-    if (isTRUE(any(run.val.tech == "LOGRANK OUTPUT"))) { logrank <- which(run.val.tech == "LOGRANK OUTPUT"):(.section.ind.from.to(section, "LOGRANK OUTPUT", run = run.val.tech)) }
+    "LOGRANK OUTPUT" |> (\(p) if (isTRUE(any(run.val.tech == p))) { logrank <<- which(run.val.tech == p):(.section.ind.from.to(section, p, run = run.val.tech)) } )()
 
     #—————————————————————————————————————— #
     ### TECH RESULTS ####
@@ -1275,34 +1297,34 @@ mplus.print <- function(x, print = c("all", "input", "result"),
     #—————————————————————————————————————— #
     ### MODEL COMMAND WITH FINAL ESTIMATES USED AS STARTING VALUES ####
 
-    if (isTRUE(any(run.val == "MODEL COMMAND WITH FINAL ESTIMATES USED AS STARTING VALUES"))) { svalues <- which(run.val == "MODEL COMMAND WITH FINAL ESTIMATES USED AS STARTING VALUES"):(.section.ind.from.to(section, "MODEL COMMAND WITH FINAL ESTIMATES USED AS STARTING VALUES", run = run.val)) }
+    "MODEL COMMAND WITH FINAL ESTIMATES USED AS STARTING VALUES" |> (\(p) if (isTRUE(any(run.val == p))) { svalues <<- which(run.val == p):(.section.ind.from.to(section, p, run = run.val)) })()
 
     #—————————————————————————————————————— #
     ### SAMPLE STATISTICS FOR ESTIMATED FACTOR SCORES ####
 
-    if (isTRUE(any(run.val == "SAMPLE STATISTICS FOR ESTIMATED FACTOR SCORES"))) { stat.fscores <- which(run.val == "SAMPLE STATISTICS FOR ESTIMATED FACTOR SCORES"):(.section.ind.from.to(section, "SAMPLE STATISTICS FOR ESTIMATED FACTOR SCORES", run = run.val)) }
+    "SAMPLE STATISTICS FOR ESTIMATED FACTOR SCORES" |> (\(p) if (isTRUE(any(run.val == p))) { stat.fscores <<- which(run.val == p):(.section.ind.from.to(section, p, run = run.val)) } )()
 
     #—————————————————————————————————————— #
     ### SUMMARY OF FACTOR SCORES ####
 
-    if (isTRUE(any(run.val == "SUMMARY OF FACTOR SCORES"))) { summary.fscores <- which(run.val == "SUMMARY OF FACTOR SCORES"):(.section.ind.from.to(section, "SUMMARY OF FACTOR SCORES", run = run.val)) }
+    "SUMMARY OF FACTOR SCORES" |> (\(p) if (isTRUE(any(run.val == p))) { summary.fscores <<- which(run.val == p):(.section.ind.from.to(section, p, run = run.val)) })()
 
     #—————————————————————————————————————— #
     ### SUMMARIES OF PLAUSIBLE VALUES (N = NUMBER OF OBSERVATIONS * NUMBER OF IMPUTATIONS) ####
 
-    if (isTRUE(any(run.val == "SUMMARIES OF PLAUSIBLE VALUES (N = NUMBER OF OBSERVATIONS * NUMBER OF IMPUTATIONS)"))) { pv <- min(which(run.val == "SUMMARIES OF PLAUSIBLE VALUES (N = NUMBER OF OBSERVATIONS * NUMBER OF IMPUTATIONS)")):(.section.ind.from.to(section, "SUMMARIES OF PLAUSIBLE VALUES (N = NUMBER OF OBSERVATIONS * NUMBER OF IMPUTATIONS)", run = run.val)) }
+    "SUMMARIES OF PLAUSIBLE VALUES (N = NUMBER OF OBSERVATIONS * NUMBER OF IMPUTATIONS)" |> (\(p) if (isTRUE(any(run.val == p))) { pv <<- min(which(run.val == p)):(.section.ind.from.to(section, p, run = run.val)) } )()
 
     #—————————————————————————————————————— #
     ### PLOT Information ####
 
-    if (isTRUE(any(run.val == "PLOT INFORMATION"))) { plotinfo <- which(run.val == "PLOT INFORMATION"):(.section.ind.from.to(section, "PLOT INFORMATION", run = run.val)) }
+    "PLOT INFORMATION" |> (\(p) if (isTRUE(any(run.val == p))) { plotinfo <<- which(run.val == p):(.section.ind.from.to(section, p, run = run.val)) } )()
 
     #—————————————————————————————————————— #
     ### SAVEDATA INFORMATION ####
 
-    if (isTRUE(any(run.val == "SAVEDATA INFORMATION"))) { saveinfo <- which(run.val == "SAVEDATA INFORMATION"):(.section.ind.from.to(section, "SAVEDATA INFORMATION", run = run.val)) }
+    "SAVEDATA INFORMATION" |> (\(p) if (isTRUE(any(run.val == p))) { saveinfo <<- which(run.val == p):(.section.ind.from.to(section, p, run = run.val)) } )()
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Return Object ####
 
     return.object <- list(# Mplus version
@@ -1352,14 +1374,20 @@ mplus.print <- function(x, print = c("all", "input", "result"),
                                         fit = if (!is.null(fit)) { run.val[fit] } else { NULL },
                                         class.count = if (!is.null(class.count)) { run.val[class.count] } else { NULL },
                                         ind.means = if (!is.null(ind.means)) { run.val[ind.means] } else { NULL },
+                                        equal.mean = if (!is.null(equal.mean)) { run.val[equal.mean] } else { NULL },
                                         trans.prob = if (!is.null(trans.prob)) { run.val[trans.prob] } else { NULL },
                                         classif = if (!is.null(classif)) { run.val[classif] } else { NULL },
                                         mod.result = if (!is.null(mod.result)) { run.val[mod.result] } else { NULL },
                                         odds.ratio = if (!is.null(odds.ratio)) { run.val[odds.ratio] } else { NULL },
+                                        odds.ratio.class = if (!is.null(odds.ratio.class)) { run.val[odds.ratio.class] } else { NULL },
+                                        multinom = if (!is.null(multinom)) { run.val[multinom] } else { NULL },
+                                        odds.ratio.multinom = if (!is.null(odds.ratio.multinom)) { run.val[odds.ratio.multinom] } else { NULL },
                                         prob.scale = if (!is.null(prob.scale)) { run.val[prob.scale] } else { NULL },
                                         ind.odds.ratio = if (!is.null(ind.odds.ratio)) { run.val[ind.odds.ratio] } else { NULL },
                                         alt.param = if (!is.null(alt.param)) { run.val[alt.param] } else { NULL },
+                                        alt.param.odds.ratio = if (!is.null(alt.param.odds.ratio)) { run.val[alt.param.odds.ratio] } else { NULL },
                                         irt.param = if (!is.null(irt.param)) { run.val[irt.param] } else { NULL },
+                                        equal.mean.bch = if (!is.null(equal.mean.bch)) { run.val[equal.mean.bch] } else { NULL },
                                         brant.wald = if (!is.null(brant.wald)) { run.val[brant.wald] } else { NULL },
                                         std.mod.result = if (!is.null(std.mod.result)) { run.val[std.mod.result] } else { NULL },
                                         rsquare = if (!is.null(rsquare)) { run.val[rsquare] } else { NULL },
@@ -1412,7 +1440,7 @@ mplus.print <- function(x, print = c("all", "input", "result"),
 
     })
 
-  #—————————————————————————————————————— # #
+  #—————————————————————————————————————— #
   # Mplus Output in misty object
 
   } else {
@@ -1423,7 +1451,7 @@ mplus.print <- function(x, print = c("all", "input", "result"),
 
   #_____________________________________________________________________________
   #
-  # Print Object ---------------------------------------------------------------
+  # Print Object ———————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Print Input ####
@@ -1563,7 +1591,7 @@ mplus.print <- function(x, print = c("all", "input", "result"),
 
   #_____________________________________________________________________________
   #
-  # Print Input/Output ---------------------------------------------------------
+  # Print Input/Output —————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Print Input Commands and Result Sections ####
@@ -1646,7 +1674,7 @@ mplus.print <- function(x, print = c("all", "input", "result"),
   }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Write Results into a text file ####
+  ## Write Results into a Text File ####
   #
   # Note that write.table() function does not display results on the console even
   # when sink(write, split = TRUE)
@@ -1729,16 +1757,12 @@ mplus.print <- function(x, print = c("all", "input", "result"),
 
   #_____________________________________________________________________________
   #
-  # Return Object --------------------------------------------------------------
+  # Return Object ——————————————————————————————————————————————————————————————
 
   object <- list(call = match.call(),
                  type = "mplus",
                  x = x,
-                 args = list(print = print, input = input, result = result,
-                             exclude = exclude, variable = variable,
-                             not.input = not.input, not.result = not.result,
-                             write = write, append = append, check = check,
-                             output = output),
+                 args = list(print = print, input = input, result = result, exclude = exclude, variable = variable, not.input = not.input, not.result = not.result, write = write, append = append, check = check, output = output),
                  print = list(input = input.object, result = result.object),
                  notprint = list(input = input.not, result = result.not),
                  result = return.object)
@@ -1747,7 +1771,7 @@ mplus.print <- function(x, print = c("all", "input", "result"),
 
   #_____________________________________________________________________________
   #
-  # Output ---------------------------------------------------------------------
+  # Output —————————————————————————————————————————————————————————————————————
 
   return(invisible(object))
 

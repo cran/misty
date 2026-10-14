@@ -51,7 +51,7 @@ script.new <- function(text = "", type = c("r", "rmarkdown", "sql"),
 
   #_____________________________________________________________________________
   #
-  # Input Check ----------------------------------------------------------------
+  # Input Check ————————————————————————————————————————————————————————————————
 
   # Check inputs
   .check.input(logical = "run", s.character = list(type = c("r", "rmarkdown", "sql")), package = "rstudioapi", envir = environment(), input.check = check)
@@ -61,13 +61,13 @@ script.new <- function(text = "", type = c("r", "rmarkdown", "sql"),
 
   #_____________________________________________________________________________
   #
-  # Data and Arguments ---------------------------------------------------------
+  # Data and Arguments —————————————————————————————————————————————————————————
 
   type <- ifelse (all(c("r", "rmarkdon", "sql") %in% type), "r", type)
 
   #_____________________________________________________________________________
   #
-  # Main Function --------------------------------------------------------------
+  # Main Function ——————————————————————————————————————————————————————————————
 
   # Open new R script
   invisible(rstudioapi::documentNew(text = text, type = type, position = position, execute = run))

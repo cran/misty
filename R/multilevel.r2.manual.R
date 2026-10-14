@@ -92,6 +92,9 @@
 #' @param check      logical: if \code{TRUE} (default), argument specification is
 #'                   checked.
 #' @param output     logical: if \code{TRUE}, (default) output is shown on the console.
+#' @param ...        additional arguments from the \code{plot.misty.object()}
+#'                   function, see 'Details in the \code{\link{plot.misty.object}}
+#'                   function.
 #'
 #' @details
 #' A number of R-squared measures for multilevel and linear mixed effects models
@@ -201,15 +204,12 @@
 multilevel.r2.manual <- function(data, within = NULL, between = NULL, random = NULL,
                                  gamma.w = NULL, gamma.b = NULL, tau, sigma2,
                                  intercept = TRUE, center = TRUE, digits = 3,
-                                 plot = FALSE, gray = FALSE, start = 0.15, end = 0.85,
-                                 color = c("#D55E00", "#0072B2", "#CC79A7", "#009E73", "#E69F00"),
-                                 filename = NULL, width = NA, height = NA,
-                                 units = c("in", "cm", "mm", "px"), dpi = 600,
-                                 write = NULL, append = TRUE, check = TRUE, output = TRUE) {
+                                 plot = FALSE, filename = NULL, width = NA, height = NA, dpi = 600,
+                                 write = NULL, append = TRUE, check = TRUE, output = TRUE, ...) {
 
   #_____________________________________________________________________________
   #
-  # Initial Check --------------------------------------------------------------
+  # Initial Check ——————————————————————————————————————————————————————————————
 
   # Check if input 'data' is missing or NULL
   if (isTRUE(missing(data) || is.null(data))) { stop("Please specify a matrix or data frame for the argument 'data'.", call. = FALSE) }
@@ -222,14 +222,11 @@ multilevel.r2.manual <- function(data, within = NULL, between = NULL, random = N
 
   #_____________________________________________________________________________
   #
-  # Input Check ----------------------------------------------------------------
+  # Input Check ————————————————————————————————————————————————————————————————
 
-  .check.input(logical = c("intercept", "center", "plot", "gray", "append", "output"),
-               numeric = list(start = 1L, end = 1L),
-               args = c("digits", "write1"),
-               envir = environment(), input.check = check)
+  .check.input(logical = c("intercept", "center", "plot", "append", "output"), args = c("digits", "write1"), envir = environment(), input.check = check)
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Additional Checks ####
 
   if (isTRUE(check)) {
@@ -328,17 +325,11 @@ multilevel.r2.manual <- function(data, within = NULL, between = NULL, random = N
     # Check input 'sigma2'
     if (isTRUE(length(sigma2) != 1L || !is.numeric(sigma2))) { stop("Please specify a numeric value for the argument 'sigma2'.", call. = FALSE) }
 
-    # Check input 'start'
-    if (isTRUE(start < 0L || start > 1L)) { stop("Please specify a numeric value between 0 and 1 for the argument 'start'", call. = FALSE) }
-
-    # Check input 'end'
-    if (isTRUE(end < 0L || end > 1L)) { stop("Please specify a numeric value between 0 and 1 for the argument 'end'", call. = FALSE) }
-
   }
 
   #_____________________________________________________________________________
   #
-  # Data and Variables ---------------------------------------------------------
+  # Data and Variables —————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## 'within', 'between', and 'random' Arguments ####
@@ -349,15 +340,9 @@ multilevel.r2.manual <- function(data, within = NULL, between = NULL, random = N
 
   if (isTRUE(is.character(random))) { random_covs <- match(random, colnames(data)) } else { random_covs <- random }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## 'units' Argument ####
-
-  # Default setting
-  if (isTRUE(all(c("in", "cm", "mm", "px") %in% units))) { units <- "in" }
-
   #_____________________________________________________________________________
   #
-  # Main Function --------------------------------------------------------------
+  # Main Function ——————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## R-squared Measures ####
@@ -377,7 +362,7 @@ multilevel.r2.manual <- function(data, within = NULL, between = NULL, random = N
 
   #_____________________________________________________________________________
   #
-  # Return Object --------------------------------------------------------------
+  # Return Object ——————————————————————————————————————————————————————————————
 
   object <- list(call = match.call(),
                  type = "multilevel.r2.manual",
@@ -385,9 +370,7 @@ multilevel.r2.manual <- function(data, within = NULL, between = NULL, random = N
                  args = list(within = within, between = between, random = random,
                              gamma.w = gamma.w, gamma.b = gamma.b, tau = tau,
                              sigma2 = sigma2, intercept = intercept, center = center,
-                             digits = digits, plot = plot, gray = gray,
-                             start = start, end = end, color = color,
-                             width = width, height = height, units = units, dpi = dpi,
+                             digits = digits, plot = plot, width = width, height = height, dpi = dpi,
                              write = write, append = append, check = check, output = output),
                  plot = NULL,
                  result = list(decomp = rs$decomp,
@@ -408,20 +391,20 @@ multilevel.r2.manual <- function(data, within = NULL, between = NULL, random = N
 
   #_____________________________________________________________________________
   #
-  # Plot and Save Plot ---------------------------------------------------------
+  # Plot and Save Plot —————————————————————————————————————————————————————————
 
-  if (isTRUE(plot)) { object$plot <- plot(object, filename = filename, width = width, height = height, units = units, dpi = dpi, check = FALSE) |> (\(y) suppressMessages(suppressWarnings(print(y))))() }
+  if (isTRUE(plot)) { object$plot <- plot(object, filename = filename, width = width, height = height, dpi = dpi, check = FALSE, ...) |> (\(y) suppressMessages(suppressWarnings(print(y))))() }
 
   #_____________________________________________________________________________
   #
-  # Write Results --------------------------------------------------------------
+  # Write Results ——————————————————————————————————————————————————————————————
 
   if (isTRUE(!is.null(write))) {
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Text file ####
 
-    # Send R output to textfile
+    # Send R output to text file
     sink(file = write, append = ifelse(isTRUE(file.exists(write)), append, FALSE), type = "output", split = FALSE)
 
     if (isTRUE(append && file.exists(write))) { write("", file = write, append = TRUE) }
@@ -436,7 +419,7 @@ multilevel.r2.manual <- function(data, within = NULL, between = NULL, random = N
 
   #_____________________________________________________________________________
   #
-  # Output ---------------------------------------------------------------------
+  # Output —————————————————————————————————————————————————————————————————————
 
   if (isTRUE(output)) { print(object, check = FALSE) }
 

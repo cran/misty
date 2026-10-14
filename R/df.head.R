@@ -68,14 +68,14 @@ df.head <- function(data, n = 6, digits = 3, width = 20, factor.labels = TRUE,
 
   #_____________________________________________________________________________
   #
-  # Initial Check --------------------------------------------------------------
+  # Initial Check ——————————————————————————————————————————————————————————————
 
   # Check if input 'data' is missing or NULL
   if (isTRUE(missing(data) || is.null(data))) { stop("Please specify a data frame for the argument 'data'", call. = FALSE) }
 
   #_____________________________________________________________________________
   #
-  # Input Check ----------------------------------------------------------------
+  # Input Check ————————————————————————————————————————————————————————————————
 
   # Check inputs
   .check.input(logical = c("factor.labels", "row.names", "message"), numeric = list(n = 1L, width = 1L), character = list(row.names.col = 1L, message.col = 1L), args = "digits", envir = environment(), input.check = check)
@@ -93,7 +93,7 @@ df.head <- function(data, n = 6, digits = 3, width = 20, factor.labels = TRUE,
 
   #_____________________________________________________________________________
   #
-  # Main Function --------------------------------------------------------------
+  # Main Function ——————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Remove Rows ####
@@ -197,7 +197,7 @@ df.head <- function(data, n = 6, digits = 3, width = 20, factor.labels = TRUE,
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Format Row Names ####
 
-  if (isTRUE(row.names && is.null(getOption("knitr.in.progress")))) { object[, 1L] <- misty::chr.color(object[, 1L], color = row.names.col, check = FALSE) }
+  if (isTRUE(row.names && is.null(getOption("knitr.in.progress")) && .Platform$GUI == "RStudio")) { object[, 1L] <- misty::chr.color(object[, 1L], color = row.names.col, check = FALSE) }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Message ####
@@ -223,7 +223,7 @@ df.head <- function(data, n = 6, digits = 3, width = 20, factor.labels = TRUE,
     }
 
     # Format message
-    if (isTRUE(!is.null(row.col) && is.null(getOption("knitr.in.progress")))) { row.col <- misty::chr.color(row.col, color = message.col, check = FALSE) }
+    if (isTRUE(!is.null(row.col) && is.null(getOption("knitr.in.progress")) && .Platform$GUI == "RStudio")) { row.col <- misty::chr.color(row.col, color = message.col, check = FALSE) }
 
   } else {
 
@@ -233,7 +233,7 @@ df.head <- function(data, n = 6, digits = 3, width = 20, factor.labels = TRUE,
 
   #_____________________________________________________________________________
   #
-  # Return Object --------------------------------------------------------------
+  # Return Object ——————————————————————————————————————————————————————————————
 
   object <- list(call = match.call(),
                  type = "df.head",
@@ -245,7 +245,7 @@ df.head <- function(data, n = 6, digits = 3, width = 20, factor.labels = TRUE,
 
   #_____________________________________________________________________________
   #
-  # Output ---------------------------------------------------------------------
+  # Output —————————————————————————————————————————————————————————————————————
 
   if (isTRUE(output)) { print(object, check = FALSE) }
 
@@ -253,8 +253,8 @@ df.head <- function(data, n = 6, digits = 3, width = 20, factor.labels = TRUE,
 
 }
 
-#----------------------------------------------------------------------------- #
-#----------------------------------------------------------------------------- #
+#———————————————————————————————————————————————————————————————————————————————
+#———————————————————————————————————————————————————————————————————————————————
 
 #' @rdname df.tail
 df.tail <- function(data, n = 6, digits = 3, width = 20, factor.labels = TRUE,
@@ -263,7 +263,7 @@ df.tail <- function(data, n = 6, digits = 3, width = 20, factor.labels = TRUE,
 
   #_____________________________________________________________________________
   #
-  # Initial Check --------------------------------------------------------------
+  # Initial Check ——————————————————————————————————————————————————————————————
 
   # Check if input 'data' is missing
   if (isTRUE(missing(data))) { stop("Please specify a numeric vector for the argument 'data'", call. = FALSE) }
@@ -273,7 +273,7 @@ df.tail <- function(data, n = 6, digits = 3, width = 20, factor.labels = TRUE,
 
   #_____________________________________________________________________________
   #
-  # Input Check ----------------------------------------------------------------
+  # Input Check ————————————————————————————————————————————————————————————————
 
   # Check inputs
   .check.input(logical = c("factor.labels", "row.names", "message"), numeric = list(n = 1L, width = 1L), character = list(row.names.col = 1L, message.col = 1L), args = "digits", envir = environment(), input.check = check)
@@ -291,7 +291,7 @@ df.tail <- function(data, n = 6, digits = 3, width = 20, factor.labels = TRUE,
 
   #_____________________________________________________________________________
   #
-  # Main Function --------------------------------------------------------------
+  # Main Function ——————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Remove Rows ####
@@ -395,7 +395,7 @@ df.tail <- function(data, n = 6, digits = 3, width = 20, factor.labels = TRUE,
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Format Row Names ####
 
-  if (isTRUE(row.names && is.null(getOption("knitr.in.progress")))) { object[, 1L] <- misty::chr.color(object[, 1L], color = row.names.col, check = FALSE) }
+  if (isTRUE(row.names && is.null(getOption("knitr.in.progress")) && .Platform$GUI == "RStudio")) { object[, 1L] <- misty::chr.color(object[, 1L], color = row.names.col, check = FALSE) }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Message ####
@@ -421,7 +421,7 @@ df.tail <- function(data, n = 6, digits = 3, width = 20, factor.labels = TRUE,
     }
 
     # Format message
-    if (isTRUE(!is.null(row.col) && is.null(getOption("knitr.in.progress")))) { row.col <- misty::chr.color(row.col, color = message.col, check = FALSE) }
+    if (isTRUE(!is.null(row.col) && is.null(getOption("knitr.in.progress")) && .Platform$GUI == "RStudio")) { row.col <- misty::chr.color(row.col, color = message.col, check = FALSE) }
 
   } else {
 
@@ -431,7 +431,7 @@ df.tail <- function(data, n = 6, digits = 3, width = 20, factor.labels = TRUE,
 
   #_____________________________________________________________________________
   #
-  # Return Object --------------------------------------------------------------
+  # Return Object ——————————————————————————————————————————————————————————————
 
   object <- list(call = match.call(),
                  type = "df.tail",
@@ -443,7 +443,7 @@ df.tail <- function(data, n = 6, digits = 3, width = 20, factor.labels = TRUE,
 
   #_____________________________________________________________________________
   #
-  # Output ---------------------------------------------------------------------
+  # Output —————————————————————————————————————————————————————————————————————
 
   if (isTRUE(output)) { print(object, check = FALSE) }
 

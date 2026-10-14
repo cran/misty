@@ -69,7 +69,7 @@ read.sav <- function(file, use.value.labels = FALSE, use.missings = TRUE, format
 
   #_____________________________________________________________________________
   #
-  # Initial Check --------------------------------------------------------------
+  # Initial Check ——————————————————————————————————————————————————————————————
 
   # Check input 'file'
   if (isTRUE(missing(file))) { stop("Please specify a character string indicating the name of the SPSS data file for the argument 'file'", call. = FALSE) }
@@ -82,7 +82,7 @@ read.sav <- function(file, use.value.labels = FALSE, use.missings = TRUE, format
 
   #_____________________________________________________________________________
   #
-  # Input Check ----------------------------------------------------------------
+  # Input Check ————————————————————————————————————————————————————————————————
 
   # Check inputs
   .check.input(logical = c("use.value.labels", "use.missings", "formats", "label", "labels", "missing", "widths", "as.data.frame"),
@@ -90,7 +90,7 @@ read.sav <- function(file, use.value.labels = FALSE, use.missings = TRUE, format
 
   #_____________________________________________________________________________
   #
-  # Data and Arguments ---------------------------------------------------------
+  # Data and Arguments —————————————————————————————————————————————————————————
 
   # User-defined missing values
   use_na <- ifelse(isTRUE(use.missings), FALSE, TRUE)
@@ -100,7 +100,7 @@ read.sav <- function(file, use.value.labels = FALSE, use.missings = TRUE, format
 
   #_____________________________________________________________________________
   #
-  # Main Function --------------------------------------------------------------
+  # Main Function ——————————————————————————————————————————————————————————————
 
   # Read SPSS data
   object <- haven::read_spss(file, user_na = use_na)
@@ -220,7 +220,7 @@ read.sav <- function(file, use.value.labels = FALSE, use.missings = TRUE, format
 
   #_____________________________________________________________________________
   #
-  # Output ---------------------------------------------------------------------
+  # Output —————————————————————————————————————————————————————————————————————
 
   return(object)
 

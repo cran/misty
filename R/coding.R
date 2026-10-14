@@ -21,17 +21,16 @@
 #'               group for dummy and simple coding and the omitted group in
 #'               effect coding. By default, the first group or factor level is
 #'               selected as baseline or omitted group.
-#' @param name   a character string or character vector indicating the names
-#'               of the coded variables. By default, variables are named
-#'               \code{"dum."}, \code{"sim."}, \code{"eff."}, \code{"weff."},
-#'               \code{"rep."}, \code{"fhelm."}, \code{"rhelm."},or \code{"poly."}
-#'               depending on the \code{type} of coding with the category used
-#'               in the comparison (e.g., \code{"dum.2"} and \code{"dum.3"}).
-#'               Variable names can be specified using a character string (e.g.,
-#'               \code{name = "dummy_"} leads to \code{dummy_2} and \code{dummy_3})
-#'               or a character vector matching the number of coded variables
-#'               (e.g. \code{name = c("x1_2", "x1_3")})  which is the number of
-#'               unique categories minus one.
+#' @param name   a character character vector indicating the names of the coded
+#'               variables. By default, variables are named \code{"dum."},
+#'               \code{"sim."}, \code{"eff."}, \code{"weff."}, \code{"rep."},
+#'               \code{"fhelm."}, \code{"rhelm."},or \code{"poly."} depending on
+#'               the \code{type} of coding with the category used in the comparison
+#'               (e.g., \code{"dum.2"} and \code{"dum.3"}). Variable names can be
+#'               specified using a character string (e.g., \code{name = "dummy_"}
+#'               leads to \code{dummy_2} and \code{dummy_3}) or a character vector
+#'               matching the number of coded variables (e.g. \code{name = c("x1_2", "x1_3")})
+#'               which is the number of unique categories minus one.
 #' @param append logical: if \code{TRUE} (default), coded variables are appended
 #'               to the data frame specified in the argument \code{data}.
 #' @param as.na  a numeric vector indicating user-defined missing values,
@@ -150,32 +149,16 @@ coding <- function(data, ...,
 
   #_____________________________________________________________________________
   #
-  # Initial Check --------------------------------------------------------------
+  # Initial Check ——————————————————————————————————————————————————————————————
 
   # Check if input 'data' is missing
   if (isTRUE(missing(data) || is.null(data))) { stop("Please specify a numeric vector for the argument 'data'", call. = FALSE) }
 
   #_____________________________________________________________________________
   #
-  # Data -----------------------------------------------------------------------
+  # Data ———————————————————————————————————————————————————————————————————————
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Using the Argument '...' ####
-
-  if (isTRUE(!missing(...))) {
-
-    # Extract data and convert tibble into data frame or vector
-    x <- data[, .var.names(data = data, ...)] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { unname(unlist(y)) } else { y })()
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Without Using the Argument '...' ####
-
-  } else {
-
-    # Data frame
-    x <- data |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { unname(unlist(y)) } else { y })()
-
-  }
+  .data(data, ..., drop = TRUE) |> (\(p) { assign("x", p$data, envir = parent.frame()) })()
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Convert User-Missing Values into NA ####
@@ -184,7 +167,7 @@ coding <- function(data, ...,
 
   #_____________________________________________________________________________
   #
-  # Input Check ----------------------------------------------------------------
+  # Input Check ————————————————————————————————————————————————————————————————
 
   # Check inputs
   .check.input(logical = "append", s.character = list(type = c("dummy", "simple", "effect", "weffect", "repeat", "fhelm", "rhelm", "poly")), envir = environment(), input.check = check)
@@ -215,7 +198,7 @@ coding <- function(data, ...,
 
   #_____________________________________________________________________________
   #
-  # Arguments ------------------------------------------------------------------
+  # Arguments ——————————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Type of Coding ####
@@ -224,7 +207,7 @@ coding <- function(data, ...,
 
   #_____________________________________________________________________________
   #
-  # Main Function --------------------------------------------------------------
+  # Main Function ——————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Vector of Factor Levels or Unique Values ####
@@ -348,7 +331,7 @@ coding <- function(data, ...,
 
   #_____________________________________________________________________________
   #
-  # Output ---------------------------------------------------------------------
+  # Output —————————————————————————————————————————————————————————————————————
 
   return(object)
 

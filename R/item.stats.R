@@ -1,6 +1,6 @@
-#' Item Analysis for Dichotomous, Polytomous, and Continuous Items
+#' Item Statistics for Dichotomous, Polytomous, and Continuous Items
 #'
-#' This function conducts item analysis for dichotomous, polytomous, and continuous
+#' This function provides item statistics for dichotomous, polytomous, and continuous
 #' items by computing corrected item-total correlations with confidence intervals
 #' and coefficient alphas if the item is deleted. The default setting for computing
 #' the item-total correlations is depending on the type of the data, i.e.,
@@ -199,7 +199,7 @@ item.stats <- function(data, ..., exclude = NULL, correct = TRUE,
 
   #_____________________________________________________________________________
   #
-  # Input Check ####
+  # Input Check ————————————————————————————————————————————————————————————————
 
   # Check if input 'data' is missing or NULL
   if (isTRUE(missing(data) || is.null(data))) { stop("Please specify a data frame for the argument 'data'", call. = FALSE) }
@@ -209,19 +209,9 @@ item.stats <- function(data, ..., exclude = NULL, correct = TRUE,
 
   #_____________________________________________________________________________
   #
-  # Data -----------------------------------------------------------------------
+  # Data ———————————————————————————————————————————————————————————————————————
 
-  # Using the Argument '...'
-  if (isTRUE(!missing(...))) {
-
-    x <- as.data.frame(data[, .var.names(data = data, ...), drop = FALSE])
-
-  # Without Using the Argument '...'
-  } else {
-
-    x <- as.data.frame(data)
-
-  }
+  .data(data, ...) |> (\(p) { assign("x", p$data, envir = parent.frame()) })()
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Numeric Items ####
@@ -234,7 +224,7 @@ item.stats <- function(data, ..., exclude = NULL, correct = TRUE,
   if (isTRUE(!is.null(exclude))) { x <- x[, which(!colnames(x) %in% exclude)] |> (\(y) if (isTRUE(ncol(y) < 2L)) { stop("At least two items after excluding items are needed to compute item statistics.", call. = FALSE) } else { return(y) })() }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Convert User-missing Values into NA ####
+  ## Convert User-Missing Values into NA ####
 
   if (isTRUE(!is.null(as.na))) { x <- .as.na(x, na = as.na) }
 
@@ -271,7 +261,7 @@ item.stats <- function(data, ..., exclude = NULL, correct = TRUE,
 
   #_____________________________________________________________________________
   #
-  # Arguments ####
+  # Arguments ——————————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## 'method' Argument ####
@@ -343,7 +333,7 @@ item.stats <- function(data, ..., exclude = NULL, correct = TRUE,
 
   #_____________________________________________________________________________
   #
-  # Main Function ####
+  # Main Function ——————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data Check ####
@@ -448,55 +438,9 @@ item.stats <- function(data, ..., exclude = NULL, correct = TRUE,
 
   })
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Plot ####
-
-  # if (isTRUE(plot)) {
-  #
-  #   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  #   ## Dichotomous Items ####
-  #
-  #   switch(type, "dicho" = {
-  #
-  #     # MISSING DATA?
-  #
-  #     # Score groups
-  #     breaks <- 3
-  #     score.group <- cut(rowSums(x), breaks = breaks)
-  #
-  #     score.group <- factor(score.group,
-  #                           labels = apply(table(score.group, rowSums(x)), 1L, function(y) names(which(y != 0)) |>
-  #                                            (\(p) if (isTRUE(length(p) > 1L)) { paste0("[", p[1], ", ", p[length(p)], "]") } else {  paste0("[", p[1], "]") } )()))
-  #
-  #     prop <- sapply(lapply(x, factor, level = c(0L, 1L)), function(y) tapply(y, INDEX = score.group, function(z) prop.table(table(z))["1"] ))
-  #
-  #     plotdat <- data.frame(item = rep(colnames(prop), each = breaks),
-  #                           sgroup = levels(score.group),
-  #                           prop = as.vector(prop))
-  #
-  #     library(ggplot2)
-  #
-  #     ggplot(plotdat, aes(sgroup, prop, group = 1)) +
-  #       geom_point() +
-  #       geom_line() +
-  #       facet_wrap(~ item)
-  #
-  #
-  #     ggplot(plotdat, aes(sgroup, prop, group = item, color = item)) +
-  #       geom_line() + geom_point()
-  #
-  #   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  #   ## Polytomous Items ####
-  #
-  #   }, "poly" = {
-  #
-  #   })
-  #
-  # }
-
   #_____________________________________________________________________________
   #
-  # Return Object ####
+  # Return Object ——————————————————————————————————————————————————————————————
 
   object <- list(call = match.call(),
                  type = "item.stats",
@@ -509,19 +453,19 @@ item.stats <- function(data, ..., exclude = NULL, correct = TRUE,
 
   #_____________________________________________________________________________
   #
-  # Write Results --------------------------------------------------------------
+  # Write Results ——————————————————————————————————————————————————————————————
 
   if (isTRUE(!is.null(write))) { .write.result(object = object, write = write, append = append) }
 
   #_____________________________________________________________________________
   #
-  # Output ---------------------------------------------------------------------
+  # Output —————————————————————————————————————————————————————————————————————
 
   if (isTRUE(output)) { print(object, check = FALSE) }
 
   #_____________________________________________________________________________
   #
-  # Return ---------------------------------------------------------------------
+  # Return —————————————————————————————————————————————————————————————————————
 
   return(invisible(object))
 

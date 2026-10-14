@@ -25,6 +25,8 @@
 #'                   bias in small samples for is used to compute Cohen's d.
 #' @param posthoc    logical: if \code{TRUE}, Tukey HSD post hoc test for
 #'                   multiple comparison is conducted.
+#' @param adjust     logical: if \code{TRUE} (default), difference-adjustment
+#'                   for the confidence intervals is applied.
 #' @param conf.level a numeric value between 0 and 1 indicating the confidence
 #'                   level of the interval.
 #' @param digits     an integer value indicating the number of decimal places
@@ -35,16 +37,16 @@
 #' @param as.na      a numeric vector indicating user-defined missing values,
 #'                   i.e. these values are converted to \code{NA} before conducting
 #'                   the analysis.
-#' @param plot       logical: if \code{TRUE}, a plot is drawn.
-#' @param bar        logical: if \code{TRUE} (default), bars representing means
-#'                   for each groups are drawn.
-#' @param point      logical: if \code{TRUE}, points representing means for
-#'                   each groups are drawn.
-#' @param ci         logical: if \code{TRUE} (default), error bars representing
-#'                   confidence intervals are drawn.
-#' @param jitter     logical: if \code{TRUE}, jittered data points are drawn.
-#' @param adjust     logical: if \code{TRUE} (default), difference-adjustment
-#'                   for the confidence intervals is applied.
+#' @param plot       logical: if \code{TRUE}, a plot showing bar plots with
+#'                   error bars for confidence intervals is drawn. For additional
+#'                   plotting arguments, see \code{Details} in the help page of
+#'                   the function \code{plot.misty.object}.
+#' @param geom       a character vector indicating which plot elements to draw,
+#'                   i.e., \code{"all"} for drawing all plot elements, \code{"bar"}
+#'                   for drawing bars representing means for each groups, \code{"point"}
+#'                   for drawing points representing means for each group, \code{"ci"}
+#'                   for drawing error bars representing confidence intervals, and
+#'                   \code{"jitter"} for drawing jittered data points.
 #' @param filename   a character string indicating the \code{filename}
 #'                   argument including the file extension in the \code{ggsave}
 #'                   function. Note that one of \code{".eps"}, \code{".ps"},
@@ -73,6 +75,9 @@
 #'                   is checked.
 #' @param output     logical: if \code{TRUE} (default), output is shown on the
 #'                   console.
+#' @param ...        additional arguments from the \code{plot.misty.object()}
+#'                   function, see 'Details in the \code{\link{plot.misty.object}}
+#'                   function.
 #'
 #' @details
 #' \describe{
@@ -127,14 +132,13 @@
 #' #————————————————————————————————————————————————————————————————————————————
 #' # Between-Subject Analysis of Variance
 #'
-#' # Example 1a: Between-Subject ANOVA
+#' # Example 1a: Between-Subject ANOVA, default setting
 #' aov.b(hp ~ gear, data = mtcars)
 #'
-#' # Example 1b: Between-Subject ANOVA
-#' # Print descriptive statistics and Tukey HSD post hoc test
+#' # Example 1b: Print descriptive statistics and Tukey HSD post hoc test
 #' aov.b(hp ~ gear, data = mtcars, descript = TRUE, posthoc = TRUE)
 #'
-#' # Example 1c: Between-Subject ANOVA, print eta-squared and omega-squared
+#' # Example 1c: Print eta-squared and omega-squared
 #' aov.b(hp ~ gear, data = mtcars, effsize = TRUE)
 #'
 #' #————————————————————————————————————————————————————————————————————————————
@@ -143,14 +147,18 @@
 #' # Example 2a: Plot results, default setting
 #' aov.b(hp ~ gear, data = mtcars, plot = TRUE)
 #'
-#' # Example 2b: Plot results
-#' # No bars, draw points representing means and jittered data points
-#' aov.b(hp ~ gear, data = mtcars, plot = TRUE, bar = FALSE, point = TRUE, jitter = TRUE)
+#' # Example 2b: No bars, draw points representing means and jittered data points
+#' aov.b(hp ~ gear, data = mtcars, plot = TRUE, geom = c("point", "jitter"))
 #'
-#' # Example 2c: Plot results using the plot() function, use additional arguments
+#' # Example 2c: Plot results, additional arguments
+#' # see Details in the help page of the function plot.misty.object
+#' aov.b(hp ~ gear, data = mtcars, geom = "all", plot = TRUE, jitter.alpha = 0.4,
+#'         title = "Between-Subject ANOVA")
+#'
+#' # Example 2d: Plot results using the plot() function, additional arguments
 #' # see Details in the help page of the function plot.misty.object
 #' object <- aov.b(hp ~ gear, data = mtcars)
-#' plot(object, jitter = TRUE, jitter.alpha = 0.4, title = "Between-Subject ANOVA")
+#' plot(object, geom = "jitter", jitter.alpha = 0.4, title = "Between-Subject ANOVA")
 #'
 #' #————————————————————————————————————————————————————————————————————————————
 #' # Create Plot Manually
@@ -170,10 +178,9 @@
 #'   geom_errorbar(aes(group, m, ymin = low, ymax = upp), width = 0.1) +
 #'   theme_bw()
 #'
+#' \dontrun{
 #' #————————————————————————————————————————————————————————————————————————————
 #' # Write Results and Save Plot
-#'
-#' \dontrun{
 #'
 #' # Example 4a: Write results into a text file
 #' aov.b(hp ~ gear, data = mtcars, write = "ANOVA.txt")
@@ -186,15 +193,15 @@
 #'       filename = "ANOVA.png", width = 6, height = 5)
 #' }
 aov.b <- function(formula, data, hypo = FALSE, descript = FALSE, effsize = FALSE,
-                  weighted = TRUE, correct = FALSE, posthoc = FALSE, conf.level = 0.95,
-                  digits = 2, p.digits = 3, as.na = NULL, plot = FALSE, bar = TRUE,
-                  point = FALSE, ci = TRUE, jitter = FALSE, adjust = TRUE,
+                  weighted = TRUE, correct = FALSE, posthoc = FALSE, adjust = TRUE,
+                  conf.level = 0.95, digits = 2, p.digits = 3, as.na = NULL,
+                  plot = FALSE, geom = c("all", "bar", "point", "ci", "jitter"),
                   filename = NULL, width = NA, height = NA, dpi = 600,
-                  write = NULL, append = TRUE, check = TRUE, output = TRUE) {
+                  write = NULL, append = TRUE, check = TRUE, output = TRUE, ...) {
 
   #_____________________________________________________________________________
   #
-  # Initial Check --------------------------------------------------------------
+  # Initial Check ——————————————————————————————————————————————————————————————
 
   # Check if input 'formula' is missing
   if (isTRUE(missing(formula))) { stop("Please specify a formula using the argument 'formula'", call. = FALSE) }
@@ -204,10 +211,7 @@ aov.b <- function(formula, data, hypo = FALSE, descript = FALSE, effsize = FALSE
 
   #_____________________________________________________________________________
   #
-  # Formula and Data Frame -----------------------------------------------------
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Variables ####
+  # Variables ——————————————————————————————————————————————————————————————————
 
   # Extract variables
   var.formula <- all.vars(as.formula(formula))
@@ -220,47 +224,81 @@ aov.b <- function(formula, data, hypo = FALSE, descript = FALSE, effsize = FALSE
 
   #_____________________________________________________________________________
   #
-  # Data -----------------------------------------------------------------------
-
-  # As data frame
-  data <- as.data.frame(data)
-
-  # Check if variables are in the data
-  (!var.formula %in% colnames(data)) |> (\(y) if (isTRUE(any(y))) { stop(paste0("Variables specified in the the formula were not found in 'data': ", paste(var.formula[which(y)], collapse = ", ")), call. = FALSE) })()
-
-  # Check if input 'formula' has only one grouping variable
-  if (isTRUE(length(group.var) != 1L)) { stop("Please specify a formula with only one grouping variable.", call. = FALSE) }
-
-  # Check if input 'formula' has only one outcome variable
-  if (isTRUE(length(y.var) != 1L)) { stop("Please specify a formula with only one outcome variable.", call. = FALSE) }
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Convert user-missing values into NA ####
-
-  if (isTRUE(!is.null(as.na))) { data[, y.var] <- .as.na(data[, y.var], na = as.na) }
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Listwise Deletion ####
-
-  data <- na.omit(data[, var.formula])
-
-  #_____________________________________________________________________________
-  #
   # Input Check ————————————————————————————————————————————————————————————————
 
   # Check inputs and R package
-  .check.input(logical = c("hypo", "descript", "effsize", "weighted", "correct", "posthoc", "plot", "bar", "point", "ci", "jitter", "adjust", "append", "output"),
+  .check.input(logical = c("hypo", "descript", "effsize", "weighted", "correct", "posthoc", "plot", "adjust", "append", "output"), m.character = list(geom = c("all", "bar", "point", "ci", "jitter")),
                args = c("digits", "p.digits", "conf.level", "write2"), envir = environment(), input.check = check)
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Additional Checks ####
+
+  if (isTRUE(check)) {
+
+    # Check if variables are in the data
+    (!var.formula %in% colnames(data)) |> (\(y) if (isTRUE(any(y))) { stop(paste0("Variables specified in the the formula were not found in 'data': ", paste(var.formula[which(y)], collapse = ", ")), call. = FALSE) })()
+
+    # Check if input 'formula' has only one grouping variable
+    if (isTRUE(length(group.var) != 1L)) { stop("Please specify a formula with only one grouping variable.", call. = FALSE) }
+
+    # Check if input 'formula' has only one outcome variable
+    if (isTRUE(length(y.var) != 1L)) { stop("Please specify a formula with only one outcome variable.", call. = FALSE) }
+
+  }
+
+  #_____________________________________________________________________________
+  #
+  # Data ———————————————————————————————————————————————————————————————————————
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Data Frame ####
+
+  x <- as.data.frame(data)
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Convert User-Missing Values into NA ####
+
+  if (isTRUE(!is.null(as.na))) { x[, y.var] <- .as.na(x[, y.var], na = as.na) }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Missing Data in the Grouping Variable ####
+
+  if (isTRUE(any(is.na(x[, group.var])))) {
+
+    (!is.na(x[, group.var])) |> (\(p) { x <<- x[p, ]
+
+    warning(paste0("Listwise deletion of missing values in the grouping variable, number of cases removed from the analysis: ", sum(!p)), call. = FALSE)
+
+    })()
+
+  }
+
+  #_____________________________________________________________________________
+  #
+  # Arguments ——————————————————————————————————————————————————————————————————
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## 'geom' Argument ####
+
+  if (isTRUE(all(c("all", "bar", "point", "ci", "jitter") %in% geom))) {
+
+    geom <- c("bar", "ci", "line")
+
+  } else if (all(geom == "all")) {
+
+    geom <- c("bar", "point", "ci", "line", "jitter")
+
+  }
 
   #_____________________________________________________________________________
   #
   # Main Function ——————————————————————————————————————————————————————————————
 
   # Outcome
-  y <- unlist(data[, y.var])
+  y <- unlist(x[, y.var])
 
   # Grouping
-  group <- factor(unlist(data[, group.var]))
+  group <- factor(unlist(x[, group.var]))
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Descriptive Statistics ####
@@ -298,19 +336,13 @@ aov.b <- function(formula, data, hypo = FALSE, descript = FALSE, effsize = FALSE
   #—————————————————————————————————————— #
   ### Omega Squared ####
 
-  omega.sq <- ((ss.m - df.m*ms.r) / (ss.t + ms.r)) |> (\(y) ifelse(y < 0L, 0L, y))()
+  omega.sq <- ((ss.m - df.m*ms.r) / (ss.t + ms.r)) |> (\(p) ifelse(p < 0L, 0L, p))()
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## ANOVA Table ####
 
-  test <- data.frame(source = c(misty::chr.trim(row.names(aov.table), side = "both"), "Total"),
-                     sum.sq = c(aov.table[, "Sum Sq"], sum(aov.table[, "Sum Sq"])),
-                     df = c(aov.table[, "Df"], sum(aov.table[, "Df"])),
-                     mean.sq = c(aov.table[, "Mean Sq"], sum(aov.table[, "Mean Sq"])),
-                     F = c(aov.table[, "F value"], NA),
-                     pval = c(aov.table[, "Pr(>F)"], NA),
-                     eta.sq = c(eta.sq, NA, NA),
-                     omega.sq = c(omega.sq, NA, NA))
+  test <- data.frame(source = c(misty::chr.trim(row.names(aov.table), side = "both"), "Total"), sum.sq = c(aov.table[, "Sum Sq"], sum(aov.table[, "Sum Sq"])), df = c(aov.table[, "Df"], sum(aov.table[, "Df"])), mean.sq = c(aov.table[, "Mean Sq"], sum(aov.table[, "Mean Sq"])),
+                     F = c(aov.table[, "F value"], NA), pval = c(aov.table[, "Pr(>F)"], NA), eta.sq = c(eta.sq, NA, NA), omega.sq = c(omega.sq, NA, NA))
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Post Hoc Test ####
@@ -369,13 +401,13 @@ aov.b <- function(formula, data, hypo = FALSE, descript = FALSE, effsize = FALSE
 
   #_____________________________________________________________________________
   #
-  # Return Object --------------------------------------------------------------
+  # Return Object ——————————————————————————————————————————————————————————————
 
   object <- list(call = match.call(),
                  type = "aov.b",
                  data = data.frame(y, group),
                  formula = formula,
-                 args = list(hypo = hypo, descript = descript, effsize = effsize, weighted = weighted, correct = correct, posthoc = posthoc, conf.level = conf.level, digits = digits, p.digits = p.digits, as.na = as.na, plot = plot, bar = bar, point = point, ci = ci, jitter = jitter, adjust = adjust, filename = filename, width = width, height = height, dpi = dpi, write = write, append = append, check = check, output = output),
+                 args = list(hypo = hypo, descript = descript, effsize = effsize, weighted = weighted, correct = correct, posthoc = posthoc, adjust = adjust, conf.level = conf.level, digits = digits, p.digits = p.digits, as.na = as.na, plot = plot, geom = geom, filename = filename, width = width, height = height, dpi = dpi, write = write, append = append, check = check, output = output),
                  plot = NULL,
                  result = list(descript = ci.table, test = test, posthoc = result.ph, aov = aov.res))
 
@@ -383,19 +415,19 @@ aov.b <- function(formula, data, hypo = FALSE, descript = FALSE, effsize = FALSE
 
   #_____________________________________________________________________________
   #
-  # Plot and Save Plot ---------------------------------------------------------
+  # Plot and Save Plot —————————————————————————————————————————————————————————
 
-  if (isTRUE(plot)) { object$plot <- plot(object, filename = filename, width = width, height = height, dpi = dpi, check = FALSE) |> (\(y) suppressMessages(suppressWarnings(print(y))))() }
+  if (isTRUE(plot)) { object$plot <- plot(object, filename = filename, width = width, height = height, dpi = dpi, check = FALSE, ...) |> (\(y) suppressMessages(suppressWarnings(print(y))))() }
 
   #_____________________________________________________________________________
   #
-  # Write Results --------------------------------------------------------------
+  # Write Results ——————————————————————————————————————————————————————————————
 
   if (isTRUE(!is.null(write))) { .write.result(object = object, write = write, append = append) }
 
   #_____________________________________________________________________________
   #
-  # Output ---------------------------------------------------------------------
+  # Output —————————————————————————————————————————————————————————————————————
 
   if (isTRUE(output)) { print(object, check = FALSE) }
 

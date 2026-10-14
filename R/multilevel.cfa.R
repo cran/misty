@@ -140,18 +140,18 @@
 #'                      method. Note that it takes longer to estimate the model
 #'                      using FIML, and that FIML is prone to convergence issues
 #'                      which might be resolved by switching to listwise deletion.
-#' @param print         a character string or character vector indicating which
-#'                      results to show on the console, i.e. \code{"all"} for all
-#'                      results, \code{"summary"} for a summary of the specification
-#'                      of the estimation method and missing data handling in lavaan,
-#'                      \code{"coverage"} for the variance-covariance coverage of
-#'                      the data, \code{"descript"} for descriptive statistics,
-#'                      \code{"fit"} for model fit,  \code{"est"} for parameter
-#'                      estimates, \code{"modind"} for modification indices,
-#'                      \code{"resid"} for the residual correlation matrix and
-#'                      standardized residual means, and \code{"opdyke"} for the
-#'                      discrepancy between model-implied and observed correlation
-#'                      expressed in terms of the relative percentile of an Opdyke
+#' @param print         a character vector indicating which results to show on
+#'                      the console, i.e. \code{"all"} for all results, \code{"summary"}
+#'                      for a summary of the specification of the estimation method
+#'                      and missing data handling in lavaan, \code{"coverage"}
+#'                      for the variance-covariance coverage of the data,
+#'                      \code{"descript"} for descriptive statistics, \code{"fit"}
+#'                      for model fit,  \code{"est"} for parameter estimates,
+#'                      \code{"modind"} for modification indices, \code{"resid"}
+#'                      for the residual correlation matrix and standardized
+#'                      residual means, and \code{"opdyke"} for the discrepancy
+#'                      between model-implied and observed correlation expressed
+#'                      in terms of the relative percentile of an Opdyke
 #'                      distribution (McNeish, 2025). By default, a summary of
 #'                      the specification, model fit, and parameter estimates are
 #'                      printed. By default, a summary of the specification,
@@ -194,9 +194,10 @@
 #'                      \code{"red"}, \code{"b.red"} (default), \code{"green"},
 #'                      \code{"b.green"}, \code{"blue"}, or \code{"b.blue"},
 #'                      see the help page of the \code{\link{chr.color}} function.
-#'                      Note that this option is not supported when using R
-#'                      Markdown and when writing the output into a text file
-#'                      (\code{.txt}).
+#'                      Note that this option is only supported on the RStudio
+#'                      platform, i.e., the argument switches to \code{"default"}
+#'                      when using R Markdown and when writing the output into a
+#'                      text file (\code{.txt}).
 #' @param style         a character vector indicating the font style for
 #'                      highlighting absolute residual correlation coefficients
 #'                      and standardized means equal or higher \code{resid.minval},
@@ -611,7 +612,7 @@ multilevel.cfa <- function(data, ..., cluster, model = NULL, rescov = NULL,
 
   #_____________________________________________________________________________
   #
-  # Initial Check --------------------------------------------------------------
+  # Initial Check ——————————————————————————————————————————————————————————————
 
   # Check if input 'data' is missing or NULL
   if (isTRUE(missing(data) || is.null(data))) { stop("Please specify a data frame for the argument 'data'", call. = FALSE) }
@@ -621,41 +622,21 @@ multilevel.cfa <- function(data, ..., cluster, model = NULL, rescov = NULL,
 
   #_____________________________________________________________________________
   #
-  # Data -----------------------------------------------------------------------
+  # Data ———————————————————————————————————————————————————————————————————————
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Using the Argument '...' ####
-
-  if (isTRUE(!missing(...))) {
-
-    # Extract data
-    x <- as.data.frame(data[, .var.names(data = data, ..., cluster = cluster), drop = FALSE])
-
-    # Extract cluster variable and convert tibble into data frame or vector
-    cluster <- data[, cluster] |> (\(p) if (isTRUE("tbl" %in% substr(class(p), 1L, 3L))) { unname(unlist(p)) } else { return(p) })()
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Without using the Argument '...' ####
-
-  } else {
-
-    # Data frame
-    x <- as.data.frame(data)
-
-    # Data and cluster
-    var.group <- .var.group(data = x, cluster = cluster)
+  .data(data, ..., cluster = cluster, drop = TRUE) |> (\(p) {
 
     # Data
-    if (isTRUE(!is.null(var.group$data)))  { x <- var.group$data }
+    assign("x", p$data, envir = parent.frame())
 
     # Cluster variable
-    if (isTRUE(!is.null(var.group$cluster))) { cluster <- var.group$cluster }
+    if (isTRUE(!is.null(p$cluster))) { assign("cluster", p$cluster, envir = parent.frame()) }
 
-  }
+  })()
 
   #_____________________________________________________________________________
   #
-  # Input Check ----------------------------------------------------------------
+  # Input Check ————————————————————————————————————————————————————————————————
 
   .check.input(logical = c("ls.fit", "append", "output"),
                numeric = list(mod.minval = 1L, resid.minval = 1L),
@@ -774,7 +755,7 @@ multilevel.cfa <- function(data, ..., cluster, model = NULL, rescov = NULL,
 
   #_____________________________________________________________________________
   #
-  # Model and Arguments --------------------------------------------------------
+  # Model and Arguments ————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Manifest variables ####
@@ -1025,13 +1006,18 @@ multilevel.cfa <- function(data, ..., cluster, model = NULL, rescov = NULL,
   if (isTRUE(test == "none")) { print <- setdiff(print, "fit") }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## 'color' Argument ####
+
+  if (isTRUE(color != "default" && .Platform$GUI != "RStudio")) { color <- "default" }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## 'style' Argument ####
 
   if (isTRUE(all(c("regular", "bold", "italic") %in% style))) { style <- "regular" }
 
   #_____________________________________________________________________________
   #
-  # Main Function --------------------------------------------------------------
+  # Main Function ——————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Covariance Coverage ####
@@ -1827,7 +1813,7 @@ multilevel.cfa <- function(data, ..., cluster, model = NULL, rescov = NULL,
 
   #_____________________________________________________________________________
   #
-  # Return Object --------------------------------------------------------------
+  # Return Object ——————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Test Statistic and Standard Error ####
@@ -2284,13 +2270,13 @@ multilevel.cfa <- function(data, ..., cluster, model = NULL, rescov = NULL,
 
   #_____________________________________________________________________________
   #
-  # Write Results --------------------------------------------------------------
+  # Write Results ——————————————————————————————————————————————————————————————
 
   if (isTRUE(!is.null(write))) { .write.result(object = object, write = write, append = append) }
 
   #_____________________________________________________________________________
   #
-  # Output ---------------------------------------------------------------------
+  # Output —————————————————————————————————————————————————————————————————————
 
   if (isTRUE(output)) { print(object, check = FALSE) }
 

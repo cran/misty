@@ -170,7 +170,7 @@
 #'
 #' @examples
 #' \dontrun{
-#' #—————————————————————————————————————— #———————————————————————————————————————
+#' #————————————————————————————————————————————————————————————————————————————
 #' # Example 1: Update VARIABLE and MODEL section
 #'
 #' # Write Mplus Data File
@@ -197,7 +197,7 @@
 #' # Run updated Mplus input
 #' mod1 <- mplus.update(mod0, update1, file = "ex3_1_update1.inp")
 #'
-#' #—————————————————————————————————————— #———————————————————————————————————————
+#' #————————————————————————————————————————————————————————————————————————————
 #' # Example 2: Update ANALYSIS section
 #'
 #' # Update ANALYSIS section
@@ -208,7 +208,7 @@
 #' # Run updated Mplus input
 #' mod2 <- mplus.update(mod1, update2, file = "ex3_1_update2.inp")
 #'
-#' #—————————————————————————————————————— #———————————————————————————————————————
+#' #————————————————————————————————————————————————————————————————————————————
 #' # Example 3: Remove OUTPUT section
 #'
 #' #' Remove OUTPUT section
@@ -232,7 +232,7 @@ mplus.update <- function(x, update, file = "Mplus_Input_Update.inp", comment = F
 
   #_____________________________________________________________________________
   #
-  # Initial Check --------------------------------------------------------------
+  # Initial Check ——————————————————————————————————————————————————————————————
 
   # Check if input 'x' is a misty.object
   if (isTRUE(!inherits(x, "misty.object"))) { stop("Please specify a misty.object for the argument 'x'", call. = FALSE) }
@@ -245,7 +245,7 @@ mplus.update <- function(x, update, file = "Mplus_Input_Update.inp", comment = F
 
   #_____________________________________________________________________________
   #
-  # Arguments ------------------------------------------------------------------
+  # Arguments ——————————————————————————————————————————————————————————————————
 
   # All input options
   input.all <- c("title", "data", "data.imp", "data.wl", "data.lw", "data.tp", "data.miss", "data.surv", "data.coh", "variable", "define", "analysis", "model", "mod.ind", "mod.test", "mod.prior", "montecarlo", "mod.pop", "mod.cov", "mod.miss", "inpoutput", "savedata", "plot", "output", "message")
@@ -255,7 +255,7 @@ mplus.update <- function(x, update, file = "Mplus_Input_Update.inp", comment = F
 
   #_____________________________________________________________________________
   #
-  # Input Check ----------------------------------------------------------------
+  # Input Check ————————————————————————————————————————————————————————————————
 
   # Check inputs
   .check.input(logical = c("comment", "replace.inp", "mplus.run", "variable", "not.input", "not.result", "append", "output"),
@@ -301,7 +301,7 @@ mplus.update <- function(x, update, file = "Mplus_Input_Update.inp", comment = F
 
   #_____________________________________________________________________________
   #
-  # Arguments ------------------------------------------------------------------
+  # Arguments ——————————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## file Argument ####
@@ -327,7 +327,7 @@ mplus.update <- function(x, update, file = "Mplus_Input_Update.inp", comment = F
 
   #_____________________________________________________________________________
   #
-  # Main Function --------------------------------------------------------------
+  # Main Function ——————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Remove Comments ####
@@ -745,7 +745,7 @@ mplus.update <- function(x, update, file = "Mplus_Input_Update.inp", comment = F
 
   #_____________________________________________________________________________
   #
-  # Return Object --------------------------------------------------------------
+  # Return Object ——————————————————————————————————————————————————————————————
 
   object <- list(call = match.call(),
                  type = "mplus",
@@ -761,7 +761,7 @@ mplus.update <- function(x, update, file = "Mplus_Input_Update.inp", comment = F
 
   #_____________________________________________________________________________
   #
-  # Output ---------------------------------------------------------------------
+  # Output —————————————————————————————————————————————————————————————————————
 
   return(invisible(object))
 

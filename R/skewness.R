@@ -14,7 +14,7 @@
 #'                 \code{-}, \code{~}, \code{:}, \code{::}, and \code{!}
 #'                 can also be used to select variables, see 'Details' in the
 #'                 \code{\link{df.subset}} function.
-#' @param sample   logical: if \code{TRUE} (default), the univariate sample skewness
+#' @param sample   logical: if \code{TRUE}, the univariate sample skewness
 #'                 or kurtosis is computed, while the population skewness or kurtosis
 #'                 is computed when \code{sample = FALSE}.
 #' @param center   logical: if \code{TRUE} (default), the univariate or multivariate
@@ -123,37 +123,21 @@
 #'
 #' # Example 2b: Compute multivariate excess kurtosis
 #' kurtosis(mtcars)
-skewness <- function(data, ..., sample = TRUE, digits = 2, p.digits = 3,
+skewness <- function(data, ..., sample = FALSE, digits = 2, p.digits = 3,
                      as.na = NULL, check = TRUE, output = TRUE) {
 
   #_____________________________________________________________________________
   #
-  # Initial Check --------------------------------------------------------------
+  # Initial Check ——————————————————————————————————————————————————————————————
 
   # Check if input 'data' is missing or NULL
   if (isTRUE(missing(data) || is.null(data))) { stop("Please specify a numeric vector or data frame for the argument 'data'", call. = FALSE) }
 
   #_____________________________________________________________________________
   #
-  # Data -----------------------------------------------------------------------
+  # Data ———————————————————————————————————————————————————————————————————————
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Using the Argument '...' ####
-
-  if (isTRUE(!missing(...))) {
-
-    # Extract data and convert tibble into data frame or vector
-    x <- data[, .var.names(data = data, ...)] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(y)) == 1L)) { unname(unlist(y)) } else { as.data.frame(y) } } else { y })()
-
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Without Using the Argument '...' ####
-
-  } else {
-
-    # Convert 'data' as tibble into data frame
-    x <- data |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(y)) == 1L)) { unname(unlist(y)) } else { as.data.frame(y) } } else { y })()
-
-  }
+  .data(data, ..., drop = TRUE) |> (\(p) { assign("x", p$data, envir = parent.frame()) })()
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Convert User-Missing Values into NA ####
@@ -162,7 +146,7 @@ skewness <- function(data, ..., sample = TRUE, digits = 2, p.digits = 3,
 
   #_____________________________________________________________________________
   #
-  # Univariate -----------------------------------------------------------------
+  # Univariate —————————————————————————————————————————————————————————————————
 
   if (isTRUE(ncol(as.data.frame(x)) == 1L)) {
 
@@ -209,7 +193,7 @@ skewness <- function(data, ..., sample = TRUE, digits = 2, p.digits = 3,
 
   #_____________________________________________________________________________
   #
-  # Multivariate -----------------------------------------------------------------
+  # Multivariate ———————————————————————————————————————————————————————————————
 
   } else {
 
@@ -274,41 +258,25 @@ skewness <- function(data, ..., sample = TRUE, digits = 2, p.digits = 3,
 
 }
 
-#_____________________________________________________________________________
-#_____________________________________________________________________________
+#_______________________________________________________________________________
+#_______________________________________________________________________________
 
 #' @rdname kurtosis
-kurtosis <- function(data, ..., sample = TRUE, center = TRUE, digits = 2,
+kurtosis <- function(data, ..., sample = FALSE, center = TRUE, digits = 2,
                      p.digits = 3, as.na = NULL, check = TRUE, output = TRUE) {
 
   #_____________________________________________________________________________
   #
-  # Initial Check --------------------------------------------------------------
+  # Initial Check ——————————————————————————————————————————————————————————————
 
   # Check if input 'data' is missing or NULL
   if (isTRUE(missing(data) || is.null(data))) { stop("Please specify a numeric vector for the argument 'data'", call. = FALSE) }
 
   #_____________________________________________________________________________
   #
-  # Data -----------------------------------------------------------------------
+  # Data ———————————————————————————————————————————————————————————————————————
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Using the Argument 'data' ####
-
-  if (isTRUE(!missing(...))) {
-
-    # Extract data and convert tibble into data frame or vector
-    x <- data[, .var.names(..., data = data)] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(y)) == 1L)) { unname(unlist(y)) } else { as.data.frame(y) } } else { y })()
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Without Using the Argument 'data' ####
-
-  } else {
-
-    # Convert 'data' as tibble into data frame
-    x <- data |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(y)) == 1L)) { unname(unlist(y)) } else { as.data.frame(y) } } else { y })()
-
-  }
+  .data(data, ..., drop = TRUE) |> (\(p) { assign("x", p$data, envir = parent.frame()) })()
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Convert User-Missing Values into NA ####
@@ -318,7 +286,7 @@ kurtosis <- function(data, ..., sample = TRUE, center = TRUE, digits = 2,
 
   #_____________________________________________________________________________
   #
-  # Univariate -----------------------------------------------------------------
+  # Univariate —————————————————————————————————————————————————————————————————
 
   if (isTRUE(ncol(as.data.frame(x)) == 1L)) {
 
@@ -366,7 +334,7 @@ kurtosis <- function(data, ..., sample = TRUE, center = TRUE, digits = 2,
 
   #_____________________________________________________________________________
   #
-  # Multivariate -----------------------------------------------------------------
+  # Multivariate ———————————————————————————————————————————————————————————————
 
   } else {
 

@@ -17,12 +17,11 @@
 #' @param keep   a numeric vector indicating values not to be reverse coded.
 #' @param append logical: if \code{TRUE} (default), centered variable(s) are
 #'               appended to the data frame specified in the argument \code{data}.
-#' @param name   a character string or character vector indicating the names
-#'               of the reverse coded item. By default, variables are named with
-#'               the ending \code{".r"} resulting in e.g. \code{"x1.r"} and
-#'               \code{"x2.r"}. Variable names can also be specified using a
-#'               character vector matching the number of variables (e.g.,
-#'               \code{name = c("reverse.x1", "reverse.x2")}).
+#' @param name   a character vector indicating the names of the reverse coded
+#'               item. By default, variables are named with the ending \code{".r"}
+#'               resulting in e.g. \code{"x1.r"} and \code{"x2.r"}. Variable names
+#'               can also be specified using a character vector matching the number
+#'               of variables (e.g., \code{name = c("reverse.x1", "reverse.x2")}).
 #' @param as.na  a numeric vector indicating user-defined missing values, i.e.
 #'               these values are converted to \code{NA} before conducting the
 #'                analysis.
@@ -72,41 +71,25 @@ item.reverse <- function(data, ..., min = NULL, max = NULL, keep = NULL, append 
 
   #_____________________________________________________________________________
   #
-  # Initial Check --------------------------------------------------------------
+  # Initial Check ——————————————————————————————————————————————————————————————
 
   # Check if input 'data' is missing or NULL
   if (isTRUE(missing(data) || is.null(data))) { stop("Please specify a numeric vector or data frame for the argument 'data'", call. = FALSE) }
 
   #_____________________________________________________________________________
   #
-  # Data -----------------------------------------------------------------------
+  # Data ———————————————————————————————————————————————————————————————————————
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Using the Argument '...' ####
-
-  if (isTRUE(!missing(...))) {
-
-    # Variable names
-    var.names <- .var.names(data = data, ...)
-
-    # Extract data and convert tibble into data frame or vector
-    x <- data[, var.names] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(y)) == 1L)) { unname(unlist(y)) } else { as.data.frame(y) } } else { y })()
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Without Using the Argument '...' ####
-
-  } else {
-
-    # Convert 'data' as tibble into data frame
-    x <- data |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(y)) == 1L)) { unname(unlist(y)) } else { as.data.frame(y) } } else { y })()
-
-    # Data and cluster
-    var.group <- .var.group(data = x)
+  var.names <- NULL
+  .data(data, ..., drop = TRUE) |> (\(p) {
 
     # Data
-    if (isTRUE(!is.null(var.group$data))) { x <- var.group$data }
+    assign("x", p$data, envir = parent.frame())
 
-  }
+    # Variable names
+    assign("var.names", p$var.names, envir = parent.frame())
+
+  })()
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Convert User-Missing Values into NA ####
@@ -115,7 +98,7 @@ item.reverse <- function(data, ..., min = NULL, max = NULL, keep = NULL, append 
 
   #_____________________________________________________________________________
   #
-  # Arguments ------------------------------------------------------------------
+  # Arguments ——————————————————————————————————————————————————————————————————
 
   # Argument 'min'
   if (isTRUE(is.null(min))) { min <- min(x, na.rm = TRUE) }
@@ -131,7 +114,7 @@ item.reverse <- function(data, ..., min = NULL, max = NULL, keep = NULL, append 
 
   #_____________________________________________________________________________
   #
-  # Input Check ----------------------------------------------------------------
+  # Input Check ————————————————————————————————————————————————————————————————
 
   # Check inputs
   .check.input(logical = c("append", "table"), numeric = list(min = 1L, max = 1L), envir = environment(), input.check = check)
@@ -180,7 +163,7 @@ item.reverse <- function(data, ..., min = NULL, max = NULL, keep = NULL, append 
 
   #_____________________________________________________________________________
   #
-  # Main Function --------------------------------------------------------------
+  # Main Function ——————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Single Variable ####
@@ -264,7 +247,7 @@ item.reverse <- function(data, ..., min = NULL, max = NULL, keep = NULL, append 
 
   #_____________________________________________________________________________
   #
-  # Return Object --------------------------------------------------------------
+  # Return Object ——————————————————————————————————————————————————————————————
 
   if (isTRUE(is.null(dim(x)) && table)) { return(invisible(object)) } else { return(object) }
 

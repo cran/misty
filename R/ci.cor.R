@@ -15,165 +15,163 @@
 #' function computes Pearson product-moment correlation coefficients adjusted via
 #' approximate distribution method.
 #'
-#' @param data              a data frame with numeric variables, i.e., factors
-#'                          and character variables are excluded from \code{data}
-#'                          before conducting the analysis.
-#' @param ...               an expression indicating the variable names in \code{data}
-#'                          e.g., \code{ci.cor(x1, x2, data = dat)}. Note that the
-#'                          operators \code{+}, \code{-}, \code{~}, \code{:},
-#'                          \code{::}, and \code{!} can also be used to select
-#'                          variables, see 'Details' in the \code{\link{df.subset}}
-#'                          function.
-#' @param method            a character string indicating which correlation
-#'                          coefficient is to be computed, i.e., \code{"pearson"}
-#'                          for Pearson product-moment correlation coefficient
-#'                          (default), \code{"spearman"} for Spearman's rank-order
-#'                          correlation coefficient, \code{"kendall-b"} for Kendall's
-#'                          Tau-b correlation coefficient, \code{"kendall-c"} for
-#'                          Kendall-Stuart's Tau-c correlation coefficient. Note
-#'                          that confidence intervals are only computed given
-#'                          at least 4 pairs of observations.
-#' @param adjust            a character string specifying the non-normality
-#'                          adjustment method, i.e., \code{"none"} for the Fisher
-#'                          \eqn{z'} confidence interval for the Pearson
-#'                          product-moment correlation coefficient without
-#'                          non-normality adjustment, \code{"joint"} for the
-#'                          confidence interval with non-normality adjustment via
-#'                          sample joint moments, and \code{"approx"} (default)
-#'                          for the confidence interval with non-normality adjustment
-#'                          via approximate distribution by skewness and kurtosis.
-#'                          Note that this argument only applies to the Pearson
-#'                          product-moment correlation coefficient, i.e.,
-#'                          \code{method = "pearson"}
-#' @param se                a character string specifying the method for computing
-#'                          the standard error of the correlation coefficient,
-#'                          i.e., \code{"fisher"} for the Fisher \eqn{z'} confidence
-#'                          interval, \code{"fieller"} (default) for the confidence
-#'                          interval for Spearman's rank-order correlation
-#'                          coefficient based on approximate standard error by
-#'                          Fieller et al. (1957), \code{"bonett"} for the confidence
-#'                          interval based on approximate standard error by Bonett
-#'                          and Wright (2000), and \code{"rin"} for the confidence
-#'                          interval for Spearman's rank-order correlation coefficient
-#'                          based on rank-based inverse normal (RIN) transformation.
-#'                          Note that this argument only applies to Spearman's
-#'                          rank-order correlation coefficient, i.e.,
-#'                          \code{method = "spearman"}.
-#' @param sample            logical: if \code{TRUE} (default), the univariate
-#'                          sample skewness and kurtosis is used when applying
-#'                          the approximate distribution method and reported in
-#'                          the result table, while the population skewness and
-#'                          kurtosis is used when \code{sample = FALSE}.
-#' @param seed              a numeric value specifying the seed of the pseudo-random
-#'                          number generator when generating a random set of
-#'                          starting parameter value when the parameters led to
-#'                          a sum of squares greater than the maximum tolerance
-#'                          after optimization when applying the approximate
-#'                          distribution method (\code{adjust = approx}) when
-#'                          computing the confidence interval for the Pearson
-#'                          product-moment correlation coefficient, or the seeds
-#'                          of the pseudo-random numbers used when conducting
-#'                          bootstrapping.
-#' @param maxtol            a numeric value indicating the tolerance for total
-#'                          squared error when applying the approximate distribution
-#'                          method (\code{adjust = approx}).
-#' @param nudge             a numeric value indicating the nudge proportion of
-#'                          their original values by which sample skewness, kurtosis,
-#'                          and r are nudged towards 0 when applying the approximate
-#'                          distribution method (\code{adjust = approx}).
-#'                          are only computed given at least 10 pairs of observations.
-#' @param boot              a character string specifying the type of bootstrap
-#'                          confidence intervals (CI), i.e., \code{"none"} (default)
-#'                          for not conducting bootstrapping, \code{"norm"} for
-#'                          the bias-corrected normal approximation bootstrap CI,
-#'                          \code{"basic"} for the basic bootstrap CI, \code{"perc"},
-#'                          for the percentile bootstrap CI \code{"bc"} for the
-#'                          bias-corrected (BC) percentile bootstrap CI
-#'                          (without acceleration), and \code{"bca"} for the
-#'                          bias-corrected and accelerated (BCa) bootstrap CI.
-#' @param nrep              a numeric value indicating the number of bootstrap
-#'                          replicates (default is 1000).
-#' @param fisher            logical: if \code{TRUE} (default), Fisher \eqn{z}
-#'                          transformation is applied before computing the
-#'                          confidence intervals to reverse-transformed the limits
-#'                          of the interval using the inverse of the Fisher
-#'                          \eqn{z} transformation. Note that this argument applies
-#'                          only  when \code{boot} is \code{"norm"} or \code{"basic"}.
-#' @param alternative       a character string specifying the alternative hypothesis,
-#'                          must be one of \code{"two.sided"} (default),
-#'                          \code{"greater"} or \code{"less"}.
-#' @param conf.level        a numeric value between 0 and 1 indicating the confidence
-#'                          level of the interval.
-#' @param group             either a character string indicating the variable name
-#'                          of the grouping variable in \code{data}, or a vector
-#'                          representing the grouping variable. The grouping variable
-#'                          is excluded from the data frame specified in \code{data}.
-#' @param split             either a character string indicating the variable name
-#'                          of the split variable in \code{data}, or a vector
-#'                          representing the split variable. The split variable
-#'                          is excluded from the data frame specified in \code{data}.
-#' @param na.omit           logical: if \code{TRUE}, incomplete cases are removed
-#'                          before conducting the analysis (i.e., listwise deletion);
-#'                          if \code{FALSE} (default), pairwise deletion is used.
-#' @param digits            an integer value indicating the number of decimal
-#'                          places to be used.
-#' @param as.na             a numeric vector indicating user-defined missing values,
-#'                          i.e. these values are converted to \code{NA} before
-#'                          conducting the analysis.
-#' @param plot              a character string indicating the type of the plot
-#'                          to display, i.e., \code{"none"} (default) for not
-#'                          displaying any plots, \code{"ci"} for displaying
-#'                          confidence intervals for the correlation coefficient,
-#'                          \code{"boot"} for displaying bootstrap samples with
-#'                          histograms and density curves when the argument
-#'                          \code{"boot"} is other than \code{"none"}.
-#' @param hist              logical: if \code{TRUE} (default), histograms are
-#'                          drawn when plotting bootstrap samples (\code{plot = "boot"}).
-#' @param density           logical: if \code{TRUE} (default), density curves are
-#'                          drawn when plotting bootstrap samples
-#'                          (\code{plot = "boot"}).
-#' @param point             logical: if \code{TRUE} (default), vertical lines
-#'                          representing the point estimate of the correlation
-#'                          coefficients are drawn when plotting bootstrap samples
-#'                          (\code{plot = "boot"}).
-#' @param ci                logical: if \code{TRUE} (default), vertical lines
-#'                          representing the bootstrap confidence intervals of
-#'                          the correlation coefficient are drawn when plotting
-#'                          bootstrap samples (\code{plot = "boot"}).
-#' @param line              logical: if \code{TRUE} (default), a horizontal line
-#'                          is drawn when \code{plot = "ci"} or a vertical line
-#'                          is drawn when \code{plot = "boot"}.
-#' @param filename          a character string indicating the \code{filename}
-#'                          argument including the file extension in the \code{ggsave}
-#'                          function. Note that one of \code{".eps"}, \code{".ps"},
-#'                          \code{".tex"}, \code{".pdf"} (default),
-#'                          \code{".jpeg"}, \code{".tiff"}, \code{".png"},
-#'                          \code{".bmp"}, \code{".svg"} or \code{".wmf"} needs
-#'                          to be specified as file extension in the \code{file}
-#'                          argument. Note that plots can only be saved when
-#'                          \code{plot = "ci"} or \code{plot = "boot"}.
-#' @param width             a numeric value indicating the \code{width} argument
-#'                          (default is the size of the current graphics device)
-#'                          in the \code{ggsave} function.
-#' @param height            a numeric value indicating the \code{height} argument
-#'                          (default is the size of the current graphics device)
-#'                          in the \code{ggsave} function.
-#' @param dpi               a numeric value indicating the \code{dpi} argument
-#'                          (default is \code{600}) in the \code{ggsave} function.
-#' @param write             a character string naming a file for writing the output
-#'                          into either a text file with file extension \code{".txt"}
-#'                          (e.g., \code{"Output.txt"}) or Excel file with file
-#'                          extension \code{".xlsx"}  (e.g., \code{"Output.xlsx"}).
-#'                          If the file name does not contain any file extension,
-#'                          an Excel file will be written.
-#' @param append            logical: if \code{TRUE} (default), output will be
-#'                          appended to an existing text file with extension
-#'                          \code{.txt} specified in \code{write}, if \code{FALSE}
-#'                          existing text file will be overwritten.
-#' @param check             logical: if \code{TRUE} (default), argument specification
-#'                          is checked.
-#' @param output            logical: if \code{TRUE} (default), output is shown
-#'                          on the console.
+#' @param data        a data frame with numeric variables, i.e., factors
+#'                    and character variables are excluded from \code{data}
+#'                    before conducting the analysis.
+#' @param ...         an expression indicating the variable names in \code{data}
+#'                    e.g., \code{ci.cor(x1, x2, data = dat)}. Note that the
+#'                    operators \code{+}, \code{-}, \code{~}, \code{:},
+#'                    \code{::}, and \code{!} can also be used to select
+#'                    variables, see 'Details' in the \code{\link{df.subset}}
+#'                    function.
+#' @param method      a character string indicating which correlation
+#'                    coefficient is to be computed, i.e., \code{"pearson"}
+#'                    for Pearson product-moment correlation coefficient
+#'                    (default), \code{"spearman"} for Spearman's rank-order
+#'                    correlation coefficient, \code{"kendall-b"} for Kendall's
+#'                    Tau-b correlation coefficient, \code{"kendall-c"} for
+#'                    Kendall-Stuart's Tau-c correlation coefficient. Note
+#'                    that confidence intervals are only computed given
+#'                    at least 4 pairs of observations.
+#' @param adjust      a character string specifying the non-normality
+#'                    adjustment method, i.e., \code{"none"} for the Fisher
+#'                    \eqn{z'} confidence interval for the Pearson
+#'                    product-moment correlation coefficient without
+#'                    non-normality adjustment, \code{"joint"} for the
+#'                    confidence interval with non-normality adjustment via
+#'                    sample joint moments, and \code{"approx"} (default)
+#'                    for the confidence interval with non-normality adjustment
+#'                    via approximate distribution by skewness and kurtosis.
+#'                    Note that this argument only applies to the Pearson
+#'                    product-moment correlation coefficient, i.e.,
+#'                    \code{method = "pearson"}
+#' @param se          a character string specifying the method for computing
+#'                    the standard error of the correlation coefficient,
+#'                    i.e., \code{"fisher"} for the Fisher \eqn{z'} confidence
+#'                    interval, \code{"fieller"} (default) for the confidence
+#'                    interval for Spearman's rank-order correlation
+#'                    coefficient based on approximate standard error by
+#'                    Fieller et al. (1957), \code{"bonett"} for the confidence
+#'                    interval based on approximate standard error by Bonett
+#'                    and Wright (2000), and \code{"rin"} for the confidence
+#'                    interval for Spearman's rank-order correlation coefficient
+#'                    based on rank-based inverse normal (RIN) transformation.
+#'                    Note that this argument only applies to Spearman's
+#'                    rank-order correlation coefficient, i.e.,
+#'                    \code{method = "spearman"}.
+#' @param sample      logical: if \code{TRUE} (default), the univariate
+#'                    sample skewness and kurtosis is used when applying
+#'                    the approximate distribution method and reported in
+#'                    the result table, while the population skewness and
+#'                    kurtosis is used when \code{sample = FALSE}.
+#' @param seed        a numeric value specifying the seed of the pseudo-random
+#'                    number generator when generating a random set of
+#'                    starting parameter value when the parameters led to
+#'                    a sum of squares greater than the maximum tolerance
+#'                    after optimization when applying the approximate
+#'                    distribution method (\code{adjust = approx}) when
+#'                    computing the confidence interval for the Pearson
+#'                    product-moment correlation coefficient, or the seeds
+#'                    of the pseudo-random numbers used when conducting
+#'                    bootstrapping.
+#' @param maxtol      a numeric value indicating the tolerance for total
+#'                    squared error when applying the approximate distribution
+#'                    method (\code{adjust = approx}).
+#' @param nudge       a numeric value indicating the nudge proportion of
+#'                    their original values by which sample skewness, kurtosis,
+#'                    and r are nudged towards 0 when applying the approximate
+#'                    distribution method (\code{adjust = approx}).
+#'                    are only computed given at least 10 pairs of observations.
+#' @param boot        a character string specifying the type of bootstrap
+#'                    confidence intervals (CI), i.e., \code{"none"} (default)
+#'                    for not conducting bootstrapping, \code{"norm"} for
+#'                    the bias-corrected normal approximation bootstrap CI,
+#'                    \code{"basic"} for the basic bootstrap CI, \code{"perc"},
+#'                    for the percentile bootstrap CI \code{"bc"} for the
+#'                    bias-corrected (BC) percentile bootstrap CI
+#'                    (without acceleration), and \code{"bca"} for the
+#'                    bias-corrected and accelerated (BCa) bootstrap CI.
+#' @param nrep        a numeric value indicating the number of bootstrap
+#'                    replicates (default is 1000).
+#' @param fisher      logical: if \code{TRUE} (default), Fisher \eqn{z}
+#'                    transformation is applied before computing the
+#'                    confidence intervals to reverse-transformed the limits
+#'                    of the interval using the inverse of the Fisher
+#'                    \eqn{z} transformation. Note that this argument applies
+#'                    only  when \code{boot} is \code{"norm"} or \code{"basic"}.
+#' @param alternative a character string specifying the alternative hypothesis,
+#'                    must be one of \code{"two.sided"} (default),
+#'                    \code{"greater"} or \code{"less"}.
+#' @param conf.level  a numeric value between 0 and 1 indicating the confidence
+#'                    level of the interval.
+#' @param group       either a character string indicating the variable name
+#'                    of the grouping variable in \code{data}, or a vector
+#'                    representing the grouping variable. The grouping variable
+#'                    is excluded from the data frame specified in \code{data}.
+#' @param split       either a character string indicating the variable name
+#'                    of the split variable in \code{data}, or a vector
+#'                    representing the split variable. The split variable
+#'                    is excluded from the data frame specified in \code{data}.
+#' @param na.omit     logical: if \code{TRUE}, incomplete cases are removed
+#'                    before conducting the analysis (i.e., listwise deletion);
+#'                    if \code{FALSE} (default), pairwise deletion is used.
+#' @param digits      an integer value indicating the number of decimal
+#'                    places to be used.
+#' @param as.na       a numeric vector indicating user-defined missing values,
+#'                    i.e. these values are converted to \code{NA} before
+#'                    conducting the analysis.
+#' @param plot        a character string indicating the type of the plot
+#'                    to display, i.e., \code{"none"} (default) for not
+#'                    displaying any plots, \code{"ci"} for displaying
+#'                    confidence intervals for the correlation coefficient,
+#'                    \code{"boot"} for displaying bootstrap samples with
+#'                    histograms and density curves when the argument
+#'                    \code{"boot"} is other than \code{"none"}.
+#' @param geom        a character string or character vector indicating which
+#'                    plot elements to draw, i.e., \code{"all"} for drawing
+#'                    all plot elements, \code{"hist"} for drawing histograms
+#'                    when plotting bootstrap samples (\code{plot = "boot"}),
+#'                    \code{"density"} for drawing density curves when plotting
+#'                    bootstrap samples (\code{plot = "boot"}), \code{"point"}
+#'                    for drawing vertical lines representing the point estimate
+#'                    of the correlation coefficients when plotting bootstrap samples
+#'                    (\code{plot = "boot"}), \code{"ci"} for drawing vertical lines
+#'                    representing the bootstrap confidence intervals of the
+#'                    correlation when plotting bootstrap samples (\code{plot = "boot"}),
+#'                    and \code{"line"} for drawing a horizontal line when
+#'                    specifying \code{plot = "ci"} or a vertical line when
+#'                    specifying \code{plot = "boot"}.
+#' @param filename    a character string indicating the \code{filename}
+#'                    argument including the file extension in the \code{ggsave}
+#'                    function. Note that one of \code{".eps"}, \code{".ps"},
+#'                    \code{".tex"}, \code{".pdf"} (default),
+#'                    \code{".jpeg"}, \code{".tiff"}, \code{".png"},
+#'                    \code{".bmp"}, \code{".svg"} or \code{".wmf"} needs
+#'                    to be specified as file extension in the \code{file}
+#'                    argument. Note that plots can only be saved when
+#'                    \code{plot = "ci"} or \code{plot = "boot"}.
+#' @param width       a numeric value indicating the \code{width} argument
+#'                    (default is the size of the current graphics device)
+#'                    in the \code{ggsave} function.
+#' @param height      a numeric value indicating the \code{height} argument
+#'                    (default is the size of the current graphics device)
+#'                    in the \code{ggsave} function.
+#' @param dpi         a numeric value indicating the \code{dpi} argument
+#'                    (default is \code{600}) in the \code{ggsave} function.
+#' @param write       a character string naming a file for writing the output
+#'                    into either a text file with file extension \code{".txt"}
+#'                    (e.g., \code{"Output.txt"}) or Excel file with file
+#'                    extension \code{".xlsx"}  (e.g., \code{"Output.xlsx"}).
+#'                    If the file name does not contain any file extension,
+#'                    an Excel file will be written.
+#' @param append      logical: if \code{TRUE} (default), output will be
+#'                    appended to an existing text file with extension
+#'                    \code{.txt} specified in \code{write}, if \code{FALSE}
+#'                    existing text file will be overwritten.
+#' @param check       logical: if \code{TRUE} (default), argument specification
+#'                    is checked.
+#' @param output      logical: if \code{TRUE} (default), output is shown
+#'                    on the console.
 #'
 #' @details
 #' \describe{
@@ -484,6 +482,7 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' #————————————————————————————————————————————————————————————————————————————
 #' # Pearson Product-Moment Correlation Coefficient
 #'
@@ -517,51 +516,56 @@
 #' # Example 3b:  Kendall's Tau-c
 #' ci.cor(mtcars, mpg, drat, qsec, method = "kendall-c")
 #'
-#' \dontrun{
 #' #————————————————————————————————————————————————————————————————————————————
-#' # Bootstrap Confidence Interval (CI)
+#' # Grouping Variable
 #'
-#' # Example 4a: Bias-corrected (BC) percentile bootstrap CI
-#' ci.cor(mtcars, mpg, drat, qsec, boot = "bc")
+#' # Example 4a: Grouping variable
+#' ci.cor(mtcars, mpg, drat, qsec, group = "vs")
 #'
-#' # Example 4b: Bias-corrected and accelerated (BCa) bootstrap CI,
-#' # 5000 bootstrap replications, set seed of the pseudo-random number generator
-#' ci.cor(mtcars, mpg, drat, qsec, boot = "bca", nrep = 5000, seed = 42)
+#' # Example 4b:  Alternative specification without using the argument '...'
+#' ci.cor(mtcars[, c("mpg", "drat", "qsec")], group = mtcars$vs)
+#'
+#' #————————————————————————————————————————————————————————————————————————————
+#' # Split Variable
+#'
+#' # Example 5a: Split variable
+#' ci.cor(mtcars, mpg, drat, qsec, split = "am")
+#'
+#' # Example 5b:  Alternative specification without using the argument '...'
+#' ci.cor(mtcars[, c("mpg", "drat", "qsec")], split = mtcars$am)
 #'
 #' #————————————————————————————————————————————————————————————————————————————
 #' # Grouping and Split Variable
 #'
-#' # Example 5a: Grouping variable
-#' ci.cor(mtcars, mpg, drat, qsec, group = "vs")
-#'
-#' # Alternative specification without using the argument '...'
-#' ci.cor(mtcars[, c("mpg", "drat", "qsec")], group = mtcars$vs)
-#'
-#' # Example 5b: Split variable
-#' ci.cor(mtcars, mpg, drat, qsec, split = "am")
-#'
-#' # Alternative specification without using the argument '...'
-#' ci.cor(mtcars[, c("mpg", "drat", "qsec")], split = mtcars$am)
-#'
-#' # Example 5c: Grouping and split variable
+#' # Example 6a: Grouping and split variable
 #' ci.cor(mtcars, mpg, drat, qsec, group = "vs", split = "am")
 #'
-#' # Alternative specification without using the argument '...'
+#' # Example 6b:  Alternative specification without using the argument '...'
 #' ci.cor(mtcars[, c("mpg", "drat", "qsec")], group = mtcars$vs, split = mtcars$am)
+#'
+#' #————————————————————————————————————————————————————————————————————————————
+#' # Bootstrap Confidence Interval (CI)
+#'
+#' # Example 7a: Bias-corrected (BC) percentile bootstrap CI
+#' ci.cor(mtcars, mpg, drat, qsec, boot = "bc")
+#'
+#' # Example 7b: Bias-corrected and accelerated (BCa) bootstrap CI,
+#' # 5000 bootstrap replications, set seed of the pseudo-random number generator
+#' ci.cor(mtcars, mpg, drat, qsec, boot = "bca", nrep = 5000, seed = 42)
 #'
 #' #————————————————————————————————————————————————————————————————————————————
 #' # Plot Confidence Intervals
 #'
-#' # Example 7a: Pearson product-moment correlation coefficient
+#' # Example 8a: Pearson product-moment correlation coefficient
 #' ci.cor(mtcars, mpg, drat, qsec, plot = "ci")
 #'
-#' # Example 7b: Grouping variable
+#' # Example 8b: Grouping variable
 #' ci.cor(mtcars, mpg, drat, qsec, group = "vs", plot = "ci")
 #'
-#' # Example 7c: Split variable
+#' # Example 8c: Split variable
 #' ci.cor(mtcars, mpg, drat, qsec, split = "am", plot = "ci")
 #'
-#' # Example 7d: Plot results using the plot() function, use additional arguments
+#' # Example 8d: Plot results using the plot() function, use additional arguments
 #' # see Details in the help page of the function plot.misty.object
 #' object <- ci.cor(mtcars, mpg, drat, qsec, plot = "ci")
 #' plot(object, ybreaks = seq(-1, 1, by = 0.25), title = "Confidence Intervals")
@@ -569,16 +573,16 @@
 #' #————————————————————————————————————————————————————————————————————————————
 #' # Plot Bootstrap Samples
 #'
-#' # Example 8a: Pearson product-moment correlation coefficient
+#' # Example 9a: Pearson product-moment correlation coefficient
 #' ci.cor(mtcars, mpg, drat, qsec, boot = "bc", plot = "boot")
 #'
-#' # Example 8b: Grouping variable
+#' # Example 9b: Grouping variable
 #' ci.cor(mtcars, mpg, drat, qsec, group = "vs", boot = "bc", plot = "boot")
 #'
-#' # Example 8c: Split variable
+#' # Example 9c: Split variable
 #' ci.cor(mtcars, mpg, drat, qsec, split = "am", boot = "bc", plot = "boot")
 #'
-#' # Example 8d: Plot results using the plot() function, use additional arguments
+#' # Example 9d: Plot results using the plot() function, use additional arguments
 #' # see Details in the help page of the function plot.misty.object
 #' object <- ci.cor(mtcars, mpg, drat, qsec, boot = "bc", plot = "boot")
 #' plot(object, fill = "gray30", title = "Bootstrap Samples")
@@ -586,13 +590,13 @@
 #' #————————————————————————————————————————————————————————————————————————————
 #' # Write Results and Save Plot
 #'
-#' # Example 9a: Write results into a text file
+#' # Example 10a: Write results into a text file
 #' ci.cor(mtcars, mpg, drat, qsec, write = "CI_Cor_Text.txt")
 #'
-#' # Example 9b: Write results into an Excel file
+#' # Example 10b: Write results into an Excel file
 #' ci.cor(mtcars, mpg, drat, qsec, write = "CI_Cor_Excel.xlsx")
 #'
-#' # Example 9c: Save plot as PNG file
+#' # Example 10c: Save plot as PNG file
 #' ci.cor(mtcars, mpg, drat, qsec, plot = "ci", filename = "CI_Cor.png",
 #'        width = 8, height = 6)
 #' }
@@ -603,104 +607,43 @@ ci.cor <- function(data, ..., method = c("pearson", "spearman", "kendall-b", "ke
                    fisher = TRUE, alternative = c("two.sided", "less", "greater"),
                    conf.level = 0.95, group = NULL, split = NULL, na.omit = FALSE,
                    digits = 2, as.na = NULL, plot = c("none", "ci", "boot"),
-                   hist = TRUE, density = TRUE, point = TRUE, ci = TRUE, line = TRUE,
+                   geom = c("all", "hist", "density", "point", "ci", "line"),
                    filename = NULL, width = NA, height = NA, dpi = 600, write = NULL,
                    append = TRUE, check = TRUE, output = TRUE) {
 
   #_____________________________________________________________________________
   #
-  # Initial Check --------------------------------------------------------------
+  # Initial Check ——————————————————————————————————————————————————————————————
 
   # Check if input 'data' is missing or NULL
   if (isTRUE(missing(data) || is.null(data))) { stop("Please specify a data frame with numeric variables for the argument 'data'", call. = FALSE) }
 
   #_____________________________________________________________________________
   #
-  # Data -----------------------------------------------------------------------
+  # Data ———————————————————————————————————————————————————————————————————————
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Using the argument '...' ####
-
-  if (isTRUE(!missing(...))) {
-
-    # Extract data and convert tibble into data frame or vector
-    x <- as.data.frame(data[, .var.names(data = data, ..., group = group, split = split)])
-
-    # Extract grouping variable and convert tibble into a vector
-    if (isTRUE(!is.null(group))) { group <- data[, group] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { unname(unlist(y)) } else { return(y) })() }
-
-    # Extract splitting variable and convert tibble into a vector
-    if (isTRUE(!is.null(split))) { split <- data[, split] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { unname(unlist(y)) } else { return(y) })() }
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Without using the argument '...' ####
-
-  } else {
-
-    # Convert 'data' as tibble into data frame
-    x <- as.data.frame(data)
-
-    # Data and cluster
-    var.group <- .var.group(data = x, group = group, split = split)
+  .data(data, ..., group = group, split = split) |> (\(p) {
 
     # Data
-    if (isTRUE(!is.null(var.group$data)))  { x <- var.group$data }
+    assign("x", p$data, envir = parent.frame())
 
     # Grouping variable
-    if (isTRUE(!is.null(var.group$group))) { group <- var.group$group }
+    if (isTRUE(!is.null(p$group))) { assign("group", p$group, envir = parent.frame()) }
 
     # Split variable
-    if (isTRUE(!is.null(var.group$split))) { split <- var.group$split }
+    if (isTRUE(!is.null(p$split))) { assign("split", p$split, envir = parent.frame()) }
 
-  }
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Grouping and Split Variable ####
-
-  # Grouping variable
-  if (!is.null(group)) {
-
-    x <- which(sapply(names(x), function(y) identical(group, x[, y]))) |> (\(z) if (isTRUE(length(z) != 0L)) { return(x[, -z]) } else { x })()
-
-    if (isTRUE(ncol(x) == 0L)) { stop("After excluding the grouping variable from the data frame, there are not enough variables left for computing a correlation coefficient.") }
-
-  }
-
-  # Split variable
-  if (!is.null(split)) {
-
-    x <- which(sapply(names(x), function(y) identical(split, x[, y]))) |> (\(z) if (isTRUE(length(z) != 0L)) { return(x[, -z]) } else { x })()
-
-    if (isTRUE(ncol(x) == 0L)) { stop("After excluding the split variable from the data frame, there are not enough variables left for computing a correlation coefficient.") }
-
-  }
-
-  # Grouping and split variable are identical
-  if (isTRUE(!is.null(group) && !is.null(split) && identical(group, split))) { stop("Grouping and split variables are identical.", call. = FALSE) }
+  })()
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Convert user-missing values into NA ####
+  ## Convert User-Missing Values into NA ####
 
   if (isTRUE(!is.null(as.na))) { x <- .as.na(x, na = as.na) }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Numeric Variables ####
 
-    x <- x |>
-      (\(y) !vapply(y, is.numeric, FUN.VALUE = logical(1L)))() |>
-      (\(z) if (isTRUE(any(z))) {
-
-        warning(paste0("Non-numeric variables were excluded from the analysis: ", paste(names(which(z)), collapse = ", ")), call. = FALSE)
-
-        return(x[, -which(z), drop = FALSE])
-
-      } else {
-
-        return(x)
-
-      })()
-
-  if (isTRUE(ncol(x) == 0L)) { stop("No variables left for analysis after excluding non-numeric variables.", call. = FALSE) }
+  x <- .exclude.non.numeric(x, func = "cor.matrix")
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Listwise deletion ####
@@ -719,15 +662,19 @@ ci.cor <- function(data, ..., method = c("pearson", "spearman", "kendall-b", "ke
 
   #_____________________________________________________________________________
   #
-  # Input Check ----------------------------------------------------------------
+  # Input Check ————————————————————————————————————————————————————————————————
 
-  # Check inputs
-  .check.input(logical = c("sample", "fisher", "hist", "point", "ci", "line", "append", "output"), numeric = list(seed = 1L, maxtol = 1L, nudge = 1L, width = 1L, height = 1L, dpi = 1L),
+  .check.input(logical = c("sample", "fisher", "append", "output"), numeric = list(seed = 1L, maxtol = 1L, nudge = 1L, width = 1L, height = 1L, dpi = 1L),
                s.character = list(method = c("pearson", "spearman", "kendall-b", "kendall-c"), adjust = c("none", "joint", "approx"), se = c("fisher", "fieller", "bonett", "rin"), boot = c("none", "norm", "basic", "perc", "bc", "bca"), plot = c("none", "ci", "boot")),
-               args = c("alternative", "conf.level", "digits", "nrep", "write2"), envir = environment(), input.check = check)
+               m.character = list(geom = c("all", "hist", "density", "point", "ci", "line")), args = c("alternative", "conf.level", "digits", "nrep", "write2"), envir = environment(), input.check = check)
 
-  # Additional checks
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Additional Checks ####
+
   if (isTRUE(isTRUE(check))) {
+
+    #—————————————————————————————————————— #
+    ### Check inputs 'adjust', 'se', 'maxtol', and 'nudge' ####
 
     # Check input 'adjust'
     if (isTRUE(all(method != "pearson"))) { if (isTRUE(all(adjust != "none"))) { warning("Argument 'adjust' is not applicable when 'method' is not \"pearson\"", call. = FALSE)  } }
@@ -743,7 +690,9 @@ ci.cor <- function(data, ..., method = c("pearson", "spearman", "kendall-b", "ke
     # Check input 'nudge'
     if (isTRUE(nudge <= 0 || nudge > 0.1)) { stop("Please specify a number between 0 and 0.1 for the argument 'nudge'.", call. = FALSE) }
 
-    # Check input 'group'
+    #—————————————————————————————————————— #
+    ### Check input 'group' ####
+
     if (isTRUE(!is.null(group))) {
 
       # Input 'group' completely missing
@@ -754,7 +703,9 @@ ci.cor <- function(data, ..., method = c("pearson", "spearman", "kendall-b", "ke
 
     }
 
-    # Check input 'split'
+    #—————————————————————————————————————— #
+    ### Check input 'split' ####
+
     if (isTRUE(!is.null(split))) {
 
       # Input 'split' completely missing
@@ -772,29 +723,54 @@ ci.cor <- function(data, ..., method = c("pearson", "spearman", "kendall-b", "ke
 
   #_____________________________________________________________________________
   #
-  # Arguments ------------------------------------------------------------------
+  # Arguments ——————————————————————————————————————————————————————————————————
 
-  # 'method' Argument
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## 'method' Argument ####
+
   method <- ifelse(all(c("pearson", "spearman", "kendall-b", "kendall-c") %in% method), "pearson", method)
 
-  # 'adjust' Argument
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## 'adjust' Argument ####
+
   if (isTRUE(method == "pearson")) { adjust <- ifelse(all(c("none", "joint", "approx") %in% adjust), "approx", adjust) } else { adjust <- "none" }
 
-  # 'se' Argument
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## 'se' Argument ####
+
   if (isTRUE(method != "pearson")) { se <- ifelse(all(c("fisher", "fieller", "bonett", "rin") %in% se), "fieller", se) } else if (isTRUE(method %in% c("kendall-b", "kendall-c"))) { se <- "fieller" } else { se <- "fisher" }
 
-  # 'boot' Argument
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## 'boot' Argument ####
+
   boot <- ifelse(all(c("none", "norm", "basic", "perc", "bc", "bca") %in% boot), "none", boot)
 
-  # 'alternative' Argument
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## 'alternative' Argument ####
+
   if (isTRUE(all(c("two.sided", "less", "greater") %in% alternative))) { alternative <- "two.sided" }
 
-  # 'plot' Argument
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## 'plot' Argument ####
+
   plot <- ifelse(all(c("none", "ci", "boot") %in% plot), "none", plot)
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## 'geom' Argument ####
+
+  if (isTRUE(all(c("all", "hist", "density", "point", "ci", "line") %in% geom))) {
+
+    geom <- c("hist", "density", "point", "ci", "line")
+
+  } else if (all(geom == "all")) {
+
+    geom <- c("hist", "density", "point", "ci", "line")
+
+  }
 
   #_____________________________________________________________________________
   #
-  # Main Function --------------------------------------------------------------
+  # Main Function ——————————————————————————————————————————————————————————————
 
   low <- upp <- point <- NULL
 
@@ -960,12 +936,12 @@ ci.cor <- function(data, ..., method = c("pearson", "spearman", "kendall-b", "ke
 
   #_____________________________________________________________________________
   #
-  # Return Object --------------------------------------------------------------
+  # Return Object ——————————————————————————————————————————————————————————————
 
   object <- list(call = match.call(),
                  type = "ci.cor",
                  data = list(x = x, group = group, split = split),
-                 args = list(method = method, adjust = adjust, se = se, sample = sample, seed = seed, maxtol = maxtol, nudge = nudge, boot = boot, nrep = nrep, fisher = fisher, alternative = alternative, conf.level = conf.level, na.omit = na.omit, digits = digits, as.na = as.na, plot = plot, hist = hist, density = density, point = point, ci = ci, line = line, filename = filename, width = width, height = height, dpi = dpi, write = write, append = append, check = check, output = output),
+                 args = list(method = method, adjust = adjust, se = se, sample = sample, seed = seed, maxtol = maxtol, nudge = nudge, boot = boot, nrep = nrep, fisher = fisher, alternative = alternative, conf.level = conf.level, na.omit = na.omit, digits = digits, as.na = as.na, plot = plot, geom = geom, filename = filename, width = width, height = height, dpi = dpi, write = write, append = append, check = check, output = output),
                  boot = if (isTRUE(boot != "none")) { boot.sample } else { NULL },
                  plot = NULL, result = result)
 
@@ -973,19 +949,19 @@ ci.cor <- function(data, ..., method = c("pearson", "spearman", "kendall-b", "ke
 
   #_____________________________________________________________________________
   #
-  # Plot and Save Plot ---------------------------------------------------------
+  # Plot and Save Plot —————————————————————————————————————————————————————————
 
   if (isTRUE(plot != "none")) { object$plot <- plot(object, filename = filename, width = width, height = height, dpi = dpi, check = FALSE) |> (\(y) suppressMessages(suppressWarnings(print(y))))() }
 
   #_____________________________________________________________________________
   #
-  # Write Results --------------------------------------------------------------
+  # Write Results ——————————————————————————————————————————————————————————————
 
   if (isTRUE(!is.null(write))) { .write.result(object = object, write = write, append = append) }
 
   #_____________________________________________________________________________
   #
-  # Output ---------------------------------------------------------------------
+  # Output —————————————————————————————————————————————————————————————————————
 
   if (isTRUE(output)) { print(object, check = FALSE) }
 

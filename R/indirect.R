@@ -14,13 +14,12 @@
 #'                    \eqn{a}.
 #' @param se.b        a positive numeric value indicating the standard error of
 #'                    \eqn{b}.
-#' @param print       a character string or character vector indicating which
-#'                    confidence intervals (CI) to show on the console, i.e.
-#'                    \code{"all"} for all CIs, \code{"asymp"} for the CI based
-#'                    on the asymptotic normal method, \code{"dop"} for
-#'                    the CI based on the distribution of the product method, and
-#'                    \code{"mc"} (default) for the CI based on the Monte Carlo
-#'                    method.
+#' @param print       a character vector indicating which confidence intervals
+#'                    (CI) to show on the console, i.e. \code{"all"} for all CIs,
+#'                    \code{"asymp"} for the CI based on the asymptotic normal
+#'                    method, \code{"dop"} for the CI based on the distribution
+#'                    of the product method, and \code{"mc"} (default) for the
+#'                    CI based on the Monte Carlo method.
 #' @param se          a character string indicating which standard error (SE) to
 #'                    compute for the asymptotic normal method, i.e., \code{"sobel"}
 #'                    for the approximate standard error by Sobel (1982) using the
@@ -205,7 +204,7 @@ indirect <- function(a, b, se.a, se.b, print = c("all", "asymp", "dop", "mc"),
 
   #_____________________________________________________________________________
   #
-  # Input Check ----------------------------------------------------------------
+  # Input Check ————————————————————————————————————————————————————————————————
 
   # Check inputs
   .check.input(logical = c("append", "output"),
@@ -224,10 +223,10 @@ indirect <- function(a, b, se.a, se.b, print = c("all", "asymp", "dop", "mc"),
 
   #_____________________________________________________________________________
   #
-  # Arguments ------------------------------------------------------------------
+  # Arguments———————————————————————————————————————————————————————————————————
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Print Confidence intervals ####
+  ## Print Confidence Intervals ####
 
   if(all(c("all", "asymp", "dop", "mc") %in% print)) { print <- "mc" }
 
@@ -245,7 +244,7 @@ indirect <- function(a, b, se.a, se.b, print = c("all", "asymp", "dop", "mc"),
 
   #_____________________________________________________________________________
   #
-  # Main Function --------------------------------------------------------------
+  # Main Function ——————————————————————————————————————————————————————————————
 
   dop.ci <- asymp.ci <- mc.ci <- c(NA, NA)
 
@@ -390,7 +389,7 @@ indirect <- function(a, b, se.a, se.b, print = c("all", "asymp", "dop", "mc"),
 
   #_____________________________________________________________________________
   #
-  # Return Object --------------------------------------------------------------
+  # Return Object ——————————————————————————————————————————————————————————————
 
   object <- list(call = match.call(),
                  type = "indirect",
@@ -404,11 +403,11 @@ indirect <- function(a, b, se.a, se.b, print = c("all", "asymp", "dop", "mc"),
 
   #_____________________________________________________________________________
   #
-  # Write Results --------------------------------------------------------------
+  # Write Results ——————————————————————————————————————————————————————————————
 
   if (isTRUE(!is.null(write))) {
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Text File ####
 
     # Send R output to text file
@@ -426,7 +425,7 @@ indirect <- function(a, b, se.a, se.b, print = c("all", "asymp", "dop", "mc"),
 
   #_____________________________________________________________________________
   #
-  # Output ---------------------------------------------------------------------
+  # Output —————————————————————————————————————————————————————————————————————
 
    if (isTRUE(output)) { print(object, check = FALSE) }
 
